@@ -1,94 +1,143 @@
-<script setup>
-import Checkbox from '@/Components/Checkbox.vue';
-import GuestLayout from '@/Layouts/GuestLayout.vue';
-import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
-import TextInput from '@/Components/TextInput.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
+<template>
+  <div id="app-login" class="card-overlay">
+    <v-app>
+      <div>
+        <v-row class="my-1">
+          <v-col cols="12" md="4">
+            <v-btn
+              tile
+              block
+              outlined
+              elevation="0"
+              color="primary"
+              class="p-0 m-0"
+              @click="goToLoginPage()"
+              >Connexion</v-btn
+            >
+            <!-- <v-btn
+              tile
+              block
+              outlined
+              elevation="0"
+              style="background-color: white; color: #004980"
+              class="p-0 m-0"
+              @click="goToLoginPage()"
+              >Connexion</v-btn
+            > -->
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-btn
+              tile
+              block
+              outlined
+              elevation="0"
+              color="primary"
+              class="p-0 m-0"
+              @click="goToWelcomePage()"
+              >site web</v-btn
+            ></v-col
+          >
+          <v-col cols="12" md="4"
+            ><v-btn tile block outlined elevation="0" color="primary" class="'-0 m-0"
+              >our stats</v-btn
+            ></v-col
+          >
+        </v-row>
+      </div>
+      <router-view />
+      <div>
+        <footer
+          style="
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background-color: #7d002c;
+            width: 100%;
+            background-size: cover;
+          "
+        >
+          <span class="text-reset text-white"
+            >© {{ new Date().getFullYear() }}&nbsp; Copyright:
+            <a href="https://mdbootstrap.com/" target="_blank">synetcom.com</a></span
+          >
+        </footer>
+      </div>
+    </v-app>
+  </div>
+</template>
 
-defineProps({
-    canResetPassword: {
-        type: Boolean,
+<script>
+import { router, useForm } from "@inertiajs/vue3";
+import FooterIndex from "../../components/welcome/Footer.index.vue";
+import LoginComponent from "../../components/auth-page/Login.component.vue";
+
+export default {
+  components: {
+    LoginComponent,
+    FooterIndex,
+  },
+  computed: {},
+  methods: {
+    goToLoginPage() {
+      return router.get(route("login"));
     },
-    status: {
-        type: String,
+    goToWelcomePage() {
+      return router.get("/");
     },
-});
-
-const form = useForm({
-    email: '',
-    password: '',
-    remember: false,
-});
-
-const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
-    });
+  },
 };
 </script>
 
-<template>
-    <GuestLayout>
-        <Head title="Log in" />
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap");
 
-        <div v-if="status" class="mb-4 font-medium text-sm text-green-600">
-            {{ status }}
-        </div>
+#app-login {
+  font-family: Raleway, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  background: url("https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1414&q=80")
+    no-repeat center center fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+}
 
-        <form @submit.prevent="submit">
-            <div>
-                <InputLabel for="email" value="Email" />
+.sm-main-style {
+  margin: auto;
+  width: 95%;
+}
+.md-main-style {
+  margin: auto;
+  width: 70%;
+}
+.footer-style {
+  height: 50px;
+  margin-top: 10px;
+  background-color: #7d002c;
+}
+.footer-md {
+  padding: 30px 0px;
+}
+.footer-md a {
+  text-decoration: none;
+  color: white !important;
+  font-size: 1.1rem;
+  font-family: cursive;
+  font-weight: 600;
+}
 
-                <TextInput
-                    id="email"
-                    type="email"
-                    class="mt-1 block w-full"
-                    v-model="form.email"
-                    required
-                    autofocus
-                    autocomplete="username"
-                />
-
-                <InputError class="mt-2" :message="form.errors.email" />
-            </div>
-
-            <div class="mt-4">
-                <InputLabel for="password" value="Password" />
-
-                <TextInput
-                    id="password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    v-model="form.password"
-                    required
-                    autocomplete="current-password"
-                />
-
-                <InputError class="mt-2" :message="form.errors.password" />
-            </div>
-
-            <div class="block mt-4">
-                <label class="flex items-center">
-                    <Checkbox name="remember" v-model:checked="form.remember" />
-                    <span class="ml-2 text-sm text-gray-600">Remember me</span>
-                </label>
-            </div>
-
-            <div class="flex items-center justify-end mt-4">
-                <Link
-                    v-if="canResetPassword"
-                    :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                >
-                    Forgot your password?
-                </Link>
-
-                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    Log in
-                </PrimaryButton>
-            </div>
-        </form>
-    </GuestLayout>
-</template>
+.footer-sm {
+  padding: 20px 0px;
+}
+.footer-sm a {
+  text-decoration: none;
+  color: white !important;
+  font-size: 0.8rem;
+  font-family: cursive;
+  font-weight: 600;
+}
+</style>

@@ -6,7 +6,7 @@
       <!-- <Link  :href="route('home')">
         <v-btn text>Page d'accueil</v-btn>
       </Link> -->
-      <div><v-btn color="white" @click="testURL">Connexion</v-btn></div>
+      <div><v-btn color="white" @click="goToLogin()">Connexion</v-btn></div>
     </v-app-bar>
     <BodyIndex />
     <!-- <v-card style="margin-top: 100px">
@@ -33,9 +33,9 @@ export default {
   computed: {},
   mounted() {},
   methods: {
-    testURL() {
+    goToLogin() {
       console.log("here");
-      return this.$inertia.get("/");
+      return router.get(route("login"));
     },
   },
 };

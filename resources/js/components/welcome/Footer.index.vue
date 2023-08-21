@@ -26,7 +26,7 @@
             </v-col>
           </v-row>
           <v-row no-gutters>
-            <v-btn class="connexion_btn"> Connexion </v-btn>
+            <v-btn class="connexion_btn" @click="goToLoginPage()"> Connexion </v-btn>
           </v-row>
         </div></v-col
       >
@@ -167,13 +167,7 @@ export default {
     goSocialMediasURL(icon) {
       return window.open(icon.url);
     },
-    goToMenuItemPage(name) {
-      if (name && name != "") {
-        return router.visit(`/${name}`, {
-          preserveScroll: true,
-        });
-      } else return;
-    },
+
     goToRegisterPage() {
       return router.visit("/register", {
         preserveScroll: true,

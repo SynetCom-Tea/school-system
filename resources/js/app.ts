@@ -1,13 +1,12 @@
-import "./bootstrap";
-import "../css/app.css";
+import './bootstrap';
+import '../css/app.css';
 
-import { createApp, h, DefineComponent } from "vue";
-import { createInertiaApp } from "@inertiajs/inertia-vue3";
-import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
+import { createApp, h } from 'vue';
+import { createInertiaApp } from '@inertiajs/vue3';
+import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy/dist/vue.m';
-import { Ziggy } from './ziggy';
+import { createVuetify, type ThemeDefinition } from 'vuetify';
 import { InertiaProgress } from "@inertiajs/progress";
-import { createVuetify ,type ThemeDefinition} from 'vuetify';
 import VueGates from 'vue-gates';
 import 'vuetify/styles'
 import "vuetify/dist/vuetify.min.css";
@@ -16,10 +15,50 @@ import * as components from 'vuetify/components'
 import * as directives from 'vuetify/directives'
 import * as labsComponents from 'vuetify/labs/components'
 import { VDataTable } from 'vuetify/labs/VDataTable'
+ import Vuex from 'vuex'
+import axios from 'axios'
+import VueAxios from 'vue-axios'
+import VueSweetalert2 from 'vue-sweetalert2';
+import 'sweetalert2/dist/sweetalert2.min.css';
+import { store } from './store'
 
-// InertiaProgress.init({ color: '#2880ff' });
+import { createWebHistory, createRouter } from "vue-router";
+
+import LoginComponent from "./components/auth-page/Login.component.vue";
+import Index from "./pages/welcome/Index.vue";
+
+const routes = [{
+        path: '/login',
+        name: 'LoginComponent',
+        component: LoginComponent
+    },
+    {
+        path: '/',
+        name: 'IndexWelcome',
+        component:Index
+    },
+    {
+        path: '/',
+        name: 'stats',
+        component: Index
+    },
+]
+
+     const indexRouter = createRouter({
+  history: createWebHistory(),
+  routes,
+});
+
+
+
+const options = {
+    confirmButtonColor: "#3085d6",
+    cancelButtonColor: "#d33",
+};
+
+const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 InertiaProgress.init({ color: '#7d002c' });
-const appName = window.document.getElementsByTagName('title')[0]?.innerText || 'Laravel';
+
  const myAllBlackTheme: ThemeDefinition = {
      dark: false,
       light: true,
@@ -40,7 +79,6 @@ const appName = window.document.getElementsByTagName('title')[0]?.innerText || '
 const vuetify = createVuetify({
       theme: {
         defaultTheme: "myAllBlackTheme",
-
         themes: {
           myAllBlackTheme,
         },
@@ -57,47 +95,25 @@ const vuetify = createVuetify({
             mdi,
         },
     },
-    // theme: {
-    //         dark: true,
-    //         options: { customProperties: true },
-    //         themes: {
-    //             dark: {
-    //                 primary: {
-    //                     base: "#099b63",
-    //                     darken1: "#04c279"
-    //                 },
-    //                 accent: "#250032",
-    //                 secondary: "#97812F",
-    //                 info: {
-    //                     base: "#1FFFF1",
-    //                     darken1: "#450b5a",
-    //                     darken2: "#1125c0",
-    //                     darken3: "#40bfa4"
-    //                 },
-    //                 warning: 'orange',
-    //                 error: 'red',
-    //                 success:'green',
-    //                 anchor: "#1FFFF1"
-    //             }
-    //         },
-    //     }
+
 })
 createInertiaApp({
-  title: (title) => `${title} - ${appName}`,
-    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob<DefineComponent>('./Pages/**/*.vue')),
-    setup({ el, app, props, plugin }) {
-    return createApp({ render: () => h(app, props) })
+    title: (title) => `${title} - ${appName}`,
+    resolve: (name) => resolvePageComponent(`./Pages/${name}.vue`, import.meta.glob('./Pages/**/*.vue')),
+    setup({ el, App, props, plugin}) {
+      return createApp({ render: () => h(App, props) })
         .use(plugin)
         .use(ZiggyVue, Ziggy)
-        .use(vuetify)
-        .use(VueGates)
-      .mount(el);
+.use(indexRouter)
+        .use(store)
+          .use(vuetify)
+          .use(VueGates)
+          .use(Vuex)
+          .use(VueAxios, axios)
+          .use(VueSweetalert2, options)
+            .mount(el);
     },
-
+    progress: {
+        color:'#7d002c',
+    },
 });
-
-
-
-
-
-
