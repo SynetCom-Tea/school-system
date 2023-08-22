@@ -1,49 +1,36 @@
-<script setup>
-import { ref } from "vue";
-import ApplicationLogo from "@/Components/ApplicationLogo.vue";
-import Dropdown from "@/Components/Dropdown.vue";
-import DropdownLink from "@/Components/DropdownLink.vue";
-import NavLink from "@/Components/NavLink.vue";
-import ResponsiveNavLink from "@/Components/ResponsiveNavLink.vue";
-import { Link } from "@inertiajs/vue3";
-
-const showingNavigationDropdown = ref(false);
-</script>
-
 <template>
-  <v-card>
-    <v-layout>
-      <v-navigation-drawer expand-on-hover rail>
-        <v-list>
-          <v-list-item
-            prepend-avatar="https://randomuser.me/api/portraits/women/85.jpg"
-            title="Sandra Adams"
-            subtitle="sandra_a88@gmailcom"
-          ></v-list-item>
-        </v-list>
-
-        <v-divider></v-divider>
-
-        <v-list density="compact" nav>
-          <v-list-item
-            prepend-icon="mdi-folder"
-            title="My Files"
-            value="myfiles"
-          ></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-account-multiple"
-            title="Shared with me"
-            value="shared"
-          ></v-list-item>
-          <v-list-item
-            prepend-icon="mdi-star"
-            title="Starred"
-            value="starred"
-          ></v-list-item>
-        </v-list>
-      </v-navigation-drawer>
-
-      <v-main style="height: 250px"></v-main>
-    </v-layout>
-  </v-card>
+  <v-layout>
+    <Sidebar />
+    <v-main>
+      <slot />
+      <!-- <v-container fluid class="main-container">
+        <v-card ripple color="rgb(125, 0, 44)">
+          <v-card-title style="color: white">{{ page.title }}</v-card-title>
+          <v-card-subtitle class="text-wrap" style="color: white">{{
+            page.subtitle
+          }}</v-card-subtitle>
+        </v-card>
+      </v-container> -->
+    </v-main>
+  </v-layout>
 </template>
+
+<script>
+import Sidebar from "../components/auth-page/SideBar.vue";
+import { router } from "@inertiajs/vue3";
+export default {
+  name: "App",
+
+  components: {
+    Sidebar,
+  },
+
+  data: () => ({
+    page: {
+      title: "Bienvenue sur la plateforme de gestion de Système Scoloaire",
+      subtitle:
+        "Vous pouvez administrez et gérer vos données en toute simplicité et en sécurité. Une plateforme qui intègre la gestion de votre établissement de l'inscription à l'évaluation jusqu'à l'analyse et le traitement de vos données.!",
+    },
+  }),
+};
+</script>

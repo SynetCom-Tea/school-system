@@ -1,53 +1,85 @@
+import articlesIcon from "@iconify-icons/fluent-mdl2/articles";
+import formsAppsScriptOutlineRounded from "@iconify-icons/material-symbols/forms-apps-script-outline-rounded";
+import {
+  mdiAccount,
+  mdiPurse,
+  mdiHomeOutline,
+  mdiPresentation,
+  mdiGift,
+  mdiSquareMedium,
+  mdiClipboardEditOutline,
+  mdiInstagram,
+  mdiTwitter,
+  mdiFacebook,
+  mdiDotsVertical,
+  mdiLogout,
+  mdiAccountBoxMultiple,
+  mdiCogOutline,
+  mdiHomeCity,
+  mdiLinkedin,
+  mdiCartArrowUp,
+  mdiStocking,
+  mdiCartPlus,
+  mdiFaceAgent,
+  mdiChevronDown,
+  mdiAccountCogOutline,
+  mdiCog,
+  mdiSchool,
+  mdiWalletMembership,
+  mdiAccountSchool,
+  mdiInformation,
+  mdiCardAccountDetails,
+  mdiBookOpenPageVariantOutline,
+  mdiShieldCheck,
+  mdiTools,
+  mdiOfficeBuilding,
+  mdiShareCircle,
+  mdiMail,
+  mdiReceiptTextSendOutline,
+  mdiReceiptTextCheckOutline,
+} from "@mdi/js";
 export function listMenus() {
     let singleItems = [
         {
-            text: "Home",
+            title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
             permissions: "manage_system",
         },
         {
-            text: "Mon compte",
+            title: "Mon compte",
             icon: mdiCogOutline,
             link: "/profile",
         },
-
-
-
-
-
         {
-            text: "Etablissements",
+            title: "Etablissements",
             icon: mdiReceiptTextCheckOutline,
             link: "/receptions",
             permissions: "manage_system",
         },
-
-
     ];
     let usersMenu = {
         icon: mdiAccountCogOutline,
+        title: "Gestions Utilisateurs",
         "icon-alt": mdiChevronDown,
-        title: "Utilisateurs",
         permissions: "manage_system",
-        divider: true,
         model: false,
         children: [
             {
                 icon: mdiSquareMedium,
-                title: "Utilisateur",
+                title: "Liste",
                 link: "/users",
                 permissions: "manage_system",
             },
             {
                 icon: mdiSquareMedium,
-                title: "Role",
+                title: "Rôles",
                 link: "/roles",
                 permissions: "manage_system",
             },
             {
                 icon: mdiSquareMedium,
-                title: "Permission",
+                title: "Permissions",
                 link: "/permissions",
                 permissions: "manage_system",
             },
@@ -118,4 +150,5 @@ export function listMenus() {
             },
         ],
     }
+    return [singleItems,usersMenu,configsMenu,welcomeMenu]
 }
