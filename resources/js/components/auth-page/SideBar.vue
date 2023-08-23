@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
       <div class="app-bar-content">
         <h2 class="transition-default">Bienvenue sur Système scolaire!</h2>
@@ -21,14 +21,7 @@
         </v-btn>
       </div>
     </v-app-bar>
-    <v-navigation-drawer
-      v-model="drawer"
-      rail-width="320"
-      rail-height="1000"
-      permanent
-      rail
-      height="100%"
-    >
+    <v-navigation-drawer v-model="drawer" rail-width="320" permanent rail height="100%">
       <div id="sidebar">
         <div class="sidebar-toggle">
           <div @click.stop="drawer = !drawer" id="btn-toggle">
@@ -60,7 +53,6 @@
                   <template v-slot:prepend>
                     <v-icon :title="link.title" :icon="link.icon"></v-icon>
                   </template>
-
                   <v-list-item-title
                     class="text-wrap"
                     v-text="link.title"
@@ -134,7 +126,6 @@
                   <template v-slot:prepend>
                     <v-icon title="logout" :icon="icons.mdiLogout"></v-icon>
                   </template>
-
                   <v-list-item-title class="text-wrap">Déconnexion</v-list-item-title>
                 </v-list-item>
               </v-list>
@@ -249,7 +240,7 @@ export default {
   top: 0;
   left: 0;
   background-color: rgb(0, 73, 128);
-  height: 100%;
+  /* height: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -319,12 +310,14 @@ export default {
   flex-direction: column;
 }
 .sidebar-links .v-list .list-case {
+  cursor: pointer;
   text-decoration: none;
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 25px;
-  padding-inline: 20px;
-  padding-block: 15px;
+  padding-inline: 10px;
+  padding-block: 10px;
   margin-block: 3px;
+  border-width: thick;
   font-weight: 100;
   border: 1px solid rgba(255, 255, 255, 0.85);
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -342,14 +335,17 @@ export default {
   color: white;
 }
 .sidebar-links .v-list .v-list-group .sub-list-group {
+  cursor: pointer;
   text-decoration: none;
-  margin-left: 15px;
+  margin-left: 35px;
   background-color: rgb(125, 0, 44, 1);
-  border-width: thick;
+  border-width: thin;
   border-radius: 25px;
   margin-block: 2px;
   color: white;
-  font-weight: 100;
+  font-weight: 80;
+  padding-inline: 7px;
+  padding-block: 7px;
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   /* border: 1px rgb(125, 0, 44, 1);
     padding-inline: 20px;
@@ -365,9 +361,10 @@ export default {
 .sidebar-links .v-list .v-list-group .group-title {
   text-decoration: none;
   background-color: rgba(255, 255, 255, 0.75);
+  border-width: thick;
   border-radius: 25px;
-  padding-inline: 15px;
-  padding-block: 15px;
+  padding-inline: 10px;
+  padding-block: 10px;
   margin-block: 3px;
   font-weight: 100;
   border: 1px solid rgba(255, 255, 255, 0.85);
