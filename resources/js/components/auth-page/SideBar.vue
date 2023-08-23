@@ -2,7 +2,7 @@
   <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
       <div class="app-bar-content">
-        <h2 class="transition-default">Bienvenue sur Système scolaire!</h2>
+        <div class="transition-default">Bienvenue sur Système scolaire!</div>
         <div class="text-end">
           <v-btn
             @click="redirectToWebsite"
@@ -21,7 +21,7 @@
         </v-btn>
       </div>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" rail-width="320" permanent rail height="100%">
+    <v-navigation-drawer v-model="drawer" width="300" permanent height="100%">
       <div id="sidebar">
         <div class="sidebar-toggle">
           <div @click.stop="drawer = !drawer" id="btn-toggle">
@@ -150,6 +150,7 @@ import {
   mdiInformationVariantCircleOutline,
 } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
+import { Vue3Marquee } from "vue3-marquee";
 export default {
   name: "Sidebar",
   components: {
@@ -162,8 +163,16 @@ export default {
     mdiLogout,
     mdiLogoutVariant,
   },
+
   data: () => {
     return {
+      listGreetings: [
+        { id: 1, text: "Wa fonda kayan!" },
+        { id: 2, text: "Barka da zouwa!" },
+        { id: 3, text: "Bienvenue!" },
+        { id: 1, text: "Welcome!" },
+        { id: 1, text: "Marhaba!" },
+      ],
       open: ["getListMenus[1]"],
       drawer: true,
       menuCompact: {
@@ -235,6 +244,11 @@ export default {
 };
 </script>
 <style scoped>
+.defile {
+  cursor: pointer;
+
+  border-radius: 3px;
+}
 #sidebar {
   margin: 0;
   top: 0;
@@ -314,8 +328,8 @@ export default {
   text-decoration: none;
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 25px;
-  padding-inline: 10px;
-  padding-block: 10px;
+  padding-inline: 8px;
+  padding-block: 8px;
   margin-block: 3px;
   border-width: thick;
   font-weight: 100;
@@ -335,6 +349,7 @@ export default {
   color: white;
 }
 .sidebar-links .v-list .v-list-group .sub-list-group {
+  justify-content: flex-start;
   cursor: pointer;
   text-decoration: none;
   margin-left: 35px;
@@ -344,8 +359,8 @@ export default {
   margin-block: 2px;
   color: white;
   font-weight: 80;
-  padding-inline: 7px;
-  padding-block: 7px;
+  padding-inline: 5px;
+  padding-block: 5px;
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   /* border: 1px rgb(125, 0, 44, 1);
     padding-inline: 20px;
@@ -363,8 +378,8 @@ export default {
   background-color: rgba(255, 255, 255, 0.75);
   border-width: thick;
   border-radius: 25px;
-  padding-inline: 10px;
-  padding-block: 10px;
+  padding-inline: 8px;
+  padding-block: 8px;
   margin-block: 3px;
   font-weight: 100;
   border: 1px solid rgba(255, 255, 255, 0.85);
@@ -376,42 +391,14 @@ export default {
   border-radius: 25px;
   margin-left: 15px;
 }
-
-/* .sidebar-links .v-list .v-list-group:hover {
-  background-color: rgb(125, 0, 44, 1);
-  box-shadow: 0px 0px 8px rgb(125, 0, 44, 0.85);
-  border-color: rgb(125, 0, 44);
-} */
-
-/* .sidebar-links .v-list .v-list-item:nth-last-of-type(1):hover {
-  background-image: linear-gradient(to right, red, rgb(100, 0, 0));
-  box-shadow: 0px 0px 8px red;
-  border-color: red;
-} */
-
-/* .sidebar-links .links .v-list .v-list-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: rgba(0, 0, 0, 0.6);
-}
-.sidebar-links .links .v-list .v-list-group:hover {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: white;
-} */
-
-/* Debut list-item */
-.sidebar-links .icon:hover {
-  color: white;
-}
 .sidebar-links .icon {
-  color: rgba(0, 0, 0, 0.9);
+  color: white;
   margin-top: -1px;
   margin-left: 3px;
 }
-
+.sidebar-links .icon:hover {
+  color: #000000de;
+}
 .sidebar-toggle {
   top: 0px;
   right: 0px;
@@ -447,10 +434,22 @@ export default {
 }
 
 .transition-default {
-  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  cursor: pointer;
+  font-family: monospace;
+  font-size: 2em;
+  animation: color-change 1s infinite;
 }
 
+@keyframes color-change {
+  0% {
+    color: red;
+  }
+  50% {
+    color: green;
+  }
+  100% {
+    color: orange;
+  }
+}
 @media screen and (max-width: 600px) {
   .app-bar-content h2 {
     font-size: 18px;
