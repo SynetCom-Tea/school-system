@@ -21,7 +21,14 @@
         </v-btn>
       </div>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" rail-width="320" permanent rail app>
+    <v-navigation-drawer
+      v-model="drawer"
+      rail-width="320"
+      rail-height="1000"
+      permanent
+      rail
+      height="100%"
+    >
       <div id="sidebar">
         <div class="sidebar-toggle">
           <div @click.stop="drawer = !drawer" id="btn-toggle">
@@ -121,6 +128,15 @@
                     ></v-list-item-title>
                   </v-list-item>
                 </v-list-group>
+
+                <!-- Déconnexion doit etre le dernier menu -->
+                <v-list-item class="list-case" @click="logout" key="logout">
+                  <template v-slot:prepend>
+                    <v-icon title="logout" :icon="icons.mdiLogout"></v-icon>
+                  </template>
+
+                  <v-list-item-title class="text-wrap">Déconnexion</v-list-item-title>
+                </v-list-item>
               </v-list>
             </div>
           </div>
@@ -138,6 +154,7 @@ import {
   mdiHandshake,
   mdiHome,
   mdiEmail,
+  mdiLogout,
   mdiLogoutVariant,
   mdiInformationVariantCircleOutline,
 } from "@mdi/js";
@@ -151,6 +168,7 @@ export default {
     mdiHandshake,
     mdiInformationVariantCircleOutline,
     mdiEmail,
+    mdiLogout,
     mdiLogoutVariant,
   },
   data: () => {
@@ -167,6 +185,7 @@ export default {
         mdiHandshake,
         mdiInformationVariantCircleOutline,
         mdiEmail,
+        mdiLogout,
         mdiLogoutVariant,
       },
       profileInfo: {
@@ -202,6 +221,9 @@ export default {
   },
   methods: {
     listMenus,
+    logout() {
+      router.post("/logout");
+    },
     onClickMenuItem(item) {
       router.get(item);
     },
@@ -227,7 +249,7 @@ export default {
   top: 0;
   left: 0;
   background-color: rgb(0, 73, 128);
-  height: 900px;
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -336,12 +358,8 @@ export default {
   */
 }
 .sidebar-links .v-list .v-list-group .sub-list-group:hover {
-  margin-left: 15px;
   background-color: rgba(255, 255, 255, 0.75);
-  border-width: thick;
-  border-radius: 25px;
-  margin-block: 2px;
-  color: bold;
+  color: #000000de;
   font-weight: 100;
 }
 .sidebar-links .v-list .v-list-group .group-title {
