@@ -6,10 +6,10 @@ export const actions = {
         // this is just an example on how to save the JWT Token, PS AUTH API is fake
         axios.post('https://fake-url.com/api/auth', formData).then((response) => {
             localStorage.setItem('auth_token', response.datatoken);
-            router.get(route('/profile'));
+           // router.get(route('/profile'));
         }).catch((error) => {
             //will always redirect to profile
-             router.get(route('/profile'));
+             //router.get(route('/profile'));
         });
     },
 };

@@ -76,7 +76,7 @@
                   </template>
 
                   <v-list-item
-                    class="skip"
+                    class="sub-list-group"
                     v-for="(item, i) in getListMenus[1].children"
                     :key="i"
                   >
@@ -107,7 +107,7 @@
                   </template>
 
                   <v-list-item
-                    class="skip"
+                    class="sub-list-group"
                     v-for="(item, i) in getListMenus[2].children"
                     :key="i"
                   >
@@ -319,14 +319,30 @@ export default {
   border-color: rgb(125, 0, 44);
   color: white;
 }
-.sidebar-links
-  .v-list
-  .v-list-group.v-list-group--prepend.v-list-group--open
-  .v-list-group__items {
+.sidebar-links .v-list .v-list-group .sub-list-group {
+  text-decoration: none;
+  margin-left: 15px;
   background-color: rgb(125, 0, 44, 1);
-  box-shadow: 0px 0px 8px rgb(125, 0, 44, 0.85);
-  border-color: rgb(125, 0, 44);
+  border-width: thick;
+  border-radius: 25px;
+  margin-block: 2px;
   color: white;
+  font-weight: 100;
+  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* border: 1px rgb(125, 0, 44, 1);
+    padding-inline: 20px;
+  padding-block: 10px;
+
+  */
+}
+.sidebar-links .v-list .v-list-group .sub-list-group:hover {
+  margin-left: 15px;
+  background-color: rgba(255, 255, 255, 0.75);
+  border-width: thick;
+  border-radius: 25px;
+  margin-block: 2px;
+  color: bold;
+  font-weight: 100;
 }
 .sidebar-links .v-list .v-list-group .group-title {
   text-decoration: none;
