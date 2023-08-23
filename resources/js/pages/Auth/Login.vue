@@ -1,0 +1,143 @@
+<template>
+  <div id="app-login" class="card-overlay">
+    <v-app>
+      <div>
+        <v-row class="my-1">
+          <v-col cols="12" md="4">
+            <v-btn
+              tile
+              block
+              outlined
+              elevation="0"
+              color="primary"
+              class="p-0 m-0"
+              @click="goToLoginPage()"
+              >Connexion</v-btn
+            >
+            <!-- <v-btn
+              tile
+              block
+              outlined
+              elevation="0"
+              style="background-color: white; color: #004980"
+              class="p-0 m-0"
+              @click="goToLoginPage()"
+              >Connexion</v-btn
+            > -->
+          </v-col>
+          <v-col cols="12" md="4">
+            <v-btn
+              tile
+              block
+              outlined
+              elevation="0"
+              color="primary"
+              class="p-0 m-0"
+              @click="goToWelcomePage()"
+              >site web</v-btn
+            ></v-col
+          >
+          <v-col cols="12" md="4"
+            ><v-btn tile block outlined elevation="0" color="primary" class="'-0 m-0"
+              >our stats</v-btn
+            ></v-col
+          >
+        </v-row>
+      </div>
+      <router-view />
+      <div>
+        <footer
+          style="
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            background-color: #7d002c;
+            width: 100%;
+            background-size: cover;
+          "
+        >
+          <span class="text-reset text-white"
+            >© {{ new Date().getFullYear() }}&nbsp; Copyright:
+            <a href="https://mdbootstrap.com/" target="_blank">synetcom.com</a></span
+          >
+        </footer>
+      </div>
+    </v-app>
+  </div>
+</template>
+
+<script>
+import { router, useForm } from "@inertiajs/vue3";
+import FooterIndex from "../../components/welcome/Footer.index.vue";
+import LoginComponent from "../../components/auth-page/Login.component.vue";
+
+export default {
+  components: {
+    LoginComponent,
+    FooterIndex,
+  },
+  computed: {},
+  methods: {
+    goToLoginPage() {
+      return router.get(route("login"));
+    },
+    goToWelcomePage() {
+      return router.get("/");
+    },
+  },
+};
+</script>
+
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap");
+
+#app-login {
+  font-family: Raleway, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-align: center;
+  color: #2c3e50;
+  background: url("https://images.unsplash.com/photo-1531297484001-80022131f5a1?ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&ixlib=rb-1.2.1&auto=format&fit=crop&w=1414&q=80")
+    no-repeat center center fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+}
+
+.sm-main-style {
+  margin: auto;
+  width: 95%;
+}
+.md-main-style {
+  margin: auto;
+  width: 70%;
+}
+.footer-style {
+  height: 50px;
+  margin-top: 10px;
+  background-color: #7d002c;
+}
+.footer-md {
+  padding: 30px 0px;
+}
+.footer-md a {
+  text-decoration: none;
+  color: white !important;
+  font-size: 1.1rem;
+  font-family: cursive;
+  font-weight: 600;
+}
+
+.footer-sm {
+  padding: 20px 0px;
+}
+.footer-sm a {
+  text-decoration: none;
+  color: white !important;
+  font-size: 0.8rem;
+  font-family: cursive;
+  font-weight: 600;
+}
+</style>
