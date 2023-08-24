@@ -49,6 +49,7 @@
                   class="list-case"
                   v-for="link in getListMenus[0]"
                   :key="link.title"
+                  @click="onClickMenuItem(link.link)"
                 >
                   <template v-slot:prepend>
                     <v-icon :title="link.title" :icon="link.icon"></v-icon>

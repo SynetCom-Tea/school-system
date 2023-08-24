@@ -47,12 +47,12 @@ export function listMenus() {
             permissions: "manage_system",
         },
         {
-            title: "Mon compte",
+            title: "Evaluation",
             icon: mdiCogOutline,
-            link: "/profile",
+            link: "/gestionnote/evaluation",
         },
         {
-            title: "Etablissements",
+            title: "Attribution de notes",
             icon: mdiReceiptTextCheckOutline,
             link: "/receptions",
             permissions: "manage_system",
