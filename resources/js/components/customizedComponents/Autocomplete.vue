@@ -4,6 +4,10 @@ import { ref } from "vue";
 export default {
   props: {
     vModel: [String, Number],
+    itemsValue: {
+      type: Array,
+      default: [],
+    },
     type: {
       type: String,
       default: "text",
@@ -36,7 +40,11 @@ export default {
       type: Number,
       default: "",
     },
-    name: {
+    itemTitle: {
+      type: String,
+      required: false,
+    },
+    itemValue: {
       type: String,
       required: false,
     },
@@ -78,8 +86,11 @@ export default {
       default: "",
     },
     onchangeField: { type: Function },
+    customFilter: { type: Function },
     classLabel: { type: String, default: "defaultClassLabel" },
+    style: { type: String },
     isRequired: { type: Boolean, default: false },
+    isMultiple: { type: Boolean, default: false },
   },
   setup() {},
   updated() {},
@@ -102,14 +113,19 @@ export default {
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
   >
-    <v-text-field
+    <v-autocomplete
       :type="type"
+      :items="itemsValue"
       v-model="modelValue"
       :variant="variantValue"
       :hint="hintValue"
       :density="densityValue"
       v-bind="$attrs"
-      :name="name"
+      :disabled="conditionDisabled"
+      :custom-filter="customFilter"
+      :item-title="itemTitle"
+      :item-value="itemValue"
+      :style="style"
       :placeholder="placeholder"
       :rules="rules"
       :prepend-inner-icon="icon"
@@ -117,6 +133,7 @@ export default {
       :color="colorValue"
       @change="onchangeField"
       :error-messages="errorMessageValue"
+      :multiple="isMultiple"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>
@@ -124,31 +141,12 @@ export default {
       <template #label v-else>
         {{ label }}
       </template>
-    </v-text-field>
+    </v-autocomplete>
   </v-responsive>
 </template>
 <style scoped>
 #required-field::after {
   content: "*";
   color: red;
-}
-
-#app
-  > div
-  > main
-  > div.v-responsive.py-4
-  > div.v-responsive__content
-  > div
-  > div.v-input__control
-  > div.v-text-field
-  .v-field {
-  cursor: text;
-  height: 30px;
-}
-.v-text-field .v-input__control {
-  height: 30px;
-  min-height: auto !important;
-  display: flex !important;
-  align-items: center !important;
 }
 </style>

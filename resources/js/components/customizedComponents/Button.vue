@@ -36,7 +36,7 @@ export default {
       type: Number,
       default: "",
     },
-    name: {
+    title: {
       type: String,
       required: false,
     },
@@ -61,9 +61,9 @@ export default {
       type: String,
       default: "",
     },
-    successMessage: {
+    sizeButton: {
       type: String,
-      default: "",
+      default: "small",
     },
     placeholder: {
       type: String,
@@ -77,9 +77,11 @@ export default {
       type: [Object, String],
       default: "",
     },
-    onchangeField: { type: Function },
+    onClickButton: { type: Function },
     classLabel: { type: String, default: "defaultClassLabel" },
     isRequired: { type: Boolean, default: false },
+    isBlock: { type: Boolean, default: false },
+    isBlock: { type: Boolean, default: false },
   },
   setup() {},
   updated() {},
@@ -102,21 +104,19 @@ export default {
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
   >
-    <v-text-field
+    <v-btn
       :type="type"
-      v-model="modelValue"
       :variant="variantValue"
-      :hint="hintValue"
       :density="densityValue"
       v-bind="$attrs"
-      :name="name"
-      :placeholder="placeholder"
-      :rules="rules"
+      :title="title"
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="colorValue"
-      @change="onchangeField"
+      :size="sizeButton"
+      @click="onClickButton"
       :error-messages="errorMessageValue"
+      :block="isBlock"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>
@@ -124,7 +124,7 @@ export default {
       <template #label v-else>
         {{ label }}
       </template>
-    </v-text-field>
+    </v-btn>
   </v-responsive>
 </template>
 <style scoped>

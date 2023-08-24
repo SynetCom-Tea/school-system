@@ -441,13 +441,37 @@ export default {
 
 @keyframes color-change {
   0% {
-    color: red;
+    color: blue;
   }
-  50% {
+  10% {
+    color: #8e44ad;
+  }
+  20% {
+    color: #1abc9c;
+  }
+  30% {
+    color: #d35400;
+  }
+  40% {
     color: green;
   }
-  100% {
+  50% {
+    color: #34495e;
+  }
+  60% {
     color: orange;
+  }
+  70% {
+    color: #2980b9;
+  }
+  80% {
+    color: #f1c40f;
+  }
+  90% {
+    color: #2980b9;
+  }
+  100% {
+    color: pink;
   }
 }
 @media screen and (max-width: 600px) {

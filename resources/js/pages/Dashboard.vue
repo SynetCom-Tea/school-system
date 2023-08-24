@@ -1,23 +1,62 @@
-<script setup>
+<script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import TextInput from "../components/customizedComponents/TextField.vue";
+import TextInputC from "../components/customizedComponents/TextFieldC.vue";
+import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
+import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
-const test = "Abou";
-const listGreetings = [
-  { id: 1, text: "Wa fonda kayan!", color: "red" },
-  { id: 2, text: "Barka da zouwa!", color: "blue" },
-  { id: 3, text: "Bienvenue!", color: "gray" },
-  { id: 1, text: "Welcome!", color: "green" },
-  { id: 1, text: "Marhaba!", color: "red" },
-];
+export default {
+  components: {
+    ModalDetailUpdate,
+    AuthenticatedLayout,
+    Head,
+    TextInput,
+    Vue3Marquee,
+    TextInputC,
+    mdiAccount,
+    mdiPurse,
+    mdiHomeOutline,
+    mdiPresentation,
+    mdiGift,
+  },
+  data() {
+    return {
+      test: "Abou",
+      rules: {
+        required: (value) => !!value || "Required.",
+        counter: (value) => value.length <= 20 || "Max 20 characters",
+        email: (value) => {
+          const pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+          return pattern.test(value) || "Invalid e-mail.";
+        },
+      },
+      icons: { mdiGift, mdiAccount },
+      listGreetings: [
+        { id: 1, text: "Wa fonda kayan!", color: "red" },
+        { id: 2, text: "Barka da zouwa!", color: "blue" },
+        { id: 3, text: "Bienvenue!", color: "gray" },
+        { id: 1, text: "Welcome!", color: "green" },
+        { id: 1, text: "Marhaba!", color: "red" },
+      ],
+    };
+  },
+  updated() {
+    console.log("t:", this.icons.mdiAccount);
+  },
+  methods: {
+    onChangeTitle(e) {
+      console.log("testE:", e.target.value);
+    },
+  },
+};
 </script>
 
 <template>
   <Head title="Dashboard" />
 
   <AuthenticatedLayout>
-    <template #header>
+    <template>
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
     </template>
     <div class="mt-10">
@@ -34,8 +73,6 @@ const listGreetings = [
                 :elevation="isHovering ? 4 : 2"
                 :color="isHovering ? 'primary' : 'undefined'"
                 :class="{ 'on-hover': isHovering }"
-                height="70"
-                max-width="300"
                 v-bind="props"
               >
                 <v-card-text class="defile"> </v-card-text>{{ item.text }}</v-card
@@ -46,9 +83,36 @@ const listGreetings = [
         </v-row>
       </Vue3Marquee>
     </div>
+    <!-- <br /><br /><br /><br /><br /><br />
+
+    <TextInput
+      type="text"
+      v-model="test"
+      label="Mot de passe"
+      :isRequired="true"
+      classResponsive="py-4"
+      :maxHeightResponsive="100"
+      :maxWidthResponsive="150"
+      :onchangeField="onChangeTitle"
+      :rules="[rules.required, rules.counter]"
+    />
+    <div>{{ test }}</div>
+    <br /><br /><br /><br /><br /><br />
+
+    <div>
+      <ModalDetailUpdate
+        toolbarTitle="Modale"
+        :iconValueDetail="icons.mdiAccount"
+        :iconUpdate="icons.mdiGift"
+      />
+    </div> -->
   </AuthenticatedLayout>
 </template>
 <style scoped>
+.classTest {
+  width: 200px;
+  background-color: red;
+}
 .defile {
   font-family: monospace;
   font-size: 3em;
