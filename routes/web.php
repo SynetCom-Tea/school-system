@@ -4,6 +4,10 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Modules\Scolarite\Http\Controllers\EtudiantsController;
+use Modules\Scolarite\Http\Controllers\AnneeController;
+use Modules\Scolarite\Http\Controllers\ClasseController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -34,5 +38,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
+
+Route::resource('etudiants', EtudiantsController::class);
+Route::resource('annees', AnneeController::class);
+Route::resource('classes', ClasseController::class);
 
 require __DIR__ . '/auth.php';

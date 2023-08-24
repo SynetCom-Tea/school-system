@@ -24,7 +24,7 @@
     <v-navigation-drawer
       v-model="drawer"
       rail-width="320"
-      rail-height="1000"
+    
       permanent
       rail
       height="100%"
@@ -147,7 +147,7 @@
 </template>
 
 <script>
-import { router } from "@inertiajs/vue3";
+import { router, Link } from "@inertiajs/vue3";
 import {
   mdiMenu,
   mdiChevronLeft,
@@ -249,7 +249,7 @@ export default {
   top: 0;
   left: 0;
   background-color: rgb(0, 73, 128);
-  height: 100%;
+  /* height: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;

@@ -57,6 +57,12 @@ export function listMenus() {
             link: "/receptions",
             permissions: "manage_system",
         },
+        {
+            title: "Etudiants",
+            icon: mdiAccountSchool,
+            link: "/etudiants",
+            permissions: "manage_system",
+        },
     ];
     let usersMenu = {
         icon: mdiAccountCogOutline,
@@ -117,8 +123,19 @@ export function listMenus() {
                 link: "/organizations",
                 permissions: "manage_system",
             },
+            {
+                icon: mdiSchool,
+                title: "Années Scolaires",
+                link: "/annees",
+                permissions: "manage_system",
+            },
 
-
+            {
+                icon: mdiSchool,
+                title: "Classes",
+                link: "/classes",
+                permissions: "manage_system",
+            },
 
         ],
     };
