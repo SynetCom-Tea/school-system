@@ -2,9 +2,14 @@
 
 namespace Modules\Scolarite\Http\Controllers;
 
-use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
+use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Redirect;
+use Modules\Scolarite\Entities\Annee;
+use Modules\Scolarite\Entities\Classe;
+use Modules\Scolarite\Entities\AnneeClasse;
 
 class AnneeClasseController extends Controller
 {
@@ -14,7 +19,9 @@ class AnneeClasseController extends Controller
      */
     public function index()
     {
-        return view('scolarite::index');
+        return Inertia::render('Promotion/Index', [
+            'promotions' => AnneeClasse::with('annees', 'classes')->get()
+        ]);
     }
 
     /**
@@ -23,7 +30,10 @@ class AnneeClasseController extends Controller
      */
     public function create()
     {
-        return view('scolarite::create');
+        return Inertia::render('Promotion/Create', [
+            'annees' => Annee::all(),
+            'classes' => Classe::all()
+        ]);
     }
 
     /**
@@ -33,7 +43,18 @@ class AnneeClasseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        foreach($request->classes as $classe){
+            AnneeClasse::create([
+                'date_debut' => $request->date_debut,
+                'date_fin' => $request->date_fin,
+                'annee_id' => $request->annee_id,
+                'classe_id' => $classe['classe_id'],
+            ]);
+        }
+        return redirect()->route('promotions.index')->with('message', [
+            'type' => 'success',
+            'text' => "La promotion a été créée avec succès !",
+        ]);
     }
 
     /**
@@ -43,7 +64,7 @@ class AnneeClasseController extends Controller
      */
     public function show($id)
     {
-        return view('scolarite::show');
+        
     }
 
     /**
@@ -53,7 +74,10 @@ class AnneeClasseController extends Controller
      */
     public function edit($id)
     {
-        return view('scolarite::edit');
+        return Inertia::render('Promotion/Edit', [
+            'annees' => Annee::all(),
+            'classes' => Classe::all()
+        ]);
     }
 
     /**
