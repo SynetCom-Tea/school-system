@@ -19,12 +19,16 @@ import { VDataTable } from 'vuetify/labs/VDataTable'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
 import VueSweetalert2 from 'vue-sweetalert2';
+import VueDatePicker from '@vuepic/vue-datepicker';
+import '@vuepic/vue-datepicker/dist/main.css'
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { store } from './store'
 
 import { createWebHistory, createRouter } from "vue-router";
 
 import LoginComponent from "./components/auth-page/Login.component.vue";
+import PageToolbar from "../js/Components/PageToolbar.vue"
+import Btn from "../js/Components/Btn.vue";
 import Index from "./pages/welcome/Index.vue";
 
 const routes = [{
@@ -104,14 +108,17 @@ createInertiaApp({
       return createApp({ render: () => h(App, props) })
         .use(plugin)
         .use(ZiggyVue, Ziggy)
-.use(indexRouter)
+        .use(indexRouter)
         .use(store)
-          .use(vuetify)
-          .use(VueGates)
-          .use(Vuex)
-          .use(VueAxios, axios)
-          .use(VueSweetalert2, options)
-            .mount(el);
+        .use(vuetify)
+        .use(VueGates)
+        .use(Vuex)
+        .use(VueAxios, axios)
+        .component('VueDatePicker', VueDatePicker)
+        .component('page-toolbar', PageToolbar)
+        .component('btn', Btn)
+        .use(VueSweetalert2, options)
+        .mount(el);
     },
     progress: {
         color:'#7d002c',
