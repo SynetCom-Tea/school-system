@@ -4,6 +4,7 @@ import { Head } from "@inertiajs/vue3";
 import TextInput from "../components/customizedComponents/TextField.vue";
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
 import Button from "../components/customizedComponents/Button.vue";
+import Dialog from "../components/customizedComponents/Dialog.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
@@ -12,6 +13,7 @@ export default {
     ModalDetailUpdate,
     AuthenticatedLayout,
     Head,
+    Dialog,
     Button,
     TextInput,
     Vue3Marquee,
@@ -47,6 +49,9 @@ export default {
     console.log("t:", this.icons.mdiAccount);
   },
   methods: {
+    onClickBt() {
+      console.log("button:");
+    },
     onChangeTitle(e) {
       console.log("testE:", e.target.value);
     },
@@ -86,13 +91,17 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <Button
-      variantValue="tonal"
+    <!-- <Button
+      variantValue="flat"
       densityValue="comfortable"
       title="title"
       class="m-4"
-      icon="icons.mdiAccount"
-    ></Button>
+      color="red"
+      :prependIcon="icons.mdiAccount"
+      :appendIcon="icons.mdiGift"
+      :onClickButton="onClickBt"
+    ></Button> -->
+    <Dialog />
     <!--  <TextInput
       type="text"
       v-model="test"

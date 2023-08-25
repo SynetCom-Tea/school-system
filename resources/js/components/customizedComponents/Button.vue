@@ -3,7 +3,6 @@ import { ref } from "vue";
 
 export default {
   props: {
-    vModel: [String, Number],
     type: {
       type: String,
       default: "text",
@@ -24,44 +23,23 @@ export default {
       type: String,
       default: "compact",
     },
-    maxHeightResponsive: {
-      type: Number,
-      default: "",
-    },
-    heightResponsive: {
-      type: Number,
-      default: "",
-    },
-    classResponsive: {
-      type: String,
-      default: "py-4",
-    },
-    maxWidthResponsive: {
-      type: Number,
-      default: "",
-    },
     title: {
       type: String,
       required: false,
     },
-    baseColorValue: {
+    color: {
       type: String,
       default: "primary",
-    },
-    colorValue: {
-      type: String,
-      default: "primary",
-    },
-    label: {
-      type: String,
-      required: true,
     },
     conditionDisabled: {
       type: String,
       required: false,
     },
-
-    icon: {
+    prependIcon: {
+      type: String,
+      default: "",
+    },
+    appendIcon: {
       type: String,
       default: "",
     },
@@ -77,57 +55,37 @@ export default {
       type: [Object, String],
       default: "",
     },
-    errorMessageValue: {
-      type: [Object, String],
-      default: "",
-    },
+
     onClickButton: { type: Function },
     class: { type: String, default: "" },
     isRequired: { type: Boolean, default: false },
-    isBlock: { type: Boolean, default: false },
     isBlock: { type: Boolean, default: false },
     isLoading: { type: Boolean, default: false },
   },
   setup() {},
   updated() {},
-  computed: {
-    modelValue: {
-      get() {
-        return this.vModel;
-      },
-      set(newValue) {
-        this.$emit("input", newValue);
-      },
-    },
-  },
+  computed: {},
 };
 </script>
 <template>
-  <v-responsive
-    :class="classResponsive"
-    :height="heightResponsive"
-    :max-height="maxHeightResponsive"
-    :max-width="maxWidthResponsive"
+  <v-btn
+    :type="type"
+    :class="class"
+    :loading="isLoading"
+    :disabled="conditionDisabled"
+    :variant="variantValue"
+    :density="densityValue"
+    v-bind="$attrs"
+    :title="title"
+    :prepend-icon="prependIcon"
+    :append-icon="appendIcon"
+    :color="color"
+    :size="sizeButton"
+    @click="onClickButton"
+    :block="isBlock"
   >
-    <v-btn
-      :type="type"
-      :class="class"
-      :loading="isLoading"
-      :variant="variantValue"
-      :density="densityValue"
-      v-bind="$attrs"
-      :title="title"
-      :prepend-inner-icon="icon"
-      :base-color="baseColorValue"
-      :color="colorValue"
-      :size="sizeButton"
-      @click="onClickButton"
-      :error-messages="errorMessageValue"
-      :block="isBlock"
-    >
-      {{ nameButton }}
-    </v-btn>
-  </v-responsive>
+    {{ nameButton }}
+  </v-btn>
 </template>
 <style scoped>
 #required-field::after {
