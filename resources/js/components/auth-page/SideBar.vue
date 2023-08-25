@@ -254,7 +254,7 @@ export default {
   top: 0;
   left: 0;
   background-color: rgb(0, 73, 128);
-  /* height: 100%; */
+  height: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
