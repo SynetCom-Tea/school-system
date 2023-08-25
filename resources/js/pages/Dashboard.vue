@@ -27,6 +27,7 @@ export default {
   data() {
     return {
       test: "Abou",
+      isDialog: false,
       rules: {
         required: (value) => !!value || "Required.",
         counter: (value) => value.length <= 20 || "Max 20 characters",
@@ -51,6 +52,11 @@ export default {
   methods: {
     onClickBt() {
       console.log("button:");
+      this.isDialog = true;
+      console.log("this.isDialog:", this.isDialog);
+    },
+    onCloseModale() {
+      this.isDialog = false;
     },
     onChangeTitle(e) {
       console.log("testE:", e.target.value);
@@ -91,17 +97,32 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <!-- <Button
-      variantValue="flat"
-      densityValue="comfortable"
+    <Button
+      variant="flat"
+      density="comfortable"
       title="title"
       class="m-4"
       color="red"
+      nameButton="Open Dialog"
       :prependIcon="icons.mdiAccount"
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
-    ></Button> -->
-    <Dialog />
+    ></Button>
+    <Dialog :modelDialog="isDialog" :onCloseModale="onCloseModale" :widthDialog="300">
+      <template v-slot:content>
+        <h1>TEST CONTENU</h1>
+      </template>
+      <template #otherButtons>
+        <Button
+          title="Fermer la modale"
+          variant="text"
+          color="primary"
+          nameButton="Enregistrer"
+          :onClickButton="onCloseModale"
+          style="float: right; margin: 10px; height: 30px"
+        ></Button
+      ></template>
+    </Dialog>
     <!--  <TextInput
       type="text"
       v-model="test"
@@ -114,9 +135,9 @@ export default {
       :rules="[rules.required, rules.counter]"
     />
     <div>{{ test }}</div>
-    <br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /> -->
 
-    <div>
+    <!-- <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"

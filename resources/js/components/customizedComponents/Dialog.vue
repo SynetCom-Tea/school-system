@@ -1,82 +1,135 @@
 <script>
-import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
-
+import {
+  mdiAccount,
+  mdiClose,
+  mdiPurse,
+  mdiHomeOutline,
+  mdiPresentation,
+  mdiGift,
+} from "@mdi/js";
+import Button from "./Button.vue";
 export default {
-  components: { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift },
+  components: {
+    Button,
+    mdiAccount,
+    mdiPurse,
+    mdiClose,
+    mdiHomeOutline,
+    mdiPresentation,
+    mdiGift,
+  },
+  props: {
+    modelDialog: { type: Boolean, default: false },
+    isfullscreen: { type: Boolean, default: false, required: false },
+    toolbarTitle: {
+      type: String,
+      default: "Titre de la modale",
+    },
+    onCloseModale: { type: Function },
+    heightDialog: {
+      type: Number,
+      default: 300,
+    },
+    widthDialog: {
+      type: Number,
+      default: 300,
+    },
+    transitionType: {
+      type: String,
+      required: false,
+      default: "",
+    },
+  },
   data() {
     return {
-      icons: { mdiAccount },
-      dialog: false,
+      icons: { mdiClose, mdiAccount },
+      //dialog: false,
       notifications: false,
       sound: true,
       widgets: false,
     };
   },
+  computed: {
+    dialog: {
+      get() {
+        return this.modelDialog;
+      },
+      set(newValue) {
+        this.$emit("input", newValue);
+      },
+    },
+  },
 };
 </script>
 
 <template>
-  <v-row justify="center">
+  <v-card v-if="modelDialog" :width="widthDialog">
     <v-dialog
       v-model="dialog"
-      fullscreen
+      :fullscreen="isfullscreen"
+      scrollable
       :scrim="false"
-      transition="dialog-bottom-transition"
+      :width="widthDialog"
+      :height="heightDialog"
     >
-      <template v-slot:activator="{ props }">
-        <v-btn color="primary" dark v-bind="props"> Open Dialog </v-btn>
-      </template>
       <v-card>
         <v-toolbar dark color="primary">
-          <v-btn icon dark @click="dialog = false">
+          <v-btn icon dark @click="modelDialog = false">
             <v-icon :icon="icons.mdiAccount"></v-icon>
           </v-btn>
-          <v-toolbar-title>Settings</v-toolbar-title>
-          <v-spacer></v-spacer>
+          <v-toolbar-title
+            style="
+              font-size: 1em;
+              width: 100px;
+              word-wrap: break-word;
+              white-space: pre-wrap;
+              word-break: break-word;
+            "
+          >
+            {{ toolbarTitle }}
+          </v-toolbar-title>
+
           <v-toolbar-items>
-            <v-btn variant="text" @click="dialog = false"> Save </v-btn>
+            <Button
+              title="Fermer la modale"
+              fab
+              variant="flat"
+              :prependIcon="icons.mdiClose"
+              :onClickButton="onCloseModale"
+            ></Button>
           </v-toolbar-items>
         </v-toolbar>
-        <v-list lines="two" subheader>
-          <v-list-subheader>User Controls</v-list-subheader>
-          <v-list-item
-            title="Content filtering"
-            subtitle="Set the content filtering level to restrict apps that can be downloaded"
-          ></v-list-item>
-          <v-list-item
-            title="Password"
-            subtitle="Require password for purchase or use password to restrict purchase"
-          ></v-list-item>
-        </v-list>
+        <!-- content -->
+        <v-card-text>
+          <!-- Modal content with form -->
+          <slot name="content"></slot>
+        </v-card-text>
         <v-divider></v-divider>
-        <v-list lines="two" subheader>
-          <v-list-subheader>General</v-list-subheader>
-          <v-list-item
-            title="Notifications"
-            subtitle="Notify me about updates to apps or games that I downloaded"
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <div
+            class="mt-4"
+            style="
+              position: absolute;
+              bottom: 0;
+              left: 0;
+              width: 100%;
+              background-size: cover;
+            "
           >
-            <template v-slot:prepend>
-              <v-checkbox v-model="notifications"></v-checkbox>
-            </template>
-          </v-list-item>
-          <v-list-item
-            title="Sound"
-            subtitle="Auto-update apps at any time. Data charges may apply"
-          >
-            <template v-slot:prepend>
-              <v-checkbox v-model="sound"></v-checkbox>
-            </template>
-          </v-list-item>
-          <v-list-item
-            title="Auto-add widgets"
-            subtitle="Automatically add home screen widgets"
-          >
-            <template v-slot:prepend>
-              <v-checkbox v-model="widgets"></v-checkbox>
-            </template>
-          </v-list-item>
-        </v-list>
+            <slot name="otherButtons"></slot>
+
+            <Button
+              title="Fermer la modale"
+              variant="text"
+              color="red"
+              nameButton="Quitter"
+              :onClickButton="onCloseModale"
+              style="float: right; margin: 10px; height: 30px"
+            ></Button>
+          </div>
+        </v-card-actions>
       </v-card>
     </v-dialog>
-  </v-row>
+  </v-card>
 </template>
