@@ -14,4 +14,6 @@
 Route::prefix('gestionnote')->group(function() {
     Route::get('/', 'GestionNoteController@index');
     Route::resource('evaluation',\Modules\GestionNote\Http\Controllers\EvaluationController::class);
+    // Affichage de notes
+    Route::get('/note/affichage',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'index'])->name('note.affichage');
 });

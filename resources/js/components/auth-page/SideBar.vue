@@ -59,7 +59,7 @@
                     v-text="link.title"
                   ></v-list-item-title>
                 </v-list-item>
-                <v-list-group :value="getListMenus[1].title">
+                <!-- <v-list-group :value="getListMenus[1].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -89,7 +89,7 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group>
+                </v-list-group> -->
                 <v-list-group :value="getListMenus[2].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
@@ -110,6 +110,7 @@
                     class="sub-list-group"
                     v-for="(item, i) in getListMenus[2].children"
                     :key="i"
+                    @click="onClickMenuItem(item.link)"
                   >
                     <template v-slot:prepend>
                       <v-icon :title="item.title" :icon="item.icon"></v-icon>

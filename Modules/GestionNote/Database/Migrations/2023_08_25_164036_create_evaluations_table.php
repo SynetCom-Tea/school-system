@@ -28,8 +28,16 @@ return new class extends Migration
             ->index()
             ->references('id')
             ->on('type_evaluations');
+            $table->foreignIdFor(Modules\GestionNote\Entities\EnseignementAnnee::class)->nullable()
+                ->index()
+                ->references('id')
+                ->on('enseignement_annees');
             $table->timestamps();
+<<<<<<< HEAD:Modules/GestionNote/Database/Migrations/2023_08_23_104036_create_evaluations_table.php
            
+=======
+            $table->softDeletes();
+>>>>>>> c61f7e47c680b06ebfc30ff6c678cf9eb2e63f2e:Modules/GestionNote/Database/Migrations/2023_08_25_164036_create_evaluations_table.php
         });
     }
 

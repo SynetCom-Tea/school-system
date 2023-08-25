@@ -11,10 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('niveaux', function (Blueprint $table) {
+        Schema::create('classe_annees', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->string('libelle');
+            $table->foreignIdFor(Modules\GestionNote\Entities\Annee::class)
+                ->index()
+                ->references('id')->on('annees');
+            $table->foreignIdFor(Modules\GestionNote\Entities\Classe::class)
+            ->index()
+            ->references('id')->on('classes');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -25,6 +29,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('niveaux');
+        Schema::dropIfExists('classe_annees');
     }
 };
