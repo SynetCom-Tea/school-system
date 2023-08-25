@@ -1,5 +1,10 @@
 <script>
+import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
 export default {
+ components: {
+    VueSpinnerHourglass,
+    VueSpinner,
+    }
   data() {
     return {
       dialog: false,
@@ -30,7 +35,7 @@ export default {
       <v-card color="primary">
         <v-card-text>
           Please stand by
-          <v-progress-linear indeterminate color="white" class="mb-0"></v-progress-linear>
+        <VueSpinnerHourglass size="80" color="primary" />
         </v-card-text>
       </v-card>
     </v-dialog>

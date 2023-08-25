@@ -8,10 +8,13 @@ import Dialog from "../components/customizedComponents/Dialog.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
+import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
 export default {
   components: {
     ModalDetailUpdate,
+    VueSpinnerHourglass,
     AuthenticatedLayout,
+    VueSpinner,
     Head,
     Dialog,
     Button,
@@ -96,6 +99,8 @@ export default {
         </v-row>
       </Vue3Marquee>
     </div>
+    <br /><br /><br /><br /><br /><br />
+    <VueSpinnerHourglass size="80" color="primary" />
     <br /><br /><br /><br /><br /><br />
     <Button
       variant="flat"
