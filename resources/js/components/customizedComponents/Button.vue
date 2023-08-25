@@ -12,6 +12,10 @@ export default {
       type: String,
       default: "outlined",
     },
+    nameButton: {
+      type: String,
+      default: "Button",
+    },
     hintValue: {
       type: String,
       default: "",
@@ -78,10 +82,11 @@ export default {
       default: "",
     },
     onClickButton: { type: Function },
-    classLabel: { type: String, default: "defaultClassLabel" },
+    class: { type: String, default: "" },
     isRequired: { type: Boolean, default: false },
     isBlock: { type: Boolean, default: false },
     isBlock: { type: Boolean, default: false },
+    isLoading: { type: Boolean, default: false },
   },
   setup() {},
   updated() {},
@@ -106,6 +111,8 @@ export default {
   >
     <v-btn
       :type="type"
+      :class="class"
+      :loading="isLoading"
       :variant="variantValue"
       :density="densityValue"
       v-bind="$attrs"
@@ -118,12 +125,7 @@ export default {
       :error-messages="errorMessageValue"
       :block="isBlock"
     >
-      <template #label v-if="isRequired">
-        <span id="required-field">{{ label }}</span>
-      </template>
-      <template #label v-else>
-        {{ label }}
-      </template>
+      {{ nameButton }}
     </v-btn>
   </v-responsive>
 </template>

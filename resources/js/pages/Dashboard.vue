@@ -3,6 +3,7 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import TextInput from "../components/customizedComponents/TextField.vue";
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
+import Button from "../components/customizedComponents/Button.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
@@ -11,6 +12,7 @@ export default {
     ModalDetailUpdate,
     AuthenticatedLayout,
     Head,
+    Button,
     TextInput,
     Vue3Marquee,
     TextInputC,
@@ -83,9 +85,15 @@ export default {
         </v-row>
       </Vue3Marquee>
     </div>
-    <!-- <br /><br /><br /><br /><br /><br />
-
-    <TextInput
+    <br /><br /><br /><br /><br /><br />
+    <Button
+      variantValue="tonal"
+      densityValue="comfortable"
+      title="title"
+      class="m-4"
+      icon="icons.mdiAccount"
+    ></Button>
+    <!--  <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
