@@ -29,11 +29,12 @@ return new class extends Migration
             ->references('id')
             ->on('type_evaluations');
             $table->timestamps();
+           
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    
+
 };

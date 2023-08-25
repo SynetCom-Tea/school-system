@@ -22,11 +22,12 @@ return new class extends Migration
             $table->integer('statut')->nullable();
             $table->string('date')->nullable();
             $table->timestamps();
+           
         });
     }
 
     /**
      * Reverse the migrations.
      */
-    
+
 };
