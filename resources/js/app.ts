@@ -25,11 +25,15 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import { store } from './store'
 
 import { createWebHistory, createRouter } from "vue-router";
-
 import LoginComponent from "./components/auth-page/Login.component.vue";
 import PageToolbar from "../js/Components/PageToolbar.vue"
 import Btn from "../js/Components/Btn.vue";
 import Index from "./pages/welcome/Index.vue";
+
+// import VeeValidate, { Validator } from "vee-validate";
+// import fr from "vee-validate/dist/locale/";
+
+// Validator.localize({ fr: fr });
 
 const routes = [{
         path: '/login',
@@ -47,13 +51,10 @@ const routes = [{
         component: Index
     },
 ]
-
      const indexRouter = createRouter({
   history: createWebHistory(),
   routes,
 });
-
-
 
 const options = {
     confirmButtonColor: "#3085d6",

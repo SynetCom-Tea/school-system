@@ -1,8 +1,8 @@
 <template>
-  <div>
+  <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
       <div class="app-bar-content">
-        <h2 class="transition-default">Bienvenue sur Système scolaire!</h2>
+        <div class="transition-default">Bienvenue sur Système scolaire!</div>
         <div class="text-end">
           <v-btn
             @click="redirectToWebsite"
@@ -21,7 +21,7 @@
         </v-btn>
       </div>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" rail-width="320" permanent rail app>
+    <v-navigation-drawer v-model="drawer" width="300" permanent height="100%">
       <div id="sidebar">
         <div class="sidebar-toggle">
           <div @click.stop="drawer = !drawer" id="btn-toggle">
@@ -53,7 +53,6 @@
                   <template v-slot:prepend>
                     <v-icon :title="link.title" :icon="link.icon"></v-icon>
                   </template>
-
                   <v-list-item-title
                     class="text-wrap"
                     v-text="link.title"
@@ -154,6 +153,14 @@
                     ></v-list-item-title>
                   </v-list-item>
                 </v-list-group>
+
+                <!-- Déconnexion doit etre le dernier menu -->
+                <v-list-item class="list-case" @click="logout" key="logout">
+                  <template v-slot:prepend>
+                    <v-icon title="logout" :icon="icons.mdiLogout"></v-icon>
+                  </template>
+                  <v-list-item-title class="text-wrap">Déconnexion</v-list-item-title>
+                </v-list-item>
               </v-list>
             </div>
           </div>
@@ -171,10 +178,12 @@ import {
   mdiHandshake,
   mdiHome,
   mdiEmail,
+  mdiLogout,
   mdiLogoutVariant,
   mdiInformationVariantCircleOutline,
 } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
+import { Vue3Marquee } from "vue3-marquee";
 export default {
   name: "Sidebar",
   components: {
@@ -184,10 +193,19 @@ export default {
     mdiHandshake,
     mdiInformationVariantCircleOutline,
     mdiEmail,
+    mdiLogout,
     mdiLogoutVariant,
   },
+
   data: () => {
     return {
+      listGreetings: [
+        { id: 1, text: "Wa fonda kayan!" },
+        { id: 2, text: "Barka da zouwa!" },
+        { id: 3, text: "Bienvenue!" },
+        { id: 1, text: "Welcome!" },
+        { id: 1, text: "Marhaba!" },
+      ],
       open: ["getListMenus[1]"],
       drawer: true,
       menuCompact: {
@@ -200,6 +218,7 @@ export default {
         mdiHandshake,
         mdiInformationVariantCircleOutline,
         mdiEmail,
+        mdiLogout,
         mdiLogoutVariant,
       },
       profileInfo: {
@@ -235,6 +254,9 @@ export default {
   },
   methods: {
     listMenus,
+    logout() {
+      router.post("/logout");
+    },
     onClickMenuItem(item) {
       router.get(item);
     },
@@ -258,12 +280,17 @@ export default {
 };
 </script>
 <style scoped>
+.defile {
+  cursor: pointer;
+
+  border-radius: 3px;
+}
 #sidebar {
   margin: 0;
   top: 0;
   left: 0;
   background-color: rgb(0, 73, 128);
-  height: 100%;
+  /* height: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -333,12 +360,14 @@ export default {
   flex-direction: column;
 }
 .sidebar-links .v-list .list-case {
+  cursor: pointer;
   text-decoration: none;
   background-color: rgba(255, 255, 255, 0.75);
   border-radius: 25px;
-  padding-inline: 20px;
-  padding-block: 15px;
+  padding-inline: 8px;
+  padding-block: 8px;
   margin-block: 3px;
+  border-width: thick;
   font-weight: 100;
   border: 1px solid rgba(255, 255, 255, 0.85);
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -356,14 +385,18 @@ export default {
   color: white;
 }
 .sidebar-links .v-list .v-list-group .sub-list-group {
+  justify-content: flex-start;
+  cursor: pointer;
   text-decoration: none;
-  margin-left: 15px;
+  margin-left: 35px;
   background-color: rgb(125, 0, 44, 1);
-  border-width: thick;
+  border-width: thin;
   border-radius: 25px;
   margin-block: 2px;
   color: white;
-  font-weight: 100;
+  font-weight: 80;
+  padding-inline: 5px;
+  padding-block: 5px;
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   /* border: 1px rgb(125, 0, 44, 1);
     padding-inline: 20px;
@@ -372,20 +405,17 @@ export default {
   */
 }
 .sidebar-links .v-list .v-list-group .sub-list-group:hover {
-  margin-left: 15px;
   background-color: rgba(255, 255, 255, 0.75);
-  border-width: thick;
-  border-radius: 25px;
-  margin-block: 2px;
-  color: bold;
+  color: #000000de;
   font-weight: 100;
 }
 .sidebar-links .v-list .v-list-group .group-title {
   text-decoration: none;
   background-color: rgba(255, 255, 255, 0.75);
+  border-width: thick;
   border-radius: 25px;
-  padding-inline: 15px;
-  padding-block: 15px;
+  padding-inline: 8px;
+  padding-block: 8px;
   margin-block: 3px;
   font-weight: 100;
   border: 1px solid rgba(255, 255, 255, 0.85);
@@ -397,42 +427,14 @@ export default {
   border-radius: 25px;
   margin-left: 15px;
 }
-
-/* .sidebar-links .v-list .v-list-group:hover {
-  background-color: rgb(125, 0, 44, 1);
-  box-shadow: 0px 0px 8px rgb(125, 0, 44, 0.85);
-  border-color: rgb(125, 0, 44);
-} */
-
-/* .sidebar-links .v-list .v-list-item:nth-last-of-type(1):hover {
-  background-image: linear-gradient(to right, red, rgb(100, 0, 0));
-  box-shadow: 0px 0px 8px red;
-  border-color: red;
-} */
-
-/* .sidebar-links .links .v-list .v-list-group {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: rgba(0, 0, 0, 0.6);
-}
-.sidebar-links .links .v-list .v-list-group:hover {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  color: white;
-} */
-
-/* Debut list-item */
-.sidebar-links .icon:hover {
-  color: white;
-}
 .sidebar-links .icon {
-  color: rgba(0, 0, 0, 0.9);
+  color: white;
   margin-top: -1px;
   margin-left: 3px;
 }
-
+.sidebar-links .icon:hover {
+  color: #000000de;
+}
 .sidebar-toggle {
   top: 0px;
   right: 0px;
@@ -468,10 +470,46 @@ export default {
 }
 
 .transition-default {
-  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  cursor: pointer;
+  font-family: monospace;
+  font-size: 2em;
+  animation: color-change 1s infinite;
 }
 
+@keyframes color-change {
+  0% {
+    color: blue;
+  }
+  10% {
+    color: #8e44ad;
+  }
+  20% {
+    color: #1abc9c;
+  }
+  30% {
+    color: #d35400;
+  }
+  40% {
+    color: green;
+  }
+  50% {
+    color: #34495e;
+  }
+  60% {
+    color: orange;
+  }
+  70% {
+    color: #2980b9;
+  }
+  80% {
+    color: #f1c40f;
+  }
+  90% {
+    color: #2980b9;
+  }
+  100% {
+    color: pink;
+  }
+}
 @media screen and (max-width: 600px) {
   .app-bar-content h2 {
     font-size: 18px;
