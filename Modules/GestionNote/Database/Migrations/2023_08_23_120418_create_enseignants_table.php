@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('prenom');
             $table->string('telephone');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

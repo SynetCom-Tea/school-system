@@ -11,14 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('enseignement_annees', function (Blueprint $table) {
+        Schema::create('annees', function (Blueprint $table) {
             $table->id();
-            $table->foreignIdFor(Modules\GestionNote\Entities\Enseignant::class)
-                ->index()
-                ->references('id')->on('Enseignants');
-            $table->integer('classe');
-            $table->integer('annee');
+            $table->string('libelle');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
@@ -27,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('enseignement_annees');
+        Schema::dropIfExists('annees');
     }
 };

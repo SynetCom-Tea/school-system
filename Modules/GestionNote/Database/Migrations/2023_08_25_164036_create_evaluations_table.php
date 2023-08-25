@@ -28,7 +28,12 @@ return new class extends Migration
             ->index()
             ->references('id')
             ->on('type_evaluations');
+            $table->foreignIdFor(Modules\GestionNote\Entities\EnseignementAnnee::class)->nullable()
+                ->index()
+                ->references('id')
+                ->on('enseignement_annees');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

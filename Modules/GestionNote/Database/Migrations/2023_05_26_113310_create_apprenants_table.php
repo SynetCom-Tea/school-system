@@ -26,6 +26,7 @@ return new class extends Migration
             //     ->references('id')
             //     ->on('cursus_pre_bacs');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
