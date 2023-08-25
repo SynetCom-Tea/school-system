@@ -34,6 +34,11 @@ export default {
       type: Number,
       default: 300,
     },
+    iconHeaderModal: {
+      type: String,
+      required: false,
+      default: "",
+    },
     transitionType: {
       type: String,
       required: false,
@@ -74,9 +79,13 @@ export default {
     >
       <v-card>
         <v-toolbar dark color="primary">
-          <v-btn icon dark @click="modelDialog = false">
-            <v-icon :icon="icons.mdiAccount"></v-icon>
-          </v-btn>
+          <Button
+            title="Icon de la modale"
+            variant="flat"
+            :prependIcon="iconHeaderModal"
+            size="x-large"
+          ></Button>
+
           <v-toolbar-title
             style="
               font-size: 1em;
