@@ -28,7 +28,7 @@
             mdiTools,
         },
         layout: AuthenticatedLayout,
-        props: ["periode", "typeEvaluation", "evaluation"],
+        props: ["periode"],
         data() {
             return {
                 icon: {
@@ -42,32 +42,31 @@
                 },
                 headers: [
 
-                    { title: 'Code', align: 'center', key: 'id'},
-                    { title: 'Designation', align: 'center', key: 'designation' },
-                    { title: 'Type', align: 'center', key: 'type'},
-                    { title: 'Etat', align: 'center', key: 'etat'},
+                    { title: 'ID', align: 'center', key: 'id'},
+                    { title: 'Type', align: 'center', key: 'type' },
+                    { title: 'Libelle', align: 'center', key: 'libelle'},
+                    { title: 'Statut', align: 'center', key: 'statut'},
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                types: ['periode'],
-                dialog_title: 'Nouveau Evaluation',
+                types: ['Matériel', 'Service'],
+                dialog_title: 'Nouveau Matériel/Service',
                 dialog: false,
 
-                form: evaluationForm({
-                    id: '',
-                    designation: '',
+                form: useForm({
                     type: '',
-                    etat: '',
+                    libelle: '',
+                    statut: '',
                 }),
             }
         },
         methods:{
             create() {
                 this.dialog = true;
-                this.dialog_title = 'Nouvelle Evaluation'
+                this.dialog_title = 'Nouveau Matériel/Service'
             },
             editItem(item){
                 console.log('edit',item)
-                this.dialog_title = 'Modifier Evaluation ' + item.code
+                this.dialog_title = 'Modifier le besoin ' + item.code
                 this.form.id = item.id
                 this.form.code = item.code
                 this.form.designation = item.designation
@@ -124,13 +123,13 @@
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
                     // console.log(this.form)
-                    this.form.post(route('evaluation.store'), {
+                    this.form.post(route('besoins.store'), {
                         onFinish: () => {
                             this.close()
                             this.$swal({
                                 icon: 'success',
                                 title: 'Enregistrement',
-                                text: 'Evaluation créée avec succès!',
+                                text: 'Besoin créée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -172,8 +171,8 @@
         }
     }
 </script>
-<template>
 
+<template>
   <Head title="Dashboard" />
 
   <AuthenticatedLayout>
@@ -184,23 +183,27 @@
     <v-card style="margin: 20px">
       <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
         <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">Evaluation
-
-            <v-data-table :headers="headers" :items="items" item-key="id">
-    <template v-slot:top>
-      <v-toolbar flat>
-        <v-toolbar-title>Ma Data Table</v-toolbar-title>
-      </v-toolbar>
-      <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
+          <div class="p-6 text-gray-900">Evaluation</div>
+        </div>
+      </div>
+    </v-card>
+    <v-card>
+        <page-toolbar :icon="icon.mdiTools">Gestion des besoins</page-toolbar>
+        <v-card-text>
+            <v-data-table
+                :headers="headers"
+                :items="periode">
+                <template v-slot:addBtn>
+                    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:activator="{ props }">
-                            <div class="custom-add-button" >
-                                <v-btn @click="create" x-small variant="outlined" color="primary" v-bind="props"> Ajouter
+                            <div class="custom-add-button">
+                                <v-btn @click="create" x-small variant="outlined" color="green" v-bind="props"> Ajouter
                                 </v-btn>
                             </div>
                         </template>
                         <template v-slot:default="{ isActive }">
                             <v-card>
-                                <v-toolbar dense color="primary" dark>
+                                <v-toolbar dense color="orange" dark>
                                     <v-toolbar-title>
                                         <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
 
@@ -209,52 +212,32 @@
                                 </v-toolbar>
                                 <v-card-text>
                                     <v-form ref="form">
-                                        <v-container>
-                                            <v-row>
+                                        <v-row>
+                                            <v-col cols="12" md="12">
+                                                <text-field label="Code" placeholder="code" v-model="form.code" isRequired :rules="[v => !!v || 'Ce champ est requis!']"></text-field>
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="12" md="12">
+                                                <text-field label="Designation" placeholder="designation" v-model="form.designation" isRequired :rules="[v => !!v || 'Ce champ est requis!']"></text-field>
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
 
-                                            <v-col
-                                                cols="12"
-                                                sm="6"
-                                            >
-                                            <v-text-field
-                                                label="Date d'evaluation *"
-                                                type="date"
-                                                required
-                                                ></v-text-field>
+                                            <v-col cols="12" md="12">
+                                                <select-field label="Type" v-model="form.type"
+                                                :items="types"
+                                                isRequired
+                                                :rules="[v => !!v || 'Ce champ est requis!']"
+                                                >
+                                                </select-field>
                                             </v-col>
-                                            <v-col
-                                                cols="12"
-                                                sm="6"
-                                            >
-                                            <v-text-field
-                                                label="Poucentage de l'evaluation en % *"
-                                                type="text"
-                                                required
-                                                ></v-text-field>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="12" md="12">
+                                                <text-field label="Etat" placeholder="Etat" v-model="form.etat" v-if="form.type === 'Matériel'"></text-field>
                                             </v-col>
-                                            <v-col
-                                                cols="12"
-                                                sm="6"
-                                            >
-                                                <v-select
-                                                :items="['1', '2', '3', '4']"
-                                                label="Periode *"
-                                                required
-                                                ></v-select>
-                                            </v-col>
-                                            <v-col
-                                                cols="12"
-                                                sm="6"
-                                            >
-                                                <v-select
-                                                :items="['1', '2', '3', '4']"
-                                                label="Type evaluation*"
-                                                required
-                                                ></v-select>
-                                            </v-col>
-
-                                            </v-row>
-                                        </v-container>
+                                        </v-row>
                                     </v-form>
                                 </v-card-text>
                                 <v-card-actions class="justify-end">
@@ -269,11 +252,15 @@
                             </v-card>
                         </template>
                     </v-dialog>
-    </template>
-  </v-data-table>
-          </div>
-        </div>
-      </div>
+                </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+                    </v-icon>
+                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+                    </v-icon>
+                </template>
+            </v-data-table>
+        </v-card-text>
     </v-card>
   </AuthenticatedLayout>
 </template>

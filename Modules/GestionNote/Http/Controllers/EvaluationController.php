@@ -24,8 +24,8 @@ class EvaluationController extends Controller
         $evaluation = Evaluation::all();
         return Inertia::render('gestion-note/evaluation/index', [
             'periode' => $periode,
-            'typeEvaluation'=>$typeEvaluation,
-            'evaluation'=>$evaluation,
+            // 'typeEvaluation'=>$typeEvaluation,
+            // 'evaluation'=>$evaluation,
         ]);
     }
 
