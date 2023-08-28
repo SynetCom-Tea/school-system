@@ -17,23 +17,28 @@
       class="bg-primary"
       permanent
       :rail="rail"
+      width="300"
     >
       <div id="sidebar">
         <div class="sidebar-toggle">
-          <div @click.stop="rail = !rail" id="btn-toggle">
+          <div @click="changeToggleState()" id="btn-toggle">
             <v-icon id="btn-toggle-icon" :icon="icons.mdiChevronLeft"></v-icon>
           </div>
         </div>
         <div class="sidebar-body">
           <div class="sidebar-profile">
             <img
-              :src="'../assets/' + profileInfo.photo.file"
-              :alt="profileInfo.photo.title"
+              :src="'../assets/' + getProfile.photo.file"
+              :alt="getProfile.photo.title"
             />
             <v-slide-x-transition mode="in-out" leave-absolute>
-              <div id="profile-name">
-                {{ profileInfo.name }}
-              </div>
+              <v-list-item
+                id="profile-name"
+                lines="two"
+                :title="getProfile.name"
+                :subtitle="getProfile.typeUser"
+              >
+              </v-list-item>
             </v-slide-x-transition>
           </div>
           <div class="sidebar-links">
@@ -45,6 +50,7 @@
                   class="list-case"
                   v-for="link in getListMenus[0]"
                   :key="link.title"
+                  @click="page(link.link)"
                 >
                   <template v-slot:prepend>
                     <v-icon :title="link.title" :icon="link.icon"></v-icon>
@@ -106,6 +112,7 @@
                     class="sub-list-group"
                     v-for="(item, i) in getListMenus[1].children"
                     :key="i"
+                    @click="page(item.link)"
                   >
                     <template v-slot:prepend>
                       <v-icon :title="item.title" :icon="item.icon"></v-icon>
@@ -203,6 +210,7 @@ export default {
         mdiLogout,
         mdiMenu,
       },
+      username: "",
       profileInfo: {
         name: "Super Admin",
         photo: {
@@ -213,8 +221,26 @@ export default {
       rail: true,
     };
   },
-  mounted() {},
+  mounted() {
+    this.$gates.setRoles(this.$page.props.roles);
+    this.$gates.setPermissions(this.$page.props.permissions);
+    this.username =
+      this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
+  },
   computed: {
+    getProfile() {
+      let fullName =
+        this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
+      let item = {
+        name: fullName,
+        typeUser: "Super-Admin",
+        photo: {
+          file: "team.png",
+          title: "photo profile user",
+        },
+      };
+      return item;
+    },
     getListMenus() {
       return listMenus();
     },
@@ -242,6 +268,7 @@ export default {
       } else {
         return (btnToggleIcon.style.transform = "rotateY(180deg)");
       }
+      this.rail = !this.rail;
     },
   },
 };
@@ -276,13 +303,13 @@ export default {
   justify-content: left;
   align-items: center;
   margin-block: 15px;
-  margin-inline: 14px;
+  margin-inline: 10px;
   padding: 4px;
   background-image: linear-gradient(to right, rgb(125, 0, 44, 0.7), rgb(125, 0, 44, 0.4));
   border-radius: 50px;
   border: 2px solid rgb(125, 0, 44, 0.75);
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .sidebar-profile:hover {
@@ -293,9 +320,9 @@ export default {
 }
 
 .sidebar-profile #profile-name {
-  font-weight: 900;
+  font-weight: 100;
   flex-grow: 1;
-  font-size: 16px;
+  font-size: 10px;
   text-align: center;
   color: white;
 }
@@ -331,7 +358,7 @@ export default {
   text-decoration: none;
   /* background-color: rgba(255, 255, 255, 0.75); */
   border-radius: 25px;
-  padding-inline: 8px;
+  padding-inline: 4px;
   padding-block: 8px;
   margin-block: 3px;
   border-width: thick;
@@ -355,14 +382,14 @@ export default {
   justify-content: flex-start;
   cursor: pointer;
   text-decoration: none;
-  margin-left: 35px;
+  /* margin-left: 35px; */
   background-color: rgb(125, 0, 44, 1);
   border-width: thin;
   border-radius: 25px;
   margin-block: 2px;
   color: white;
   font-weight: 80;
-  padding-inline: 5px;
+  padding-inline: 4px;
   padding-block: 5px;
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   /* border: 1px rgb(125, 0, 44, 1);
@@ -381,7 +408,7 @@ export default {
   /* background-color: rgba(255, 255, 255, 0.75); */
   border-width: thick;
   border-radius: 25px;
-  padding-inline: 8px;
+  padding-inline: 4px;
   padding-block: 8px;
   margin-block: 3px;
   font-weight: 100;
