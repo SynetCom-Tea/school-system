@@ -5,12 +5,14 @@ import TextInput from "../components/customizedComponents/TextField.vue";
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
 import Button from "../components/customizedComponents/Button.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
+import Loader from "../components/customizedComponents/Loader.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
 import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
 export default {
   components: {
+    Loader,
     ModalDetailUpdate,
     VueSpinnerHourglass,
     AuthenticatedLayout,
@@ -49,14 +51,13 @@ export default {
       ],
     };
   },
-  updated() {
+  mounted() {
     console.log("t:", this.icons.mdiAccount);
   },
+
   methods: {
     onClickBt() {
-      console.log("button:");
-      this.isDialog = true;
-      console.log("this.isDialog:", this.isDialog);
+      this.isDialog = !this.isDialog;
     },
     onCloseModale() {
       this.isDialog = false;
@@ -100,7 +101,7 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <VueSpinnerHourglass size="80" color="primary" />
+    <Loader :modelDialog="isDialog" />
     <br /><br /><br /><br /><br /><br />
     <Button
       variant="flat"
@@ -108,12 +109,17 @@ export default {
       title="title"
       class="m-4"
       color="red"
-      nameButton="Open Dialog"
+      nameButton="Test Loader"
       :prependIcon="icons.mdiAccount"
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <Dialog :modelDialog="isDialog" :onCloseModale="onCloseModale" :widthDialog="300">
+    <!-- <Dialog
+      :modelDialog="isDialog"
+      :onCloseModale="onCloseModale"
+      :iconHeaderModal="icons.mdiAccount"
+      :widthDialog="300"
+    >
       <template v-slot:content>
         <h1>TEST CONTENU</h1>
       </template>
@@ -127,7 +133,7 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog>
+    </Dialog> -->
     <!--  <TextInput
       type="text"
       v-model="test"

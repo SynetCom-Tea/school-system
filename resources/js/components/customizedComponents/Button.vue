@@ -33,7 +33,11 @@ export default {
       default: "primary",
     },
     conditionDisabled: {
-      type: String,
+      type: Boolean,
+      required: false,
+    },
+    isRounded: {
+      type: Boolean,
       required: false,
     },
     prependIcon: {
@@ -64,6 +68,7 @@ export default {
   <v-btn
     :type="type"
     :class="class"
+    :rounded="isRounded"
     :style="style"
     :loading="isLoading"
     :disabled="conditionDisabled"

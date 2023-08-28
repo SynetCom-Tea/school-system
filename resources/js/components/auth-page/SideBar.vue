@@ -2,23 +2,12 @@
   <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
       <div class="app-bar-content">
-        <div class="transition-default">Bienvenue sur Système scolaire!</div>
-        <div class="text-end">
-          <v-btn
-            @click="redirectToWebsite"
-            class="text-none"
-            style="color: rgb(125, 0, 44); background-color: white"
-            rounded
-            variant="flat"
-            width="90"
-          >
-            Site web
-          </v-btn>
+        <div class="text-white text-h5">Bienvenue sur Système scolaire!</div>
+        <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
+        <div class="d-flex">
+          <SiteWebButton />
+          <MenuTopButton :onClickMenuButton="onClickMenuButton" />
         </div>
-        <v-btn ripple color="white" @click="drawer = !drawer">
-          <v-icon title="Menu" :icon="icons.mdiMenu"></v-icon>
-          <div>Menu</div>
-        </v-btn>
       </div>
     </v-app-bar>
     <v-navigation-drawer v-model="drawer" width="300" permanent height="100%">
@@ -141,29 +130,20 @@
 
 <script>
 import { router } from "@inertiajs/vue3";
-import {
-  mdiMenu,
-  mdiChevronLeft,
-  mdiHandshake,
-  mdiHome,
-  mdiEmail,
-  mdiLogout,
-  mdiLogoutVariant,
-  mdiInformationVariantCircleOutline,
-} from "@mdi/js";
+import { mdiChevronLeft, mdiLogout, mdiMenu } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
+import Button from "../customizedComponents/Button.vue";
+import SiteWebButton from "./SiteWebButton.vue";
+import MenuTopButton from "./MenuTopButton.vue";
 export default {
   name: "Sidebar",
   components: {
-    mdiMenu,
     mdiChevronLeft,
-    mdiHome,
-    mdiHandshake,
-    mdiInformationVariantCircleOutline,
-    mdiEmail,
     mdiLogout,
-    mdiLogoutVariant,
+    mdiMenu,
+    MenuTopButton,
+    SiteWebButton,
   },
 
   data: () => {
@@ -181,14 +161,9 @@ export default {
         hidden: true,
       },
       icons: {
-        mdiMenu,
         mdiChevronLeft,
-        mdiHome,
-        mdiHandshake,
-        mdiInformationVariantCircleOutline,
-        mdiEmail,
         mdiLogout,
-        mdiLogoutVariant,
+        mdiMenu,
       },
       profileInfo: {
         name: "Super Admin",
@@ -198,24 +173,9 @@ export default {
         },
       },
       rail: true,
-      menuLinks: [
-        { path: "#", title: "Home", icon: mdiHome },
-        { path: "#", title: "About", icon: mdiInformationVariantCircleOutline },
-        { path: "#", title: "Contact", icon: mdiEmail },
-        { path: "#", title: "Work With Us", icon: mdiHandshake },
-        { path: "#", title: "Logout", icon: mdiLogoutVariant },
-        { path: "#", title: "Home", icon: mdiHome },
-        { path: "#", title: "About", icon: mdiInformationVariantCircleOutline },
-        { path: "#", title: "Contact", icon: mdiEmail },
-        { path: "#", title: "Work With Us", icon: mdiHandshake },
-        { path: "#", title: "Logout", icon: mdiLogoutVariant },
-      ],
     };
   },
-  mounted() {
-    console.log("ListNavAppNav:", this.getListMenus);
-    console.log("group:", this.getListMenus[1]);
-  },
+  mounted() {},
   computed: {
     getListMenus() {
       return listMenus();
@@ -229,8 +189,8 @@ export default {
     onClickMenuItem(item) {
       router.get(item);
     },
-    redirectToWebsite() {
-      router.get("/");
+    onClickMenuButton() {
+      this.drawer = !this.drawer;
     },
     changeToggleState() {
       let btnToggleIcon = document.getElementById("btn-toggle-icon");
