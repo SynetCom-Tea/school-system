@@ -20,6 +20,12 @@ return new class extends Migration
             $table->string('prenom')->nullable();
             $table->string('tel')->nullable();
             $table->string('mail')->nullable();
+            $table->string('sexe')->nullable();
+            $table->date('dateNaiss')->nullable();
+            $table->foreignIdFor(\Modules\Scolarite\Entities\Tuteur::class)
+                ->references('id')->on('tuteurs')->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
             $table->timestamps();
         });
     }

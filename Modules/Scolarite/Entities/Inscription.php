@@ -10,7 +10,7 @@ class Inscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date_inscription', 'etudiant_id', 'filiere_id'];
+    protected $fillable = ['date_inscription', 'etudiant_id', 'filiere_id', 'classe_id'];
     
     public function etudiant(): BelongsTo
     {
@@ -20,5 +20,10 @@ class Inscription extends Model
     public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);
+    }
+
+    public function classe(): BelongsTo
+    {
+        return $this->belongsTo(Classe::class);
     }
 }

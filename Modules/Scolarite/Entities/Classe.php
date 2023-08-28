@@ -17,4 +17,8 @@ class Classe extends Model
         return $this->hasMany(AnneeClasse::class);
     }
     
+    public function inscriptions(): HasMany
+    {
+        return $this->hasMany(Inscription::class);
+    }
 }
