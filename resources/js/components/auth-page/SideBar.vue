@@ -2,29 +2,25 @@
   <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
       <div class="app-bar-content">
-        <div class="transition-default">Bienvenue sur Système scolaire!</div>
-        <div class="text-end">
-          <v-btn
-            @click="redirectToWebsite"
-            class="text-none"
-            style="color: rgb(125, 0, 44); background-color: white"
-            rounded
-            variant="flat"
-            width="90"
-          >
-            Site web
-          </v-btn>
+        <div class="text-white text-h5">Bienvenue sur Système scolaire!</div>
+        <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
+        <div class="d-flex">
+          <SiteWebButton />
+          <MenuTopButton :onClickMenuButton="onClickMenuButton" />
         </div>
-        <v-btn ripple color="white" @click="drawer = !drawer">
-          <v-icon title="Menu" :icon="icons.mdiMenu"></v-icon>
-          <div>Menu</div>
-        </v-btn>
       </div>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" width="300" permanent height="100%">
+
+    <v-navigation-drawer
+      v-model="drawer"
+      rail-width="300"
+      class="bg-primary"
+      permanent
+      :rail="rail"
+    >
       <div id="sidebar">
         <div class="sidebar-toggle">
-          <div @click.stop="drawer = !drawer" id="btn-toggle">
+          <div @click.stop="rail = !rail" id="btn-toggle">
             <v-icon id="btn-toggle-icon" :icon="icons.mdiChevronLeft"></v-icon>
           </div>
         </div>
@@ -58,6 +54,38 @@
                     v-text="link.title"
                   ></v-list-item-title>
                 </v-list-item>
+                <v-list-group :value="getListMenus[4].title">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="getListMenus[4].title"
+                          :icon="getListMenus[4].icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="getListMenus[4].title"
+                      ></v-list-item-title>
+                    </v-list-item>
+                  </template>
+
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in getListMenus[4].children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                    </template>
+
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="item.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </v-list-group>
                 <v-list-group :value="getListMenus[1].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
@@ -109,6 +137,7 @@
                     class="sub-list-group"
                     v-for="(item, i) in getListMenus[2].children"
                     :key="i"
+                    @click="page(item.link)"
                   >
                     <template v-slot:prepend>
                       <v-icon :title="item.title" :icon="item.icon"></v-icon>
@@ -138,30 +167,21 @@
 </template>
 
 <script>
-import { router, Link } from "@inertiajs/vue3";
-import {
-  mdiMenu,
-  mdiChevronLeft,
-  mdiHandshake,
-  mdiHome,
-  mdiEmail,
-  mdiLogout,
-  mdiLogoutVariant,
-  mdiInformationVariantCircleOutline,
-} from "@mdi/js";
+import { router } from "@inertiajs/vue3";
+import { mdiChevronLeft, mdiLogout, mdiMenu } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
+import Button from "../customizedComponents/Button.vue";
+import SiteWebButton from "./SiteWebButton.vue";
+import MenuTopButton from "./MenuTopButton.vue";
 export default {
   name: "Sidebar",
   components: {
-    mdiMenu,
     mdiChevronLeft,
-    mdiHome,
-    mdiHandshake,
-    mdiInformationVariantCircleOutline,
-    mdiEmail,
     mdiLogout,
-    mdiLogoutVariant,
+    mdiMenu,
+    MenuTopButton,
+    SiteWebButton,
   },
 
   data: () => {
@@ -179,14 +199,9 @@ export default {
         hidden: true,
       },
       icons: {
-        mdiMenu,
         mdiChevronLeft,
-        mdiHome,
-        mdiHandshake,
-        mdiInformationVariantCircleOutline,
-        mdiEmail,
         mdiLogout,
-        mdiLogoutVariant,
+        mdiMenu,
       },
       profileInfo: {
         name: "Super Admin",
@@ -196,24 +211,9 @@ export default {
         },
       },
       rail: true,
-      menuLinks: [
-        { path: "#", title: "Home", icon: mdiHome },
-        { path: "#", title: "About", icon: mdiInformationVariantCircleOutline },
-        { path: "#", title: "Contact", icon: mdiEmail },
-        { path: "#", title: "Work With Us", icon: mdiHandshake },
-        { path: "#", title: "Logout", icon: mdiLogoutVariant },
-        { path: "#", title: "Home", icon: mdiHome },
-        { path: "#", title: "About", icon: mdiInformationVariantCircleOutline },
-        { path: "#", title: "Contact", icon: mdiEmail },
-        { path: "#", title: "Work With Us", icon: mdiHandshake },
-        { path: "#", title: "Logout", icon: mdiLogoutVariant },
-      ],
     };
   },
-  mounted() {
-    console.log("ListNavAppNav:", this.getListMenus);
-    console.log("group:", this.getListMenus[1]);
-  },
+  mounted() {},
   computed: {
     getListMenus() {
       return listMenus();
@@ -227,8 +227,11 @@ export default {
     onClickMenuItem(item) {
       router.get(item);
     },
-    redirectToWebsite() {
-      router.get("/");
+    onClickMenuButton() {
+      this.drawer = !this.drawer;
+    },
+    page(link) {
+      router.get(link);
     },
     changeToggleState() {
       let btnToggleIcon = document.getElementById("btn-toggle-icon");
@@ -253,12 +256,12 @@ export default {
   margin: 0;
   top: 0;
   left: 0;
-  background-color: rgb(0, 73, 128);
+  /* background-color: rgb(0, 73, 128); */
   /* height: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+  /* box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6); */
   user-select: none;
 }
 
@@ -308,7 +311,7 @@ export default {
 }
 
 .sidebar-links small {
-  color: rgba(255, 255, 255, 0.4);
+  /* color: rgba(255, 255, 255, 0.4); */
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 12px;
@@ -326,7 +329,7 @@ export default {
 .sidebar-links .v-list .list-case {
   cursor: pointer;
   text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.75);
+  /* background-color: rgba(255, 255, 255, 0.75); */
   border-radius: 25px;
   padding-inline: 8px;
   padding-block: 8px;
@@ -375,7 +378,7 @@ export default {
 }
 .sidebar-links .v-list .v-list-group .group-title {
   text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.75);
+  /* background-color: rgba(255, 255, 255, 0.75); */
   border-width: thick;
   border-radius: 25px;
   padding-inline: 8px;
