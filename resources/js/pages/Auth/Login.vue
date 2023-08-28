@@ -1,50 +1,8 @@
 <template>
-  <div id="app-login" class="card-overlay">
+  <div>
     <v-app>
-      <div>
-        <v-row class="my-1">
-          <v-col cols="12" md="4">
-            <v-btn
-              tile
-              block
-              outlined
-              elevation="0"
-              color="primary"
-              class="p-0 m-0"
-              @click="goToLoginPage()"
-              >Connexion</v-btn
-            >
-            <!-- <v-btn
-              tile
-              block
-              outlined
-              elevation="0"
-              style="background-color: white; color: #004980"
-              class="p-0 m-0"
-              @click="goToLoginPage()"
-              >Connexion</v-btn
-            > -->
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-btn
-              tile
-              block
-              outlined
-              elevation="0"
-              color="primary"
-              class="p-0 m-0"
-              @click="goToWelcomePage()"
-              >site web</v-btn
-            ></v-col
-          >
-          <v-col cols="12" md="4"
-            ><v-btn tile block outlined elevation="0" color="primary" class="'-0 m-0"
-              >our stats</v-btn
-            ></v-col
-          >
-        </v-row>
-      </div>
-      <router-view />
+      <LoginComponent />
+
       <div>
         <footer
           style="
@@ -78,12 +36,17 @@ export default {
   },
   computed: {},
   methods: {
-    goToLoginPage() {
-      return router.get(route("login"));
-    },
-    goToWelcomePage() {
-      return router.get("/");
-    },
+    //   goToLoginPage() {
+    //     //   return router.visit("/login", {
+    //     //     preserveScroll: true,
+    //     //   });
+    //     this.$router.push("/login");
+    //     // return router.get(route("login"));
+    //   },
+    //   goToWelcomePage() {
+    //     return router.get("/");
+    //     // this.$router.back();
+    //   },
   },
 };
 </script>
