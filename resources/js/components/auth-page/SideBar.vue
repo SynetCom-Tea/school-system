@@ -47,6 +47,38 @@
                     v-text="link.title"
                   ></v-list-item-title>
                 </v-list-item>
+                <v-list-group :value="getListMenus[4].title">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="getListMenus[4].title"
+                          :icon="getListMenus[4].icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="getListMenus[4].title"
+                      ></v-list-item-title>
+                    </v-list-item>
+                  </template>
+
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in getListMenus[4].children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                    </template>
+
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="item.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </v-list-group>
                 <v-list-group :value="getListMenus[1].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
@@ -98,6 +130,7 @@
                     class="sub-list-group"
                     v-for="(item, i) in getListMenus[2].children"
                     :key="i"
+                    @click="page(item.link)"
                   >
                     <template v-slot:prepend>
                       <v-icon :title="item.title" :icon="item.icon"></v-icon>
@@ -189,6 +222,9 @@ export default {
     },
     onClickMenuButton() {
       this.drawer = !this.drawer;
+    },
+    page(link) {
+      router.get(link);
     },
     changeToggleState() {
       let btnToggleIcon = document.getElementById("btn-toggle-icon");
