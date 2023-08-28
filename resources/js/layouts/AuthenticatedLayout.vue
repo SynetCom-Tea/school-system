@@ -3,14 +3,6 @@
     <Sidebar />
     <v-main>
       <slot />
-      <!-- <v-container fluid class="main-container">
-        <v-card ripple color="rgb(125, 0, 44)">
-          <v-card-title style="color: white">{{ page.title }}</v-card-title>
-          <v-card-subtitle class="text-wrap" style="color: white">{{
-            page.subtitle
-          }}</v-card-subtitle>
-        </v-card>
-      </v-container> -->
     </v-main>
   </v-layout>
 </template>
