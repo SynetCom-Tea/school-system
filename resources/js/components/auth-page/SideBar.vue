@@ -10,10 +10,17 @@
         </div>
       </div>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" width="300" permanent height="100%">
+
+    <v-navigation-drawer
+      v-model="drawer"
+      rail-width="300"
+      class="bg-primary"
+      permanent
+      :rail="rail"
+    >
       <div id="sidebar">
         <div class="sidebar-toggle">
-          <div @click.stop="drawer = !drawer" id="btn-toggle">
+          <div @click.stop="rail = !rail" id="btn-toggle">
             <v-icon id="btn-toggle-icon" :icon="icons.mdiChevronLeft"></v-icon>
           </div>
         </div>
@@ -249,12 +256,12 @@ export default {
   margin: 0;
   top: 0;
   left: 0;
-  background-color: rgb(0, 73, 128);
-  height: 100%;
+  /* background-color: rgb(0, 73, 128); */
+  /* height: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+  /* box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6); */
   user-select: none;
 }
 
@@ -304,7 +311,7 @@ export default {
 }
 
 .sidebar-links small {
-  color: rgba(255, 255, 255, 0.4);
+  /* color: rgba(255, 255, 255, 0.4); */
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 12px;
@@ -322,7 +329,7 @@ export default {
 .sidebar-links .v-list .list-case {
   cursor: pointer;
   text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.75);
+  /* background-color: rgba(255, 255, 255, 0.75); */
   border-radius: 25px;
   padding-inline: 8px;
   padding-block: 8px;
@@ -371,7 +378,7 @@ export default {
 }
 .sidebar-links .v-list .v-list-group .group-title {
   text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.75);
+  /* background-color: rgba(255, 255, 255, 0.75); */
   border-width: thick;
   border-radius: 25px;
   padding-inline: 8px;
