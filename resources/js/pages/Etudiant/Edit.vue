@@ -20,7 +20,7 @@ export default {
     mdiCloseCircle,
     mdiOfficeBuilding,
   },
-  props: ["tuteurs"],
+  props: ["tuteurs", "etudiant"],
   layout: AuthenticatedLayout,
   data() {
     return {
@@ -54,14 +54,13 @@ export default {
     async submit() {
       const { valid } = await this.$refs.form.validate();
       if (valid) {
-         this.form.post(route("etudiants.store"), {
+         this.form.put(route("etudiants.update", this.form.id), {
           onFinish: () => {
             this.close();
-
             this.$swal({
               icon: "success",
-              title: "Enregistrement",
-              text: "Etudiant créé avec succès!",
+              title: "Modification",
+              text: " Etudiant modifié avec succès!",
               toast: true,
               position: "top-end",
               showConfirmButton: false,
@@ -69,7 +68,7 @@ export default {
               timerProgressBar: true,
             });
           },
-        });  
+        }); 
       }
     },
     close() {
@@ -88,6 +87,16 @@ export default {
     
   },
   created() {
+    const etudiant = this.etudiant
+    this.form.id = etudiant.id;
+      this.form.nom = etudiant.nom;
+      this.form.prenom = etudiant.prenom;
+      this.form.matricule = etudiant.matricule;
+      this.form.tel = etudiant.tel;
+      this.form.mail = etudiant.mail;
+      this.form.sexe = etudiant.sexe;
+      this.form.dateNaiss = etudiant.dateNaiss;
+      this.form.tuteur_id = etudiant.tuteur_id;
     
   },
 };
@@ -95,7 +104,7 @@ export default {
 <template>
   <v-card>
     <page-toolbar :icon="icon.mdiAccountSchool"
-      >Nouvel Etudiant</page-toolbar
+      >Modifier Etudiant</page-toolbar
     >
     <v-card-text>
       <v-form ref="form">

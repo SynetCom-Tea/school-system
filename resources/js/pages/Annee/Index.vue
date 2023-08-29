@@ -11,6 +11,7 @@
        mdiClipboardEditOutline,
        mdiOfficeBuilding,
        mdiMail,
+       mdiCalendar,
        
     } from '@mdi/js'
     export default {
@@ -23,6 +24,7 @@
             mdiClipboardEditOutline,
             mdiOfficeBuilding,
             mdiMail,
+            mdiCalendar,
         },
         layout: AuthenticatedLayout,
         props: ["annees"],
@@ -37,6 +39,7 @@
                     mdiClipboardEditOutline,
                     mdiOfficeBuilding,
                     mdiMail,
+                    mdiCalendar,
                 },
                 headers: [
                     {
@@ -170,7 +173,7 @@
 </script>
 <template>
     <v-card>
-        <page-toolbar :icon="icon.mdiMail">Gestion des années scolaires</page-toolbar>
+        <page-toolbar :icon="icon.mdiCalendar">Gestion des années scolaires</page-toolbar>
         <v-card-text>
             <table-component 
                 :headers="headers"

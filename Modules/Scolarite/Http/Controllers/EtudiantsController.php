@@ -71,7 +71,8 @@ class EtudiantsController extends Controller
     public function edit(string $id)
     {
         return Inertia::render('Etudiant/Edit', [
-            'etudiant' => Etudiant::find($id)
+            'etudiant' => Etudiant::find($id),
+            'tuteurs' => Tuteur::all()
         ]);
     }
 

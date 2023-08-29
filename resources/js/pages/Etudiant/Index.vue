@@ -24,7 +24,7 @@ export default {
     mdiLockReset,
   },
   layout: AuthenticatedLayout,
-  props: ["etudiants"],
+  props: ["etudiants","tuteurs"],
   data() {
     return {
       icon: {
@@ -68,18 +68,7 @@ export default {
       router.get(route("etudiants.create"));
     },
     editItem(item) {
-      //console.log('edit',item)
-      this.dialog_title = "Modifier l'étudiant";
-      this.form.id = item.id;
-      this.form.nom = item.nom;
-      this.form.prenom = item.prenom;
-      this.form.matricule = item.matricule;
-      this.form.tel = item.tel;
-      this.form.mail = item.mail;
-      this.form.sexe = item.sexe;
-      this.form.dateNaiss = item.dateNaiss;
-      this.form.tuteur_id = item.tuteur_id;
-      this.dialog = true;
+      router.get(route('etudiants.edit', item.id))
     },
     deleteItem(item) {
       this.$swal({
@@ -123,169 +112,26 @@ export default {
         }
       });
     },
-    async submit() {
-      const { valid } = await this.$refs.form.validate();
-      if (valid) {
-        const { id, nom, prenom,matricule,tel, email,sexe,dateNaiss,tuteur_id } = this.form;
-
-        this.form.put(route("etudiants.update", this.form.id), {
-          onFinish: () => {
-            this.close();
-            this.$swal({
-              icon: "success",
-              title: "Modification",
-              text: " Etudiant modifié avec succès!",
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 5000,
-              timerProgressBar: true,
-            });
-          },
-        });
-      }
-    },
-    
-    close() {
-      this.form.id = "";
-      this.form.name = "";
-      this.form.prenom = "";
-      this.form.mail = "";
-      this.dialog = false;
-      this.form.tel = "";
-      this.form.matricule = "";
-      this.form.sexe = "";
-      this.form.dateNaiss = "";
-      this.form.tuteur_id = "";
-    },
   },
 };
 </script>
 <template>
-  <v-card>
-    <page-toolbar :icon="icon.mdiOfficeBuilding"
-      >Gestion des étudiants</page-toolbar
-    >
-    <v-dialog
-      v-model="dialog"
-      transition="dialog-top-transition"
-      persistent
-      width="500px"
-    >
-      <template v-slot:default="{ isActive }">
-        <v-card>
-          <v-toolbar dense color="orange" dark>
-            <v-toolbar-title>
-              <v-icon left>{{
-                form.id ? icon.mdiPencil : icon.mdiPlusCircle
-              }}</v-icon>
-              {{ dialog_title }}
-            </v-toolbar-title>
-            <v-spacer></v-spacer>
-          </v-toolbar>
-          <v-card-text>
-            <v-form ref="form">
-              <v-row>
-                <v-col cols="12" md="12">
-                  <text-field
-                    label="Matricule"
-                    placeholder="Matricule"
-                    v-model="form.matricule"
-                    isRequired
-                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  ></text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="12">
-                  <text-field
-                    label="Nom"
-                    placeholder="Nom"
-                    v-model="form.nom"
-                    isRequired
-                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  ></text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="12">
-                  <text-field
-                    label="Prénom"
-                    placeholder="Prénom"
-                    v-model="form.prenom"
-                    isRequired
-                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  ></text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="12">
-                  <text-field
-                    label="Téléphone"
-                    placeholder="Téléphone"
-                    v-model="form.tel"
-                    isRequired
-                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  ></text-field>
-                </v-col>
-              </v-row>
-              <v-row>
-                <v-col cols="12" md="12">
-                  <text-field
-                    label="Email"
-                    placeholder="Email"
-                    v-model="form.mail"
-                    isRequired
-                    :rules="[
-                      (v) => !!v || 'Ce champ est requis!',
-                      (v) =>
-                        /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
-                        'Adresse Email invalide!',
-                    ]"
-                  ></text-field>
-                </v-col>
-              </v-row>
-            </v-form>
-          </v-card-text>
-          <v-card-actions class="justify-end">
-            <v-spacer></v-spacer>
-            <v-btn dark small type="button" color="red" @click="close">
-              <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-            </v-btn>
-            <v-btn small color="success" @click="submit">
-              <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </template>
-    </v-dialog>
-    <v-card-text>
-      <table-component :headers="headers" :items="etudiants">
-        <template v-slot:addBtn>
-          <btn @click="create"
-            ><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn
-          >
-        </template>
-        <template v-slot:item.actions="{ item }">
-          <v-icon
-            size="small"
-            color="warning"
-            title="Modifier"
-            class="me-2"
-            @click="editItem(item.raw)"
-            :icon="icon.mdiPencil"
-          >
-          </v-icon>
-          <v-icon
-            size="small"
-            color="error"
-            @click="deleteItem(item.raw)"
-            :icon="icon.mdiDelete"
-            class="me-2"
-          >
-          </v-icon>
-        </template>
-      </table-component>
-    </v-card-text>
-  </v-card>
+    <v-card>
+        <page-toolbar :icon="icon.mdiAccountSchool">Gestion des étudiants</page-toolbar>
+        <v-card-text>
+            <table-component 
+                :headers="headers"
+                :items="etudiants">
+                <template v-slot:addBtn>
+                    <btn @click="goTo()"><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn>
+                </template>
+                <template v-slot:[`item.actions`]="{ item }">
+                    <v-icon size="large" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+                    </v-icon>
+                    <v-icon size="large" color="red" title="Supprimer" class="me-2" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+                    </v-icon>
+                </template>
+            </table-component>
+        </v-card-text>
+    </v-card>
 </template>

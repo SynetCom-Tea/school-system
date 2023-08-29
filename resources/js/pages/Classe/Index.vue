@@ -11,7 +11,7 @@
        mdiClipboardEditOutline,
        mdiOfficeBuilding,
        mdiMail,
-       
+       mdiGoogleClassroom,
     } from '@mdi/js'
     export default {
         components: {
@@ -23,6 +23,7 @@
             mdiClipboardEditOutline,
             mdiOfficeBuilding,
             mdiMail,
+            mdiGoogleClassroom,
         },
         layout: AuthenticatedLayout,
         props: ["classes"],
@@ -37,6 +38,7 @@
                     mdiClipboardEditOutline,
                     mdiOfficeBuilding,
                     mdiMail,
+                    mdiGoogleClassroom,
                 },
                 headers: [
                     {
@@ -173,7 +175,7 @@
 </script>
 <template>
     <v-card>
-        <page-toolbar :icon="icon.mdiMail">Gestion des classes</page-toolbar>
+        <page-toolbar :icon="icon.mdiGoogleClassroom">Gestion des classes</page-toolbar>
         <v-card-text>
             <table-component 
                 :headers="headers"

@@ -11,6 +11,7 @@
        mdiClipboardEditOutline,
        mdiOfficeBuilding,
        mdiMail,
+       mdiAccount
        
     } from '@mdi/js'
     export default {
@@ -23,6 +24,7 @@
             mdiClipboardEditOutline,
             mdiOfficeBuilding,
             mdiMail,
+            mdiAccount
         },
         layout: AuthenticatedLayout,
         props: ["tuteurs"],
@@ -37,6 +39,7 @@
                     mdiClipboardEditOutline,
                     mdiOfficeBuilding,
                     mdiMail,
+                    mdiAccount
                 },
                 headers: [
                     {
@@ -184,7 +187,7 @@
 </script>
 <template>
     <v-card>
-        <page-toolbar :icon="icon.mdiMail">Gestion des tuteurs</page-toolbar>
+        <page-toolbar :icon="icon.mdiAccount">Gestion des tuteurs</page-toolbar>
         <v-card-text>
             <table-component 
                 :headers="headers"
@@ -229,7 +232,7 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Tél 2" placeholder="Tél 2" v-model="form.tel1" isRequired :rules="rules"></text-field>
+                                                <text-field label="Tél 2" placeholder="Tél 2" v-model="form.tel2" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>

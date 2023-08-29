@@ -39,6 +39,7 @@ import {
   mdiMail,
   mdiReceiptTextSendOutline,
   mdiReceiptTextCheckOutline,
+  mdiCalendar,
 } from "@mdi/js";
 export function listMenus() {
     let singleItems = [
@@ -60,6 +61,12 @@ export function listMenus() {
             permissions: "manage_system",
         },
         {
+            title: "Tuteurs",
+            icon: mdiAccount,
+            link: "/tuteurs",
+            permissions: "manage_system",
+        },
+        {
             title: "Etudiants",
             icon: mdiAccountSchool,
             link: "/etudiants",
@@ -68,7 +75,7 @@ export function listMenus() {
     ];
     let usersMenu = {
         icon: mdiAccountCogOutline,
-        title: "Gestions Utilisateurs",
+        title: "Gestion Utilisateurs",
         "icon-alt": mdiChevronDown,
         permissions: "manage_system",
         model: false,
@@ -126,14 +133,14 @@ export function listMenus() {
                 permissions: "manage_system",
             },
             {
-                icon: mdiSchool,
+                icon: mdiCalendar,
                 title: "Années Scolaires",
                 link: "/annees",
                 permissions: "manage_system",
             },
 
             {
-                icon: mdiSchool,
+                icon: mdiGoogleClassroom,
                 title: "Classes",
                 link: "/classes",
                 permissions: "manage_system",
