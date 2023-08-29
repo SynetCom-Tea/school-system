@@ -138,7 +138,7 @@ export function listMenus() {
                 link: "/classes",
                 permissions: "manage_system",
             },
-
+            {
                 icon: mdiGoogleClassroom,
                 title: "Salle de cours",
                 link: "/salles",
@@ -201,5 +201,5 @@ export function listMenus() {
             // },
         ],
     };
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu]
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu];
 }

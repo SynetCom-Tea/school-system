@@ -1,5 +1,5 @@
 {
-    "Scolarite": true
-    "Emploi": true,
-    "Enseignement": true
+    "Scolarite": true,
+    "Emploi": false,
+    "Enseignement": false
 }

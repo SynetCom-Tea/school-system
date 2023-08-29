@@ -28,6 +28,7 @@ import { createWebHistory, createRouter } from "vue-router";
 import LoginComponent from "./components/auth-page/Login.component.vue";
 import PageToolbar from "../js/Components/PageToolbar.vue"
 import Btn from "../js/Components/Btn.vue";
+import TableComponent from "../js/components/TableComponent.vue";
 import Index from "./pages/welcome/Index.vue";
 
 // import VeeValidate, { Validator } from "vee-validate";
@@ -118,6 +119,7 @@ createInertiaApp({
         .component('VueDatePicker', VueDatePicker)
         .component('page-toolbar', PageToolbar)
         .component('btn', Btn)
+        .component('table-component', TableComponent)
         .use(VueSweetalert2, options)
         .mount(el);
     },

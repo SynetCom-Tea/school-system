@@ -106,6 +106,7 @@
                     class="sub-list-group"
                     v-for="(item, i) in getListMenus[1].children"
                     :key="i"
+                    @click="page(item.link)"
                   >
                     <template v-slot:prepend>
                       <v-icon :title="item.title" :icon="item.icon"></v-icon>
