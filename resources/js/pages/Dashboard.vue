@@ -10,9 +10,13 @@ import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpd
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
 import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
+import Datatable from "../components/customizedComponents/Datatable.vue";
+import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
   components: {
     Loader,
+    Datatable,
+    Toolbar,
     ModalDetailUpdate,
     VueSpinnerHourglass,
     AuthenticatedLayout,
@@ -31,6 +35,31 @@ export default {
   },
   data() {
     return {
+      headers: [
+        {
+          title: "N°",
+          align: "start",
+          key: "id",
+          sortable: false,
+        },
+        { title: "Titre", align: "center", key: "title" },
+
+        { title: "Actions", key: "actions", sortable: false },
+      ],
+      dataH: [
+        {
+          id: 1,
+          title: "Ali",
+        },
+        {
+          id: 2,
+          title: "Sara",
+        },
+        {
+          id: 3,
+          title: "Sani",
+        },
+      ],
       test: "Abou",
       isDialog: false,
       rules: {
@@ -102,7 +131,12 @@ export default {
         <VueSpinner size="50" color="white"></VueSpinner
       ></template>
     </Loader>
-    <br /><br /><br /><br /><br /><br />
+    <br /><br />
+    <Toolbar :icon="icons.mdiAccount" subtitle="Toolbar title"></Toolbar>
+    <br /><br />
+    <Datatable :headers="headers" :items="dataH" />
+    <br /><br />
+
     <Button
       variant="flat"
       density="comfortable"
