@@ -7,19 +7,20 @@ export default {
       type: String,
       default: "text",
     },
-    variantValue: {
+    variant: {
       type: String,
-      default: "outlined",
+      default: "flat",
+      required: false,
     },
     nameButton: {
       type: String,
-      default: "Button",
+      default: "",
     },
     hintValue: {
       type: String,
       default: "",
     },
-    densityValue: {
+    density: {
       type: String,
       default: "compact",
     },
@@ -32,7 +33,11 @@ export default {
       default: "primary",
     },
     conditionDisabled: {
-      type: String,
+      type: Boolean,
+      required: false,
+    },
+    isRounded: {
+      type: Boolean,
       required: false,
     },
     prependIcon: {
@@ -47,17 +52,9 @@ export default {
       type: String,
       default: "small",
     },
-    placeholder: {
-      type: String,
-      default: "",
-    },
-    rules: {
-      type: [Object, String],
-      default: "",
-    },
-
+    style: { type: Object, required: false },
     onClickButton: { type: Function },
-    class: { type: String, default: "" },
+    class: { type: String, required: false },
     isRequired: { type: Boolean, default: false },
     isBlock: { type: Boolean, default: false },
     isLoading: { type: Boolean, default: false },
@@ -71,10 +68,12 @@ export default {
   <v-btn
     :type="type"
     :class="class"
+    :rounded="isRounded"
+    :style="style"
     :loading="isLoading"
     :disabled="conditionDisabled"
-    :variant="variantValue"
-    :density="densityValue"
+    :variant="variant"
+    :density="density"
     v-bind="$attrs"
     :title="title"
     :prepend-icon="prependIcon"
@@ -85,6 +84,7 @@ export default {
     :block="isBlock"
   >
     {{ nameButton }}
+    <slot />
   </v-btn>
 </template>
 <style scoped>
