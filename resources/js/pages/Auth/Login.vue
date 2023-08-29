@@ -2,24 +2,6 @@
   <div>
     <v-app>
       <LoginComponent />
-
-      <div>
-        <footer
-          style="
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            background-color: #7d002c;
-            width: 100%;
-            background-size: cover;
-          "
-        >
-          <span class="text-reset text-white"
-            >© {{ new Date().getFullYear() }}&nbsp; Copyright:
-            <a href="https://mdbootstrap.com/" target="_blank">synetcom.com</a></span
-          >
-        </footer>
-      </div>
     </v-app>
   </div>
 </template>

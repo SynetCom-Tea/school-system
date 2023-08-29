@@ -84,6 +84,7 @@ export default {
     :block="isBlock"
   >
     {{ nameButton }}
+    <slot />
   </v-btn>
 </template>
 <style scoped>

@@ -1,12 +1,12 @@
 <template>
   <div class="login">
-    <v-row align="center" justify="center">
-      <v-col cols="12" sm="10">
+    <v-row align="center" justify="center" style="height: 530px">
+      <v-col cols="12" sm="9">
         <v-card class="elevation-5 mt-4">
           <v-window v-model="step">
             <v-window-item :value="1">
               <v-row>
-                <v-col cols="12" md="6" style="height: 530px">
+                <v-col cols="6" md="6">
                   <v-card-text class="mt-8">
                     <h2 class="text-center">Page de connexion</h2>
                     <h6 class="text-center grey--text">
@@ -34,53 +34,70 @@
                             autocomplete="false"
                             type="password"
                           />
+                          <Button
+                            title="Valider"
+                            nameButton="Connexion"
+                            :onClickButton="goToLogin"
+                            density="comfortable"
+                            class="text-center"
+                            :isBlock="true"
+                            size="large"
+                          >
+                          </Button>
                         </v-form>
                         <v-row>
-                          <v-col cols="12" sm="7">
-                            <v-checkbox
-                              label="Se rappeler de moi"
-                              class="mt-n1"
-                              color="primary"
-                            >
+                          <div class="mt-3" style="font-size: 2px">
+                            <v-checkbox label="Se rappeler de moi" color="primary">
                             </v-checkbox>
-                          </v-col>
-                          <v-col cols="12" sm="5">
-                            <span style="font-size: 13px; color: #004980; cursor: pointer"
-                              >Mot de passe oublié</span
+                          </div>
+
+                          <v-col cols="12" md="5">
+                            <div
+                              class="mt-3"
+                              style="font-size: 10px; cursor: pointer; color: #7d002c"
+                              color="primary"
+                              @click="forgottenPassword()"
                             >
+                              Mot de passe oublié
+                            </div>
                           </v-col>
                         </v-row>
-                        <v-btn color="primary" dark block tile @click="goToLogin()"
-                          >Connexion</v-btn
-                        >
 
-                        <h5 class="text-center grey--text mt-1 mb-2">
-                          Ou se connecter avec
-                        </h5>
-                        <div class="d-flex justify-space-between align-center mx-2 mb-1">
-                          <v-btn depressed outlined color="grey">
-                            <v-icon color="red" :icon="icons.mdiGoogle"></v-icon>
-                          </v-btn>
-                          <v-btn depressed outlined color="grey">
-                            <v-icon color="blue" :icon="icons.mdiFacebook"></v-icon>
-                          </v-btn>
-                          <v-btn depressed outlined color="grey">
+                        <h5 class="text-center grey--text">Ou se connecter avec</h5>
+                        <div class="d-flex justify-space-between align-center mx-2 mt-3">
+                          <Button
+                            density="comfortable"
+                            title="title"
+                            color="grey"
+                            class="text-center"
+                          >
+                            <v-icon color="red" :icon="icons.mdiGoogle"></v-icon
+                          ></Button>
+                          <Button
+                            density="comfortable"
+                            title="title"
+                            color="grey"
+                            class="text-center"
+                          >
+                            <v-icon color="blue" :icon="icons.mdiFacebook"></v-icon
+                          ></Button>
+                          <Button
+                            density="comfortable"
+                            title="title"
+                            color="grey"
+                            class="text-center"
+                          >
                             <v-icon
                               color="light-blue lighten-3"
                               :icon="icons.mdiTwitter"
-                            ></v-icon>
-                          </v-btn>
+                            ></v-icon
+                          ></Button>
                         </div>
                       </v-col>
                     </v-row>
                   </v-card-text>
                 </v-col>
-                <v-col
-                  cols="12"
-                  md="6"
-                  style="height: 530px"
-                  class="bg-primary rounded-bl-xl"
-                >
+                <v-col cols="6" md="6" class="bg-primary rounded-bl-xl">
                   <div style="text-align: center; padding: 180px 0">
                     <v-card-text class="white--text">
                       <h3 class="text-center">Vous n'avez pas encore de compte?</h3>
@@ -91,9 +108,16 @@
                       </h6>
                     </v-card-text>
                     <div class="text-center">
-                      <v-btn color="secondary" tile outlined dark @click="step++"
-                        >S'enregistrer</v-btn
+                      <Button
+                        title="Valider"
+                        nameButton="S'enregistrer"
+                        density="comfortable"
+                        class="text-center"
+                        color="secondary"
+                        size="large"
+                        @click="goToWindow('next')"
                       >
+                      </Button>
                     </div>
                   </div>
                 </v-col>
@@ -111,9 +135,15 @@
                       </h6>
                     </v-card-text>
                     <div class="text-center">
-                      <v-btn color="primary" tile outlined dark @click="step--"
-                        >Se Connecter</v-btn
+                      <Button
+                        title="Clicquer pour retourner à la page login"
+                        nameButton="Se Connecter"
+                        density="comfortable"
+                        class="text-center"
+                        size="large"
+                        @click="goToWindow('previous')"
                       >
+                      </Button>
                     </div>
                   </div>
                 </v-col>
@@ -213,8 +243,9 @@
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram } from "@mdi/js";
 import TextField from "../customizedComponents/TextField.vue";
+import Button from "../customizedComponents/Button.vue";
 export default {
-  components: { TextField, mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+  components: { Button, TextField, mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
   data: () => ({
     step: 1,
     getErrors: "",
@@ -230,6 +261,13 @@ export default {
     source: String,
   },
   methods: {
+    goToWindow(key) {
+      if (key == "next") return this.step++;
+      if (key == "previous") return this.step--;
+    },
+    forgottenPassword() {
+      console.log("forgotten Password");
+    },
     goToLogin() {
       this.form.post(route("login"), {
         onError: (e) => {

@@ -1,5 +1,5 @@
 <template>
-  <div class="text-center">
+  <div>
     <v-menu v-model="menu" :close-on-content-click="true" location="end">
       <template v-slot:activator="{ props }">
         <div style="float: right">
