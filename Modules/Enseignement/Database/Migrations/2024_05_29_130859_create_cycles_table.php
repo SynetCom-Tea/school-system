@@ -11,19 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('etablissements', function (Blueprint $table) {
+        Schema::create('cycles', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('mail');
-            $table->string('adresse');
-            $table->json('telephone');
-            $table->string('ville');
-            $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
-                ->references('id')->on('type_etablissements');
             $table->softDeletes();
             $table->timestamps();
         });
-        
     }
 
     /**
@@ -31,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('etablissements');
+        Schema::dropIfExists('cycles');
     }
 };

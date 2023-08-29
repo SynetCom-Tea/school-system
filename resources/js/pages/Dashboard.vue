@@ -91,7 +91,7 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <!-- <Button
+    <Button
       variantValue="flat"
       densityValue="comfortable"
       title="title"
@@ -100,9 +100,9 @@ export default {
       :prependIcon="icons.mdiAccount"
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
-    ></Button> -->
+    ></Button>
     <Dialog />
-    <!--  <TextInput
+     <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"

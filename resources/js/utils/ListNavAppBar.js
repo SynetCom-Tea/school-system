@@ -87,6 +87,21 @@ export function listMenus() {
             },
         ],
     };
+    let enseignements = {
+        icon: mdiAccountCogOutline,
+        title: "Gestions d'Enseignements",
+        "icon-alt": mdiChevronDown,
+        permissions: "manage_system",
+        model: false,
+        children: [
+            {
+                icon: mdiSquareMedium,
+                title: "Fillières",
+                link: "/enseignement/fillieres",
+                permissions: "manage_system",
+            },
+        ],
+    };
     let configsMenu = {
         icon: mdiCog,
         "icon-alt": mdiChevronDown,
@@ -182,5 +197,5 @@ export function listMenus() {
             // },
         ],
     };
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu]
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,enseignements]
 }

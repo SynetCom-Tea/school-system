@@ -22,6 +22,10 @@ return new class extends Migration
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->foreignIdFor(App\Models\Etablissement::class)->nullable()
+                ->index()
+                ->references('id')
+                ->on('etablissements');
             $table->rememberToken();
             $table->timestamps();
         });
