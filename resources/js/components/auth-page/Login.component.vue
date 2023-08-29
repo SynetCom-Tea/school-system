@@ -1,187 +1,296 @@
 <template>
-  <v-container
-    id="container-login"
-    :class="isSignInPanelActive ? 'container right-panel-active' : 'container-login'"
-  >
-    <SignUpForm v-if="currentSignUpStep == 1" />
-    <SignUpContinuationForm v-if="currentSignUpStep == 2" />
-    <SignInForm />
-    <div class="overlay-container">
-      <div class="overlay">
-        <OverlaySignUp />
-        <OverlaySignIn />
-      </div>
-    </div>
-    <!-- <div class="footer-style">
-      <footer
-        :class="{
-          'footer-sm': '500',
-          'footer-md': '700',
-        }"
-      >
-        <span class="text-reset text-white"
-          >© {{ new Date().getFullYear() }}&nbsp; Copyright:
-          <a href="https://mdbootstrap.com/">synetcom.com</a></span
-        >
-      </footer>
-    </div> -->
-  </v-container>
+  <div class="login">
+    <v-row align="center" justify="center" style="height: 530px">
+      <v-col cols="12" sm="9">
+        <v-card class="elevation-5 mt-4">
+          <v-window v-model="step">
+            <v-window-item :value="1">
+              <v-row>
+                <v-col cols="6" md="6">
+                  <v-card-text class="mt-8">
+                    <h2 class="text-center">Page de connexion</h2>
+                    <h6 class="text-center grey--text">
+                      Connectez vous à votre compte pour continuer à explorer <br />et
+                      découvrir l'innovation
+                    </h6>
+                    <v-row align="center" justify="center">
+                      <v-col cols="12" sm="8">
+                        <v-form action="goToLogin">
+                          <TextField
+                            label="Identifiant"
+                            outlined
+                            :isRequired="true"
+                            v-model="form.email"
+                            dense
+                            class="mt-5"
+                            :errorMessageValue="form.errors.email"
+                          />
+                          <TextField
+                            label="Mot de passe"
+                            v-model="form.password"
+                            outlined
+                            dense
+                            :isRequired="true"
+                            autocomplete="false"
+                            type="password"
+                          />
+                          <Button
+                            title="Valider"
+                            nameButton="Connexion"
+                            :onClickButton="goToLogin"
+                            density="comfortable"
+                            class="text-center"
+                            :isBlock="true"
+                            size="large"
+                          >
+                          </Button>
+                        </v-form>
+                        <v-row>
+                          <div class="mt-3" style="font-size: 2px">
+                            <v-checkbox label="Se rappeler de moi" color="primary">
+                            </v-checkbox>
+                          </div>
+
+                          <v-col cols="12" md="5">
+                            <div
+                              class="mt-3"
+                              style="font-size: 10px; cursor: pointer; color: #7d002c"
+                              color="primary"
+                              @click="forgottenPassword()"
+                            >
+                              Mot de passe oublié
+                            </div>
+                          </v-col>
+                        </v-row>
+
+                        <h5 class="text-center grey--text">Ou se connecter avec</h5>
+                        <div class="d-flex justify-space-between align-center mx-2 mt-3">
+                          <Button
+                            density="comfortable"
+                            title="title"
+                            color="grey"
+                            class="text-center"
+                          >
+                            <v-icon color="red" :icon="icons.mdiGoogle"></v-icon
+                          ></Button>
+                          <Button
+                            density="comfortable"
+                            title="title"
+                            color="grey"
+                            class="text-center"
+                          >
+                            <v-icon color="blue" :icon="icons.mdiFacebook"></v-icon
+                          ></Button>
+                          <Button
+                            density="comfortable"
+                            title="title"
+                            color="grey"
+                            class="text-center"
+                          >
+                            <v-icon
+                              color="light-blue lighten-3"
+                              :icon="icons.mdiTwitter"
+                            ></v-icon
+                          ></Button>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-col>
+                <v-col cols="6" md="6" class="bg-primary rounded-bl-xl">
+                  <div style="text-align: center; padding: 180px 0">
+                    <v-card-text class="white--text">
+                      <h3 class="text-center">Vous n'avez pas encore de compte?</h3>
+                      <h6 class="text-center">
+                        Let's get you all set up so you can start creating your your
+                        first<br />
+                        onboarding experience
+                      </h6>
+                    </v-card-text>
+                    <div class="text-center">
+                      <Button
+                        title="Valider"
+                        nameButton="S'enregistrer"
+                        density="comfortable"
+                        class="text-center"
+                        color="secondary"
+                        size="large"
+                        @click="goToWindow('next')"
+                      >
+                      </Button>
+                    </div>
+                  </div>
+                </v-col>
+              </v-row>
+            </v-window-item>
+            <v-window-item :value="2">
+              <v-row>
+                <v-col cols="12" md="6" class="blue rounded-br-xl" style="height: 530px">
+                  <div style="text-align: center; padding: 180px 0">
+                    <v-card-text class="white--text">
+                      <h3 class="text-center">Déjà enregistré(e)?</h3>
+                      <h6 class="text-center">
+                        Log in to your account so you can continue building and<br />
+                        editing your onboarding flows
+                      </h6>
+                    </v-card-text>
+                    <div class="text-center">
+                      <Button
+                        title="Clicquer pour retourner à la page login"
+                        nameButton="Se Connecter"
+                        density="comfortable"
+                        class="text-center"
+                        size="large"
+                        @click="goToWindow('previous')"
+                      >
+                      </Button>
+                    </div>
+                  </div>
+                </v-col>
+
+                <v-col cols="12" md="6" style="height: 530px">
+                  <v-card-text class="mt-5">
+                    <h3 class="text-center">Créer un compte</h3>
+                    <h6 class="text-center grey--text">
+                      Let's get you all set up so you can start creatin your <br />
+                      first onboarding experiance
+                    </h6>
+                    <v-row align="center" justify="center">
+                      <v-col cols="12" sm="8">
+                        <v-row>
+                          <v-col cols="12" sm="6">
+                            <v-text-field
+                              label="First Name"
+                              outlined
+                              dense
+                              color="blue"
+                              autocomplete="false"
+                              class="mt-2"
+                            />
+                          </v-col>
+                          <v-col cols="12" sm="6">
+                            <v-text-field
+                              label="Last Name"
+                              outlined
+                              dense
+                              color="blue"
+                              autocomplete="false"
+                              class="mt-2"
+                            />
+                          </v-col>
+                        </v-row>
+                        <v-text-field
+                          label="Email"
+                          outlined
+                          dense
+                          color="blue"
+                          autocomplete="false"
+                        />
+                        <v-text-field
+                          label="Password"
+                          outlined
+                          dense
+                          color="blue"
+                          autocomplete="false"
+                          type="password"
+                        />
+                        <v-row>
+                          <v-col cols="12" sm="7">
+                            <v-checkbox
+                              label="J'accepte les conditions"
+                              class="mt-n1"
+                              color="primary"
+                            >
+                            </v-checkbox>
+                          </v-col>
+                          <v-col cols="12" sm="5">
+                            <span>Terms &Conditions</span>
+                          </v-col>
+                        </v-row>
+                        <v-btn color="primary" dark block tile>S'enregistrer</v-btn>
+
+                        <h5 class="text-center grey--text mt-2 mb-3">
+                          Ou S'enregistrer avec
+                        </h5>
+                        <div class="d-flex justify-space-between align-center mx-5 mb-4">
+                          <v-btn depressed outlined color="grey">
+                            <v-icon color="red" :icon="icons.mdiInstagram"></v-icon>
+                          </v-btn>
+                          <v-btn depressed outlined color="grey">
+                            <v-icon color="blue" :icon="icons.mdiFacebook"></v-icon>
+                          </v-btn>
+                          <v-btn depressed outlined color="grey">
+                            <v-icon
+                              color="light-blue lighten-3"
+                              :icon="icons.mdiTwitter"
+                            ></v-icon>
+                          </v-btn>
+                        </div>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                </v-col>
+              </v-row>
+            </v-window-item>
+          </v-window>
+        </v-card>
+      </v-col>
+    </v-row>
+  </div>
 </template>
 
 <script>
-import SignInForm from "./sign-in-form.vue";
-//"../components/auth-page/sign-in-form.vue";
-import SignUpForm from "./sign-up-form.vue";
-import SignUpContinuationForm from "./sign-up-continuation-form.vue";
-import OverlaySignUp from "./overlay-sign-up.vue";
-import OverlaySignIn from "./overlay-sign-in.vue";
+import { router, useForm } from "@inertiajs/vue3";
+import { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram } from "@mdi/js";
+import TextField from "../customizedComponents/TextField.vue";
+import Button from "../customizedComponents/Button.vue";
 export default {
-  components: {
-    SignInForm,
-    SignUpForm,
-    OverlaySignUp,
-    OverlaySignIn,
-    SignUpContinuationForm,
+  components: { Button, TextField, mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+  data: () => ({
+    step: 1,
+    getErrors: "",
+    icons: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+    errors: {},
+    form: useForm({
+      email: "",
+      password: "",
+    }),
+  }),
+
+  props: {
+    source: String,
   },
-  computed: {
-    isSignInPanelActive: {
-      get: function () {
-        return this.$store.getters["authPageModule/getIsSignInPanelActive"];
-      },
-      set: function (newVal) {
-        this.$store.commit("authPageModule/setIsSignInPanelActive", newVal);
-      },
+  methods: {
+    goToWindow(key) {
+      if (key == "next") return this.step++;
+      if (key == "previous") return this.step--;
     },
-    currentSignUpStep: {
-      get: function () {
-        return this.$store.getters["authPageModule/getCurrentSignUpStep"];
-      },
-      set: function (newVal) {
-        this.$store.commit("authPageModule/setCurrentSignUpStep", newVal);
-      },
+    forgottenPassword() {
+      console.log("forgotten Password");
+    },
+    goToLogin() {
+      this.form.post(route("login"), {
+        onError: (e) => {
+          console.log("error from login:", e);
+          console.log("error :", this.getErrors);
+          if (e.email == "These credentials do not match our records.") {
+            this.errors.text = "Identifiant ou mot de passe incorrect";
+          }
+        },
+      });
     },
   },
 };
 </script>
-
-<style>
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,800");
-
-form {
-  background-color: #ffffff;
-  height: 100%;
-}
-
-.container-login {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  position: relative;
-  overflow: hidden;
-  max-width: 100%;
+<style scoped>
+.login {
+  height: 50vh;
   min-height: 480px;
-  height: 70vh;
 }
-
-.form-container {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  transition: all 0.6s ease-in-out;
+.v-application .rounded-bl-xl {
+  border-bottom-left-radius: 300px !important;
 }
-
-.overlay-container {
-  position: absolute;
-  top: 0;
-  left: 50%;
-  width: 50%;
-  height: 100%;
-  overflow: hidden;
-  transition: transform 0.6s ease-in-out;
-  z-index: 100;
-}
-
-.container.right-panel-active .overlay-container {
-  transform: translateX(-100%);
-}
-
-.overlay {
-  background: #ff416c;
-  background: -webkit-linear-gradient(to right, #e260c6, #004980);
-  background: linear-gradient(to right, #284563, #004980);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: 0 0;
-  color: #ffffff;
-  position: relative;
-  left: -100%;
-  height: 100%;
-  width: 200%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
-}
-
-.container.right-panel-active .overlay {
-  transform: translateX(50%);
-}
-
-.overlay-panel {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  text-align: center;
-  top: 0;
-  height: 100%;
-  width: 50%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
-}
-.container.right-panel-active .overlay-left {
-  transform: translateX(0);
-}
-
-.container.right-panel-active .overlay-right {
-  transform: translateX(20%);
-}
-/* font sizes */
-.sm-title {
-  font-size: 18px;
-}
-.md-title {
-  font-size: 44px;
-}
-.sm-description {
-  font-size: 12px;
-}
-.md-description {
-  font-size: 16px;
-}
-footer-style {
-  height: 50px;
-  margin-top: 10px;
-  background-color: #7d002c;
-}
-.footer-md {
-  padding: 30px 0px;
-}
-.footer-md a {
-  text-decoration: none;
-  color: white !important;
-  font-size: 1.1rem;
-  font-family: cursive;
-  font-weight: 600;
-}
-
-.footer-sm {
-  padding: 20px 0px;
-}
-.footer-sm a {
-  text-decoration: none;
-  color: white !important;
-  font-size: 0.8rem;
-  font-family: cursive;
-  font-weight: 600;
+.v-application .rounded-br-xl {
+  border-bottom-right-radius: 300px !important;
 }
 </style>

@@ -69,7 +69,7 @@ export function listMenus() {
         children: [
             {
                 icon: mdiSquareMedium,
-                title: "Liste",
+                title: "Liste utilisateurs",
                 link: "/users",
                 permissions: "manage_system",
             },
@@ -149,26 +149,26 @@ export function listMenus() {
         permissions: "manage_welcome",
         divider: true,
         model: false,
-        children: [
-            {
-                icon: "dashicons:welcome-widgets-menus",
-                title: "Généralités",
-                link: "/manage-welcome",
-                permissions: "manage_welcome",
-            },
-            {
-                icon: formsAppsScriptOutlineRounded,
-                title: "Formulaires",
-                link: "/manage-welcome/forms",
-                permissions: "manage_welcome",
-            },
-            {
-                icon: articlesIcon,
-                title: "Articles",
-                link: "/manage-welcome/articles",
-                permissions: "manage_welcome",
-            },
-        ],
+        // children: [
+        //     {
+        //         icon:mdiGoogleClassroom,
+        //         title: "Généralités",
+        //         link: "/manage-welcome",
+        //         permissions: "manage_welcome",
+        //     },
+        //     {
+        //         icon: formsAppsScriptOutlineRounded,
+        //         title: "Formulaires",
+        //         link: "/manage-welcome/forms",
+        //         permissions: "manage_welcome",
+        //     },
+        //     {
+        //         icon: articlesIcon,
+        //         title: "Articles",
+        //         link: "/manage-welcome/articles",
+        //         permissions: "manage_welcome",
+        //     },
+        // ],
     }
     let emploiMenu = {
         icon: mdiTimetable,

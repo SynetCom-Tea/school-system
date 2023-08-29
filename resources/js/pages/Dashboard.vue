@@ -5,13 +5,18 @@ import TextInput from "../components/customizedComponents/TextField.vue";
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
 import Button from "../components/customizedComponents/Button.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
+import Loader from "../components/customizedComponents/Loader.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
+import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
 export default {
   components: {
+    Loader,
     ModalDetailUpdate,
+    VueSpinnerHourglass,
     AuthenticatedLayout,
+    VueSpinner,
     Head,
     Dialog,
     Button,
@@ -27,6 +32,7 @@ export default {
   data() {
     return {
       test: "Abou",
+      isDialog: false,
       rules: {
         required: (value) => !!value || "Required.",
         counter: (value) => value.length <= 20 || "Max 20 characters",
@@ -45,12 +51,16 @@ export default {
       ],
     };
   },
-  updated() {
+  mounted() {
     console.log("t:", this.icons.mdiAccount);
   },
+
   methods: {
     onClickBt() {
-      console.log("button:");
+      this.isDialog = !this.isDialog;
+    },
+    onCloseModale() {
+      this.isDialog = false;
     },
     onChangeTitle(e) {
       console.log("testE:", e.target.value);
@@ -91,18 +101,40 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
+    <Loader :modelDialog="isDialog" />
+    <br /><br /><br /><br /><br />
     <Button
-      variantValue="flat"
-      densityValue="comfortable"
+      variant="flat"
+      density="comfortable"
       title="title"
       class="m-4"
       color="red"
+      nameButton="Test Loader"
       :prependIcon="icons.mdiAccount"
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <Dialog />
-     <TextInput
+    <!-- <Dialog
+      :modelDialog="isDialog"
+      :onCloseModale="onCloseModale"
+      :iconHeaderModal="icons.mdiAccount"
+      :widthDialog="300"
+    >
+      <template v-slot:content>
+        <h1>TEST CONTENU</h1>
+      </template>
+      <template #otherButtons>
+        <Button
+          title="Fermer la modale"
+          variant="text"
+          color="primary"
+          nameButton="Enregistrer"
+          :onClickButton="onCloseModale"
+          style="float: right; margin: 10px; height: 30px"
+        ></Button
+      ></template>
+    </Dialog> -->
+    <!--  <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
@@ -114,9 +146,9 @@ export default {
       :rules="[rules.required, rules.counter]"
     />
     <div>{{ test }}</div>
-    <br /><br /><br /><br /><br /><br />
+    <br /><br /><br /><br /><br /><br /> -->
 
-    <div>
+    <!-- <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"

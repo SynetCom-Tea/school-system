@@ -69,7 +69,7 @@ export default {
     },
     methods: {
         create() {
-            console.log(this.dialog)
+            
             this.dialog = true
         }, 
         editItem(item) {
@@ -160,7 +160,7 @@ export default {
                     </v-toolbar>
                     <v-card-text>
                         <v-form>
-                            <v-row>
+                            <v-row> 
                                 <v-col cols="12" md="12">
                                     <text-field label="Code" placeholder="Code" v-model="form.code"></text-field>
                                 </v-col>

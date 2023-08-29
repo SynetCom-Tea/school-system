@@ -131,36 +131,81 @@
 </template>
 
 <script>
-import {
-    router
-} from "@inertiajs/vue3";
-import {
-    mdiMenu,
-    mdiChevronLeft,
-    mdiHandshake,
-    mdiHome,
-    mdiEmail,
-    mdiLogout,
-    mdiLogoutVariant,
-    mdiInformationVariantCircleOutline,
-} from "@mdi/js";
-import {
-    listMenus
-} from "../../utils/ListNavAppBar.js";
-import {
-    Vue3Marquee
-} from "vue3-marquee";
+import { router } from "@inertiajs/vue3";
+import { mdiChevronLeft, mdiLogout, mdiMenu } from "@mdi/js";
+import { listMenus } from "../../utils/ListNavAppBar.js";
+import { Vue3Marquee } from "vue3-marquee";
+import Button from "../customizedComponents/Button.vue";
+import SiteWebButton from "./SiteWebButton.vue";
+import MenuTopButton from "./MenuTopButton.vue";
 export default {
-    name: "Sidebar",
-    components: {
-        mdiMenu,
+  name: "Sidebar",
+  components: {
+    mdiChevronLeft,
+    mdiLogout,
+    mdiMenu,
+    MenuTopButton,
+    SiteWebButton,
+  },
+
+  data: () => {
+    return {
+      listGreetings: [
+        { id: 1, text: "Wa fonda kayan!" },
+        { id: 2, text: "Barka da zouwa!" },
+        { id: 3, text: "Bienvenue!" },
+        { id: 1, text: "Welcome!" },
+        { id: 1, text: "Marhaba!" },
+      ],
+      open: ["getListMenus[1]"],
+      drawer: true,
+      menuCompact: {
+        hidden: true,
+      },
+      icons: {
         mdiChevronLeft,
-        mdiHome,
-        mdiHandshake,
-        mdiInformationVariantCircleOutline,
-        mdiEmail,
         mdiLogout,
-        mdiLogoutVariant,
+        mdiMenu,
+      },
+      username: "",
+      profileInfo: {
+        name: "Super Admin",
+        photo: {
+          file: "team.png",
+          title: "photo profile user",
+        },
+      },
+      rail: true,
+    };
+  },
+  mounted() {
+    this.$gates.setRoles(this.$page.props.roles);
+    this.$gates.setPermissions(this.$page.props.permissions);
+    this.username =
+      this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
+  },
+  computed: {
+    getProfile() {
+      let fullName =
+        this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
+      let item = {
+        name: fullName,
+        typeUser: "Super-Admin",
+        photo: {
+          file: "team.png",
+          title: "photo profile user",
+        },
+      };
+      return item;
+    },
+    getListMenus() {
+      return listMenus();
+    },
+  },
+  methods: {
+    listMenus,
+    logout() {
+      router.post("/logout");
     },
 
     data: () => {
@@ -262,41 +307,26 @@ export default {
             ],
         };
     },
-    mounted() {
-        console.log("ListNavAppNav:", this.getListMenus);
-        console.log("group:", this.getListMenus[5]);
+    onClickMenuButton() {
+      this.drawer = !this.drawer;
     },
     computed: {
         getListMenus() {
             return listMenus();
         },
     },
-    methods: {
-        listMenus,
-        logout() {
-            router.post("/logout");
-        },
-        onClickMenuItem(item) {
-            router.get(item);
-        },
-        redirectToWebsite() {
-            router.get("/");
-        },
-        page(link) {
-            router.get(link);
-        },
-        changeToggleState() {
-            let btnToggleIcon = document.getElementById("btn-toggle-icon");
-            this.menuCompact.hidden = !this.menuCompact.hidden;
+    changeToggleState() {
+      let btnToggleIcon = document.getElementById("btn-toggle-icon");
+      this.menuCompact.hidden = !this.menuCompact.hidden;
 
-            if (this.menuCompact.hidden) {
-                return (btnToggleIcon.style.transform = "rotateY(0deg)");
-            } else {
-                return (btnToggleIcon.style.transform = "rotateY(180deg)");
-            }
-        },
+      if (this.menuCompact.hidden) {
+        return (btnToggleIcon.style.transform = "rotateY(0deg)");
+      } else {
+        return (btnToggleIcon.style.transform = "rotateY(180deg)");
+      }
+      this.rail = !this.rail;
     },
-};
+}}
 </script>
 
 <style scoped>
@@ -307,16 +337,16 @@ export default {
 }
 
 #sidebar {
-    margin: 0;
-    top: 0;
-    left: 0;
-    background-color: rgb(0, 73, 128);
-    /* height: 100%; */
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
-    user-select: none;
+  margin: 0;
+  top: 0;
+  left: 0;
+  /* background-color: rgb(0, 73, 128); */
+  /* height: 100%; */
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  /* box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6); */
+  user-select: none;
 }
 
 .sidebar-body {
@@ -324,19 +354,19 @@ export default {
 }
 
 .sidebar-profile {
-    position: relative;
-    display: flex;
-    flex-direction: row;
-    justify-content: left;
-    align-items: center;
-    margin-block: 15px;
-    margin-inline: 14px;
-    padding: 4px;
-    background-image: linear-gradient(to right, rgb(125, 0, 44, 0.7), rgb(125, 0, 44, 0.4));
-    border-radius: 50px;
-    border: 2px solid rgb(125, 0, 44, 0.75);
-    transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    margin-bottom: 25px;
+  position: relative;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin-block: 15px;
+  margin-inline: 10px;
+  padding: 4px;
+  background-image: linear-gradient(to right, rgb(125, 0, 44, 0.7), rgb(125, 0, 44, 0.4));
+  border-radius: 50px;
+  border: 2px solid rgb(125, 0, 44, 0.75);
+  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 20px;
 }
 
 .sidebar-profile:hover {
@@ -347,11 +377,11 @@ export default {
 }
 
 .sidebar-profile #profile-name {
-    font-weight: 900;
-    flex-grow: 1;
-    font-size: 16px;
-    text-align: center;
-    color: white;
+  font-weight: 100;
+  flex-grow: 1;
+  font-size: 10px;
+  text-align: center;
+  color: white;
 }
 
 .sidebar-profile img {
@@ -365,10 +395,10 @@ export default {
 }
 
 .sidebar-links small {
-    color: rgba(255, 255, 255, 0.4);
-    text-transform: uppercase;
-    letter-spacing: 2px;
-    font-size: 12px;
+  /* color: rgba(255, 255, 255, 0.4); */
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  font-size: 12px;
 }
 
 .divider {
@@ -383,17 +413,17 @@ export default {
 }
 
 .sidebar-links .v-list .list-case {
-    cursor: pointer;
-    text-decoration: none;
-    background-color: rgba(255, 255, 255, 0.75);
-    border-radius: 25px;
-    padding-inline: 8px;
-    padding-block: 8px;
-    margin-block: 3px;
-    border-width: thick;
-    font-weight: 100;
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  cursor: pointer;
+  text-decoration: none;
+  /* background-color: rgba(255, 255, 255, 0.75); */
+  border-radius: 25px;
+  padding-inline: 4px;
+  padding-block: 8px;
+  margin-block: 3px;
+  border-width: thick;
+  font-weight: 100;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .sidebar-links .v-list .list-case:hover {
@@ -411,20 +441,20 @@ export default {
 }
 
 .sidebar-links .v-list .v-list-group .sub-list-group {
-    justify-content: flex-start;
-    cursor: pointer;
-    text-decoration: none;
-    margin-left: 35px;
-    background-color: rgb(125, 0, 44, 1);
-    border-width: thin;
-    border-radius: 25px;
-    margin-block: 2px;
-    color: white;
-    font-weight: 80;
-    padding-inline: 5px;
-    padding-block: 5px;
-    transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    /* border: 1px rgb(125, 0, 44, 1);
+  justify-content: flex-start;
+  cursor: pointer;
+  text-decoration: none;
+  /* margin-left: 35px; */
+  background-color: rgb(125, 0, 44, 1);
+  border-width: thin;
+  border-radius: 25px;
+  margin-block: 2px;
+  color: white;
+  font-weight: 80;
+  padding-inline: 4px;
+  padding-block: 5px;
+  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  /* border: 1px rgb(125, 0, 44, 1);
     padding-inline: 20px;
   padding-block: 10px;
 
@@ -438,16 +468,16 @@ export default {
 }
 
 .sidebar-links .v-list .v-list-group .group-title {
-    text-decoration: none;
-    background-color: rgba(255, 255, 255, 0.75);
-    border-width: thick;
-    border-radius: 25px;
-    padding-inline: 8px;
-    padding-block: 8px;
-    margin-block: 3px;
-    font-weight: 100;
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  text-decoration: none;
+  /* background-color: rgba(255, 255, 255, 0.75); */
+  border-width: thick;
+  border-radius: 25px;
+  padding-inline: 4px;
+  padding-block: 8px;
+  margin-block: 3px;
+  font-weight: 100;
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
 }
 
 .v-list-group__items {
