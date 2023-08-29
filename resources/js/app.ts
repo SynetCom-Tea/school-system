@@ -29,6 +29,8 @@ import LoginComponent from "./components/auth-page/Login.component.vue";
 import PageToolbar from "../js/Components/PageToolbar.vue"
 import Btn from "../js/Components/Btn.vue";
 import TableComponent from "../js/components/TableComponent.vue";
+import TextField from "../js/components/customizedComponents/TextField.vue";
+import Dialog from "../js/components/customizedComponents/Dialog.vue";
 import Index from "./pages/welcome/Index.vue";
 
 // import VeeValidate, { Validator } from "vee-validate";
@@ -120,6 +122,8 @@ createInertiaApp({
         .component('page-toolbar', PageToolbar)
         .component('btn', Btn)
         .component('table-component', TableComponent)
+        .component('text-field', TextField)
+        .component('dialog-component', Dialog)
         .use(VueSweetalert2, options)
         .mount(el);
     },
