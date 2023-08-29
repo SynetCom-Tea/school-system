@@ -51,9 +51,7 @@ export default {
       ],
     };
   },
-  mounted() {
-    console.log("t:", this.icons.mdiAccount);
-  },
+  mounted() {},
 
   methods: {
     onClickBt() {
@@ -62,9 +60,7 @@ export default {
     onCloseModale() {
       this.isDialog = false;
     },
-    onChangeTitle(e) {
-      console.log("testE:", e.target.value);
-    },
+    onChangeTitle(e) {},
   },
 };
 </script>
@@ -101,7 +97,11 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <Loader :modelDialog="isDialog" />
+    <Loader :modelDialog="isDialog">
+      <template v-slot:spinnertype>
+        <VueSpinner size="50" color="white"></VueSpinner
+      ></template>
+    </Loader>
     <br /><br /><br /><br /><br /><br />
     <Button
       variant="flat"

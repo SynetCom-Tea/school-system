@@ -48,7 +48,7 @@ export default {
       const textOne = item.raw.name.toLowerCase();
       const textTwo = item.raw.abbr.toLowerCase();
       const searchText = queryText.toLowerCase();
-      console.log("herre");
+
       return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1;
     },
     save() {

@@ -30,7 +30,7 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "py-4",
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,

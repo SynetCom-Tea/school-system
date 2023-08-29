@@ -62,7 +62,7 @@ export default {
 
   mounted() {
     // console.log(this.headers)
-    console.log(this.users);
+    // console.log(this.users);
   },
 
   methods: {
