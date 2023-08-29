@@ -8,7 +8,10 @@
       </Link> -->
       <div><v-btn color="white" @click="goToLogin()">Connexion</v-btn></div>
     </v-app-bar>
-    <BodyIndex />
+    <main>
+      <BodyIndex />
+    </main>
+
     <!-- <v-card style="margin-top: 100px">
       <h1>Wa barka!!</h1>
     </v-card> -->
@@ -34,7 +37,8 @@ export default {
   mounted() {},
   methods: {
     goToLogin() {
-      console.log("here");
+      // this.$router.push("/login");
+      // this.$router.push("/login");
       return router.get(route("login"));
     },
   },

@@ -24,7 +24,7 @@ import '@vuepic/vue-datepicker/dist/main.css'
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { store } from './store'
 
-import { createWebHistory, createRouter } from "vue-router";
+import { createWebHistory, createRouter,createWebHashHistory} from "vue-router";
 import LoginComponent from "./components/auth-page/Login.component.vue";
 import PageToolbar from "../js/Components/PageToolbar.vue"
 import Btn from "../js/Components/Btn.vue";
@@ -55,7 +55,7 @@ const routes = [{
     },
 ]
      const indexRouter = createRouter({
-  history: createWebHistory(),
+  history: createWebHashHistory(),
   routes,
 });
 
@@ -117,6 +117,7 @@ createInertiaApp({
         .use(vuetify)
         .use(VueGates)
         .use(Vuex)
+
         .use(VueAxios, axios)
         .component('VueDatePicker', VueDatePicker)
         .component('page-toolbar', PageToolbar)
