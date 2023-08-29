@@ -43,6 +43,8 @@ export default {
         { title: "Prénom", align: "center", key: "prenom" },
         { title: "Téléphone", align: "center", key: "tel" },
         { title: "Email", align: "center", key: "mail" },
+        { title: "Genre", align: "center", key: "sexe" },
+        { title: "Date_Naissance", align: "center", key: "dateNaiss" },
         { title: "Actions", align: "center", key: "actions" },
       ],
 
@@ -54,6 +56,9 @@ export default {
         prenom: "",
         tel: "",
         mail: "",
+        sexe: "",
+        dateNaiss: "",
+        tuteur_id: "",
       }),
       
     };
@@ -67,9 +72,13 @@ export default {
       this.dialog_title = "Modifier l'étudiant";
       this.form.id = item.id;
       this.form.nom = item.nom;
+      this.form.prenom = item.prenom;
       this.form.matricule = item.matricule;
       this.form.tel = item.tel;
       this.form.mail = item.mail;
+      this.form.sexe = item.sexe;
+      this.form.dateNaiss = item.dateNaiss;
+      this.form.tuteur_id = item.tuteur_id;
       this.dialog = true;
     },
     deleteItem(item) {
@@ -117,7 +126,7 @@ export default {
     async submit() {
       const { valid } = await this.$refs.form.validate();
       if (valid) {
-        const { id, nom, prenom,matricule,tel, email } = this.form;
+        const { id, nom, prenom,matricule,tel, email,sexe,dateNaiss,tuteur_id } = this.form;
 
         this.form.put(route("etudiants.update", this.form.id), {
           onFinish: () => {
@@ -145,6 +154,9 @@ export default {
       this.dialog = false;
       this.form.tel = "";
       this.form.matricule = "";
+      this.form.sexe = "";
+      this.form.dateNaiss = "";
+      this.form.tuteur_id = "";
     },
   },
 };

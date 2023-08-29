@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Modules\Scolarite\Entities\Etudiant;
+use Modules\Scolarite\Entities\Tuteur;
 
 class EtudiantsController extends Controller
 {
@@ -18,7 +19,8 @@ class EtudiantsController extends Controller
     public function index()
     {
         return Inertia::render('Etudiant/Index', [
-            'etudiants' => Etudiant::all()
+            'etudiants' => Etudiant::all(),
+            'tuteurs' => Tuteur::all()
         ]);
     }
 
@@ -27,7 +29,9 @@ class EtudiantsController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Etudiant/Create');
+        return Inertia::render('Etudiant/Create', [
+            'tuteurs' => Tuteur::all()
+        ]);
     }
 
     /**

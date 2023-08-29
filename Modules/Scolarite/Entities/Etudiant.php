@@ -12,7 +12,7 @@ class Etudiant extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['matricule','nom','prenom','tel','mail','tuteur_id'];
+    protected $fillable = ['matricule','nom','prenom','tel','mail','sexe','dateNaiss','tuteur_id'];
 
     public function inscriptions(): HasMany
     {
