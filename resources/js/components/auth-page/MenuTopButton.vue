@@ -1,57 +1,50 @@
 <template>
-  <div>
-    <v-menu v-model="menu" :close-on-content-click="true" location="end">
-      <template v-slot:activator="{ props }">
-        <div style="float: right">
-          <Button
-            style="width: 90px; height: 40px"
-            :prependIcon="icons.mdiMenu"
-            ripple
-            title="Voir la liste de Menu"
-            nameButton="Menu"
-            v-bind="props"
-          ></Button>
-        </div>
-      </template>
-      <v-card class="bg-green">
-        <v-navigation-drawer
-          permanent
-          location="right"
-          v-model="drawer"
-          class="navigation"
-        >
-          <template v-slot:prepend>
-            <v-list-item
-              lines="two"
-              prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
-              :title="username"
-              subtitle="Connecté(e)"
-            >
-              <template v-slot:append>
-                <v-icon
-                  title="Fermer"
-                  :icon="icons.mdiClose"
-                  @click="menu = !menu"
-                ></v-icon>
-              </template>
-            </v-list-item>
-          </template>
+  <v-menu v-model="menu" :close-on-content-click="true" transition="fab-transition">
+    <template v-slot:activator="{ props }">
+      <div style="float: right">
+        <Button
+          style="width: 90px; height: 40px"
+          :prependIcon="icons.mdiMenu"
+          ripple
+          title="Voir la liste de Menu"
+          nameButton="Menu"
+          v-bind="props"
+        ></Button>
+      </div>
+    </template>
+    <v-card class="bg-green">
+      <v-navigation-drawer permanent location="right" v-model="drawer" class="navigation">
+        <template v-slot:prepend>
+          <v-list-item
+            lines="two"
+            prepend-avatar="https://randomuser.me/api/portraits/women/81.jpg"
+            :title="username"
+            subtitle="Connecté(e)"
+          >
+            <template v-slot:append>
+              <v-icon
+                title="Fermer"
+                :icon="icons.mdiClose"
+                @click="menu = !menu"
+              ></v-icon>
+            </template>
+          </v-list-item>
+        </template>
 
-          <v-divider></v-divider>
+        <v-divider></v-divider>
 
-          <v-list density="compact" nav v-for="item in getListMenus">
-            <v-list-item
-              :prepend-icon="item.icon"
-              :title="item.title"
-              :value="item.title"
-              @click="page(item.link)"
-            ></v-list-item>
-          </v-list>
-        </v-navigation-drawer>
-      </v-card>
-      <v-main style="height: 650px"></v-main>
-    </v-menu>
-  </div>
+        <v-list density="compact" nav v-for="item in getListMenus">
+          <v-list-item
+            :prepend-icon="item.icon"
+            :title="item.title"
+            :value="item.title"
+            @click="page(item.link)"
+          ></v-list-item>
+        </v-list>
+      </v-navigation-drawer>
+    </v-card>
+    <v-main style="height: 650px"></v-main>
+  </v-menu>
 </template>
 
 <script>
@@ -80,7 +73,6 @@ export default {
     };
   },
   mounted() {
-    console.log("test:", this.$page.props.auth.user);
     this.username =
       this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
   },

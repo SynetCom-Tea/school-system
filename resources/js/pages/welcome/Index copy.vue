@@ -89,7 +89,6 @@ export default {
       return router.get("/");
     },
     goToLogin() {
-      console.log("here");
       return router.get(route("login"));
     },
   },
