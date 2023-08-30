@@ -174,21 +174,10 @@
 <template>
     <v-card>
         <page-toolbar :icon="icon.mdiCalendar">Gestion des années scolaires</page-toolbar>
-        <v-card-text>
-            <table-component 
-                :headers="headers"
-                :items="annees">
-                <template v-slot:addBtn>
-                    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
-                        <template v-slot:activator="{ props }">
-                            <div class="custom-add-button">
-                                <v-btn @click="create" x-small variant="outlined" color="green" v-bind="props"> Ajouter
-                                </v-btn>
-                            </div>
-                        </template>
+        <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:default="{ isActive }">
                             <v-card>
-                                <v-toolbar dense color="orange" dark>
+                                <v-toolbar dense color="primary" dark>
                                     <v-toolbar-title>
                                         <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
                                         
@@ -219,6 +208,12 @@
                             </v-card>
                         </template>
                     </v-dialog>
+        <v-card-text>
+            <table-component 
+                :headers="headers"
+                :items="annees">
+                <template v-slot:addBtn>
+                    <btn @click="create"><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn>
                 </template>
                 <template v-slot:item.actions="{ item }">
                     <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">

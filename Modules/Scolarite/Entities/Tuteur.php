@@ -10,7 +10,7 @@ class Tuteur extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom1','tel1','nom2','tel2'];
+    protected $fillable = ['nom','prenom','tel','adresse'];
     
     public function etudiants(): HasMany
     {

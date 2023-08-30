@@ -26,7 +26,7 @@
             mdiGoogleClassroom,
         },
         layout: AuthenticatedLayout,
-        props: ["classes"],
+        props: ["niveaux"],
         data() {
             return {
                 icon: {
@@ -50,7 +50,7 @@
                     { title: 'Libelé', align: 'center', key: 'libele' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                dialog_title: 'Nouvelle Classe',
+                dialog_title: 'Création Niveau',
                 dialog: false,
                 
                 form: useForm({
@@ -68,11 +68,11 @@
         methods:{
             create() {
                 this.dialog = true;
-                this.dialog_title = 'Nouvelle Classe'
+                this.dialog_title = 'Création Niveau'
             },
             editItem(item){
                 //console.log('edit',item) 
-                this.dialog_title = 'Modifier la classe' 
+                this.dialog_title = 'Modifier le niveau' 
                 this.form.id = item.id
                 this.form.code = item.code
                 this.form.libele = item.libele
@@ -91,7 +91,7 @@
                     }).then((result) => {
                     if (result.isConfirmed) {
                         
-                       this.form.delete(route('classes.destroy', item.id), {
+                       this.form.delete(route('niveaux.destroy', item.id), {
                         onFinish: () => {
                             if(this.$page.props.flash?.message?.type == 'error'){
                                 this.$swal({
@@ -124,7 +124,7 @@
             async submit() {
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
-                    this.form.post(route('classes.store'), {
+                    this.form.post(route('niveaux.store'), {
                         onFinish: () => {
                             //console.log(this.form)
                             this.close()
@@ -132,7 +132,7 @@
                             this.$swal({
                                 icon: 'success',
                                 title: 'Enregistrement',
-                                text: 'Classe créée avec succès!',
+                                text: 'Niveau créé avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -146,13 +146,13 @@
                     
                      const {id,code,libele} = this.form
                     
-                    this.form.put(route('classes.update', this.form.id), {
+                    this.form.put(route('niveaux.update', this.form.id), {
                         onFinish: () => {
                            this.close()
                             this.$swal({
                                 icon: 'success',
                                 title: 'Modification',
-                                text: 'Classe modifiée avec succès!',
+                                text: 'Niveau modifié avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -175,22 +175,11 @@
 </script>
 <template>
     <v-card>
-        <page-toolbar :icon="icon.mdiGoogleClassroom">Gestion des classes</page-toolbar>
-        <v-card-text>
-            <table-component 
-                :headers="headers"
-                :items="classes">
-                <template v-slot:addBtn>
-                    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
-                        <template v-slot:activator="{ props }">
-                            <div class="custom-add-button">
-                                <v-btn @click="create" x-small variant="outlined" color="green" v-bind="props"> Ajouter
-                                </v-btn>
-                            </div>
-                        </template>
+        <page-toolbar :icon="icon.mdiGoogleClassroom">Gestion des niveaux</page-toolbar>
+        <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:default="{ isActive }">
                             <v-card>
-                                <v-toolbar dense color="orange" dark>
+                                <v-toolbar dense color="primary" dark>
                                     <v-toolbar-title>
                                         <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
                                         
@@ -226,6 +215,12 @@
                             </v-card>
                         </template>
                     </v-dialog>
+        <v-card-text>
+            <table-component 
+                :headers="headers"
+                :items="niveaux">
+                <template v-slot:addBtn>
+                    <btn @click="create"><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn>
                 </template>
                 <template v-slot:item.actions="{ item }">
                     <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">

@@ -15,10 +15,10 @@ return new class extends Migration
     {
         Schema::create('tuteurs', function (Blueprint $table) {
             $table->id();
-            $table->string('nom1')->nullable();
-            $table->string('tel1')->nullable();
-            $table->string('nom2')->nullable();
-            $table->string('tel2')->nullable();
+            $table->string('nom')->nullable();
+            $table->string('prenom')->nullable();
+            $table->string('tel')->nullable();
+            $table->string('adresse')->nullable();
             $table->timestamps();
         });
     }

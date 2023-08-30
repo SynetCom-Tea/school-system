@@ -31,7 +31,7 @@ import TextField from "../js/Components/customizedComponents/TextField.vue"
 import Autocomplete from "../js/Components/customizedComponents/Autocomplete.vue"
 import DateRangePicker from "../js/Components/customizedComponents/DateRangePicker.vue"
 import Btn from "../js/Components/Btn.vue";
-import TableComponent from "../js/components/TableComponent.vue";
+import TableComponent from "../js/components/customizedComponents/datatable.vue";
 import TextField from "../js/components/customizedComponents/TextField.vue";
 import Dialog from "../js/components/customizedComponents/Dialog.vue";
 import Index from "./pages/welcome/Index.vue";

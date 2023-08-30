@@ -61,16 +61,10 @@ export function listMenus() {
             permissions: "manage_system",
         },
         {
-            title: "Tuteurs",
-            icon: mdiAccount,
-            link: "/tuteurs",
-            permissions: "manage_system",
-        },
-        {
             title: "Etudiants",
             icon: mdiAccountSchool,
             link: "/etudiants",
-            permissions: "manage_system",
+            permissions: "manage_school",
         },
     ];
     let usersMenu = {
@@ -136,14 +130,14 @@ export function listMenus() {
                 icon: mdiCalendar,
                 title: "Années Scolaires",
                 link: "/annees",
-                permissions: "manage_system",
+                permissions: "manage_school",
             },
 
             {
                 icon: mdiGoogleClassroom,
-                title: "Classes",
-                link: "/classes",
-                permissions: "manage_system",
+                title: "Niveaux",
+                link: "/niveaux",
+                permissions: "manage_school",
             },
             {
                 icon: mdiGoogleClassroom,

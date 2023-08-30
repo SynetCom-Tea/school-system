@@ -123,7 +123,7 @@ export default {
                 :headers="headers"
                 :items="etudiants">
                 <template v-slot:addBtn>
-                    <btn @click="goTo()"><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn>
+                    <btn @click="create"><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn>
                 </template>
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-icon size="large" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
