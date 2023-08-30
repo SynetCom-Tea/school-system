@@ -132,9 +132,11 @@ export default {
       ></template>
     </Loader>
     <br /><br />
-    <Toolbar :icon="icons.mdiAccount" subtitle="Toolbar title"></Toolbar>
+    <Toolbar :icon="icons.mdiAccount" toolbarTitle="Toolbar title"></Toolbar>
     <br /><br />
-    <Datatable :headers="headers" :items="dataH" />
+    <div>
+      <Datatable titleDatatable="Liste des items " :headers="headers" :items="dataH" />
+    </div>
     <br /><br />
 
     <Button
@@ -182,13 +184,13 @@ export default {
     <div>{{ test }}</div>
     <br /><br /><br /><br /><br /><br /> -->
 
-    <!-- <div>
+    <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"
         :iconUpdate="icons.mdiGift"
       />
-    </div> -->
+    </div>
   </AuthenticatedLayout>
 </template>
 <style scoped>

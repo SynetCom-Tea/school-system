@@ -73,10 +73,6 @@ export default {
       type: String,
       default: "",
     },
-    search: {
-      type: String,
-      default: "",
-    },
     rules: {
       type: [Object, String],
       required: false,
@@ -103,14 +99,6 @@ export default {
         this.$emit("input", newValue);
       },
     },
-    modelSearch: {
-      get() {
-        return this.search;
-      },
-      set(newValue) {
-        this.$emit("input", newValue);
-      },
-    },
   },
 };
 </script>
@@ -121,10 +109,9 @@ export default {
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
   >
-    <v-autocomplete
+    <v-select
       :items="itemsValue"
       v-model="modelValue"
-      v-model:search="modelSearch"
       :variant="variantValue"
       :hint="hintValue"
       :density="densityValue"
@@ -149,8 +136,7 @@ export default {
       <template #label v-else>
         {{ label }}
       </template>
-      <slot />
-    </v-autocomplete>
+    </v-select>
   </v-responsive>
 </template>
 <style scoped>

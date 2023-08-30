@@ -29,7 +29,12 @@ import LoginComponent from "./components/auth-page/Login.component.vue";
 import PageToolbar from "../js/Components/PageToolbar.vue"
 import Btn from "../js/Components/Btn.vue";
 import Index from "./pages/welcome/Index.vue";
-
+import Button from '../js/components/customizedComponents/Button.vue'
+import TextField from '../js/components/customizedComponents/TextField.vue'
+import Autocomplete from '../js/components/customizedComponents/Autocomplete.vue'
+import Select from '../js/components/customizedComponents/Select.vue'
+import ModalDetailUpdate from '../js/components/customizedComponents/ModalDetailUpdate.vue'
+import Toolbar from '../js/components/customizedComponents/Toolbar.vue'
 // import VeeValidate, { Validator } from "vee-validate";
 // import fr from "vee-validate/dist/locale/";
 
@@ -114,7 +119,12 @@ createInertiaApp({
         .use(vuetify)
         .use(VueGates)
         .use(Vuex)
-
+        .component('TextField', TextField)
+        .component('Button', Button)
+        .component('Autocomplete', Autocomplete)
+        .component('Select', Select)
+        .component('ModalDetailUpdate', ModalDetailUpdate)
+          .component('Toolbar',Toolbar )
         .use(VueAxios, axios)
         .component('VueDatePicker', VueDatePicker)
         .component('page-toolbar', PageToolbar)

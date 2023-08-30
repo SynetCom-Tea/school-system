@@ -104,7 +104,7 @@
                 </v-col>
               </v-row>
               <h6 class="text-center">
-                <hr class="hr-text" data-content=">Ou S'enregistrer avec" />
+                <hr class="hr-text" data-content="Ou S'enregistrer avec" />
               </h6>
 
               <div class="d-flex justify-space-between align-center mx-2 mt-2">

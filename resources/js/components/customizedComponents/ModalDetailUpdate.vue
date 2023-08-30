@@ -1,9 +1,6 @@
 <script>
-import Autocomplete from "./Autocomplete.vue";
-import TextField from "./TextField.vue";
-
 export default {
-  components: { Autocomplete, TextField },
+  components: {},
   props: {
     toolbarTitle: {
       type: String,
@@ -41,8 +38,8 @@ export default {
   }),
   updated() {},
   methods: {
-    onchangeField(e) {
-      // console.log("EEEE:", e);
+    onchangeModelField(e) {
+      console.log("EEEE:", e);
     },
     customFilter(itemTitle, queryText, item) {
       const textOne = item.raw.name.toLowerCase();
@@ -50,6 +47,9 @@ export default {
       const searchText = queryText.toLowerCase();
 
       return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1;
+    },
+    testChange(e) {
+      console.log("e from testChange:", e);
     },
     save() {
       this.isEditing = !this.isEditing;
@@ -95,15 +95,37 @@ export default {
         item-title="name"
         item-value="abbr"
         label="State"
-        :onchangeField="onchangeField(vItem)"
+        @change="testChange"
+        :onchangeModelValue="onchangeModelField(vItem)"
+        :menu-props="{
+          nudgeBottom: 15 + 'px',
+          zIndex: 2,
+
+          rounded: 'xl',
+          borderColor: 'green',
+        }"
       ></Autocomplete>
+
+      <Select
+        v-model="vItem"
+        :conditionDisabled="!isEditing"
+        classResponsive="py-2"
+        :itemsValue="states"
+        :isRequired="true"
+        :customFilter="customFilter"
+        item-title="name"
+        item-value="abbr"
+        label="Terre"
+        @change="testChange"
+        :onchangeModelValue="onchangeModelField(vItem)"
+      ></Select>
     </v-card-text>
 
     <v-divider></v-divider>
 
     <v-card-actions>
       <v-spacer></v-spacer>
-      <PrimaryButton />
+
       <v-btn :disabled="!isEditing" @click="save"> {{ titleSubmittingButton }} </v-btn>
     </v-card-actions>
 
