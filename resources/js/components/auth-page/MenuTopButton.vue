@@ -6,6 +6,7 @@
           style="width: 90px; height: 40px"
           :prependIcon="icons.mdiMenu"
           ripple
+          color="white"
           title="Voir la liste de Menu"
           nameButton="Menu"
           v-bind="props"

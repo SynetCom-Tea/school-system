@@ -87,7 +87,7 @@ export default {
     },
     onchangeModelValue: { type: Function },
     customFilter: { type: Function },
-    classLabel: { type: String, default: "defaultClassLabel" },
+    class: { type: String, default: "py-3" },
     style: { type: String },
     isRequired: { type: Boolean, default: false },
     isMultiple: { type: Boolean, default: false },
@@ -115,43 +115,44 @@ export default {
 };
 </script>
 <template>
-  <v-responsive
+  <!-- <v-responsive
     :class="classResponsive"
     :height="heightResponsive"
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
+  > -->
+  <v-autocomplete
+    :items="itemsValue"
+    v-model="modelValue"
+    v-model:search="modelSearch"
+    :variant="variantValue"
+    :hint="hintValue"
+    :density="densityValue"
+    v-bind="$attrs"
+    :disabled="conditionDisabled"
+    :custom-filter="customFilter"
+    :item-title="itemTitle"
+    :item-value="itemValue"
+    :style="style"
+    :class="class"
+    :placeholder="placeholder"
+    :rules="rules"
+    :prepend-inner-icon="icon"
+    :base-color="baseColorValue"
+    :color="colorValue"
+    :error-messages="errorMessageValue"
+    :multiple="isMultiple"
+    @update:modelValue="onchangeModelValue"
   >
-    <v-autocomplete
-      :items="itemsValue"
-      v-model="modelValue"
-      v-model:search="modelSearch"
-      :variant="variantValue"
-      :hint="hintValue"
-      :density="densityValue"
-      v-bind="$attrs"
-      :disabled="conditionDisabled"
-      :custom-filter="customFilter"
-      :item-title="itemTitle"
-      :item-value="itemValue"
-      :style="style"
-      :placeholder="placeholder"
-      :rules="rules"
-      :prepend-inner-icon="icon"
-      :base-color="baseColorValue"
-      :color="colorValue"
-      :error-messages="errorMessageValue"
-      :multiple="isMultiple"
-      @update:modelValue="onchangeModelValue"
-    >
-      <template #label v-if="isRequired">
-        <span id="required-field">{{ label }}</span>
-      </template>
-      <template #label v-else>
-        {{ label }}
-      </template>
-      <slot />
-    </v-autocomplete>
-  </v-responsive>
+    <template #label v-if="isRequired">
+      <span id="required-field">{{ label }}</span>
+    </template>
+    <template #label v-else>
+      {{ label }}
+    </template>
+    <slot />
+  </v-autocomplete>
+  <!-- </v-responsive> -->
 </template>
 <style scoped>
 #required-field::after {

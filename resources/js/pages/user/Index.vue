@@ -27,7 +27,7 @@ export default {
         password: "",
         password_confirmation: "",
       }),
-      icon: {
+      icons: {
         mdiAccountGroup,
         mdiPlus,
       },
@@ -77,7 +77,5 @@ export default {
 </script>
 
 <template>
-  <v-card>
-    <h1>Liste utilisateurs</h1>
-  </v-card>
+  <Toolbar :icon="icons.mdiAccountGroup" toolbarTitle="Liste des utilisateurs"></Toolbar>
 </template>

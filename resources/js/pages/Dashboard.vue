@@ -98,9 +98,11 @@ export default {
   <Head title="Dashboard" />
 
   <AuthenticatedLayout>
-    <template>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-    </template>
+    <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Acceuil"
+    ></Toolbar>
     <div class="mt-10">
       <Vue3Marquee :duration="25">
         <v-row>
@@ -132,7 +134,11 @@ export default {
       ></template>
     </Loader>
     <br /><br />
-    <Toolbar :icon="icons.mdiAccount" toolbarTitle="Toolbar title"></Toolbar>
+    <!-- <Toolbar
+      styleToolbar="background-color:#004980"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Toolbar title"
+    ></Toolbar> -->
     <br /><br />
     <div>
       <Datatable titleDatatable="Liste des items " :headers="headers" :items="dataH" />
