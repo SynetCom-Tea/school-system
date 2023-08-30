@@ -5,7 +5,7 @@ import TableauDeNote from "@/Components/Gestion-note/TableauDeNote.vue";
 import { Head } from "@inertiajs/vue3";
 
 const props = defineProps(['classes','evaluations','notes'])
-const search = ''
+
 const headers = [
                 {
                     title: 'Id',
@@ -30,7 +30,7 @@ const headers = [
       <v-card-title>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">Affichage de notes</div>
+            <div class="p-6 text-gray-900">Attribution de notes</div>
           </div>
         </div>
       </v-card-title>

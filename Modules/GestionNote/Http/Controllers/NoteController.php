@@ -4,6 +4,11 @@ namespace Modules\GestionNote\Http\Controllers;
 
 use Modules\GestionNote\Entities\Apprenant;
 use Modules\GestionNote\Entities\Classe;
+use Modules\GestionNote\Entities\Note;
+use Modules\GestionNote\Entities\Annee;
+use Modules\GestionNote\Entities\Evaluation;
+use Modules\GestionNote\Entities\EnseignementAnnee;
+use Modules\GestionNote\Entities\ApprenantClasse;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -17,24 +22,52 @@ class NoteController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        // recuperer l'utilisateur connecté
-        //Auth::user()->professeur_id;
-        $classes = [
-            ['id' => 1, 'libelle' => '6e'],
-            ['id' => 2, 'libelle' => '5e'],
-            // ... Autres éléments de classe
-        ];
-        // $classes = collect($classes1);
-        // dd($classes,$classes1);
-        // $test = Apprenant::all();
-        //  dd($classes);
-        // Inertia::share('classes', $classes);
-
-        // return Inertia::render('VotreVue');
+        $annee = Annee::find(1);
+        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)
+        ->with('apprenant','evaluation.type_evaluation','evaluation.periode')->get() : []; 
+        // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
+        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$annee) {
+            $query->where('enseignant_id',1)->whereHas('classe_annee', function ($query1) use ($request,$annee) { 
+                $query1->where('classe_id',$request->classe)->where('annee_id', $annee->id); 
+            });
+        })->with('type_evaluation','periode')->get() : collect();
+        // dd($notes);
         return Inertia::render('gestion-note/note/index',[
-            'classes' => $classes
+            'classes' => EnseignementAnnee::whereHas('classe_annee', function ($query) use ($annee) {
+                $query->where('annee_id', $annee->id);
+            })->where('enseignant_id',1)->with('classe_annee.classe')->get(),
+            'evaluations' => $evaluations ? $evaluations : null,
+            'notes' => $notes ? $notes : null
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     * @return Renderable
+     */
+    public function attribution(Request $request)
+    {
+        // dd('ok');
+        $annee = Annee::find(1);
+
+        $eleves = $request->evaluation ? ApprenantClasse::whereHas('enseignement_annee', function ($query) use ($request,$annee) {
+            $query->where('enseignant_id',1)->whereHas('classe_annee', function ($query1) use ($request,$annee) { 
+                $query1->where('classe_id',1)->where('annee_id', $annee->id); 
+            });
+        })->with('apprenant')->get() : collect();
+        
+       // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
+       
+        dd($eleves);
+
+        return Inertia::render('gestion-note/note/attribution',[
+            'classes' => EnseignementAnnee::whereHas('classe_annee', function ($query) use ($annee) {
+                $query->where('annee_id', $annee->id);
+            })->where('enseignant_id',1)->with('classe_annee.classe')->get(),
+            'evaluations' => ['Interrogation','Devoir','Composition'],
+            'notes' => $notes ? $notes : null
         ]);
     }
 

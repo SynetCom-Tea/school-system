@@ -17,7 +17,7 @@ return new class extends Migration
     {
         Schema::create('type_evaluations', function (Blueprint $table) {
             $table->id();
-            $table->integer('libelle')->nullable();
+            $table->string('libelle')->nullable();
             $table->integer('statut')->nullable();
             $table->string('date')->nullable();
             $table->timestamps();

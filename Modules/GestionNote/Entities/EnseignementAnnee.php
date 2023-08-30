@@ -10,8 +10,18 @@ class EnseignementAnnee extends Model
     use HasFactory;
     protected $fillable = ['enseignement_id', 'classe','annee'];
 
-    public function Enseignant(): BelongsTo
+    public function enseignant(): BelongsTo
     {
         return $this->belongsTo(Enseignant::class);
+    }
+
+    public function classe_annee()
+    {
+        return $this->belongsTo(ClasseAnnee::class);
+    }
+
+    public function niveau_matiere()
+    {
+        return $this->belongsTo(NiveauMatiere::class);
     }
 }

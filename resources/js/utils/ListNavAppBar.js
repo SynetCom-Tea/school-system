@@ -103,7 +103,7 @@ export function listMenus() {
             {
                 icon: mdiWalletMembership,
                 title: "Attribution de notes",
-                link: "/schedule",
+                link: "gestionnote/note/attribution",
                 permissions: "manage_system",
             },
             // {
