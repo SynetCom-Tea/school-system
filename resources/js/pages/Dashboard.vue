@@ -176,7 +176,7 @@ export default {
         ></Button
       ></template>
     </Dialog>
-    <!--  <TextInput
+ <!-- <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
@@ -196,10 +196,10 @@ export default {
         :iconValueDetail="icons.mdiAccount"
         :iconUpdate="icons.mdiGift"
       />
-    </div>
+    </div> -->
   </AuthenticatedLayout>
 </template>
-<style scoped>
+<!-- <style scoped>
 .classTest {
   width: 200px;
   background-color: red;
@@ -221,4 +221,5 @@ export default {
     color: red;
   }
 }
-</style>
+</style> -->
+
