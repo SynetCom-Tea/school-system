@@ -18,6 +18,7 @@
               nameButton="Se Connecter"
               density="comfortable"
               class="text-center"
+              variant="flat"
               size="large"
               :onClickButton="goToPreviousWindow"
               style="text-transform: none"
@@ -30,6 +31,7 @@
             <Button
               title="Clicquer pour retourner à la page welcome"
               nameButton="Visiter le site web"
+              variant="flat"
               density="comfortable"
               class="text-center"
               color="secondary"
@@ -80,10 +82,12 @@
                   autocomplete="false"
                   type="password"
                 />
+                 <!-- :onClickButton="goToRegister()" -->
                 <Button
                   title="Valider"
+                  variant="flat"
                   nameButton="S'enregistrer"
-                  :onClickButton="goToRegister"
+
                   density="comfortable"
                   class="text-center"
                   :isBlock="true"
@@ -136,14 +140,9 @@ import {
   mdiTwitter,
   mdiInstagram,
 } from "@mdi/js";
-import TextField from "../customizedComponents/TextField.vue";
-import Button from "../customizedComponents/Button.vue";
-import SectionLogin from "./SectionLogin.vue";
+
 export default {
   components: {
-    SectionLogin,
-    Button,
-    TextField,
     mdiGoogle,
     mdiFacebook,
     mdiTwitter,
