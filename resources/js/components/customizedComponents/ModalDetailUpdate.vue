@@ -1,10 +1,22 @@
 <script>
+import {
+  mdiDelete,
+  mdiPencil,
+  mdiPlus,
+  mdiCancel,
+  mdiMagnify,
+  mdiContentSaveEditOutline,
+} from "@mdi/js";
 export default {
-  components: {},
+  components: { mdiCancel, mdiContentSaveEditOutline },
   props: {
     toolbarTitle: {
       type: String,
       default: "text",
+    },
+    dialogDetailUpdate: {
+      type: Boolean,
+      default: false,
     },
     iconUpdate: {
       type: String,
@@ -22,21 +34,33 @@ export default {
       type: String,
       default: "Modification réussie",
     },
+    onClickSaveButton: { type: Function },
+    onClickCancelButton: { type: Function },
   },
 
   data: () => ({
     hasSaved: false,
-    vItem: "",
     isEditing: null,
-    states: [
-      { name: "Florida", abbr: "FL", id: 1 },
-      { name: "Georgia", abbr: "GA", id: 2 },
-      { name: "Nebraska", abbr: "NE", id: 3 },
-      { name: "California", abbr: "CA", id: 4 },
-      { name: "New York", abbr: "NY", id: 5 },
-    ],
+    icons: {
+      mdiMagnify,
+      mdiDelete,
+      mdiPencil,
+      mdiPlus,
+      mdiCancel,
+      mdiContentSaveEditOutline,
+    },
   }),
   updated() {},
+  computed: {
+    modelValue: {
+      get() {
+        return this.dialogDetailUpdate;
+      },
+      set(newValue) {
+        this.$emit("input", newValue);
+      },
+    },
+  },
   methods: {
     onchangeModelField(e) {
       console.log("EEEE:", e);
@@ -54,89 +78,83 @@ export default {
     save() {
       this.isEditing = !this.isEditing;
       this.hasSaved = true;
+      this.onClickSaveButton();
     },
   },
 };
 </script>
 <template>
-  <v-card class="mx-auto" max-width="500">
-    <v-toolbar flat color="primary">
-      <v-btn> <v-icon :icon="iconValueDetail"></v-icon></v-btn>
+  <v-dialog v-model="modelValue" max-width="500px" persistent>
+    <v-card class="mx-auto" max-width="500">
+      <v-toolbar flat color="primary">
+        <v-toolbar-title class="font-weight-light">
+          {{ toolbarTitle }}
+        </v-toolbar-title>
 
-      <v-toolbar-title class="font-weight-light">
-        {{ toolbarTitle }}
-      </v-toolbar-title>
+        <v-spacer></v-spacer>
 
-      <v-spacer></v-spacer>
+        <v-btn icon @click="isEditing = !isEditing">
+          <v-fade-transition leave-absolute>
+            <v-icon v-if="isEditing" :icon="iconValueDetail"></v-icon>
 
-      <v-btn icon @click="isEditing = !isEditing">
-        <v-fade-transition leave-absolute>
-          <v-icon v-if="isEditing" :icon="iconValueDetail"></v-icon>
+            <v-icon v-else :icon="iconUpdate"></v-icon>
+          </v-fade-transition>
+        </v-btn>
+      </v-toolbar>
 
-          <v-icon v-else :icon="iconUpdate"></v-icon>
-        </v-fade-transition>
-      </v-btn>
-    </v-toolbar>
+      <v-card-text>
+        <v-form :disabled="!isEditing">
+          <slot name="contentForm" />
+          <slot />
+        </v-form>
+      </v-card-text>
 
-    <v-card-text>
-      <TextField
-        :disabled="!isEditing"
-        label="Name"
-        classResponsive="py-2"
-        :isRequired="true"
-      ></TextField>
-      <Autocomplete
-        v-model="vItem"
-        :conditionDisabled="!isEditing"
-        classResponsive="py-2"
-        :itemsValue="states"
-        :isRequired="true"
-        :customFilter="customFilter"
-        item-title="name"
-        item-value="abbr"
-        label="State"
-        @change="testChange"
-        :onchangeModelValue="onchangeModelField(vItem)"
-        :menu-props="{
-          nudgeBottom: 15 + 'px',
-          zIndex: 2,
+      <v-divider></v-divider>
 
-          rounded: 'xl',
-          borderColor: 'green',
-        }"
-      ></Autocomplete>
+      <v-card-actions class="card-actions-style">
+        <Button
+          variant="text"
+          class="mb-2"
+          color="red"
+          nameButton="Annuler"
+          title="Annuler et Fermer la modale"
+          style="height: 30px"
+          :prependIcon="icons.mdiCancel"
+          :onClickButton="onClickCancelButton"
+        ></Button>
 
-      <Select
-        v-model="vItem"
-        :conditionDisabled="!isEditing"
-        classResponsive="py-2"
-        :itemsValue="states"
-        :isRequired="true"
-        :customFilter="customFilter"
-        item-title="name"
-        item-value="abbr"
-        label="Terre"
-        @change="testChange"
-        :onchangeModelValue="onchangeModelField(vItem)"
-      ></Select>
-    </v-card-text>
+        <Button
+          variant="text"
+          class="mb-2"
+          nameButton="Enregistrer"
+          title="Valider et Fermer la modale"
+          style="height: 30px"
+          :disabled="!isEditing"
+          :prependIcon="icons.mdiContentSaveEditOutline"
+          :onClickButton="save"
+        ></Button>
+      </v-card-actions>
 
-    <v-divider></v-divider>
-
-    <v-card-actions>
-      <v-spacer></v-spacer>
-
-      <v-btn :disabled="!isEditing" @click="save"> {{ titleSubmittingButton }} </v-btn>
-    </v-card-actions>
-
-    <v-snackbar
-      v-model="hasSaved"
-      :timeout="2000"
-      attach
-      position="absolute"
-      location="bottom left"
-    >
-      {{ messageSnackbar }}
-    </v-snackbar>
-  </v-card>
+      <v-snackbar
+        v-model="hasSaved"
+        :timeout="2000"
+        attach
+        position="absolute"
+        location="bottom left"
+      >
+        {{ messageSnackbar }}
+      </v-snackbar>
+      <slot />
+    </v-card>
+  </v-dialog>
 </template>
+<style scoped>
+.card-actions-style {
+  display: flex;
+  justify-content: flex-end;
+  margin-left: auto;
+  flex: none;
+  min-height: 52px;
+  padding: 0.5rem;
+}
+</style>

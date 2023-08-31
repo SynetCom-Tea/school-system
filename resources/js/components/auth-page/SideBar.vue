@@ -6,7 +6,7 @@
         <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
         <div class="d-flex">
           <SiteWebButton />
-          <MenuTopButton :onClickMenuButton="onClickMenuButton" />
+          <MenuTopButton />
         </div>
       </div>
     </v-app-bar>
@@ -178,7 +178,7 @@ import { router } from "@inertiajs/vue3";
 import { mdiChevronLeft, mdiLogout, mdiMenu } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
-import Button from "../customizedComponents/Button.vue";
+
 import SiteWebButton from "./SiteWebButton.vue";
 import MenuTopButton from "./MenuTopButton.vue";
 export default {
