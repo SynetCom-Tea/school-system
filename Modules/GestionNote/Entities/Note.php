@@ -15,11 +15,11 @@ class Note extends Model
     protected $fillable = ['date', 'note', 'evaluation_id', 'apprenant_id'];
 
 
-    public function evaluation(): BelongsTo
+    public function evaluation()
     {
         return $this->belongsTo(Evaluation::class);
     }
-    public function apprenant(): BelongsTo
+    public function apprenant()
     {
         return $this->belongsTo(Apprenant::class);
     }

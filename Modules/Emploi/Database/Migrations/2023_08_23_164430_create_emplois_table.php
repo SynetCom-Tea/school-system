@@ -18,6 +18,9 @@ return new class extends Migration
             $table->string('code');
             $table->date('date_debut');
             $table->date('date_fin');
+            $table->foreignIdFor(\App\Models\ClasseAnnee::class)
+                ->index()
+                ->references('id')->on('classe_annees');
             $table->softDeletes();
             $table->timestamps();
         });

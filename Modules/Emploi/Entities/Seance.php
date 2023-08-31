@@ -27,6 +27,11 @@ class Seance extends Model
         return $this->belongsTo(\App\Models\Salle::class);
     }
 
+    public function niveauMatiere(): BelongsTo
+    {
+        return $this->belongsTo(NiveauMatiere::class);
+    }
+
     public function horaire(): BelongsTo
     {
         return $this->belongsTo(Horaire::class);

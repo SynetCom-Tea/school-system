@@ -18,6 +18,10 @@
     "autoload": {
         "psr-4": {
             "Modules\\GestionNote\\": ""
-        }
+        },
+        
+        "files": [
+            "Modules/GestionNote/Service/service.php"
+        ]
     }
 }

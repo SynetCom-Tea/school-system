@@ -99,33 +99,27 @@ export function listMenus() {
             {
                 icon: mdiGift,
                 title: "Affichage de notes",
-                link: "gestionnote/note/affichage",
+                link: "/gestionnote/note/affichage",
                 permissions: "manage_system",
             },
             {
                 icon: mdiWalletMembership,
                 title: "Attribution de notes",
-                link: "/schedule",
+                link: "/gestionnote/note/attribution",
                 permissions: "manage_system",
             },
-            {
-                icon: mdiAccountSchool,
-                title: "Enseignants",
-                link: "/teachers",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiSchool,
-                title: "Etablissements",
-                link: "/organizations",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiGoogleClassroom,
-                title: "Salle de cours",
-                link: "/salles",
-                permissions: "manage_system",
-            },
+            // {
+            //     icon: mdiAccountSchool,
+            //     title: "Enseignants",
+            //     link: "/teachers",
+            //     permissions: "manage_system",
+            // },
+            // {
+            //     icon: mdiSchool,
+            //     title: "Etablissements",
+            //     link: "/organizations",
+            //     permissions: "manage_system",
+            // },
         ],
     };
     // Gestion de Notes
@@ -173,7 +167,7 @@ export function listMenus() {
             {
                 icon: mdiSquareMedium,
                 title: "Calendrier",
-                link: "/emploi/emplois",
+                link: "/emploi/emplois/create",
                 permissions: "manage_system",
             },
             // {

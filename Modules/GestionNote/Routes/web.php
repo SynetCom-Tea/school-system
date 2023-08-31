@@ -16,4 +16,7 @@ Route::prefix('gestionnote')->group(function() {
     Route::resource('evaluation',\Modules\GestionNote\Http\Controllers\EvaluationController::class);
     // Affichage de notes
     Route::get('/note/affichage',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'index'])->name('note.affichage');
+    Route::get('/note/attribution',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attribution'])->name('note.attribution');
+    Route::post('/note/enregistrer',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'store'])->name('note.save');
+
 });

@@ -15,17 +15,18 @@ class Evaluation extends Model
     protected $fillable = ['date', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id','enseignement_annee_id'];
 
 
-    public function type_evaluation(): BelongsTo
+    public function type_evaluation()
     {
         return $this->belongsTo(TypeEvaluation::class);
     }
 
-    public function periode(): BelongsTo
-    {
-        return $this->belongsTo(Periode::class);
-    }
-    public function enseignement_annee(): BelongsTo
+    public function enseignement_annee()
     {
         return $this->belongsTo(EnseignementAnnee::class);
+    }
+
+    public function periode()
+    {
+        return $this->belongsTo(Periode::class);
     }
 }

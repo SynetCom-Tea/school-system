@@ -15,10 +15,9 @@ class GestionNoteDatabaseSeeder extends Seeder
     public function run()
     {
         Model::unguard();
-
-        // $this->call("PeriodeTableSeeder");
         $this->call([
             PeriodeTableSeeder::class,
+            TypeEvaluationTableSeeder::class,
         ]);
     }
 }
