@@ -23,6 +23,16 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+        Schema::create('tablissement_section', function (Blueprint $table) {
+            
+            $table->foreignIdFor(\App\Models\Etablissement::class)
+                ->index()
+                ->references('id')->on('etablissements');
+            $table->foreignIdFor(\App\Models\Section::class)
+                ->index()
+                ->references('id')->on('sections');
+        });
     }
 
     /**

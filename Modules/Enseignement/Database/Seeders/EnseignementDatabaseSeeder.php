@@ -16,6 +16,12 @@ class EnseignementDatabaseSeeder extends Seeder
     {
         Model::unguard();
 
-        // $this->call("OthersTableSeeder");
+        $this->call([
+            EnseignantTableSeeder::class,
+            MatiereTableSeeder::class,
+            NiveauTableSeeder::class,
+            NiveauMatiereTableSeeder::class,
+            EnseignantAnneeTableSeeder::class,
+        ]);
     }
 }

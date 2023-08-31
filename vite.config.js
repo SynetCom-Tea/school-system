@@ -42,6 +42,8 @@ export default defineConfig({
                         return { name: componentName, from: 'vuetify/labs/VDataTable' }
                     if (componentName === 'VStepper')
                         return { name: componentName, from: 'vuetify/labs/VStepper' }
+                    if (componentName === 'VDatePicker')
+                        return { name: componentName, from: 'vuetify/labs/VDatePicker' }
                 },
                 VuetifyResolver()
             ]

@@ -9,6 +9,11 @@ export default {
       type: Array,
       required: true,
     },
+    titleDatatable: {
+      type: String,
+      default: "Titre du datatable",
+      required: false,
+    },
   },
 
   data() {
@@ -26,14 +31,18 @@ export default {
 </script>
 
 <template>
-  <div style="width: 98%">
+  <v-card style="width: 98%; margin: 10px">
+    <v-card-title style="color: white; background-color: #7d002c">{{
+      titleDatatable
+    }}</v-card-title>
     <v-row>
       <v-col md="6">
-        <text-field
+        <TextField
           label="Recherche"
-          placeholder="Recherche..."
+          placeholder="Recherche"
           v-model="searchQuery"
-        ></text-field>
+          class="mt-2 ml-4"
+        ></TextField>
       </v-col>
       <v-spacer></v-spacer>
       <v-col md="3">
@@ -44,7 +53,7 @@ export default {
       :headers="headers"
       :items="items"
       :search="searchQuery"
-      class="style-table m-3 pt-3"
+      class="style-table pt-3"
     >
       <template v-for="(index, name) in $slots" v-slot:[name]>
         <slot :name="name"></slot>
@@ -53,14 +62,14 @@ export default {
         <slot :name="name" v-bind="data"></slot>
       </template>
     </v-data-table>
-  </div>
+  </v-card>
 </template>
 
 <style scoped>
 .style-table {
-  border: 1px solid #7d002c;
+  border: 1px solid #004980;
   border-radius: 4px;
   margin-left: 10px;
-  width: 80vw;
+  width: 98%;
 }
 </style>

@@ -98,9 +98,11 @@ export default {
   <Head title="Dashboard" />
 
   <AuthenticatedLayout>
-    <template>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-    </template>
+    <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Acceuil"
+    ></Toolbar>
     <div class="mt-10">
       <Vue3Marquee :duration="25">
         <v-row>
@@ -132,9 +134,15 @@ export default {
       ></template>
     </Loader>
     <br /><br />
-    <Toolbar :icon="icons.mdiAccount" subtitle="Toolbar title"></Toolbar>
+    <!-- <Toolbar
+      styleToolbar="background-color:#004980"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Toolbar title"
+    ></Toolbar> -->
     <br /><br />
-    <Datatable :headers="headers" :items="dataH" />
+    <div>
+      <Datatable titleDatatable="Liste des items " :headers="headers" :items="dataH" />
+    </div>
     <br /><br />
 
     <Button
@@ -148,7 +156,7 @@ export default {
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <!-- <Dialog
+    <Dialog
       :modelDialog="isDialog"
       :onCloseModale="onCloseModale"
       :iconHeaderModal="icons.mdiAccount"
@@ -167,8 +175,8 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog> -->
-     <TextInput
+    </Dialog>
+    <!--  <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
@@ -182,13 +190,13 @@ export default {
     <div>{{ test }}</div>
     <br /><br /><br /><br /><br /><br />
 
-    <!-- <div>
+    <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"
         :iconUpdate="icons.mdiGift"
       />
-    </div> -->
+    </div>
   </AuthenticatedLayout>
 </template>
 <style scoped>

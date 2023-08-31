@@ -30,6 +30,7 @@
               </v-form>
               <Button
                 title="Valider"
+                variant="flat"
                 nameButton="Connexion"
                 :onClickButton="goToLogin"
                 density="comfortable"
@@ -97,6 +98,7 @@
               class="text-center"
               color="secondary"
               size="large"
+              variant="flat"
               :onClickButton="goToNextWindow"
             >
             </Button>
@@ -110,10 +112,9 @@
 <script>
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram } from "@mdi/js";
-import TextField from "../customizedComponents/TextField.vue";
-import Button from "../customizedComponents/Button.vue";
+
 export default {
-  components: { Button, TextField, mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+  components: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
   props: {
     goToNextWindow: { type: Function },
     listSocialNetworks: { type: Array },
