@@ -23,6 +23,9 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Salle::class)
                 ->index()
                 ->references('id')->on('salles');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\NiveauMatiere::class)
+                ->index()
+                ->references('id')->on('niveau_matieres');
             $table->foreignIdFor(\Modules\Emploi\Entities\Emploi::class)
                 ->index()
                 ->references('id')->on('emplois');

@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('emplois', function (Blueprint $table) {
+        Schema::create('enseignant_annees', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->date('date_debut');
-            $table->date('date_fin');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Enseignant::class)
+                ->index()
+                ->references('id')->on('enseignants');
             $table->foreignIdFor(\App\Models\ClasseAnnee::class)
                 ->index()
                 ->references('id')->on('classe_annees');
-            $table->softDeletes();
+            $table->foreignIdFor(\Modules\Enseignement\Entities\NiveauMatiere::class)
+                ->index()
+                ->references('id')->on('niveau_matieres');
             $table->timestamps();
         });
     }
@@ -33,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emplois');
+        Schema::dropIfExists('enseignant_annees');
     }
 };

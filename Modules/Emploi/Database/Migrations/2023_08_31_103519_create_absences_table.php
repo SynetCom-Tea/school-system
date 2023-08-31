@@ -13,15 +13,14 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('emplois', function (Blueprint $table) {
+        Schema::create('absences', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->date('date_debut');
-            $table->date('date_fin');
-            $table->foreignIdFor(\App\Models\ClasseAnnee::class)
+            $table->foreignIdFor(\App\Models\Apprenant::class)
                 ->index()
-                ->references('id')->on('classe_annees');
-            $table->softDeletes();
+                ->references('id')->on('apprenants');
+            $table->foreignIdFor(\Modules\Emploi\Entities\Seance::class)
+                ->index()
+                ->references('id')->on('seances');
             $table->timestamps();
         });
     }
@@ -33,6 +32,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emplois');
+        Schema::dropIfExists('absences');
     }
 };

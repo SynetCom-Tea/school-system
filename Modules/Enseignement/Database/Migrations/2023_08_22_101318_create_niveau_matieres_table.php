@@ -13,15 +13,17 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('emplois', function (Blueprint $table) {
+        Schema::create('niveau_matieres', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->date('date_debut');
-            $table->date('date_fin');
-            $table->foreignIdFor(\App\Models\ClasseAnnee::class)
+            $table->integer('coefficient');
+            $table->double('volume_horaire');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
-                ->references('id')->on('classe_annees');
-            $table->softDeletes();
+                ->references('id')->on('niveaux');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)
+                ->index()
+                ->references('id')->on('matieres');
             $table->timestamps();
         });
     }
@@ -33,6 +35,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emplois');
+        Schema::dropIfExists('niveau_matieres');
     }
 };

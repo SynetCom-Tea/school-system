@@ -73,10 +73,6 @@ export default {
       type: String,
       default: "",
     },
-    search: {
-      type: String,
-      default: "",
-    },
     rules: {
       type: [Object, String],
       required: false,
@@ -87,7 +83,7 @@ export default {
     },
     onchangeModelValue: { type: Function },
     customFilter: { type: Function },
-    class: { type: String, default: "py-3" },
+    classLabel: { type: String, default: "defaultClassLabel" },
     style: { type: String },
     isRequired: { type: Boolean, default: false },
     isMultiple: { type: Boolean, default: false },
@@ -103,56 +99,45 @@ export default {
         this.$emit("input", newValue);
       },
     },
-    modelSearch: {
-      get() {
-        return this.search;
-      },
-      set(newValue) {
-        this.$emit("input", newValue);
-      },
-    },
   },
 };
 </script>
 <template>
-  <!-- <v-responsive
+  <v-responsive
     :class="classResponsive"
     :height="heightResponsive"
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
-  > -->
-  <v-autocomplete
-    :items="itemsValue"
-    v-model="modelValue"
-    v-model:search="modelSearch"
-    :variant="variantValue"
-    :hint="hintValue"
-    :density="densityValue"
-    v-bind="$attrs"
-    :disabled="conditionDisabled"
-    :custom-filter="customFilter"
-    :item-title="itemTitle"
-    :item-value="itemValue"
-    :style="style"
-    :class="class"
-    :placeholder="placeholder"
-    :rules="rules"
-    :prepend-inner-icon="icon"
-    :base-color="baseColorValue"
-    :color="colorValue"
-    :error-messages="errorMessageValue"
-    :multiple="isMultiple"
-    @update:modelValue="onchangeModelValue"
   >
-    <template #label v-if="isRequired">
-      <span id="required-field">{{ label }}</span>
-    </template>
-    <template #label v-else>
-      {{ label }}
-    </template>
-    <slot />
-  </v-autocomplete>
-  <!-- </v-responsive> -->
+    <v-select
+      :items="itemsValue"
+      v-model="modelValue"
+      :variant="variantValue"
+      :hint="hintValue"
+      :density="densityValue"
+      v-bind="$attrs"
+      :disabled="conditionDisabled"
+      :custom-filter="customFilter"
+      :item-title="itemTitle"
+      :item-value="itemValue"
+      :style="style"
+      :placeholder="placeholder"
+      :rules="rules"
+      :prepend-inner-icon="icon"
+      :base-color="baseColorValue"
+      :color="colorValue"
+      :error-messages="errorMessageValue"
+      :multiple="isMultiple"
+      @update:modelValue="onchangeModelValue"
+    >
+      <template #label v-if="isRequired">
+        <span id="required-field">{{ label }}</span>
+      </template>
+      <template #label v-else>
+        {{ label }}
+      </template>
+    </v-select>
+  </v-responsive>
 </template>
 <style scoped>
 #required-field::after {
