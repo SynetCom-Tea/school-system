@@ -171,7 +171,7 @@ export function listMenus() {
             {
                 icon: mdiSquareMedium,
                 title: "Calendrier",
-                link: "/emploi/emplois",
+                link: "/emploi/emplois/create",
                 permissions: "manage_system",
             },
             // {

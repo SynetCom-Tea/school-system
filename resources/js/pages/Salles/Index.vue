@@ -10,7 +10,8 @@ import {
     mdiDelete,
     mdiPlusCircle,
     mdiCancel,
-    mdiCheckCircle
+    mdiCheckCircle,
+    mdiAccount
 } from '@mdi/js'
 export default {
     components: {
@@ -33,7 +34,8 @@ export default {
                 mdiDelete,
                 mdiPlusCircle,
                 mdiCancel,
-                mdiCheckCircle
+                mdiCheckCircle,
+                mdiAccount
             },
             headers: [{
                     title: 'ID',
@@ -59,6 +61,7 @@ export default {
             ],
             dialog_title: 'Nouvelle Salle',
             dialog: false,
+            isDialog: false,
             dialogEdit: false,
             form: useForm({
                 libele: '',
@@ -149,7 +152,16 @@ export default {
         },
         closeEdit() {
             this.dialogEdit = false
-        }
+        },
+        onClickBt() {
+            this.isDialog = !this.isDialog;
+        },
+        onCloseModale() {
+            this.isDialog = false;
+        },
+        onChangeTitle(e) {
+            console.log("testE:", e.target.value);
+        },
     }
 }
 </script>
@@ -157,6 +169,26 @@ export default {
 <v-card>
     <page-toolbar :icon="icon.mdiGoogleClassroom">Gestion des Salles</page-toolbar>
     <v-card-text>
+        <Dialog
+            :modelDialog="isDialog"
+            :onCloseModale="onCloseModale"
+            :iconHeaderModal="icon.mdiAccount"
+            :widthDialog="300"
+            >
+            <template v-slot:content>
+                <h1>TEST CONTENU</h1>
+            </template>
+            <template #otherButtons>
+                <Button
+                title="Fermer la modale"
+                variant="text"
+                color="primary"
+                nameButton="Enregistrer"
+                :onClickButton="onCloseModale"
+                style="float: right; margin: 10px; height: 30px"
+                ></Button
+            ></template>
+        </Dialog>
         <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
             <template v-slot:default="{ isActive }">
                 <v-card>
