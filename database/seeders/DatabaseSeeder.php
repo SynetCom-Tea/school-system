@@ -24,7 +24,8 @@ class DatabaseSeeder extends Seeder
             ApprenantSeeder::class,
             SalleSeeder::class,
             SectionSeeder::class,
-            EnseignementDatabaseSeeder::class
+            EtablissementSectionSeeder::class,
+            EnseignementDatabaseSeeder::class,
         ]);
     }
 }
