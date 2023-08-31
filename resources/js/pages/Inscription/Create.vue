@@ -1,7 +1,8 @@
 <template>
 <v-card>
-        <page-toolbar>Nouvelle Inscription</page-toolbar>
+        <page-toolbar :icon="icon.mdiAccountSchool">Nouvelle Inscription</page-toolbar>
     <v-stepper :items="['Apprenant', 'Tuteurs', 'Versement']">
+
   <template v-slot:item.1>
     <v-form>
     <v-row>
@@ -10,7 +11,7 @@
             type="info"      
             text
             >
-            Informations sur le Niveau d'études
+            Informations générales
         </v-alert>
     </v-col>
     </v-row>
@@ -36,13 +37,23 @@
           ></v-select>
         </v-col>
         </v-row>
+        <v-row>
+        <v-col cols="6" md="6">
+          <v-radio-group label="L'apprenant, existe t-il déjà?" inline v-model="form.apExist">
+            <v-radio label="Oui" value="1"></v-radio>
+            <v-radio label="Non" value="2"></v-radio>
+          </v-radio-group>
+        </v-col>
+        </v-row>
+        <div v-if="form.apExist == '2'">
     <v-row>
      <v-col>
         <v-alert
-            type="info"      
+            color="info" 
+            :icon="icon.mdiAccountSchool"      
             text
             >
-            Informations sur l'apprenant
+            Informations de l'apprenant
         </v-alert>
     </v-col>
     </v-row>
@@ -118,6 +129,7 @@
           </v-radio-group>
         </v-col>
         </v-row>
+        </div>
     </v-form>
   </template>
 
@@ -126,13 +138,51 @@
     <v-row>
      <v-col>
         <v-alert
-            type="info"       
+            color="info" 
+            :icon="icon.mdiAccountCircle"       
             text
             >
             Tuteurs
         </v-alert>
     </v-col>
     </v-row>
+    <v-card-text :key="tuteur.id" v-for="(tuteur, i) in form.tuteurs">
+                    <v-chip label text-color="white" color="primary" class="text-md-h6 green--text" >Tuteur {{i + 1}}</v-chip>
+                    <v-card outlined class="mb-md-2">
+                        <v-card-text>
+                            <v-row >
+                                <v-col md="5">
+                                    <text-field label="Nom" placeholder="Nom" v-model="tuteur.nom"></text-field>
+                                </v-col>
+                                <v-col md="5">
+                                    <text-field label="Prénom" placeholder="Prénom" v-model="tuteur.prenom"></text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col md="5">
+                                    <text-field label="Téléphone" placeholder="Téléphone" v-model="tuteur.tel"></text-field>
+                                </v-col>
+                                <v-col md="5">
+                                    <text-field label="Adresse" placeholder="Adresse" v-model="tuteur.adresse"></text-field>
+                                </v-col>
+                                <v-col md="1">
+                                    <v-btn variant="outlined" :disabled="!(form.tuteurs.length > 1)" icon @click="removeRow(tuteur)" fab small color="error">
+                                        <v-icon :icon="icon.mdiClose"></v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-card-text>
+                    </v-card>
+                </v-card-text>
+            <v-row>
+                <v-col md ="10">
+                </v-col>
+                <v-col offset-md="11" md="1">
+                    <v-btn variant="outlined" icon @click="addRow()" :disabled="!(form.tuteurs.length < 2)" fab small color="info">
+                        <v-icon :icon="icon.mdiPlus"></v-icon>
+                    </v-btn>
+                </v-col>
+            </v-row>
     </v-form> 
   </template>
 
@@ -141,7 +191,8 @@
     <v-row>
      <v-col>
         <v-alert
-            type="info"       
+            color="info" 
+            :icon="icon.mdiCash100"       
             text
             >
             Versements
@@ -159,17 +210,29 @@ import { router, useForm } from "@inertiajs/vue3";
 import { VStepper } from 'vuetify/labs/VStepper';
 import {
         mdiAccountCircle,
+        mdiAccountSchool,
+        mdiCash100,
+        mdiPlus,
+        mdiClose,
     } from '@mdi/js'
 export default {
         components: {
             VStepper,
             mdiAccountCircle,
+            mdiAccountSchool,
+            mdiCash100,
+            mdiPlus,
+            mdiClose,
         },
   layout: AuthenticatedLayout,
  data() {
     return {
       icon: {
         mdiAccountCircle,
+        mdiAccountSchool,
+        mdiCash100,
+        mdiPlus,
+        mdiClose,
       },
       form: useForm({
         matricule: "",
@@ -181,9 +244,30 @@ export default {
         dateNaiss: "",
         section_id: "",
         niveau_id: "",
+        apExist: "",
+        tuteurs: [],
       }),
      
     };
   },
+  methods: {
+        addRow() {
+            this.form.tuteurs.push({
+                nom: null,
+                prenom: null,
+                tel: null,
+                adresse: null,
+                before: null,
+                after: null
+            }) 
+        },
+        removeRow(p) {
+            this.form.tuteurs = this.form.tuteurs.filter((product) => product !== p)
+        },
+  },
+  mounted() {
+        this.addRow()
+        
+    },
 }
 </script>
