@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('enseignement_annees', function (Blueprint $table) {
             $table->id();
+            $table->string('code');
             $table->foreignIdFor(Modules\GestionNote\Entities\Enseignant::class)
                 ->index()
                 ->references('id')->on('enseignants');

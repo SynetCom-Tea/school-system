@@ -10,6 +10,12 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 use Inertia\Inertia;
+use Modules\GestionNote\Entities\Enseignant;
+use Modules\GestionNote\Entities\EnseignementAnnee;
+use Modules\GestionNote\Entities\Matiere;
+use Modules\GestionNote\Entities\Niveau;
+use Modules\GestionNote\Entities\NiveauMatiere;
+use Modules\GestionNote\Entities\Section;
 
 class EvaluationController extends Controller
 {
@@ -19,13 +25,26 @@ class EvaluationController extends Controller
      */
     public function index()
     {
-        $periode = Periode::all();
-        $typeEvaluation = TypeEvaluation::all();
-        $evaluation = Evaluation::all();
+
+        $evaluations = Evaluation::with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.enseignant','enseignement_annee.niveau_matiere.niveau')->get();
+
+        // dd($evaluations);
+        $periodes = Periode::all();
+        $typeEvaluations = TypeEvaluation::all();
+        $enseigements= EnseignementAnnee::with('niveau_matiere.niveau.section','enseignant')->get();
+        // dd($enseigements);
+        $sections= Section::all();
+        $nivau_matieres= NiveauMatiere::all();
+        $enseignant= Enseignant::all();
         return Inertia::render('gestion-note/evaluation/index', [
-            'periode' => $periode,
-            // 'typeEvaluation'=>$typeEvaluation,
-            // 'evaluation'=>$evaluation,
+            'evaluations'=>$evaluations,
+            'periodes'=>$periodes,
+            'typeEvaluations'=>$typeEvaluations,
+            'enseigements'=>$enseigements,
+            'sections'=>$sections,
+            'nivau_matieres'=>$nivau_matieres,
+            'enseignant'=>$enseignant,
+
         ]);
     }
 
@@ -35,7 +54,10 @@ class EvaluationController extends Controller
      */
     public function create()
     {
-        return view('gestionnote::create');
+
+        return Inertia::render('gestion-note/evaluation/index', [
+
+        ]);
     }
 
     /**
@@ -45,23 +67,21 @@ class EvaluationController extends Controller
      */
     public function store(Request $request)
     {
-
+        // dd($request);
         request()->validate([
 
-            'date' => 'required|date_format:d/m/Y',
+            'date' => 'required|date',
             'pourcentage' => 'required|string|max:255',
-            'periode_id' => [
-                'required',
-                'exists:Periode,id',
-            ],
-            'type_evaluation_id' => [
-                'required',
-                'exists:TypeEvaluation,id',
-            ],
+            "enseignement_annee_id" => 'required',
+            "type_evaluation_id" => 'required',
+            "periode_id" => 'required',
+
         ]);
-        $data = ['date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->etype_evaluation_id ?? 'RAS'];
-        dd($data);
-        //
+        $data = $request->all();
+        $data = ['date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $request->enseignement_annee_id , 'statut' =>0?? 'RAS'];
+        Evaluation::create($data);
+        // dd($data);
+
     }
 
     /**
@@ -93,6 +113,8 @@ class EvaluationController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $evaluation = Evaluation::find($id);
+        $evaluation->update($request->all());
     }
 
     /**
@@ -103,5 +125,24 @@ class EvaluationController extends Controller
     public function destroy($id)
     {
         //
+        try{
+            $evaluation = Evaluation::find($id);
+            $evaluation->delete();
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                //dd($e->getCode());
+                return redirect()->route('evaluation.index')->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer ce besoin!",
+                ]);
+
+            }
+        }
+
+        return redirect()->route('evaluation.index')->with('message', [
+            'type' => 'success',
+            'text' => "Le besoin a été supprimé avec succès !",
+        ]);
     }
 }

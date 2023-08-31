@@ -134,7 +134,7 @@ export default {
         ></Button
       ></template>
     </Dialog> -->
-    <!--  <TextInput
+     <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
@@ -146,7 +146,7 @@ export default {
       :rules="[rules.required, rules.counter]"
     />
     <div>{{ test }}</div>
-    <br /><br /><br /><br /><br /><br /> -->
+    <br /><br /><br /><br /><br /><br />
 
     <!-- <div>
       <ModalDetailUpdate

@@ -12,7 +12,7 @@ class Evaluation extends Model
 {
     use HasFactory, softDeletes;
 
-    protected $fillable = ['date', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id'];
+    protected $fillable = ['date', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id','enseignement_annee_id'];
 
 
     public function type_evaluation(): BelongsTo
@@ -23,5 +23,9 @@ class Evaluation extends Model
     public function periode(): BelongsTo
     {
         return $this->belongsTo(Periode::class);
+    }
+    public function enseignement_annee(): BelongsTo
+    {
+        return $this->belongsTo(EnseignementAnnee::class);
     }
 }

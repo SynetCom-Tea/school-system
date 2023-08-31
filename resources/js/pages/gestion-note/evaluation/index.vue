@@ -3,8 +3,8 @@
     import { Head } from "@inertiajs/vue3";
 </script> -->
 
-<script>
-    import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+<script >
+    import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
     import { useForm } from '@inertiajs/vue3';
 
     import {
@@ -28,7 +28,7 @@
             mdiTools,
         },
         layout: AuthenticatedLayout,
-        props: ["periode"],
+        props: ["evaluations",  "periodes","typeEvaluations","enseigements","sections",  "nivau_matieres","enseignant"],
         data() {
             return {
                 icon: {
@@ -40,38 +40,49 @@
                     mdiClipboardEditOutline,
                     mdiTools,
                 },
+
                 headers: [
 
                     { title: 'ID', align: 'center', key: 'id'},
-                    { title: 'Type', align: 'center', key: 'type' },
-                    { title: 'Libelle', align: 'center', key: 'libelle'},
+                    { title: 'Matière', align: 'center', key: 'enseignement_annee.niveau_matiere.matiere.libelle', },
+                    { title: 'Niveau/Classe', align: 'center', key: 'enseignement_annee.niveau_matiere.niveau.libelle' },
+                    { title: 'Enseignant', align: 'center', key: 'enseignement_annee.enseignant.nom' },
+                    { title: 'Date Evaluation', align: 'center', key: 'date'},
+                    { title: 'Type Evaluation', align: 'center', key: 'type_evaluation.libelle'},
+                    { title: 'periodes', align: 'center', key: 'periode.libelle'},
+                    { title: 'Pourcentage', align: 'center', key: 'pourcentage'},
                     { title: 'Statut', align: 'center', key: 'statut'},
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                types: ['Matériel', 'Service'],
-                dialog_title: 'Nouveau Matériel/Service',
+
+                dialog_title: 'Nouveau Evaluation',
                 dialog: false,
 
                 form: useForm({
-                    type: '',
-                    libelle: '',
-                    statut: '',
+                    date: '',
+                    pourcentage: '',
+                    type_evaluation_id:'',
+                    periode_id:'',
+                    enseignement_annee_id:'',
+
                 }),
             }
         },
+
         methods:{
             create() {
                 this.dialog = true;
-                this.dialog_title = 'Nouveau Matériel/Service'
+                this.dialog_title = 'Nouveau Evaluation'
             },
             editItem(item){
                 console.log('edit',item)
-                this.dialog_title = 'Modifier le besoin ' + item.code
+                this.dialog_title = 'Modifier Evaluation ' + item.id
                 this.form.id = item.id
-                this.form.code = item.code
-                this.form.designation = item.designation
-                this.form.type = item.type
-                this.form.etat = item.etat
+                this.form.date = item.date
+                this.form.pourcentage = item.pourcentage
+                this.form.periode_id = item.periode_id
+                this.form.type_evaluation_id = item.type_evaluation_id
+                this.form.enseignement_annee_id = item.enseignement_annee_id
                 this.dialog = true
             },
             deleteItem(item){
@@ -87,7 +98,7 @@
                     }).then((result) => {
                     if (result.isConfirmed) {
 
-                        this.form.delete(route('besoins.destroy', item.id),{
+                        this.form.delete(route('evaluation.destroy', item.id),{
 
                             onFinish: () => {
                                 if(this.$page.props.flash?.message?.type == 'error'){
@@ -123,13 +134,13 @@
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
                     // console.log(this.form)
-                    this.form.post(route('besoins.store'), {
+                    this.form.post(route('evaluation.store'), {
                         onFinish: () => {
                             this.close()
                             this.$swal({
                                 icon: 'success',
                                 title: 'Enregistrement',
-                                text: 'Besoin créée avec succès!',
+                                text: 'Evaluation créée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -139,15 +150,15 @@
                         },
                     });
                 }else if(this.form.id && valid) {
-                    const {id, code, designation, type, etat} = this.form
+                    const {date,pourcentage,periode_id,type_evaluation_id,enseignement_annee_id} = this.form
 
-                    this.form.put(route('besoins.update', this.form.id), {
+                    this.form.put(route('evaluation.update', this.form.id), {
                         onFinish: () => {
                             this.close()
                             this.$swal({
                                 icon: 'success',
                                 title: 'Enregistrement',
-                                text: 'Besoin modifié avec succès!',
+                                text: 'Evaluation modifié avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -162,14 +173,16 @@
             },
             close() {
                 this.form.id = ""
-                this.form.code = ""
-                this.form.designation = ""
-                this.form.type = ""
-                this.form.etat = ""
+                this.form.date = ""
+                this.form.pourcentage = ""
+                this.form.periode_id = ""
+                this.form.type_evaluation_id = ""
+                this.form.enseignement_annee_id = ""
                 this.dialog = false
             }
         }
     }
+
 </script>
 
 <template>
@@ -188,11 +201,75 @@
       </div>
     </v-card>
     <v-card>
-        <page-toolbar :icon="icon.mdiTools">Gestion des besoins</page-toolbar>
+        <page-toolbar :icon="icon.mdiTools">Gestion des Evaluations</page-toolbar>
         <v-card-text>
+            <v-row justify="end">
+
+                <v-dialog
+                v-model="dialog" transition="dialog-top-transition" persistent width="900px"
+                >
+                <template v-slot:activator="{ props }">
+                    <div class="custom-add-button">
+                        <v-btn @click="create" x-small variant="outlined" color="primary" v-bind="props"> Ajouter
+                        </v-btn>
+                    </div>
+
+                </template>
+                <v-card>
+                    <!-- <v-card-title dense color="orange" dark> -->
+                        <v-toolbar dense color="primary" dark>
+                            <v-toolbar-title>
+                                <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
+
+                            </v-toolbar-title>
+                            <v-spacer></v-spacer>
+                        </v-toolbar>
+                    <!-- </v-card-title> -->
+                    <v-card-text>
+                    <v-form ref="form">
+                        <v-container>
+                            <v-row>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" isRequired :rules="[v => !!v || 'Ce champ est requis!']">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-text-field label="Pourcentage"  variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" isRequired :rules="[v => !!v || 'Ce champ est requis!']">
+                                    </v-text-field>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-select  label="Periode" variant="outlined" item-title="libelle" item-value="id" :items="periodes"  v-model="form.periode_id">
+                                    </v-select>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-select  label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="typeEvaluations"  v-model="form.type_evaluation_id">
+                                    </v-select>
+                                </v-col>
+                                <v-col cols="12" sm="6" md="6">
+                                    <v-select  label="Matiere/Niveau/Classe" variant="outlined" item-title="code" item-value="id" :items="enseigements"  v-model="form.enseignement_annee_id ">
+                                    </v-select>
+                                </v-col>
+
+                            </v-row>
+                        </v-container>
+                    </v-form>
+                    </v-card-text>
+                    <v-card-actions class="justify-end">
+                        <v-spacer></v-spacer>
+                        <v-btn dark small type="button" color="red" @click="close">
+                            <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
+                        </v-btn>
+                        <v-btn small color="success" @click="submit">
+                            <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
+                        </v-btn>
+                    </v-card-actions>
+                </v-card>
+                </v-dialog>
+            </v-row>
+            <br>
             <v-data-table
                 :headers="headers"
-                :items="periode">
+                :items="evaluations">
                 <template v-slot:addBtn>
                     <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:activator="{ props }">
