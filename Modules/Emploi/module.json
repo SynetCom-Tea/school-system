@@ -1,0 +1,11 @@
+{
+    "name": "Emploi",
+    "alias": "emploi",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Emploi\\Providers\\EmploiServiceProvider"
+    ],
+    "files": []
+}

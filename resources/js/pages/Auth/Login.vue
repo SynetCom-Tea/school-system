@@ -1,68 +1,6 @@
 <template>
-  <div id="app-login" class="card-overlay">
-    <v-app>
-      <div>
-        <v-row class="my-1">
-          <v-col cols="12" md="4">
-            <v-btn
-              tile
-              block
-              outlined
-              elevation="0"
-              color="primary"
-              class="p-0 m-0"
-              @click="goToLoginPage()"
-              >Connexion</v-btn
-            >
-            <!-- <v-btn
-              tile
-              block
-              outlined
-              elevation="0"
-              style="background-color: white; color: #004980"
-              class="p-0 m-0"
-              @click="goToLoginPage()"
-              >Connexion</v-btn
-            > -->
-          </v-col>
-          <v-col cols="12" md="4">
-            <v-btn
-              tile
-              block
-              outlined
-              elevation="0"
-              color="primary"
-              class="p-0 m-0"
-              @click="goToWelcomePage()"
-              >site web</v-btn
-            ></v-col
-          >
-          <v-col cols="12" md="4"
-            ><v-btn tile block outlined elevation="0" color="primary" class="'-0 m-0"
-              >our stats</v-btn
-            ></v-col
-          >
-        </v-row>
-      </div>
-      <router-view />
-      <div>
-        <footer
-          style="
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            background-color: #7d002c;
-            width: 100%;
-            background-size: cover;
-          "
-        >
-          <span class="text-reset text-white"
-            >© {{ new Date().getFullYear() }}&nbsp; Copyright:
-            <a href="https://mdbootstrap.com/" target="_blank">synetcom.com</a></span
-          >
-        </footer>
-      </div>
-    </v-app>
+  <div>
+    <LoginComponent />
   </div>
 </template>
 
@@ -78,12 +16,17 @@ export default {
   },
   computed: {},
   methods: {
-    goToLoginPage() {
-      return router.get(route("login"));
-    },
-    goToWelcomePage() {
-      return router.get("/");
-    },
+    //   goToLoginPage() {
+    //     //   return router.visit("/login", {
+    //     //     preserveScroll: true,
+    //     //   });
+    //     this.$router.push("/login");
+    //     // return router.get(route("login"));
+    //   },
+    //   goToWelcomePage() {
+    //     return router.get("/");
+    //     // this.$router.back();
+    //   },
   },
 };
 </script>

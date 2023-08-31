@@ -10,23 +10,35 @@
         </div>
       </div>
     </v-app-bar>
-    <v-navigation-drawer v-model="drawer" width="300" permanent height="100%">
+
+    <v-navigation-drawer
+      v-model="drawer"
+      rail-width="300"
+      class="bg-primary"
+      permanent
+      :rail="rail"
+      width="300"
+    >
       <div id="sidebar">
         <div class="sidebar-toggle">
-          <div @click.stop="drawer = !drawer" id="btn-toggle">
+          <div @click="changeToggleState()" id="btn-toggle">
             <v-icon id="btn-toggle-icon" :icon="icons.mdiChevronLeft"></v-icon>
           </div>
         </div>
         <div class="sidebar-body">
           <div class="sidebar-profile">
             <img
-              :src="'../assets/' + profileInfo.photo.file"
-              :alt="profileInfo.photo.title"
+              :src="'../assets/' + getProfile.photo.file"
+              :alt="getProfile.photo.title"
             />
             <v-slide-x-transition mode="in-out" leave-absolute>
-              <div id="profile-name">
-                {{ profileInfo.name }}
-              </div>
+              <v-list-item
+                id="profile-name"
+                lines="two"
+                :title="getProfile.name"
+                :subtitle="getProfile.typeUser"
+              >
+              </v-list-item>
             </v-slide-x-transition>
           </div>
           <div class="sidebar-links">
@@ -38,7 +50,8 @@
                   class="list-case"
                   v-for="link in getListMenus[0]"
                   :key="link.title"
-                  @click="onClickMenuItem(link.link)"
+
+                  @click="page(link.link)"
                 >
                   <template v-slot:prepend>
                     <v-icon :title="link.title" :icon="link.icon"></v-icon>
@@ -49,6 +62,39 @@
                   ></v-list-item-title>
                 </v-list-item>
                 <!-- <v-list-group :value="getListMenus[1].title">
+                <v-list-group :value="getListMenus[4].title">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="getListMenus[4].title"
+                          :icon="getListMenus[4].icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="getListMenus[4].title"
+                      ></v-list-item-title>
+                    </v-list-item>
+                  </template>
+
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in getListMenus[4].children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                    </template>
+
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="item.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </v-list-group>
+                <v-list-group :value="getListMenus[1].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -68,6 +114,7 @@
                     class="sub-list-group"
                     v-for="(item, i) in getListMenus[1].children"
                     :key="i"
+                    @click="page(item.link)"
                   >
                     <template v-slot:prepend>
                       <v-icon :title="item.title" :icon="item.icon"></v-icon>
@@ -99,7 +146,7 @@
                     class="sub-list-group"
                     v-for="(item, i) in getListMenus[2].children"
                     :key="i"
-                    @click="onClickMenuItem(item.link)"
+                    @click="page(item.link)"
                   >
                     <template v-slot:prepend>
                       <v-icon :title="item.title" :icon="item.icon"></v-icon>
@@ -165,6 +212,7 @@ export default {
         mdiLogout,
         mdiMenu,
       },
+      username: "",
       profileInfo: {
         name: "Super Admin",
         photo: {
@@ -175,8 +223,26 @@ export default {
       rail: true,
     };
   },
-  mounted() {},
+  mounted() {
+    this.$gates.setRoles(this.$page.props.roles);
+    this.$gates.setPermissions(this.$page.props.permissions);
+    this.username =
+      this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
+  },
   computed: {
+    getProfile() {
+      let fullName =
+        this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
+      let item = {
+        name: fullName,
+        typeUser: "Super-Admin",
+        photo: {
+          file: "team.png",
+          title: "photo profile user",
+        },
+      };
+      return item;
+    },
     getListMenus() {
       return listMenus();
     },
@@ -192,6 +258,9 @@ export default {
     onClickMenuButton() {
       this.drawer = !this.drawer;
     },
+    page(link) {
+      router.get(link);
+    },
     changeToggleState() {
       let btnToggleIcon = document.getElementById("btn-toggle-icon");
       this.menuCompact.hidden = !this.menuCompact.hidden;
@@ -201,6 +270,7 @@ export default {
       } else {
         return (btnToggleIcon.style.transform = "rotateY(180deg)");
       }
+      this.rail = !this.rail;
     },
   },
 };
@@ -215,12 +285,12 @@ export default {
   margin: 0;
   top: 0;
   left: 0;
-  background-color: rgb(0, 73, 128);
-  height: 100%;
+  /* background-color: rgb(0, 73, 128); */
+  /* height: 100%; */
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6);
+  /* box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.6); */
   user-select: none;
 }
 
@@ -235,13 +305,13 @@ export default {
   justify-content: left;
   align-items: center;
   margin-block: 15px;
-  margin-inline: 14px;
+  margin-inline: 10px;
   padding: 4px;
   background-image: linear-gradient(to right, rgb(125, 0, 44, 0.7), rgb(125, 0, 44, 0.4));
   border-radius: 50px;
   border: 2px solid rgb(125, 0, 44, 0.75);
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-  margin-bottom: 25px;
+  margin-bottom: 20px;
 }
 
 .sidebar-profile:hover {
@@ -252,9 +322,9 @@ export default {
 }
 
 .sidebar-profile #profile-name {
-  font-weight: 900;
+  font-weight: 100;
   flex-grow: 1;
-  font-size: 16px;
+  font-size: 10px;
   text-align: center;
   color: white;
 }
@@ -270,7 +340,7 @@ export default {
 }
 
 .sidebar-links small {
-  color: rgba(255, 255, 255, 0.4);
+  /* color: rgba(255, 255, 255, 0.4); */
   text-transform: uppercase;
   letter-spacing: 2px;
   font-size: 12px;
@@ -288,9 +358,9 @@ export default {
 .sidebar-links .v-list .list-case {
   cursor: pointer;
   text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.75);
+  /* background-color: rgba(255, 255, 255, 0.75); */
   border-radius: 25px;
-  padding-inline: 8px;
+  padding-inline: 4px;
   padding-block: 8px;
   margin-block: 3px;
   border-width: thick;
@@ -314,14 +384,14 @@ export default {
   justify-content: flex-start;
   cursor: pointer;
   text-decoration: none;
-  margin-left: 35px;
-  background-color: rgb(125, 0, 44, 1);
+  /* margin-left: 35px; */
+  /* background-color: rgb(125, 0, 44, 1)
   border-width: thin;
-  border-radius: 25px;
+  border-radius: 25px;; */
   margin-block: 2px;
   color: white;
   font-weight: 80;
-  padding-inline: 5px;
+  padding-inline: 4px;
   padding-block: 5px;
   transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
   /* border: 1px rgb(125, 0, 44, 1);
@@ -331,16 +401,16 @@ export default {
   */
 }
 .sidebar-links .v-list .v-list-group .sub-list-group:hover {
-  background-color: rgba(255, 255, 255, 0.75);
-  color: #000000de;
+  background-color: rgb(125, 0, 44, 1);
+  color: white;
   font-weight: 100;
 }
 .sidebar-links .v-list .v-list-group .group-title {
   text-decoration: none;
-  background-color: rgba(255, 255, 255, 0.75);
+  /* background-color: rgba(255, 255, 255, 0.75); */
   border-width: thick;
   border-radius: 25px;
-  padding-inline: 8px;
+  padding-inline: 4px;
   padding-block: 8px;
   margin-block: 3px;
   font-weight: 100;

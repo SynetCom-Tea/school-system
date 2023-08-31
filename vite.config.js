@@ -40,6 +40,8 @@ export default defineConfig({
                     //     return { name: componentName, from: 'vue-toastification' }
                     if (componentName === 'VDataTable')
                         return { name: componentName, from: 'vuetify/labs/VDataTable' }
+                    if (componentName === 'VStepper')
+                        return { name: componentName, from: 'vuetify/labs/VStepper' }
                 },
                 VuetifyResolver()
             ]

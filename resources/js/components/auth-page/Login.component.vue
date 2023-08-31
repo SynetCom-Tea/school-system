@@ -1,187 +1,157 @@
 <template>
-  <v-container
-    id="container-login"
-    :class="isSignInPanelActive ? 'container right-panel-active' : 'container-login'"
-  >
-    <SignUpForm v-if="currentSignUpStep == 1" />
-    <SignUpContinuationForm v-if="currentSignUpStep == 2" />
-    <SignInForm />
-    <div class="overlay-container">
-      <div class="overlay">
-        <OverlaySignUp />
-        <OverlaySignIn />
-      </div>
-    </div>
-    <!-- <div class="footer-style">
-      <footer
-        :class="{
-          'footer-sm': '500',
-          'footer-md': '700',
-        }"
-      >
-        <span class="text-reset text-white"
-          >© {{ new Date().getFullYear() }}&nbsp; Copyright:
-          <a href="https://mdbootstrap.com/">synetcom.com</a></span
-        >
-      </footer>
-    </div> -->
-  </v-container>
+  <v-row align="center" justify="center">
+    <v-col
+      cols="12"
+      sm="9"
+      style="
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: absolute;
+        bottom: 0;
+        top: 0;
+        margin: auto;
+        height: 530px;
+      "
+    >
+      <v-card class="elevation-5 mt-4">
+        <v-window v-model="step">
+          <v-window-item :value="1">
+            <div>
+              <v-btn
+                color="secondary"
+                title="Visiter le site web de l'application"
+                @click="goToWelcome()"
+                style="text-transform: none; font-size: 12px"
+                :prepend-icon="icons.mdiKeyboardBackspace"
+              >
+                Visiter le site web</v-btn
+              >
+            </div>
+            <SectionLogin
+              :goToNextWindow="goToNextWindow"
+              :listSocialNetworks="listSocialNetworks"
+            />
+          </v-window-item>
+          <v-window-item :value="2">
+            <SectionRegister
+              :goToPreviousWindow="goToPreviousWindow"
+              :listSocialNetworks="listSocialNetworks"
+            />
+          </v-window-item>
+        </v-window>
+      </v-card>
+    </v-col>
+  </v-row>
 </template>
 
 <script>
-import SignInForm from "./sign-in-form.vue";
-//"../components/auth-page/sign-in-form.vue";
-import SignUpForm from "./sign-up-form.vue";
-import SignUpContinuationForm from "./sign-up-continuation-form.vue";
-import OverlaySignUp from "./overlay-sign-up.vue";
-import OverlaySignIn from "./overlay-sign-in.vue";
+import { router, useForm } from "@inertiajs/vue3";
+import {
+  mdiKeyboardBackspace,
+  mdiGoogle,
+  mdiFacebook,
+  mdiTwitter,
+  mdiInstagram,
+} from "@mdi/js";
+
+import SectionLogin from "./SectionLogin.vue";
+import SectionRegister from "./SectionRegister.vue";
 export default {
   components: {
-    SignInForm,
-    SignUpForm,
-    OverlaySignUp,
-    OverlaySignIn,
-    SignUpContinuationForm,
+    SectionRegister,
+    SectionLogin,
+    mdiGoogle,
+    mdiFacebook,
+    mdiTwitter,
+    mdiInstagram,
+    mdiKeyboardBackspace,
+  },
+  data: () => ({
+    step: 1,
+    getErrors: "",
+    icons: { mdiKeyboardBackspace, mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+    errors: {},
+    form: useForm({
+      email: "",
+      password: "",
+    }),
+  }),
+
+  props: {
+    source: String,
   },
   computed: {
-    isSignInPanelActive: {
-      get: function () {
-        return this.$store.getters["authPageModule/getIsSignInPanelActive"];
-      },
-      set: function (newVal) {
-        this.$store.commit("authPageModule/setIsSignInPanelActive", newVal);
-      },
+    listSocialNetworks() {
+      let list = [
+        {
+          id: 1,
+          title: "Visiter Google",
+          icon: this.icons.mdiGoogle,
+          color: "red",
+          link: "https://www.google.com/",
+        },
+        {
+          id: 2,
+          title: "Visiter Facebook",
+          icon: this.icons.mdiFacebook,
+          color: "blue",
+          link: "https://www.facebook.com/",
+        },
+        {
+          id: 3,
+          title: "Visiter Twitter",
+          icon: this.icons.mdiTwitter,
+          color: "blue",
+          link: "https://twitter.com/",
+        },
+        // {
+        //   id: 4,
+        //   title: "Visiter Instagram",
+        //   icon: this.icons.mdiInstagram,
+        //   color: "red",
+        //   link: "https://www.instagram.com/",
+        // },
+      ];
+      return list ?? [];
     },
-    currentSignUpStep: {
-      get: function () {
-        return this.$store.getters["authPageModule/getCurrentSignUpStep"];
-      },
-      set: function (newVal) {
-        this.$store.commit("authPageModule/setCurrentSignUpStep", newVal);
-      },
+  },
+  methods: {
+    goToWelcome() {
+      return router.get("/");
+    },
+    goToNextWindow() {
+      return this.step++;
+    },
+    goToPreviousWindow() {
+      return this.step--;
+    },
+    goToLogin() {
+      router.post(route("login"), {
+        onError: (e) => {
+          if (e.email == "These credentials do not match our records.") {
+            this.errors.text = "Identifiant ou mot de passe incorrect";
+          }
+        },
+      });
     },
   },
 };
 </script>
-
-<style>
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,800");
-
-form {
-  background-color: #ffffff;
-  height: 100%;
-}
-
-.container-login {
-  background-color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.25), 0 10px 10px rgba(0, 0, 0, 0.22);
-  position: relative;
-  overflow: hidden;
-  max-width: 100%;
-  min-height: 480px;
-  height: 70vh;
-}
-
-.form-container {
-  position: absolute;
-  top: 0;
-  height: 100%;
-  transition: all 0.6s ease-in-out;
-}
-
-.overlay-container {
-  position: absolute;
-  top: 0;
-  left: 50%;
+<style scoped>
+.team-img {
   width: 50%;
-  height: 100%;
-  overflow: hidden;
-  transition: transform 0.6s ease-in-out;
-  z-index: 100;
+  object-fit: cover;
 }
-
-.container.right-panel-active .overlay-container {
-  transform: translateX(-100%);
-}
-
-.overlay {
-  background: #ff416c;
-  background: -webkit-linear-gradient(to right, #e260c6, #004980);
-  background: linear-gradient(to right, #284563, #004980);
-  background-repeat: no-repeat;
-  background-size: cover;
-  background-position: 0 0;
-  color: #ffffff;
-  position: relative;
-  left: -100%;
-  height: 100%;
-  width: 200%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
-}
-
-.container.right-panel-active .overlay {
-  transform: translateX(50%);
-}
-
-.overlay-panel {
-  position: absolute;
+.login {
   display: flex;
-  align-items: center;
   justify-content: center;
-  flex-direction: column;
-  text-align: center;
-  top: 0;
-  height: 100%;
-  width: 50%;
-  transform: translateX(0);
-  transition: transform 0.6s ease-in-out;
+  align-items: center;
 }
-.container.right-panel-active .overlay-left {
-  transform: translateX(0);
+.v-application .rounded-bl-xl {
+  border-bottom-left-radius: 300px !important;
 }
-
-.container.right-panel-active .overlay-right {
-  transform: translateX(20%);
-}
-/* font sizes */
-.sm-title {
-  font-size: 18px;
-}
-.md-title {
-  font-size: 44px;
-}
-.sm-description {
-  font-size: 12px;
-}
-.md-description {
-  font-size: 16px;
-}
-footer-style {
-  height: 50px;
-  margin-top: 10px;
-  background-color: #7d002c;
-}
-.footer-md {
-  padding: 30px 0px;
-}
-.footer-md a {
-  text-decoration: none;
-  color: white !important;
-  font-size: 1.1rem;
-  font-family: cursive;
-  font-weight: 600;
-}
-
-.footer-sm {
-  padding: 20px 0px;
-}
-.footer-sm a {
-  text-decoration: none;
-  color: white !important;
-  font-size: 0.8rem;
-  font-family: cursive;
-  font-weight: 600;
+.v-application .rounded-br-xl {
+  border-bottom-right-radius: 300px !important;
 }
 </style>

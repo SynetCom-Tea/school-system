@@ -9,7 +9,7 @@ export default {
     },
     variant: {
       type: String,
-      default: "flat",
+      default: "",
       required: false,
     },
     nameButton: {
@@ -84,6 +84,7 @@ export default {
     :block="isBlock"
   >
     {{ nameButton }}
+    <slot />
   </v-btn>
 </template>
 <style scoped>
