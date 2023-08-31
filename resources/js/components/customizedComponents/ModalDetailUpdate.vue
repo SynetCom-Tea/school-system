@@ -1,19 +1,21 @@
 <script>
 import Autocomplete from "./Autocomplete.vue";
 import TextField from "./TextField.vue";
-import PrimaryButton from "../PrimaryButton.vue";
+
 export default {
-  components: { Autocomplete, TextField, PrimaryButton },
+  components: { Autocomplete, TextField },
   props: {
     toolbarTitle: {
       type: String,
       default: "text",
     },
     iconUpdate: {
-      type: Object,
+      type: String,
+      required: false,
     },
     iconValueDetail: {
-      type: Object,
+      type: String,
+      required: false,
     },
     titleSubmittingButton: {
       type: String,
@@ -27,6 +29,7 @@ export default {
 
   data: () => ({
     hasSaved: false,
+    vItem: "",
     isEditing: null,
     states: [
       { name: "Florida", abbr: "FL", id: 1 },
@@ -36,8 +39,11 @@ export default {
       { name: "New York", abbr: "NY", id: 5 },
     ],
   }),
-
+  updated() {},
   methods: {
+    onchangeField(e) {
+      // console.log("EEEE:", e);
+    },
     customFilter(itemTitle, queryText, item) {
       const textOne = item.raw.name.toLowerCase();
       const textTwo = item.raw.abbr.toLowerCase();
@@ -80,14 +86,16 @@ export default {
         :isRequired="true"
       ></TextField>
       <Autocomplete
+        v-model="vItem"
         :conditionDisabled="!isEditing"
         classResponsive="py-2"
         :itemsValue="states"
         :isRequired="true"
-        :custom-filter="customFilter"
+        :customFilter="customFilter"
         item-title="name"
         item-value="abbr"
         label="State"
+        :onchangeField="onchangeField(vItem)"
       ></Autocomplete>
     </v-card-text>
 

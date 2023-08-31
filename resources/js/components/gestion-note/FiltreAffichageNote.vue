@@ -30,34 +30,6 @@
                 label="Evaluations"
             ></v-select>
         </v-col>
-        <!-- <v-col md="2">
-            <v-select
-                v-model="selectedTypeExamen"
-                :items="classes"
-                item-title="libelle"
-                item-value="id"
-                outlined
-                required
-                dense
-                chips
-                small-chips
-                label="Type examen"
-            ></v-select>
-        </v-col>
-        <v-col md="2">
-            <v-select
-                v-model="selectedMatiere"
-                :items="classes"
-                item-title="libelle"
-                item-value="id"
-                outlined
-                required
-                dense
-                chips
-                small-chips
-                label="Matieres"
-            ></v-select>
-        </v-col> -->
         <v-col md="2">
             <v-btn
             color="primary"
@@ -74,6 +46,7 @@
 
 <script>
 import { router, usePage, useForm } from "@inertiajs/vue3";
+import { provide } from 'vue';
 export default {
     props: ["classes"],
     data() {
@@ -82,6 +55,7 @@ export default {
         selectedTypeExamen: null,
         selectedEvaluation: null,
         selectedMatiere: null,
+        
         form: useForm({
         classe: "",
         prenom: "",
@@ -91,6 +65,7 @@ export default {
       }),
       };
     },
+    
     methods: {
         rechercher(){
             router.replace(this.$page.url,{data:{classe:this.selectedClasse,evaluation:this.selectedEvaluation}});

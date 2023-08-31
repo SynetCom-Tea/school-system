@@ -22,19 +22,19 @@ export default {
     },
     maxHeightResponsive: {
       type: Number,
-      default: "",
+      required: false,
     },
     heightResponsive: {
       type: Number,
-      default: "",
+      required: false,
     },
     classResponsive: {
       type: String,
-      default: "py-4",
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,
-      default: "",
+      required: false,
     },
     name: {
       type: String,
@@ -59,11 +59,11 @@ export default {
 
     icon: {
       type: String,
-      default: "",
+      required: false,
     },
     successMessage: {
       type: String,
-      default: "",
+      required: false,
     },
     placeholder: {
       type: String,
@@ -71,11 +71,11 @@ export default {
     },
     rules: {
       type: [Object, String],
-      default: "",
+      required: false,
     },
     errorMessageValue: {
       type: [Object, String],
-      default: "",
+      required: false,
     },
     onchangeField: { type: Function },
     classLabel: { type: String, default: "defaultClassLabel" },

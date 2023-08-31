@@ -8,10 +8,6 @@ export default {
       type: Array,
       default: [],
     },
-    type: {
-      type: String,
-      default: "text",
-    },
     variantValue: {
       type: String,
       default: "outlined",
@@ -26,11 +22,11 @@ export default {
     },
     maxHeightResponsive: {
       type: Number,
-      default: "",
+      required: false,
     },
     heightResponsive: {
       type: Number,
-      default: "",
+      required: false,
     },
     classResponsive: {
       type: String,
@@ -38,7 +34,7 @@ export default {
     },
     maxWidthResponsive: {
       type: Number,
-      default: "",
+      required: false,
     },
     itemTitle: {
       type: String,
@@ -61,7 +57,7 @@ export default {
       required: true,
     },
     conditionDisabled: {
-      type: String,
+      type: Boolean,
       required: false,
     },
 
@@ -79,11 +75,11 @@ export default {
     },
     rules: {
       type: [Object, String],
-      default: "",
+      required: false,
     },
     errorMessageValue: {
       type: [Object, String],
-      default: "",
+      required: false,
     },
     onchangeField: { type: Function },
     customFilter: { type: Function },
@@ -114,7 +110,6 @@ export default {
     :max-width="maxWidthResponsive"
   >
     <v-autocomplete
-      :type="type"
       :items="itemsValue"
       v-model="modelValue"
       :variant="variantValue"
@@ -131,9 +126,9 @@ export default {
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="colorValue"
-      @change="onchangeField"
       :error-messages="errorMessageValue"
       :multiple="isMultiple"
+      @update:modelValue="onchangeField"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>

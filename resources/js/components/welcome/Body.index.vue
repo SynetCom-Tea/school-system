@@ -1,7 +1,5 @@
 <template>
-  <b-card-body class="text-center">
-    <v-card><v-card-text>Content</v-card-text></v-card>
-  </b-card-body>
+  <v-card><v-card-text>Content</v-card-text></v-card>
 </template>
 
 <script>

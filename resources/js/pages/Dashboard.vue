@@ -5,12 +5,18 @@ import TextInput from "../components/customizedComponents/TextField.vue";
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
 import Button from "../components/customizedComponents/Button.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
+import Loader from "../components/customizedComponents/Loader.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
 import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
+import Datatable from "../components/customizedComponents/Datatable.vue";
+import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
   components: {
+    Loader,
+    Datatable,
+    Toolbar,
     ModalDetailUpdate,
     VueSpinnerHourglass,
     AuthenticatedLayout,
@@ -29,6 +35,31 @@ export default {
   },
   data() {
     return {
+      headers: [
+        {
+          title: "N°",
+          align: "start",
+          key: "id",
+          sortable: false,
+        },
+        { title: "Titre", align: "center", key: "title" },
+
+        { title: "Actions", key: "actions", sortable: false },
+      ],
+      dataH: [
+        {
+          id: 1,
+          title: "Ali",
+        },
+        {
+          id: 2,
+          title: "Sara",
+        },
+        {
+          id: 3,
+          title: "Sani",
+        },
+      ],
       test: "Abou",
       isDialog: false,
       rules: {
@@ -49,21 +80,16 @@ export default {
       ],
     };
   },
-  updated() {
-    console.log("t:", this.icons.mdiAccount);
-  },
+  mounted() {},
+
   methods: {
     onClickBt() {
-      console.log("button:");
-      this.isDialog = true;
-      console.log("this.isDialog:", this.isDialog);
+      this.isDialog = !this.isDialog;
     },
     onCloseModale() {
       this.isDialog = false;
     },
-    onChangeTitle(e) {
-      console.log("testE:", e.target.value);
-    },
+    onChangeTitle(e) {},
   },
 };
 </script>
@@ -100,20 +126,34 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <VueSpinnerHourglass size="80" color="primary" />
-    <br /><br /><br /><br /><br /><br />
+    <Loader :modelDialog="isDialog">
+      <template v-slot:spinnertype>
+        <VueSpinner size="50" color="white"></VueSpinner
+      ></template>
+    </Loader>
+    <br /><br />
+    <Toolbar :icon="icons.mdiAccount" subtitle="Toolbar title"></Toolbar>
+    <br /><br />
+    <Datatable :headers="headers" :items="dataH" />
+    <br /><br />
+
     <Button
       variant="flat"
       density="comfortable"
       title="title"
       class="m-4"
       color="red"
-      nameButton="Open Dialog"
+      nameButton="Test Loader"
       :prependIcon="icons.mdiAccount"
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <Dialog :modelDialog="isDialog" :onCloseModale="onCloseModale" :widthDialog="300">
+    <!-- <Dialog
+      :modelDialog="isDialog"
+      :onCloseModale="onCloseModale"
+      :iconHeaderModal="icons.mdiAccount"
+      :widthDialog="300"
+    >
       <template v-slot:content>
         <h1>TEST CONTENU</h1>
       </template>
@@ -127,7 +167,7 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog>
+    </Dialog> -->
     <!--  <TextInput
       type="text"
       v-model="test"

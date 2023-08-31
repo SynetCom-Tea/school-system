@@ -31,11 +31,11 @@ export default {
     <div>
         <v-row>
             <v-col md="6">
-                <text-field
+                <v-text-field
                     label="Recherche"
                     placeholder="Recherche..."
                     v-model="searchQuery"
-                ></text-field>
+                ></v-text-field>
             </v-col>
             <v-spacer></v-spacer>
             <v-col md="3">

@@ -1,12 +1,14 @@
 import articlesIcon from "@iconify-icons/fluent-mdl2/articles";
 import formsAppsScriptOutlineRounded from "@iconify-icons/material-symbols/forms-apps-script-outline-rounded";
 import {
+    mdiTimetable,
   mdiAccount,
   mdiPurse,
   mdiHomeOutline,
   mdiPresentation,
   mdiGift,
   mdiSquareMedium,
+  mdiGoogleClassroom,
   mdiClipboardEditOutline,
   mdiInstagram,
   mdiTwitter,
@@ -67,7 +69,7 @@ export function listMenus() {
         children: [
             {
                 icon: mdiSquareMedium,
-                title: "Liste",
+                title: "Liste utilisateurs",
                 link: "/users",
                 permissions: "manage_system",
             },
@@ -97,13 +99,13 @@ export function listMenus() {
             {
                 icon: mdiGift,
                 title: "Affichage de notes",
-                link: "gestionnote/note/affichage",
+                link: "/gestionnote/note/affichage",
                 permissions: "manage_system",
             },
             {
                 icon: mdiWalletMembership,
                 title: "Attribution de notes",
-                link: "gestionnote/note/attribution",
+                link: "/gestionnote/note/attribution",
                 permissions: "manage_system",
             },
             // {
@@ -128,26 +130,53 @@ export function listMenus() {
         permissions: "manage_welcome",
         divider: true,
         model: false,
+        // children: [
+        //     {
+        //         icon:mdiGoogleClassroom,
+        //         title: "Généralités",
+        //         link: "/manage-welcome",
+        //         permissions: "manage_welcome",
+        //     },
+        //     {
+        //         icon: formsAppsScriptOutlineRounded,
+        //         title: "Formulaires",
+        //         link: "/manage-welcome/forms",
+        //         permissions: "manage_welcome",
+        //     },
+        //     {
+        //         icon: articlesIcon,
+        //         title: "Articles",
+        //         link: "/manage-welcome/articles",
+        //         permissions: "manage_welcome",
+        //     },
+        // ],
+    }
+    let emploiMenu = {
+        icon: mdiTimetable,
+        title: "Gestions Emplois",
+        "icon-alt": mdiChevronDown,
+        permissions: "manage_system",
+        model: false,
         children: [
             {
-                icon: "dashicons:welcome-widgets-menus",
-                title: "Généralités",
-                link: "/manage-welcome",
-                permissions: "manage_welcome",
+                icon: mdiSquareMedium,
+                title: "Emploi",
+                link: "/emploi/emplois",
+                permissions: "manage_system",
             },
             {
-                icon: formsAppsScriptOutlineRounded,
-                title: "Formulaires",
-                link: "/manage-welcome/forms",
-                permissions: "manage_welcome",
+                icon: mdiSquareMedium,
+                title: "Calendrier",
+                link: "/emploi/emplois",
+                permissions: "manage_system",
             },
-            {
-                icon: articlesIcon,
-                title: "Articles",
-                link: "/manage-welcome/articles",
-                permissions: "manage_welcome",
-            },
+            // {
+            //     icon: mdiSquareMedium,
+            //     title: "Permissions",
+            //     link: "/permissions",
+            //     permissions: "manage_system",
+            // },
         ],
-    }
-    return [singleItems,usersMenu,configsMenu,welcomeMenu]
+    };
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu]
 }

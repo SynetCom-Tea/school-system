@@ -10,7 +10,7 @@ class ApprenantClasse extends Model
     use HasFactory;
     protected $fillable = ['apprenant_id', 'classe_annee_id'];
 
-    public function apprenant(): BelongsTo
+    public function apprenant()
     {
         return $this->belongsTo(Apprenant::class);
     }

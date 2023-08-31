@@ -52,22 +52,33 @@ class NoteController extends Controller
         // dd('ok');
         $annee = Annee::find(1);
 
-        $eleves = $request->evaluation ? ApprenantClasse::whereHas('enseignement_annee', function ($query) use ($request,$annee) {
-            $query->where('enseignant_id',1)->whereHas('classe_annee', function ($query1) use ($request,$annee) { 
-                $query1->where('classe_id',1)->where('annee_id', $annee->id); 
-            });
+        $eleves = $request->evaluation ? ApprenantClasse::whereHas('classe_annee', function ($query) use ($request,$annee) { 
+            $query->where('classe_id',4)->where('annee_id', $annee->id); 
         })->with('apprenant')->get() : collect();
+
+        $customizingEleves = $eleves->map(
+            function ($value) {
+                return [
+                    'id' => $value->id,
+                    "nom" => $value->apprenant->nom,
+                    "prenom" => $value->apprenant->prenom,
+                    "nom_complete" => $value->apprenant->nom_complete,
+                    "note" => 0,
+                ];
+            }
+        );
         
        // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
        
-        dd($eleves);
+        // dd($customizingEleves);
 
         return Inertia::render('gestion-note/note/attribution',[
             'classes' => EnseignementAnnee::whereHas('classe_annee', function ($query) use ($annee) {
                 $query->where('annee_id', $annee->id);
             })->where('enseignant_id',1)->with('classe_annee.classe')->get(),
             'evaluations' => ['Interrogation','Devoir','Composition'],
-            'notes' => $notes ? $notes : null
+            'eleves' => $customizingEleves ? $customizingEleves : null
+            // 'eleves' => $eleves ? $eleves : null
         ]);
     }
 
@@ -87,7 +98,50 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        // dd($request->notes);
+        // $data = $this->validate($request, [
+        //     'evaluation' => 'required',
+        //     'notes' => 'required',
+        // ]);
+        if (empty($request->notes)) {
+            return redirect()->back()->with('message', [
+                'type' => 'error',
+                'text' => 'Merci de renseigner les notes!',
+            ]);
+        }
+        foreach ($request->notes as $key => $value) {
+            
+            // die();
+            if($value != null){
+            //     dump('key',$key);
+            // dump('value',$value);
+                # code...
+                $item = ApprenantClasse::where('id',$key)->with('apprenant')->first();
+                // dump($item);
+                $verif = Note::where('evaluation_id',1)->where('apprenant_id',$item->apprenant->id)->get();
+                // dd($verif,$verif->count());
+                if($verif->count() == 0){
+                    $note = Note::create([
+                        'apprenant_id' => $item->apprenant->id,
+                        'date' => date('Y-m-d'),
+                        'evaluation_id' => 1,
+                        // 'evaluation_id' => $request->evaluation,
+                        'note' => (double)$value,
+                        'statut' => 1,
+                    ]);
+                }else{
+                    return redirect()->back()->with('message', [
+                        'type' => 'error',
+                        'text' => 'Merci de renseigner toutes les notes!',
+                    ]);
+                } 
+            } 
+        }
+        // die();
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => 'Sauvegarde de notes réussie!',
+        ]);
     }
 
     /**
