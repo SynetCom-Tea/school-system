@@ -61,9 +61,9 @@ export function listMenus() {
             permissions: "manage_system",
         },
         {
-            title: "Etudiants",
+            title: "Inscription",
             icon: mdiAccountSchool,
-            link: "/etudiants",
+            link: "/inscriptions/create",
             permissions: "manage_school",
         },
     ];

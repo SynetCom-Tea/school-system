@@ -12,6 +12,7 @@ use Modules\Scolarite\Http\Controllers\ClasseController;
 use Modules\Scolarite\Http\Controllers\AnneeClasseController;
 use Modules\Scolarite\Http\Controllers\TuteurController;
 use Modules\Scolarite\Http\Controllers\NiveauController;
+use Modules\Scolarite\Http\Controllers\InscriptionController;
 
 
 /*
@@ -52,5 +53,6 @@ Route::resource('classes', ClasseController::class);
 Route::resource('promotions', AnneeClasseController::class);
 Route::resource('tuteurs', TuteurController::class);
 Route::resource('niveaux', NiveauController::class);
+Route::resource('inscriptions', InscriptionController::class);
 
 require __DIR__ . '/auth.php';
