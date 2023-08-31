@@ -13,8 +13,11 @@ return new class extends Migration
     {
         Schema::create('niveaux', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->string('libelle');
+            $table->foreignIdFor(Modules\GestionNote\Entities\Section::class)
+                ->index()
+                ->references('id')->on('sections');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -9,17 +9,11 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-    public function down(): void
-    {
-        Schema::dropIfExists('periodes');
-    }
     public function up(): void
     {
-        Schema::create('periodes', function (Blueprint $table) {
+        Schema::create('sections', function (Blueprint $table) {
             $table->id();
-            $table->string('type')->nullable();
-            $table->string('libelle')->nullable();
-            $table->integer('statut')->nullable();
+            $table->string('libelle');
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,5 +22,8 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-
+    public function down(): void
+    {
+        Schema::dropIfExists('sections');
+    }
 };

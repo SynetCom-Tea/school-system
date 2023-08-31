@@ -19,7 +19,6 @@ return new class extends Migration
             $table->id();
             $table->string('libelle')->nullable();
             $table->integer('statut')->nullable();
-            $table->string('date')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
@@ -28,5 +27,5 @@ return new class extends Migration
     /**
      * Reverse the migrations.
      */
-    
+
 };

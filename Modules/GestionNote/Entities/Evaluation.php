@@ -12,7 +12,7 @@ class Evaluation extends Model
 {
     use HasFactory, softDeletes;
 
-    protected $fillable = ['date', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id'];
+    protected $fillable = ['date', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id','enseignement_annee_id'];
 
 
     public function type_evaluation()

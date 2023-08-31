@@ -13,14 +13,15 @@ return new class extends Migration
     {
         Schema::create('niveau_matieres', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->nullable();
             $table->foreignIdFor(Modules\GestionNote\Entities\Matiere::class)
                 ->index()
                 ->references('id')->on('Matieres');
             $table->foreignIdFor(Modules\GestionNote\Entities\Niveau::class)
                 ->index()
                 ->references('id')->on('Niveaux');
-            $table->integer('coefficient');
-            $table->integer('volumeHoraire');
+            $table->integer('coefficient')->nullable();
+            $table->integer('volumeHoraire')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });

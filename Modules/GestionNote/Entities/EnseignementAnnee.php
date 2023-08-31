@@ -1,14 +1,14 @@
 <?php
 
 namespace Modules\GestionNote\Entities;
-
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class EnseignementAnnee extends Model
 {
     use HasFactory;
-    protected $fillable = ['enseignement_id', 'classe','annee'];
+    protected $fillable = ['enseignant_id','code', 'classe_annee_id','niveau_matiere_id'];
 
     public function enseignant(): BelongsTo
     {
