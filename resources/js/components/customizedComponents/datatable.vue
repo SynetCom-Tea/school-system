@@ -32,11 +32,11 @@ export default {
 
 <template>
   <v-card style="width: 98%; margin: 10px">
-    <v-card-title style="color: white; background-color: #7d002c">{{
+    <v-card-title style="color: white; background-color:#004980">{{
       titleDatatable
     }}</v-card-title>
     <v-row>
-      <v-col md="6">
+      <v-col md="4">
         <TextField
           label="Recherche"
           placeholder="Recherche"
@@ -45,7 +45,8 @@ export default {
         ></TextField>
       </v-col>
       <v-spacer></v-spacer>
-      <v-col md="3">
+
+      <v-col md="3"  class="ms-2">
         <slot name="addBtn"></slot>
       </v-col>
     </v-row>
