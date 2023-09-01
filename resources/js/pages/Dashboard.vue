@@ -175,8 +175,8 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog>
-    <!--  <TextInput
+    </Dialog> -->
+     <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
