@@ -1,4 +1,7 @@
-{
+
+{ "Scolarite": true,
+    "GestionNote": true,
     "Emploi": true,
     "Enseignement": true
+
 }
