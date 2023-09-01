@@ -11,10 +11,14 @@ export default {
   components: { mdiCancel, mdiContentSaveEditOutline },
   props: {
     toolbarTitle: {
-      type: String,
+      type: Object,
       default: "text",
     },
     dialogDetailUpdate: {
+      type: Boolean,
+      default: false,
+    },
+    isEditing: {
       type: Boolean,
       default: false,
     },
@@ -40,7 +44,7 @@ export default {
 
   data: () => ({
     hasSaved: false,
-    isEditing: null,
+    // isEditing: null,
     icons: {
       mdiMagnify,
       mdiDelete,
@@ -49,9 +53,28 @@ export default {
       mdiCancel,
       mdiContentSaveEditOutline,
     },
+    detailUpdateTitle: "",
   }),
   updated() {},
+  watch: {
+    modelValue(val) {
+      console.log("Test:", this.isEditing);
+      console.log("verif:", val);
+    },
+  },
   computed: {
+    //detailUpdateTitle() {
+    //   if (this.isEditing) return this.toolbarTitle.detail;
+    //   this.toolbarTitle.update;
+    // },
+    // modelValueToolbarTitle: {
+    //   get() {
+    //     return this.toolbarTitle;
+    //   },
+    //   set(newValue) {
+    //     this.$emit("input", newValue);
+    //   },
+    // },
     modelValue: {
       get() {
         return this.dialogDetailUpdate;
@@ -62,6 +85,15 @@ export default {
     },
   },
   methods: {
+    onClickButton() {
+      console.log("EEEE:", this.isEditing);
+      if (this.isEditing) {
+        this.detailUpdateTitle = this.toolbarTitle.detail;
+      } else {
+        this.detailUpdateTitle = this.toolbarTitle.update;
+      }
+      return (this.isEditing = !this.isEditing);
+    },
     onchangeModelField(e) {
       console.log("EEEE:", e);
     },

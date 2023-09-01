@@ -39,6 +39,7 @@ export default {
     functionEditItem: { type: Function },
     functionDeleteItem: { type: Function },
     functionOnClickAddButton: { type: Function, required: false },
+    functionOnConfirmDeleting: { type: Function, required: false },
   },
   components: {
     ModalDetailUpdate,
@@ -55,6 +56,7 @@ export default {
     dialogDetailUpdate: false,
     searchQuery: null,
     dialogDelete: false,
+    toolbarTitle: { update: "Modification", detail: "Détail" },
     icons: {
       mdiAccount,
       mdiMagnify,
@@ -64,14 +66,25 @@ export default {
       mdiCancel,
       mdiContentSaveEditOutline,
     },
+    // detailUpdateTitle: "",
     detailEdit: -1,
     editedIndex: -1,
+    isEditingModal: null,
   }),
-
+  mounted() {
+    // console.log("this.isEditingModal22:", this.isEditingModal);
+  },
   computed: {
     // getEditemItemFunction() {
     //   if (this.selectedItemForCRUD) return this.editItem(this.selectedItemForCRUD);
     // },
+    detailUpdateTitle() {
+      console.log("isEditingModal:", this.isEditingModal);
+
+      //   this.detailUpdateTitle = "Détail";
+
+      // this.detailUpdateTitle = "Modifier une ligne";
+    },
     modelEditedObject: {
       get() {
         return this.editedObject;
@@ -83,9 +96,7 @@ export default {
     defaultItem() {
       return this.modelEditedObject;
     },
-    detailUpdateTitle() {
-      return this.detailEdit === -1 ? "Détail" : "Modifier une ligne";
-    },
+
     formTitle() {
       return this.editedIndex === -1 ? "Ajouter une ligne" : "Modifier une ligne";
     },
@@ -96,6 +107,7 @@ export default {
       val || this.close();
     },
     dialogDelete(val) {
+      console.log("val22:", val);
       val || this.closeDelete();
     },
   },
@@ -105,6 +117,10 @@ export default {
   },
 
   methods: {
+    // detailUpdateTitle(val) {
+    //   console.log("this.isEditingModal:", this.isEditingModal);
+    //   return val ? "Détail" : "Modifier une ligne";
+    // },
     //Fonction en ecoute lorsqu'on clique sur le bouton 'Ajouter'
     onClickAddButton() {
       if (this.functionOnClickAddButton) {
@@ -117,6 +133,7 @@ export default {
     },
     //Fonction en ecoute lorsqu'on clique sur l'icon 'Modifier'
     onEditItem(item) {
+      console.log("isEditingModal:", this.isEditingModal);
       this.editedIndex = this.items.indexOf(item);
       this.modelEditedObject = Object.assign({}, item);
       this.dialogDetailUpdate = true;
@@ -136,24 +153,17 @@ export default {
     },
 
     deleteItemConfirm() {
-      this.items.splice(this.editedIndex, 1);
+      // this.items.splice(this.editedIndex, 1);
+      this.functionOnConfirmDeleting();
       this.closeDelete();
     },
 
     close() {
       this.dialog = false;
-      this.$nextTick(() => {
-        this.modelEditedObject = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
     },
 
     closeDelete() {
       this.dialogDelete = false;
-      this.$nextTick(() => {
-        this.modelEditedObject = Object.assign({}, this.defaultItem);
-        this.editedIndex = -1;
-      });
     },
 
     save() {
@@ -202,11 +212,7 @@ export default {
             hide-details
           ></TextField>
         </div>
-        <!-- <v-text-field
-          label="Recherche"
-          placeholder="Recherche..."
-          v-model="searchQuery"
-        ></v-text-field> -->
+
         <v-spacer></v-spacer>
         <Button
           variant="flat"
@@ -220,8 +226,9 @@ export default {
         </Button>
         <ModalDetailUpdate
           :onClickCancelButton="onClickCancelButtonForEditing"
-          :toolbarTitle="detailUpdateTitle"
+          :toolbarTitle="toolbarTitle"
           :dialogDetailUpdate="dialogDetailUpdate"
+          :isEditing="isEditingModal"
           :iconValueDetail="icons.mdiPencil"
           :iconUpdate="icons.mdiAccount"
         ></ModalDetailUpdate>
