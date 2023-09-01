@@ -1,5 +1,5 @@
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
@@ -10,7 +10,7 @@ import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpd
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
 import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
-import Datatable from "../components/customizedComponents/Datatable.vue";
+import Datatable from "../components/customizedComponents/datatable.vue";
 import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
   components: {
@@ -298,9 +298,10 @@ export default {
         :iconUpdate="icons.mdiGift"
       />
     </div> -->
+    </div> -->
   </AuthenticatedLayout>
 </template>
-<style scoped>
+<!-- <style scoped>
 .classTest {
   width: 200px;
   background-color: red;
@@ -322,4 +323,5 @@ export default {
     color: red;
   }
 }
-</style>
+</style> -->
+

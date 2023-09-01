@@ -6,6 +6,7 @@
 <script >
     import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
     import { useForm } from '@inertiajs/vue3';
+    import Datatable from "@/components/customizedComponents/datatable.vue";
 
     import {
         mdiAccountSchool,
@@ -19,6 +20,7 @@
     } from '@mdi/js'
     export default {
         components: {
+            Datatable,
             mdiAccountSchool,
             mdiPlus,
             mdiPencil,
@@ -43,7 +45,7 @@
 
                 headers: [
 
-                    { title: 'ID', align: 'center', key: 'id'},
+                    { title: "N°", align: 'center', key: 'id'},
                     { title: 'Matière', align: 'center', key: 'enseignement_annee.niveau_matiere.matiere.libelle', },
                     { title: 'Niveau/Classe', align: 'center', key: 'enseignement_annee.niveau_matiere.niveau.libelle' },
                     { title: 'Enseignant', align: 'center', key: 'enseignement_annee.enseignant.nom' },
@@ -51,7 +53,6 @@
                     { title: 'Type Evaluation', align: 'center', key: 'type_evaluation.libelle'},
                     { title: 'periodes', align: 'center', key: 'periode.libelle'},
                     { title: 'Pourcentage', align: 'center', key: 'pourcentage'},
-                    { title: 'Statut', align: 'center', key: 'statut'},
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
 
@@ -193,142 +194,82 @@
       <h2 class="font-semibold text-xl text-gray-800 leading-tight">Evaluation</h2>
     </template>
 
-    <v-card style="margin: 20px">
-      <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-          <div class="p-6 text-gray-900">Evaluation</div>
-        </div>
-      </div>
-    </v-card>
+
     <v-card>
         <page-toolbar :icon="icon.mdiTools">Gestion des Evaluations</page-toolbar>
         <v-card-text>
-            <v-row justify="end">
 
-                <v-dialog
-                v-model="dialog" transition="dialog-top-transition" persistent width="900px"
-                >
-                <template v-slot:activator="{ props }">
-                    <div class="custom-add-button">
-                        <v-btn @click="create" x-small variant="outlined" color="primary" v-bind="props"> Ajouter
-                        </v-btn>
-                    </div>
+                <br>
 
-                </template>
-                <v-card>
-                    <!-- <v-card-title dense color="orange" dark> -->
-                        <v-toolbar dense color="primary" dark>
-                            <v-toolbar-title>
-                                <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
-
-                            </v-toolbar-title>
-                            <v-spacer></v-spacer>
-                        </v-toolbar>
-                    <!-- </v-card-title> -->
-                    <v-card-text>
-                    <v-form ref="form">
-                        <v-container>
-                            <v-row>
-                                <v-col cols="12" sm="6" md="6">
-                                    <v-text-field label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" isRequired :rules="[v => !!v || 'Ce champ est requis!']">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="6">
-                                    <v-text-field label="Pourcentage"  variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" isRequired :rules="[v => !!v || 'Ce champ est requis!']">
-                                    </v-text-field>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="6">
-                                    <v-select  label="Periode" variant="outlined" item-title="libelle" item-value="id" :items="periodes"  v-model="form.periode_id">
-                                    </v-select>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="6">
-                                    <v-select  label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="typeEvaluations"  v-model="form.type_evaluation_id">
-                                    </v-select>
-                                </v-col>
-                                <v-col cols="12" sm="6" md="6">
-                                    <v-select  label="Matiere/Niveau/Classe" variant="outlined" item-title="code" item-value="id" :items="enseigements"  v-model="form.enseignement_annee_id ">
-                                    </v-select>
-                                </v-col>
-
-                            </v-row>
-                        </v-container>
-                    </v-form>
-                    </v-card-text>
-                    <v-card-actions class="justify-end">
-                        <v-spacer></v-spacer>
-                        <v-btn dark small type="button" color="red" @click="close">
-                            <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-                        </v-btn>
-                        <v-btn small color="success" @click="submit">
-                            <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-                </v-dialog>
-            </v-row>
-            <br>
-            <v-data-table
+            <Datatable
+                titleDatatable="Listes des evaluations "
                 :headers="headers"
                 :items="evaluations">
                 <template v-slot:addBtn>
-                    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
+                        <br><br>
+                    <v-row justify="center">
+
+                        <v-dialog
+                        v-model="dialog" transition="dialog-top-transition" persistent width="900px"
+                        >
                         <template v-slot:activator="{ props }">
                             <div class="custom-add-button">
-                                <v-btn @click="create" x-small variant="outlined" color="green" v-bind="props"> Ajouter
+                                <v-btn @click="create" x-small variant="outlined" color="primary" v-bind="props"> Ajouter
                                 </v-btn>
                             </div>
+
                         </template>
-                        <template v-slot:default="{ isActive }">
-                            <v-card>
-                                <v-toolbar dense color="orange" dark>
+                        <v-card>
+                            <!-- <v-card-title dense color="orange" dark> -->
+                                <v-toolbar dense color="primary" dark>
                                     <v-toolbar-title>
                                         <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
 
                                     </v-toolbar-title>
                                     <v-spacer></v-spacer>
                                 </v-toolbar>
-                                <v-card-text>
-                                    <v-form ref="form">
-                                        <v-row>
-                                            <v-col cols="12" md="12">
-                                                <text-field label="Code" placeholder="code" v-model="form.code" isRequired :rules="[v => !!v || 'Ce champ est requis!']"></text-field>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row>
-                                            <v-col cols="12" md="12">
-                                                <text-field label="Designation" placeholder="designation" v-model="form.designation" isRequired :rules="[v => !!v || 'Ce champ est requis!']"></text-field>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row>
+                            <!-- </v-card-title> -->
+                            <v-card-text>
+                            <v-form ref="form">
+                                <v-container>
+                                    <v-row>
+                                        <v-col cols="12" sm="6">
+                                            <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" isRequired :rules="[v => !!v || 'Ce champ est requis!']">
+                                            </TextField>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" >
+                                            <TextField label="Pourcentage"  variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" isRequired :rules="[v => !!v || 'Ce champ est requis!']">
+                                            </TextField>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" md="6">
+                                            <Select  label="Periode" variant="outlined" item-title="libelle" item-value="id" :items="periodes"  v-model="form.periode_id">
+                                            </Select>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" >
+                                            <Select  label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="typeEvaluations"  v-model="form.type_evaluation_id">
+                                            </Select>
+                                        </v-col>
+                                        <v-col cols="12" sm="6" >
+                                            <Select label="Matiere/Niveau/Classe" variant="outlined" item-title="code" item-value="id" :items="enseigements"  v-model="form.enseignement_annee_id ">
+                                            </Select>
+                                        </v-col>
 
-                                            <v-col cols="12" md="12">
-                                                <select-field label="Type" v-model="form.type"
-                                                :items="types"
-                                                isRequired
-                                                :rules="[v => !!v || 'Ce champ est requis!']"
-                                                >
-                                                </select-field>
-                                            </v-col>
-                                        </v-row>
-                                        <v-row>
-                                            <v-col cols="12" md="12">
-                                                <text-field label="Etat" placeholder="Etat" v-model="form.etat" v-if="form.type === 'Matériel'"></text-field>
-                                            </v-col>
-                                        </v-row>
-                                    </v-form>
-                                </v-card-text>
-                                <v-card-actions class="justify-end">
-                                    <v-spacer></v-spacer>
-                                    <v-btn dark small type="button" color="red" @click="close">
-                                        <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-                                    </v-btn>
-                                    <v-btn small color="success" @click="submit">
-                                        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-                                    </v-btn>
-                                </v-card-actions>
-                            </v-card>
-                        </template>
-                    </v-dialog>
+                                    </v-row>
+                                </v-container>
+                            </v-form>
+                            </v-card-text>
+                            <v-card-actions class="justify-end">
+                                <v-spacer></v-spacer>
+                                <v-btn dark small type="button" color="red" @click="close">
+                                    <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
+                                </v-btn>
+                                <v-btn small color="success" @click="submit">
+                                    <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
+                                </v-btn>
+                            </v-card-actions>
+                        </v-card>
+                        </v-dialog>
+                        </v-row>
                 </template>
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
@@ -336,7 +277,7 @@
                     <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
                     </v-icon>
                 </template>
-            </v-data-table>
+            </Datatable>
         </v-card-text>
     </v-card>
   </AuthenticatedLayout>
