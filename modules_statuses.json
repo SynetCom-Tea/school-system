@@ -1,4 +1,5 @@
 {
     "Emploi": true,
-    "Enseignement": true
+    "Enseignement": true,
+    "GestionNote": true
 }

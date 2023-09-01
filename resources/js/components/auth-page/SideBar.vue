@@ -123,7 +123,7 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group>
+                </v-list-group> -->
                 <v-list-group :value="getListMenus[2].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
