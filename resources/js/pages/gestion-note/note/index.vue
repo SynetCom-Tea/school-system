@@ -8,7 +8,7 @@ const props = defineProps(['classes','evaluations','notes'])
 const search = ''
 const headers = [
                 {
-                    title: 'Id',
+                    title: '#',
                     align: 'start',
                     key: 'id',
                     sortable: false,

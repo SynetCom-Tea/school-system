@@ -32,8 +32,8 @@ class NoteController extends Controller
             $query->where('enseignant_id',1)->whereHas('classe_annee', function ($query1) use ($request,$annee) { 
                 $query1->where('classe_id',$request->classe)->where('annee_id', $annee->id); 
             });
-        })->with('type_evaluation','periode')->get() : collect();
-        // dd($notes);
+        })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere')->get() : collect();
+        //  dd($evaluations);
         return Inertia::render('gestion-note/note/index',[
             'classes' => EnseignementAnnee::whereHas('classe_annee', function ($query) use ($annee) {
                 $query->where('annee_id', $annee->id);
@@ -53,7 +53,7 @@ class NoteController extends Controller
         $annee = Annee::find(1);
 
         $eleves = $request->evaluation ? ApprenantClasse::whereHas('classe_annee', function ($query) use ($request,$annee) { 
-            $query->where('classe_id',4)->where('annee_id', $annee->id); 
+            $query->where('classe_id',$request->classe)->where('annee_id', $annee->id); 
         })->with('apprenant')->get() : collect();
 
         $customizingEleves = $eleves->map(
@@ -76,7 +76,12 @@ class NoteController extends Controller
             'classes' => EnseignementAnnee::whereHas('classe_annee', function ($query) use ($annee) {
                 $query->where('annee_id', $annee->id);
             })->where('enseignant_id',1)->with('classe_annee.classe')->get(),
-            'evaluations' => ['Interrogation','Devoir','Composition'],
+            'evaluations' => $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$annee) {
+                $query->where('enseignant_id',1)->whereHas('classe_annee', function ($query1) use ($request,$annee) { 
+                    $query1->where('classe_id',$request->classe)->where('annee_id', $annee->id); 
+                });
+            })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere')->get() : []
+            ,
             'eleves' => $customizingEleves ? $customizingEleves : null
             // 'eleves' => $eleves ? $eleves : null
         ]);
@@ -140,7 +145,7 @@ class NoteController extends Controller
         // die();
         return redirect()->back()->with('message', [
             'type' => 'success',
-            'text' => 'Sauvegarde de notes réussie!',
+            'text' => 'Sauvegarde de notes réussie avec succès!',
         ]);
     }
 

@@ -16,7 +16,7 @@ export default {
             selectedEvaluation: null,
             headers: [
               {
-                  title: 'Id',
+                  title: '#',
                   align: 'start',
                   key: 'id',
                   sortable: false,
@@ -38,16 +38,42 @@ export default {
     },
     created(){
       // console.log(this.eleves)
-      console.log(this.eleves)
-      this.eleves.forEach(element => {
-        console.log(element.note)
+      if(this.$page.props.flash?.message?.type == 'error'){
+          this.$swal({
+          icon: 'error',
+          title: 'Suppression',
+          text: this.$page.props.flash?.message?.text,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
       });
+      }else if(this.$page.props.flash?.message?.type == 'success'){
+          this.$swal({
+          icon: 'success',
+          title: 'Suppression',
+          text: this.$page.props.flash?.message?.text,
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+      });
+      }
     },
     methods: {
+      formatEvaluationLabel(item) {
+            if(item){
+                // Concatenate the relevant properties for the label
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.libelle : ''}`;
+            }
+      },
       rechercher(){
             router.replace(this.$page.url,{data:{classe:this.selectedClasse,evaluation:this.selectedEvaluation}});
       },
       requete(id){
+          this.selectedEvaluation = ''
           router.replace(this.$page.url,{data:{classe:id}});  
       },
       setNote(item){
@@ -61,11 +87,39 @@ export default {
             console.log(this.form)
             this.form.post(route("note.save"), {
             preverseScroll: true,
+            onFailed: () => {
+              
+            },
             onSuccess: () => {
                 this.isLoading = false;
                 this.dialogConfirmation = false;
                 this.form.reset();
+                if(this.$page.props.flash?.message?.type == 'error'){
+                  this.$swal({
+                    icon: 'error',
+                    title: 'Sauvegarde',
+                    text: this.$page.props.flash?.message?.text,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 10000,
+                    timerProgressBar: true,
+                });
+              }else if(this.$page.props.flash?.message?.type == 'success'){
+                this.$swal({
+                    icon: 'success',
+                    title: 'Sauvegarde',
+                    text: this.$page.props.flash?.message?.text,
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 10000,
+                    timerProgressBar: true,
+                });
+                                }
+                
             },
+            
         });
       },
     },
@@ -123,7 +177,7 @@ export default {
             <v-select
                 v-model="selectedEvaluation"
                 :items="$page.props.evaluations ? $page.props.evaluations : null"
-                item-title="type_evaluation.libelle"
+                :item-title="formatEvaluationLabel"
                 item-value="id"
                 outlined
                 required
@@ -149,7 +203,7 @@ export default {
     </v-card>
 
 
-    <v-card style="margin: 20px" v-if="eleves.length != 0">
+    <v-card style="margin: 20px" v-if="eleves">
       <v-card-title>
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
           <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">

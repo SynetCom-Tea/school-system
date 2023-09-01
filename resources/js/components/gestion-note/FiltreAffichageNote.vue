@@ -20,7 +20,7 @@
             <v-select
                 v-model="selectedEvaluation"
                 :items="$page.props.evaluations ? $page.props.evaluations : null"
-                item-title="type_evaluation.libelle"
+                :item-title="formatEvaluationLabel"
                 item-value="id"
                 outlined
                 required
@@ -67,11 +67,18 @@ export default {
     },
     
     methods: {
+        formatEvaluationLabel(item) {
+            if(item){
+                // Concatenate the relevant properties for the label
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.libelle : ''}`;
+            }
+        },
         rechercher(){
             router.replace(this.$page.url,{data:{classe:this.selectedClasse,evaluation:this.selectedEvaluation}});
             // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
         requete(id){
+            this.selectedEvaluation = ''
             router.replace(this.$page.url,{data:{classe:id}});
             // console.log('id',id)   
         },
