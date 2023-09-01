@@ -31,5 +31,6 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'enseignant', 'description' => 'Permission Enseignant']);
         Permission::create(['name' => 'etudiant', 'description' => 'Permission Etudiant']);
         Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
+        Permission::create(['name' => 'manage_school', 'description' => 'Permission Administrateur']);
     }
 }

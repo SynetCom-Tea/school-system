@@ -2,7 +2,7 @@
   <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
       <div class="app-bar-content">
-        <div class="text-white text-h5">Bienvenue sur Système scolaire!</div>
+        <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
         <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
         <div class="d-flex">
           <SiteWebButton />

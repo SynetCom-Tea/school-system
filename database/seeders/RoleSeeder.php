@@ -27,7 +27,21 @@ class RoleSeeder extends Seeder
             'password' => Hash::make('password')
         ]);
         $super_admin = Role::firstOrcreate(['name' => 'Super-administrateur']);
-        $super_admin->givePermissionTo(Permission::where('name', '<>', 'etudiant')->get());
+        $super_admin->givePermissionTo(Permission::where('name', '<>', 'etudiant')->where('name', '<>', 'manage_school')->get());
         $admin->assignRole($super_admin);
+
+        $chef = User::create([
+            'nom' => 'Ali',
+            'prenom' => 'Mohamed',
+            'sex' => 'M',
+            'date_naissance' => NULL,
+            'lieu_naissance' => NULL,
+            'telephone' => 90909089,
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('password')
+        ]);
+        $ad_school = Role::create(['name' => 'Administrateur']);
+        $ad_school->givePermissionTo('manage_school');
+        $chef->assignRole($ad_school);
     }
 }

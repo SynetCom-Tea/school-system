@@ -39,6 +39,7 @@ import {
   mdiMail,
   mdiReceiptTextSendOutline,
   mdiReceiptTextCheckOutline,
+  mdiCalendar,
 } from "@mdi/js";
 export function listMenus() {
     let singleItems = [
@@ -53,16 +54,28 @@ export function listMenus() {
             icon: mdiCogOutline,
             link: "/gestionnote/evaluation",
         },
-        // {
-        //     title: "Attribution de notes",
+        {
+            title: "Etablissements",
+            icon: mdiReceiptTextCheckOutline,
+            link: "/receptions",
+            permissions: "manage_system",
+        },
+        //     {
+        //     title: "Etablissements",
         //     icon: mdiReceiptTextCheckOutline,
         //     link: "/receptions",
         //     permissions: "manage_system",
         // },
+        {
+            title: "Inscription",
+            icon: mdiAccountSchool,
+            link: "/inscriptions/create",
+            permissions: "manage_school",
+        },
     ];
     let usersMenu = {
         icon: mdiAccountCogOutline,
-        title: "Gestions Utilisateurs",
+        title: "Gestion Utilisateurs",
         "icon-alt": mdiChevronDown,
         permissions: "manage_system",
         model: false,
@@ -131,6 +144,19 @@ export function listMenus() {
                 title: "Etablissements",
                 link: "/organizations",
                 permissions: "manage_system",
+            },
+            {
+                icon: mdiCalendar,
+                title: "Années Scolaires",
+                link: "/annees",
+                permissions: "manage_school",
+            },
+
+            {
+                icon: mdiGoogleClassroom,
+                title: "Niveaux",
+                link: "/niveaux",
+                permissions: "manage_school",
             },
             {
                 icon: mdiGoogleClassroom,
@@ -209,5 +235,5 @@ export function listMenus() {
             // },
         ],
     };
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu]
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu];
 }
