@@ -50,7 +50,6 @@
                   class="list-case"
                   v-for="link in getListMenus[0]"
                   :key="link.title"
-
                   @click="page(link.link)"
                 >
                   <template v-slot:prepend>
@@ -61,7 +60,7 @@
                     v-text="link.title"
                   ></v-list-item-title>
                 </v-list-item>
-                <!-- <v-list-group :value="getListMenus[1].title">
+                <!-- <v-list-group :value="getListMenus[1].title"> -->
                 <v-list-group :value="getListMenus[4].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
@@ -125,7 +124,7 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group> -->
+                </v-list-group>
                 <v-list-group :value="getListMenus[2].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
