@@ -13,15 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('emplois', function (Blueprint $table) {
+        Schema::create('matieres', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->date('date_debut');
-            $table->date('date_fin');
-            $table->foreignIdFor(\App\Models\ClasseAnnee::class)
-                ->index()
-                ->references('id')->on('classe_annees');
-            $table->softDeletes();
+            $table->string('libelle');
             $table->timestamps();
         });
     }
@@ -33,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emplois');
+        Schema::dropIfExists('matieres');
     }
 };

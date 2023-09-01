@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -13,17 +14,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('emplois', function (Blueprint $table) {
+        Schema::create('enseignants', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->date('date_debut');
-            $table->date('date_fin');
-            $table->foreignIdFor(\App\Models\ClasseAnnee::class)
-                ->index()
-                ->references('id')->on('classe_annees');
-            $table->softDeletes();
+            $table->string('matricule');
+            $table->string('nom');
+            $table->string('prenom');
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE enseignants ADD COLUMN nom_complet varchar(255)
+        GENERATED ALWAYS AS (CONCAT(nom,' ',prenom));");
     }
 
     /**
@@ -33,6 +33,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emplois');
+        Schema::dropIfExists('enseignants');
     }
 };

@@ -13,15 +13,12 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('emplois', function (Blueprint $table) {
+        Schema::create('niveaux', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->date('date_debut');
-            $table->date('date_fin');
-            $table->foreignIdFor(\App\Models\ClasseAnnee::class)
+            $table->string('libelle');
+            $table->foreignIdFor(\App\Models\Section::class)
                 ->index()
-                ->references('id')->on('classe_annees');
-            $table->softDeletes();
+                ->references('id')->on('sections');
             $table->timestamps();
         });
     }
@@ -33,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('emplois');
+        Schema::dropIfExists('niveaux');
     }
 };

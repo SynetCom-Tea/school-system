@@ -2,11 +2,17 @@
 
 namespace Modules\Emploi\Http\Controllers;
 
+use App\Models\AnneeScolaire;
+use App\Models\Classe;
+use App\Models\Etablissement;
+use App\Models\Section;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Modules\Emploi\Entities\Emploi;
+use Modules\Enseignement\Entities\Niveau;
 
 class EmploiController extends Controller
 {
@@ -26,9 +32,27 @@ class EmploiController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create(Request $request)
     {
-        return Inertia::render('Emplois/Create');
+        $anneeScolaireId = AnneeScolaire::find(1)->id;
+        $sections = Etablissement::with('sections')->find(1);
+        $niveaux = $request->section ? Niveau::where('section_id', $request->section)->get() : collect();
+        $classes = $request->niveau ? DB::select("
+            SELECT * FROM classes c
+            JOIN classe_annees AS ca ON c.id = ca.classe_id
+            JOIN annee_scolaires a ON a.id = ca.annee_scolaire_id
+            JOIN enseignant_annees AS ea ON ca.id = ea.classe_annee_id
+            JOIN niveau_matieres AS nm ON nm.id = ea.niveau_matiere_id
+            WHERE a.id = :anneeScolaireId AND nm.niveau_id = :niveauId
+        ", [
+            'anneeScolaireId' => $anneeScolaireId,
+            'niveauId' => $request->niveau,
+        ]) : collect();
+        // dd($sections->sections, $niveaux, $classes, $anneeScolaireId);
+        return Inertia::render('Emplois/Create', [
+            'sections' => $sections->sections,
+            'niveaux' => $niveaux
+        ]);
     }
 
     /**
