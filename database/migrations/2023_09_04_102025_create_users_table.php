@@ -38,7 +38,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('user_niveaus', function (Blueprint $table) {
+        Schema::create('user_niveaux', function (Blueprint $table) {
             $table->id();
 
             $table->foreignIdFor(\App\Models\User::class)
@@ -46,7 +46,7 @@ return new class extends Migration
                 ->references('id')->on('users');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
-                ->references('id')->on('niveaus');
+                ->references('id')->on('niveaux');
             $table->foreignIdFor(\App\Models\Annee::class)
                 ->index()
                 ->references('id')->on('annees');

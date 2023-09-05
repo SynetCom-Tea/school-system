@@ -19,7 +19,7 @@ return new class extends Migration
                 ->references('id')->on('cycle_filieres');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
-                ->references('id')->on('niveaus');
+                ->references('id')->on('niveauX');
             $table->timestamps();
         });
     }
