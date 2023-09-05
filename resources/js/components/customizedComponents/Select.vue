@@ -4,19 +4,19 @@ import { ref } from "vue";
 export default {
   props: {
     vModel: [String, Number],
-    itemsValue: {
+    items: {
       type: Array,
       default: [],
     },
-    variantValue: {
+    variant: {
       type: String,
       default: "outlined",
     },
-    hintValue: {
+    hint: {
       type: String,
       default: "",
     },
-    densityValue: {
+    density: {
       type: String,
       default: "compact",
     },
@@ -56,11 +56,6 @@ export default {
       type: String,
       required: true,
     },
-    conditionDisabled: {
-      type: Boolean,
-      required: false,
-    },
-
     icon: {
       type: String,
       default: "",
@@ -110,13 +105,12 @@ export default {
     :max-width="maxWidthResponsive"
   >
     <v-select
-      :items="itemsValue"
+      :items="items"
       v-model="modelValue"
-      :variant="variantValue"
-      :hint="hintValue"
-      :density="densityValue"
+      :variant="variant"
+      :hint="hint"
+      :density="density"
       v-bind="$attrs"
-      :disabled="conditionDisabled"
       :custom-filter="customFilter"
       :item-title="itemTitle"
       :item-value="itemValue"

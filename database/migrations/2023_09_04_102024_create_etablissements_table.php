@@ -26,9 +26,14 @@ return new class extends Migration
             $table->timestamps();
         });
 
+<<<<<<< HEAD:database/migrations/2023_09_04_102024_create_etablissements_table.php
         Schema::create('section_etablissements', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
+=======
+        Schema::create('etablissement_section', function (Blueprint $table) {
+            
+>>>>>>> 390e7a47c809f2dfd9114ff12c9172a63ec3c548:database/migrations/2023_08_23_102036_create_etablissements_table.php
             $table->foreignIdFor(\App\Models\Etablissement::class)
                 ->index()
                 ->references('id')->on('etablissements');

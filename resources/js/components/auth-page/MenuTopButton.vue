@@ -6,6 +6,7 @@
           style="width: 90px; height: 40px"
           :prependIcon="icons.mdiMenu"
           ripple
+          variant="text"
           color="white"
           title="Voir la liste de Menu"
           nameButton="Menu"
@@ -50,13 +51,12 @@
 
 <script>
 import { router } from "@inertiajs/vue3";
-import Button from "../customizedComponents/Button.vue";
+
 import { mdiMenu, mdiClose } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
 export default {
   name: "Sidebar",
   components: {
-    Button,
     mdiMenu,
     mdiClose,
   },

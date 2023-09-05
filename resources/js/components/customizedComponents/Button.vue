@@ -9,17 +9,14 @@ export default {
     },
     variant: {
       type: String,
-      default: "",
+      default: "text",
       required: false,
     },
     nameButton: {
       type: String,
       default: "",
     },
-    hintValue: {
-      type: String,
-      default: "",
-    },
+
     density: {
       type: String,
       default: "compact",

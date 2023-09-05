@@ -20,17 +20,18 @@ export default {
   },
   props: {
     icon: { default: mdiHome },
+    leftButtonName: { type: String, default: "Retour" },
+    searchQuery: { type: String, default: "" },
     toolbarTitle: { type: String, default: "Titre du toolbar" },
     typeIcon: { type: String, default: "vicon" },
     styleToolbar: { type: String, default: "" },
     dialogModel: { type: Boolean, default: true },
     addCloseButton: { type: Boolean, default: false },
-    oncloseDialog: { type: Function },
+    onClickLeftButton: { type: Function, default: () => router.get(route("dashboard")) },
   },
   data() {
     return {
       closeCard: true,
-      searchQuery: "",
       items: [
         { name: "Florida", abbr: "FL", id: 1 },
         { name: "Georgia", abbr: "GA", id: 2 },
@@ -67,12 +68,12 @@ export default {
       style="background-color: white; box-shadow: 0px 0px 5px #004980; margin-top: 5px"
       height="70px"
       rounded="0"
-      class="mx-3"
     >
       <v-toolbar color="white" :style="styleToolbar" extended extension-height="50">
         <Button
           variant="flat"
           class="mb-2"
+          fab
           color="white"
           title="Icon de la page"
           style="height: 30px"
@@ -111,14 +112,17 @@ export default {
           ></Autocomplete>
         </div>
         <div style="display: absolute; bottom: 0; top: 0;height=40px">
-          <Button class="ma-2" color="bold" :onClickButton="goBack">
+          <Button class="ma-2" color="bold" :onClickButton="onClickLeftButton">
             <v-icon start :icon="icons.mdiReply"></v-icon>
-            Retour
+            {{ leftButtonName }}
           </Button>
         </div>
       </v-toolbar>
     </v-card>
-    <v-card class="mx-3" outlined height="3px" color="primary"></v-card>
+    <v-card outlined height="3px" color="primary"></v-card>
+    <!-- <v-card class="mx-3"
+    outlined height="3px" color="primary"></v-card> -->
+    <slot />
   </div>
 </template>
 
