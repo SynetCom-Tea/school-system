@@ -8,15 +8,15 @@ export default {
       type: String,
       default: "text",
     },
-    variantValue: {
+    variant: {
       type: String,
       default: "outlined",
     },
-    hintValue: {
+    hint: {
       type: String,
       default: "",
     },
-    densityValue: {
+    density: {
       type: String,
       default: "compact",
     },
@@ -50,7 +50,7 @@ export default {
     },
     label: {
       type: String,
-      required: true,
+      default: "Label",
     },
     conditionDisabled: {
       type: String,
@@ -79,7 +79,7 @@ export default {
     },
     onchangeModelValue: { type: Function },
     onchangeField: { type: Function },
-    classLabel: { type: String, default: "defaultClassLabel" },
+    class: { type: String, required: false },
     isRequired: { type: Boolean, default: false },
   },
   setup() {},
@@ -106,9 +106,9 @@ export default {
     <v-text-field
       :type="type"
       v-model="modelValue"
-      :variant="variantValue"
-      :hint="hintValue"
-      :density="densityValue"
+      :variant="variant"
+      :hint="hint"
+      :density="density"
       v-bind="$attrs"
       :name="name"
       :placeholder="placeholder"
@@ -119,6 +119,7 @@ export default {
       @update:modelValue="onchangeModelValue"
       @change="onchangeField"
       :error-messages="errorMessageValue"
+      :class="class"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>

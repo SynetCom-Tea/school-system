@@ -4,19 +4,19 @@ import { ref } from "vue";
 export default {
   props: {
     vModel: [String, Number],
-    itemsValue: {
+    items: {
       type: Array,
       default: [],
     },
-    variantValue: {
+    variant: {
       type: String,
       default: "outlined",
     },
-    hintValue: {
+    hint: {
       type: String,
       default: "",
     },
-    densityValue: {
+    density: {
       type: String,
       default: "compact",
     },
@@ -54,13 +54,8 @@ export default {
     },
     label: {
       type: String,
-      required: true,
-    },
-    conditionDisabled: {
-      type: Boolean,
       required: false,
     },
-
     icon: {
       type: String,
       default: "",
@@ -88,7 +83,7 @@ export default {
     onchangeModelValue: { type: Function },
     customFilter: { type: Function },
     class: { type: String, default: "py-3" },
-    style: { type: String },
+    style: { type: Object, required: false },
     isRequired: { type: Boolean, default: false },
     isMultiple: { type: Boolean, default: false },
   },
@@ -122,14 +117,13 @@ export default {
     :max-width="maxWidthResponsive"
   > -->
   <v-autocomplete
-    :items="itemsValue"
+    :items="items"
     v-model="modelValue"
     v-model:search="modelSearch"
-    :variant="variantValue"
-    :hint="hintValue"
-    :density="densityValue"
+    :variant="variant"
+    :hint="hint"
+    :density="density"
     v-bind="$attrs"
-    :disabled="conditionDisabled"
     :custom-filter="customFilter"
     :item-title="itemTitle"
     :item-value="itemValue"

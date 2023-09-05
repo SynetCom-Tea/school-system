@@ -15,11 +15,9 @@
 
 <script>
 import { router } from "@inertiajs/vue3";
-import Button from "../customizedComponents/Button.vue";
+
 export default {
-  components: {
-    Button,
-  },
+  components: {},
   data: () => {
     return {};
   },

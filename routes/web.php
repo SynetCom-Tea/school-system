@@ -3,6 +3,8 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\UserController;
+
+use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,6 +15,7 @@ use Modules\Scolarite\Http\Controllers\AnneeClasseController;
 use Modules\Scolarite\Http\Controllers\TuteurController;
 use Modules\Scolarite\Http\Controllers\NiveauController;
 use Modules\Scolarite\Http\Controllers\InscriptionController;
+
 
 
 /*
@@ -38,7 +41,14 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-
+// Route::prefix('gestionnote')->group(function () {
+//     Route::get('/', 'GestionNoteController@index');
+//     Route::resource('evaluation', \Modules\GestionNote\Http\Controllers\EvaluationController::class);
+//     // Affichage de notes
+//     Route::get('/note/affichage', [NoteController::class, 'index'])->name('note.affichage');
+//     Route::get('/note/attribution', [NoteController::class, 'attribution'])->name('note.attribution');
+//     Route::post('/note/enregistrer', [NoteController::class, 'store'])->name('note.save');
+// });
 Route::middleware('auth')->group(function () {
     Route::resource('users', UserController::class);
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
