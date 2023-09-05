@@ -49,8 +49,8 @@ const submit = handleSubmit((values) => {
     <TextField
       v-model="name.value.value"
       :counter="10"
-      variantValue="solo"
-      hintValue="Ne pas depasser"
+      variant="solo"
+      hint="Ne pas depasser"
       :errorMessageValue="name.errorMessage.value"
       :isRequired="true"
       label="Name"

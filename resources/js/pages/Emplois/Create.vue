@@ -15,7 +15,6 @@ import {
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
-    props: ["emplois"],
     data() {
         return {
             icon: {
@@ -44,6 +43,20 @@ export default {
     methods: {
         goBack() {
             router.get(route('emplois.index'))
+        },
+        setNiveau(){
+            this.$inertia.replace(this.$page.url, {
+                    data: {
+                        section: this.form.section,
+                    }
+                })
+        },
+        setClasse(){
+            this.$inertia.replace(this.$page.url, {
+                data: {
+                    niveau: this.form.niveau,
+                }
+            })
         },
         addRow(day) {
             this.form.seances[day].push({
@@ -79,6 +92,7 @@ export default {
         // }
     },
     mounted() {
+        // console.log(this.sections)
         this.daysOfWeek.forEach((day) => {
             this.form.seances[day] = [];
             this.addRow(day);
@@ -101,14 +115,20 @@ export default {
                                         <autocomplete
                                             label="Section"
                                             v-model="form.section"
-                                            :items="['Primiere', 'College', 'Lycee', 'Superieur', 'Universite']"
+                                            :items="$page.props.sections"
+                                            :onchangeModelValue="setNiveau"
+                                            itemTitle="libelle"
+                                            itemValue="id"
                                         ></autocomplete>
                                     </v-col>
                                     <v-col md="4">
                                         <autocomplete
                                             label="Niveau"
                                             v-model="form.niveau"
-                                            :items="['California', 'Colorado', 'Florida', 'Georgia', 'Texas', 'Wyoming']"
+                                            :items="$page.props.niveaux"
+                                            :onchangeModelValue="setClasse"
+                                            itemTitle="libelle"
+                                            itemValue="id"
                                         ></autocomplete>
                                     </v-col>
                                     <v-col md="4">

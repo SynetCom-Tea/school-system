@@ -7,10 +7,9 @@ import {
   mdiPresentation,
   mdiGift,
 } from "@mdi/js";
-import Button from "./Button.vue";
+
 export default {
   components: {
-    Button,
     mdiAccount,
     mdiPurse,
     mdiClose,
