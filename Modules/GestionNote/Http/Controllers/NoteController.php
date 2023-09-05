@@ -2,13 +2,13 @@
 
 namespace Modules\GestionNote\Http\Controllers;
 
-use Modules\GestionNote\Entities\Apprenant;
-use Modules\GestionNote\Entities\Classe;
+use App\Models\Apprenant;
+use App\Models\Classe;
 use Modules\GestionNote\Entities\Note;
-use Modules\GestionNote\Entities\Annee;
+use App\Models\Annee;
 use Modules\GestionNote\Entities\Evaluation;
-use Modules\GestionNote\Entities\EnseignementAnnee;
-use Modules\GestionNote\Entities\ApprenantClasse;
+use Modules\Enseignement\Entities\EnseignementAnnee;
+use App\Models\ApprenantClasse;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;

@@ -14,13 +14,10 @@ class SectionSeeder extends Seeder
     public function run(): void
     {
         Section::create([
-            'libelle' => 'Première'
+            'libelle' => 'Primaire'
         ]);
         Section::create([
-            'libelle' => 'Collège'
-        ]);
-        Section::create([
-            'libelle' => 'Lycée'
+            'libelle' => 'Sécondaire'
         ]);
         Section::create([
             'libelle' => 'Superieur'

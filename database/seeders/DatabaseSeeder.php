@@ -17,15 +17,16 @@ class DatabaseSeeder extends Seeder
             // PermissionSeeder::class,
             RoleSeeder::class,
             TypeEtablissementSeeder::class,
-            EtablissementsTableSeeder::class,
-            ClasseSeeder::class,
-            AnneeScolaireSeeder::class,
-            ClasseAnneeSeeder::class,
-            ApprenantSeeder::class,
-            SalleSeeder::class,
             SectionSeeder::class,
-            EtablissementSectionSeeder::class,
-            EnseignementDatabaseSeeder::class,
+            NiveauTableSeeder::class
+            // EtablissementsTableSeeder::class,
+            // ClasseSeeder::class,
+            // AnneeScolaireSeeder::class,
+            // ClasseAnneeSeeder::class,
+            // ApprenantSeeder::class,
+            // SalleSeeder::class,
+            // EtablissementSectionSeeder::class,
+            // EnseignementDatabaseSeeder::class,
         ]);
     }
 }
