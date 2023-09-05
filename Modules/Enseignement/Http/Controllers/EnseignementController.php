@@ -5,6 +5,10 @@ namespace Modules\Enseignement\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+
+use Inertia\Inertia;
+
 
 class EnseignementController extends Controller
 {
@@ -14,7 +18,16 @@ class EnseignementController extends Controller
      */
     public function index()
     {
-        return view('enseignement::index');
+        // dd(Auth::user());
+        return Inertia::render('Admin/accueil');
+    }
+
+    public function config($type)
+    {
+        // dd($type);
+        return Inertia::render('Admin/config',[
+            'type' => $type
+        ]);
     }
 
     /**

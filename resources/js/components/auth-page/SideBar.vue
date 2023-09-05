@@ -124,8 +124,42 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
+                </v-list-group> -->
+
+                <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles = 'Administrateur'">
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="MenuAdmin.title"
+                          :icon="MenuAdmin.icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="MenuAdmin.title"
+                      ></v-list-item-title>
+                    </v-list-item>
+                  </template>
+
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in MenuAdmin.children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon" ></v-icon>
+                    </template>
+
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="item.title"
+                    ></v-list-item-title>
+                  </v-list-item>
                 </v-list-group>
-                <v-list-group :value="getListMenus[2].title">
+
+                <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles == 'Note'">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -176,7 +210,7 @@
 
 <script>
 import { router } from "@inertiajs/vue3";
-import { mdiChevronLeft, mdiLogout, mdiMenu } from "@mdi/js";
+import { mdiChevronLeft, mdiSchool, mdiCogOutline, mdiLogout, mdiMenu } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
 
@@ -186,14 +220,17 @@ export default {
   name: "Sidebar",
   components: {
     mdiChevronLeft,
+    mdiCogOutline,
     mdiLogout,
     mdiMenu,
+    mdiSchool,
     MenuTopButton,
     SiteWebButton,
   },
 
   data: () => {
     return {
+      MenuAdmin: [],
       listGreetings: [
         { id: 1, text: "Wa fonda kayan!" },
         { id: 2, text: "Barka da zouwa!" },
@@ -223,8 +260,40 @@ export default {
     };
   },
   mounted() {
+    let tabs = []
+    let enfants = []
+    tabs = this.$page.props.sections
+      .map(function (el) {
+        return el.section.libelle;
+      });
+      if (tabs.includes('Primaire') && tabs.includes('Sécondaire') && tabs.includes('Superieur')) {
+        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Sécondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Superieur", link: "/enseignement/configuration/3"})
+      } else if (tabs.includes('Primaire') && tabs.includes('Sécondaire')){
+        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Sécondaire", link: "/enseignement/configuration/2"})
+      } else if (tabs.includes('Primaire') && tabs.includes('Superieur')){
+        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Superieur", link: "/enseignement/configuration/3"})
+      }else if (tabs.includes('Sécondaire') && tabs.includes('Superieur')){
+        enfants.push({icon: mdiSchool, title: "Sécondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Superieur", link: "/enseignement/configuration/3"})
+      }else if (tabs.includes('Primaire')){
+        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"})
+      }else if (tabs.includes('Sécondaire')){
+        enfants.push({icon: mdiSchool, title: "Sécondaire", link: "/enseignement/configuration/2"})
+      }else if (tabs.includes('Superieur')){
+        enfants.push({icon: mdiSchool, title: "Superieur", link: "/enseignement/configuration/3"})
+      }else{
+
+      }
+     this.MenuAdmin = {
+        icon: mdiCogOutline,
+        title: "Configurations",
+        "icon-alt": mdiChevronLeft,
+        model: false,
+        children: enfants
+    };
+
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
+    console.log('console sections',this.$page.props.sections);
     this.username =
       this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
   },

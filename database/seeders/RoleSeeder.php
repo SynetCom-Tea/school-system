@@ -16,14 +16,29 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = User::create([
+        $superadmin = User::create([
             'nom' => 'Tondi',
             'prenom' => 'Bouli',
             'email' => 'super-admin@gmail.com',
             'password' => Hash::make('password')
         ]);
+        $admin = User::create([
+            'nom' => 'Admin',
+            'prenom' => 'Administrateur',
+            'user_id' => 1,
+            'etablissement_id' => 1,
+            'email' => 'admin@gmail.com',
+            'password' => Hash::make('password')
+        ]);
+
+        // Super admin
         $super_admin = Role::firstOrcreate(['name' => 'Super-administrateur']);
         $super_admin->givePermissionTo(Permission::where('name', '<>', 'etudiant')->get());
-        $admin->assignRole($super_admin);
+        $superadmin->assignRole($super_admin);
+
+        // Admin
+        $administrateur = Role::firstOrcreate(['name' => 'Administrateur']);
+        $administrateur->givePermissionTo(Permission::where('name', '<>', 'etudiant')->get());
+        $admin->assignRole($administrateur);
     }
 }

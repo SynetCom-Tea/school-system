@@ -2,9 +2,12 @@
 
 namespace App\Http\Middleware;
 
+use App\Models\SectionEtablissement;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
+
 
 class HandleInertiaRequests extends Middleware
 {
@@ -34,6 +37,17 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'roles' => fn () => auth()->user()
+                ? auth()->user()->getRoleNames()
+                : null,
+            'permissions' => fn () => auth()->user()
+                ? auth()->user()->getAllPermissions()->pluck('name')
+                : null,
+            $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first(),
+            'sections' => fn () => auth()->user()
+            ? SectionEtablissement::where('etablissement_id', $etablissement->etablissement->id)->with('section')->get()
+            : null,
+
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),
