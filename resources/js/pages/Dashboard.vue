@@ -257,7 +257,7 @@ export default {
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <Dialog
+    <!-- <Dialog
       :modelDialog="isDialog"
       :onCloseModale="onCloseModale"
       :iconHeaderModal="icons.mdiAccount"
@@ -276,7 +276,7 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog>
+    </Dialog> -->
  <!-- <TextInput
       type="text"
       v-model="test"
@@ -291,7 +291,7 @@ export default {
     <div>{{ test }}</div>
     <br /><br /><br /><br /><br /><br />
 
-    <!-- <div>
+     <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"

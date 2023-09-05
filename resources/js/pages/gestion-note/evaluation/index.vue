@@ -6,7 +6,7 @@
 <script >
     import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
     import { useForm } from '@inertiajs/vue3';
-    import Datatable from "@/components/customizedComponents/datatable.vue";
+    // import Datatable from "@/components/customizedComponents/datatable.vue";
 
     import {
         mdiAccountSchool,
@@ -20,7 +20,7 @@
     } from '@mdi/js'
     export default {
         components: {
-            Datatable,
+            // Datatable,
             mdiAccountSchool,
             mdiPlus,
             mdiPencil,
@@ -214,8 +214,8 @@
                         >
                         <template v-slot:activator="{ props }">
                             <div class="custom-add-button">
-                                <v-btn @click="create" x-small variant="outlined" color="primary" v-bind="props"> Ajouter
-                                </v-btn>
+                                <Button @click="create" x-small variant="outlined" color="primary" v-bind="props"> Ajouter
+                                </Button>
                             </div>
 
                         </template>

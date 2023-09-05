@@ -232,7 +232,7 @@ export default {
           :iconValueDetail="icons.mdiPencil"
           :iconUpdate="icons.mdiAccount"
         ></ModalDetailUpdate>
-        <v-dialog v-model="dialog" max-width="500px" persistent>
+        <v-dialog v-model="dialog" max-width="900px" persistent>
           <!-- <template v-slot:activator="{ props }">
             <Button
               variant="flat"
@@ -254,6 +254,7 @@ export default {
               <v-container>
                 <v-row>
                   <slot name="addDialogContent" />
+
                 </v-row>
               </v-container>
             </v-card-text>
