@@ -445,9 +445,9 @@ export default {
   cursor: pointer;
   text-decoration: none;
   /* margin-left: 35px; */
-  background-color: rgb(125, 0, 44, 1);
+  /* background-color: rgb(125, 0, 44, 1)
   border-width: thin;
-  border-radius: 25px;
+  border-radius: 25px;; */
   margin-block: 2px;
   color: white;
   font-weight: 80;
@@ -462,9 +462,9 @@ export default {
 }
 
 .sidebar-links .v-list .v-list-group .sub-list-group:hover {
-    background-color: rgba(255, 255, 255, 0.75);
-    color: #000000de;
-    font-weight: 100;
+  background-color: rgb(125, 0, 44, 1);
+  color: white;
+  font-weight: 100;
 }
 
 .sidebar-links .v-list .v-list-group .group-title {

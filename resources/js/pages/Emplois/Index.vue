@@ -28,9 +28,9 @@ export default {
         <page-toolbar :icon="icon.mdiTimetable">Gestion des Emplois</page-toolbar>
         <v-card-text>
             <v-card>
-                <btn v-bind="props">
-                    <v-icon  @click="goTo()">{{ icon.mdiPlus }}</v-icon> Ajouter
-                </btn>
+                <button @click="goTo()"> 
+                    <v-icon >{{ icon.mdiPlus }}</v-icon> Ajouter
+                </button>
             </v-card>
         </v-card-text>
     </v-card>

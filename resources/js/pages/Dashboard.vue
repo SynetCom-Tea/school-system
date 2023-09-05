@@ -1,5 +1,5 @@
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import TextInput from "../components/customizedComponents/TextField.vue";
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
@@ -10,9 +10,13 @@ import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpd
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
 import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
+import Datatable from "../components/customizedComponents/datatable.vue";
+import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
   components: {
     Loader,
+    Datatable,
+    Toolbar,
     ModalDetailUpdate,
     VueSpinnerHourglass,
     AuthenticatedLayout,
@@ -31,6 +35,31 @@ export default {
   },
   data() {
     return {
+      headers: [
+        {
+          title: "N°",
+          align: "start",
+          key: "id",
+          sortable: false,
+        },
+        { title: "Titre", align: "center", key: "title" },
+
+        { title: "Actions", key: "actions", sortable: false },
+      ],
+      dataH: [
+        {
+          id: 1,
+          title: "Ali",
+        },
+        {
+          id: 2,
+          title: "Sara",
+        },
+        {
+          id: 3,
+          title: "Sani",
+        },
+      ],
       test: "Abou",
       isDialog: false,
       rules: {
@@ -51,9 +80,7 @@ export default {
       ],
     };
   },
-  mounted() {
-    console.log("t:", this.icons.mdiAccount);
-  },
+  mounted() {},
 
   methods: {
     onClickBt() {
@@ -62,9 +89,7 @@ export default {
     onCloseModale() {
       this.isDialog = false;
     },
-    onChangeTitle(e) {
-      console.log("testE:", e.target.value);
-    },
+    onChangeTitle(e) {},
   },
 };
 </script>
@@ -73,9 +98,11 @@ export default {
   <Head title="Dashboard" />
 
   <AuthenticatedLayout>
-    <template>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-    </template>
+    <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Acceuil"
+    ></Toolbar>
     <div class="mt-10">
       <Vue3Marquee :duration="25">
         <v-row>
@@ -101,8 +128,23 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <Loader :modelDialog="isDialog" />
-    <br /><br /><br /><br /><br />
+    <Loader :modelDialog="isDialog">
+      <template v-slot:spinnertype>
+        <VueSpinner size="50" color="white"></VueSpinner
+      ></template>
+    </Loader>
+    <br /><br />
+    <!-- <Toolbar
+      styleToolbar="background-color:#004980"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Toolbar title"
+    ></Toolbar> -->
+    <br /><br />
+    <div>
+      <Datatable titleDatatable="Liste des items " :headers="headers" :items="dataH" />
+    </div>
+    <br /><br />
+
     <Button
       variant="flat"
       density="comfortable"
@@ -114,7 +156,7 @@ export default {
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <!-- <Dialog
+    <Dialog
       :modelDialog="isDialog"
       :onCloseModale="onCloseModale"
       :iconHeaderModal="icons.mdiAccount"
@@ -133,8 +175,8 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog> -->
-    <!--  <TextInput
+    </Dialog>
+ <!-- <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
@@ -146,9 +188,9 @@ export default {
       :rules="[rules.required, rules.counter]"
     />
     <div>{{ test }}</div>
-    <br /><br /><br /><br /><br /><br /> -->
+    <br /><br /><br /><br /><br /><br />
 
-    <!-- <div>
+    <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"
@@ -157,7 +199,7 @@ export default {
     </div> -->
   </AuthenticatedLayout>
 </template>
-<style scoped>
+<!-- <style scoped>
 .classTest {
   width: 200px;
   background-color: red;
@@ -179,4 +221,5 @@ export default {
     color: red;
   }
 }
-</style>
+</style> -->
+

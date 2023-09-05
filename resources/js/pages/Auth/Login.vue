@@ -1,8 +1,6 @@
 <template>
   <div>
-    <v-app>
-      <LoginComponent />
-    </v-app>
+    <LoginComponent />
   </div>
 </template>
 

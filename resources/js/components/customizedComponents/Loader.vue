@@ -46,7 +46,7 @@ export default {
             >Chargement des données. Veuillez patienter!</span
           >
           <div class="text-center" v-show="dialog">
-            <VueSpinnerHourglass size="50" color="white" />
+            <slot name="spinnertype"></slot>
           </div>
         </v-card-text>
       </v-card>

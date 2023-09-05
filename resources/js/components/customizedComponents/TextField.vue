@@ -30,7 +30,7 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "py-4",
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,
@@ -77,6 +77,7 @@ export default {
       type: [Object, String],
       required: false,
     },
+    onchangeModelValue: { type: Function },
     onchangeField: { type: Function },
     classLabel: { type: String, default: "defaultClassLabel" },
     isRequired: { type: Boolean, default: false },
@@ -115,6 +116,7 @@ export default {
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="colorValue"
+      @update:modelValue="onchangeModelValue"
       @change="onchangeField"
       :error-messages="errorMessageValue"
     >

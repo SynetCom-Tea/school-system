@@ -1,0 +1,11 @@
+{
+    "name": "Scolarite",
+    "alias": "scolarite",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\Scolarite\\Providers\\ScolariteServiceProvider"
+    ],
+    "files": []
+}

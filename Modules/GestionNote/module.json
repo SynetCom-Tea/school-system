@@ -1,0 +1,11 @@
+{
+    "name": "GestionNote",
+    "alias": "gestionnote",
+    "description": "",
+    "keywords": [],
+    "priority": 0,
+    "providers": [
+        "Modules\\GestionNote\\Providers\\GestionNoteServiceProvider"
+    ],
+    "files": []
+}
