@@ -130,6 +130,8 @@ export default {
                         showConfirmButton: false,
                         timer: 5000,
                         timerProgressBar: true,
+                        //netstat -ano | findstr :8000
+                        //chkdsk/f
                     });
                 },
             })
@@ -141,9 +143,9 @@ export default {
         },
         closeEdit() {
             this.dialogEdit = false
-        }
+        
     },
-}
+}}
 </script>
 <template>
 <v-card>
@@ -231,6 +233,7 @@ export default {
                             </v-card-actions>
                         </v-card>
                     </template>
+                    
                 </v-dialog>
             </template>
             <template v-slot:item.actions="{item}">

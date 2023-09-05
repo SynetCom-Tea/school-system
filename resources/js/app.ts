@@ -27,6 +27,9 @@ import { store } from './store'
 import { createWebHistory, createRouter,createWebHashHistory} from "vue-router";
 import LoginComponent from "./components/auth-page/Login.component.vue";
 import PageToolbar from "../js/Components/PageToolbar.vue"
+import TextField from "../js/Components/customizedComponents/TextField.vue"
+import Autocomplete from "../js/Components/customizedComponents/Autocomplete.vue"
+import DateRangePicker from "../js/Components/customizedComponents/DateRangePicker.vue"
 import Btn from "../js/Components/Btn.vue";
 import Index from "./pages/welcome/Index.vue";
 
@@ -89,7 +92,7 @@ const vuetify = createVuetify({
         },
       },
     components: {
-        VDataTable,
+      VDataTable
     },
     directives,
     labsComponents,
@@ -114,10 +117,12 @@ createInertiaApp({
         .use(vuetify)
         .use(VueGates)
         .use(Vuex)
-
         .use(VueAxios, axios)
         .component('VueDatePicker', VueDatePicker)
         .component('page-toolbar', PageToolbar)
+        .component('text-field', TextField)
+        .component('autocomplete', Autocomplete)
+        .component('date-range-picker', DateRangePicker)
         .component('btn', Btn)
         .use(VueSweetalert2, options)
         .mount(el);
