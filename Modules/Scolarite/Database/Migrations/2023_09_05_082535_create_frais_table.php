@@ -22,7 +22,7 @@ return new class extends Migration
                 ->onUpdate('cascade')
                 ->onDelete('restrict'); */
             $table->foreignIdFor(\Modules\Scolarite\Entities\Niveau::class)
-                ->references('id')->on('niveaux')->constrained()
+                ->references('id')->on('niveaus')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
             $table->timestamps();
