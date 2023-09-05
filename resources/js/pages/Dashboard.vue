@@ -1,5 +1,5 @@
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 import TextInput from "../components/customizedComponents/TextField.vue";
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
@@ -10,7 +10,7 @@ import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpd
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 import { Vue3Marquee } from "vue3-marquee";
 import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
-import Datatable from "../components/customizedComponents/Datatable.vue";
+import Datatable from "../components/customizedComponents/datatable.vue";
 import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
   components: {
@@ -98,9 +98,11 @@ export default {
   <Head title="Dashboard" />
 
   <AuthenticatedLayout>
-    <template>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Dashboard</h2>
-    </template>
+    <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Acceuil"
+    ></Toolbar>
     <div class="mt-10">
       <Vue3Marquee :duration="25">
         <v-row>
@@ -132,9 +134,15 @@ export default {
       ></template>
     </Loader>
     <br /><br />
-    <Toolbar :icon="icons.mdiAccount" subtitle="Toolbar title"></Toolbar>
+    <!-- <Toolbar
+      styleToolbar="background-color:#004980"
+      :icon="icons.mdiAccount"
+      toolbarTitle="Toolbar title"
+    ></Toolbar> -->
     <br /><br />
-    <Datatable :headers="headers" :items="dataH" />
+    <div>
+      <Datatable titleDatatable="Liste des items " :headers="headers" :items="dataH" />
+    </div>
     <br /><br />
 
     <Button
@@ -148,7 +156,7 @@ export default {
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <!-- <Dialog
+    <Dialog
       :modelDialog="isDialog"
       :onCloseModale="onCloseModale"
       :iconHeaderModal="icons.mdiAccount"
@@ -167,8 +175,8 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog> -->
-    <!--  <TextInput
+    </Dialog>
+ <!-- <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"
@@ -180,9 +188,9 @@ export default {
       :rules="[rules.required, rules.counter]"
     />
     <div>{{ test }}</div>
-    <br /><br /><br /><br /><br /><br /> -->
+    <br /><br /><br /><br /><br /><br />
 
-    <!-- <div>
+    <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"
@@ -191,7 +199,7 @@ export default {
     </div> -->
   </AuthenticatedLayout>
 </template>
-<style scoped>
+<!-- <style scoped>
 .classTest {
   width: 200px;
   background-color: red;
@@ -213,4 +221,5 @@ export default {
     color: red;
   }
 }
-</style>
+</style> -->
+

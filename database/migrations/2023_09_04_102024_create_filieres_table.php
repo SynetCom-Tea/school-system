@@ -1,0 +1,44 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::create('filieres', function (Blueprint $table) {
+            $table->id();
+            $table->string('name');
+            $table->string('code');
+            $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
+                ->index()
+                ->references('id')->on('etablissements');
+            $table->softDeletes();
+            $table->timestamps();
+        });
+
+        Schema::create('cycle_filieres', function (Blueprint $table) {
+            $table->id();
+            $table->string('code');
+            $table->foreignIdFor(\App\Models\Cycle::class)->nullable()->index()
+                ->references('id')->on('cycles');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Filiere::class)
+                ->index()
+                ->references('id')->on('filieres');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::dropIfExists('filieres');
+        Schema::dropIfExists('etablissement_filieres');
+    }
+};

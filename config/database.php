@@ -43,6 +43,8 @@ return [
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],
 
+        // Ismael, j'ai touché charset,collation et engine à cause de mon phpmyadmin qui refuse de charger les données
+
         'mysql' => [
             'driver' => 'mysql',
             'url' => env('DATABASE_URL'),
@@ -62,6 +64,8 @@ return [
                 PDO::MYSQL_ATTR_SSL_CA => env('MYSQL_ATTR_SSL_CA'),
             ]) : [],
         ],
+
+        // fin
 
         'pgsql' => [
             'driver' => 'pgsql',

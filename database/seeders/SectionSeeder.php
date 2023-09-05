@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Section;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -12,6 +13,14 @@ class SectionSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Section::create([
+            'libelle' => 'Primaire'
+        ]);
+        Section::create([
+            'libelle' => 'Sécondaire'
+        ]);
+        Section::create([
+            'libelle' => 'Superieur'
+        ]);
     }
 }

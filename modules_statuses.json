@@ -1,5 +1,6 @@
 {
-    "Scolarite": true,
-    "Emploi": false,
-    "Enseignement": false
+    "GestionNote": true,
+    "Emploi": true,
+    "Enseignement": true,
+    "Scolarite": true
 }

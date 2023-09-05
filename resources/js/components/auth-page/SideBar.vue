@@ -50,6 +50,7 @@
                   class="list-case"
                   v-for="link in getListMenus[0]"
                   :key="link.title"
+
                   @click="page(link.link)"
                 >
                   <template v-slot:prepend>
@@ -60,6 +61,7 @@
                     v-text="link.title"
                   ></v-list-item-title>
                 </v-list-item>
+                <!-- <v-list-group :value="getListMenus[1].title">
                 <v-list-group :value="getListMenus[4].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
@@ -123,7 +125,7 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group>
+                </v-list-group> -->
                 <v-list-group :value="getListMenus[2].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
@@ -383,9 +385,9 @@ export default {
   cursor: pointer;
   text-decoration: none;
   /* margin-left: 35px; */
-  background-color: rgb(125, 0, 44, 1);
+  /* background-color: rgb(125, 0, 44, 1)
   border-width: thin;
-  border-radius: 25px;
+  border-radius: 25px;; */
   margin-block: 2px;
   color: white;
   font-weight: 80;
@@ -399,8 +401,8 @@ export default {
   */
 }
 .sidebar-links .v-list .v-list-group .sub-list-group:hover {
-  background-color: rgba(255, 255, 255, 0.75);
-  color: #000000de;
+  background-color: rgb(125, 0, 44, 1);
+  color: white;
   font-weight: 100;
 }
 .sidebar-links .v-list .v-list-group .group-title {

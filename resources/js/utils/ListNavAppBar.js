@@ -50,15 +50,9 @@ export function listMenus() {
             permissions: "manage_system",
         },
         {
-            title: "Mon compte",
+            title: "Evaluation",
             icon: mdiCogOutline,
-            link: "/profile",
-        },
-        {
-            title: "Etablissements",
-            icon: mdiReceiptTextCheckOutline,
-            link: "/receptions",
-            permissions: "manage_system",
+            link: "/gestionnote/evaluation",
         },
         {
             title: "Inscription",
@@ -94,18 +88,19 @@ export function listMenus() {
             },
         ],
     };
+    // Gestion de Notes
     let configsMenu = {
         icon: mdiCog,
         "icon-alt": mdiChevronDown,
-        title: "Configuration",
+        title: "Notes",
         permissions: "manage_system",
         divider: true,
         model: false,
         children: [
             {
                 icon: mdiGift,
-                title: "Programmes",
-                link: "/program",
+                title: "Affichage de notes",
+                link: "/gestionnote/note/affichage",
                 permissions: "manage_system",
             },
             {
@@ -143,10 +138,25 @@ export function listMenus() {
                 icon: mdiGoogleClassroom,
                 title: "Salle de cours",
                 link: "/salles",
+                title: "Attribution de notes",
+                link: "/gestionnote/note/attribution",
                 permissions: "manage_system",
             },
+            // {
+            //     icon: mdiAccountSchool,
+            //     title: "Enseignants",
+            //     link: "/teachers",
+            //     permissions: "manage_system",
+            // },
+            // {
+            //     icon: mdiSchool,
+            //     title: "Etablissements",
+            //     link: "/organizations",
+            //     permissions: "manage_system",
+            // },
         ],
     };
+    // Gestion de Notes
     let welcomeMenu = {
         icon: "simple-icons:welcometothejungle",
         "icon-alt": mdiChevronDown,
@@ -191,7 +201,7 @@ export function listMenus() {
             {
                 icon: mdiSquareMedium,
                 title: "Calendrier",
-                link: "/emploi/emplois",
+                link: "/emploi/emplois/create",
                 permissions: "manage_system",
             },
             // {

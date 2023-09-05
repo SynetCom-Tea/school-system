@@ -23,11 +23,13 @@ import VueDatePicker from '@vuepic/vue-datepicker';
 import '@vuepic/vue-datepicker/dist/main.css'
 import 'sweetalert2/dist/sweetalert2.min.css';
 import { store } from './store'
+import { VStepper } from 'vuetify/labs/VStepper'
 
 import { createWebHistory, createRouter,createWebHashHistory} from "vue-router";
 import LoginComponent from "./components/auth-page/Login.component.vue";
 import PageToolbar from "../js/Components/PageToolbar.vue"
 import TextField from "../js/Components/customizedComponents/TextField.vue"
+import Button from "../js/Components/customizedComponents/Button.vue"
 import Autocomplete from "../js/Components/customizedComponents/Autocomplete.vue"
 import DateRangePicker from "../js/Components/customizedComponents/DateRangePicker.vue"
 import Btn from "../js/Components/Btn.vue";
@@ -35,7 +37,14 @@ import TableComponent from "../js/components/customizedComponents/datatable.vue"
 import TextField from "../js/components/customizedComponents/TextField.vue";
 import Dialog from "../js/components/customizedComponents/Dialog.vue";
 import Index from "./pages/welcome/Index.vue";
-
+import Button from '../js/components/customizedComponents/Button.vue'
+import TextField from '../js/components/customizedComponents/TextField.vue'
+import Autocomplete from '../js/components/customizedComponents/Autocomplete.vue'
+import Select from '../js/components/customizedComponents/Select.vue'
+import ModalDetailUpdate from '../js/components/customizedComponents/ModalDetailUpdate.vue'
+import Toolbar from '../js/components/customizedComponents/Toolbar.vue'
+import Datatable from "../js/components/customizedComponents/Datatable.vue"
+import Dialog from "../js/components/customizedComponents/Dialog.vue"
 // import VeeValidate, { Validator } from "vee-validate";
 // import fr from "vee-validate/dist/locale/";
 
@@ -95,7 +104,8 @@ const vuetify = createVuetify({
         },
       },
     components: {
-      VDataTable
+      VDataTable,
+      VStepper
     },
     directives,
     labsComponents,
@@ -120,6 +130,12 @@ createInertiaApp({
         .use(vuetify)
         .use(VueGates)
         .use(Vuex)
+        .component('TextField', TextField)
+        .component('Button', Button)
+        .component('Autocomplete', Autocomplete)
+        .component('Select', Select)
+        .component('ModalDetailUpdate', ModalDetailUpdate)
+          .component('Toolbar',Toolbar )
         .use(VueAxios, axios)
         .component('VueDatePicker', VueDatePicker)
         .component('page-toolbar', PageToolbar)
@@ -127,9 +143,8 @@ createInertiaApp({
         .component('autocomplete', Autocomplete)
         .component('date-range-picker', DateRangePicker)
         .component('btn', Btn)
-        .component('table-component', TableComponent)
-        .component('text-field', TextField)
-        .component('dialog-component', Dialog)
+        .component('Datatable', Datatable)
+        .component('Dialog', Dialog)
         .use(VueSweetalert2, options)
         .mount(el);
     },

@@ -9,7 +9,7 @@ export default {
     },
     variant: {
       type: String,
-      default: "flat",
+      default: "",
       required: false,
     },
     nameButton: {

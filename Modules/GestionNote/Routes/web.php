@@ -1,0 +1,22 @@
+<?php
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+|
+| Here is where you can register web routes for your application. These
+| routes are loaded by the RouteServiceProvider within a group which
+| contains the "web" middleware group. Now create something great!
+|
+*/
+
+Route::prefix('gestionnote')->group(function() {
+    Route::get('/', 'GestionNoteController@index');
+    Route::resource('evaluation',\Modules\GestionNote\Http\Controllers\EvaluationController::class);
+    // Affichage de notes
+    Route::get('/note/affichage',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'index'])->name('note.affichage');
+    Route::get('/note/attribution',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attribution'])->name('note.attribution');
+    Route::post('/note/enregistrer',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'store'])->name('note.save');
+
+});
