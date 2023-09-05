@@ -17,10 +17,10 @@ class Inscription extends Model
         return $this->belongsTo(Apprenant::class);
     }
 
-    public function filiere(): BelongsTo
+    /* public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);
-    }
+    } */
 
     public function classe(): BelongsTo
     {

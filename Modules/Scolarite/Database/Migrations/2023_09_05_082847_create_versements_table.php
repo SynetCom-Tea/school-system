@@ -13,15 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('inscriptions', function (Blueprint $table) {
+        Schema::create('versements', function (Blueprint $table) {
             $table->id();
-            $table->date('date_inscription');
-            $table->foreignIdFor(\Modules\Scolarite\Entities\Etudiant::class)
-                ->references('id')->on('etudiants')->constrained()
+            $table->date('date_versement');
+            $table->double('montant');
+            $table->foreignIdFor(\App\Models\Apprenant::class)
+                ->references('id')->on('apprenants')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
-            $table->foreignIdFor(\Modules\Scolarite\Entities\Filiere::class)
-                ->references('id')->on('filieres')->constrained()
+            $table->foreignIdFor(\Modules\Scolarite\Entities\Frais::class)
+                ->references('id')->on('frais')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
             $table->timestamps();
@@ -35,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('inscriptions');
+        Schema::dropIfExists('versements');
     }
 };

@@ -11,12 +11,12 @@ class Frais extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['libele','montant','filiere_id','niveau_id'];
+    protected $fillable = ['libele','montant','niveau_id'];
     
-    public function filiere(): BelongsTo
+    /* public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);
-    }
+    } */
 
     public function niveau(): BelongsTo
     {

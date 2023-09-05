@@ -58,7 +58,7 @@ export function listMenus() {
             title: "Inscription",
             icon: mdiAccountSchool,
             link: "/inscriptions/create",
-            permissions: "manage_school",
+            permissions: "manage_system",
         },
     ];
     let usersMenu = {
@@ -125,14 +125,14 @@ export function listMenus() {
                 icon: mdiCalendar,
                 title: "Années Scolaires",
                 link: "/annees",
-                permissions: "manage_school",
+                permissions: "manage_system",
             },
 
             {
                 icon: mdiGoogleClassroom,
                 title: "Niveaux",
                 link: "/niveaux",
-                permissions: "manage_school",
+                permissions: "manage_system",
             },
             {
                 icon: mdiGoogleClassroom,

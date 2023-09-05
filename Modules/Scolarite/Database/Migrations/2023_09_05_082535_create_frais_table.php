@@ -13,16 +13,16 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('versements', function (Blueprint $table) {
+        Schema::create('frais', function (Blueprint $table) {
             $table->id();
-            $table->date('date_versement');
+            $table->string('libele');
             $table->double('montant');
-            $table->foreignIdFor(\Modules\Scolarite\Entities\Etudiant::class)
-                ->references('id')->on('etudiants')->constrained()
+            /* $table->foreignIdFor(\Modules\Scolarite\Entities\Filiere::class)
+                ->references('id')->on('filieres')->constrained()
                 ->onUpdate('cascade')
-                ->onDelete('restrict');
-            $table->foreignIdFor(\Modules\Scolarite\Entities\Frais::class)
-                ->references('id')->on('frais')->constrained()
+                ->onDelete('restrict'); */
+            $table->foreignIdFor(\Modules\Scolarite\Entities\Niveau::class)
+                ->references('id')->on('niveaux')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
             $table->timestamps();
@@ -36,6 +36,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('versements');
+        Schema::dropIfExists('frais');
     }
 };
