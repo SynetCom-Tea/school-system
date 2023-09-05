@@ -23,7 +23,7 @@
             <v-row>
               <v-alert text="Cette section vous permet de configurer" type="info"></v-alert>
             </v-row>
-            <v-row>
+            <v-row  v-if="type == '3'">
               <v-col>
                 <v-switch label="Souhaiterez-vous appliquez le système LMD ?" color="primary" inset></v-switch>
               </v-col>

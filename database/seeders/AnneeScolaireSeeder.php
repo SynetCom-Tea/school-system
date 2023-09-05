@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\AnneeScolaire;
+use App\Models\Annee;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -13,7 +13,7 @@ class AnneeScolaireSeeder extends Seeder
      */
     public function run(): void
     {
-        AnneeScolaire::create([
+        Annee::create([
             'libelle' => '2022-2023'
         ]);
     }
