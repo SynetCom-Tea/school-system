@@ -21,10 +21,10 @@ return new class extends Migration
                 ->references('id')->on('filieres')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict'); */
-            $table->foreignIdFor(\Modules\Scolarite\Entities\Niveau::class)
-                ->references('id')->on('niveaus')->constrained()
+            /* $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
+                ->references('id')->on('niveaux')->constrained()
                 ->onUpdate('cascade')
-                ->onDelete('restrict');
+                ->onDelete('restrict'); */
             $table->timestamps();
         });
     }

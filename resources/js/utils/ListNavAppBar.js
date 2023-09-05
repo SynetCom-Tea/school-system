@@ -44,6 +44,12 @@ import {
 export function listMenus() {
     let singleItems = [
         {
+            title: "Profil",
+            icon: mdiAccount,
+            link: "/profile",
+            permissions: "manage_school",
+        },
+        /* {
             title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
@@ -59,9 +65,9 @@ export function listMenus() {
             icon: mdiAccountSchool,
             link: "/inscriptions/create",
             permissions: "manage_system",
-        },
+        }, */
     ];
-    let usersMenu = {
+    /* let usersMenu = {
         icon: mdiAccountCogOutline,
         title: "Gestion Utilisateurs",
         "icon-alt": mdiChevronDown,
@@ -210,7 +216,8 @@ export function listMenus() {
             //     link: "/permissions",
             //     permissions: "manage_system",
             // },
-        ],
+        ], */
     };
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu];
-}
+    //return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu];
+    return [singleItems];
+

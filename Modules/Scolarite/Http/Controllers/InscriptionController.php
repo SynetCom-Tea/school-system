@@ -8,7 +8,7 @@ use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Modules\Scolarite\Entities\Inscription;
-use Modules\Scolarite\Entities\Niveau;
+use Modules\Enseignement\Entities\Niveau;
 
 class InscriptionController extends Controller
 {
