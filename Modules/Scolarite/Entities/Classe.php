@@ -10,11 +10,11 @@ class Classe extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code', 'libele'];
+    protected $fillable = ['libele'];
 
-    public function anneeClasses(): HasMany
+    public function classeAnnees(): HasMany
     {
-        return $this->hasMany(AnneeClasse::class);
+        return $this->hasMany(ClasseAnnee::class);
     }
     
     public function inscriptions(): HasMany

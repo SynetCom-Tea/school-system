@@ -1,7 +1,7 @@
 <template>
 <v-card>
         <page-toolbar :icon="icon.mdiAccountSchool">Nouvelle Inscription</page-toolbar>
-    <v-stepper :items="['Apprenant', 'Tuteurs', 'Versement']">
+    <v-stepper :items="['Apprenant','Documents', 'Tuteurs', 'Versements']">
 
   <template v-slot:item.1>
     <v-form>
@@ -139,6 +139,22 @@
      <v-col>
         <v-alert
             color="info" 
+            :icon="icon.mdiCurrencyUsd"       
+            text
+            >
+            Documents
+        </v-alert>
+    </v-col>
+    </v-row>
+    </v-form>
+  </template>
+
+  <template v-slot:item.3>
+    <v-form>
+    <v-row>
+     <v-col>
+        <v-alert
+            color="info" 
             :icon="icon.mdiAccountCircle"       
             text
             >
@@ -178,7 +194,7 @@
                 <v-col md ="10">
                 </v-col>
                 <v-col offset-md="11" md="1">
-                    <v-btn variant="outlined" icon @click="addRow()" :disabled="!(form.tuteurs.length < 2)" fab small color="info">
+                    <v-btn variant="outlined" icon @click="addRow()" :disabled="!(form.tuteurs.length < 3)" fab small color="info">
                         <v-icon :icon="icon.mdiPlus"></v-icon>
                     </v-btn>
                 </v-col>
@@ -186,13 +202,13 @@
     </v-form> 
   </template>
 
-  <template v-slot:item.3>
+  <template v-slot:item.4>
     <v-form>
     <v-row>
      <v-col>
         <v-alert
             color="info" 
-            :icon="icon.mdiCash100"       
+            :icon="icon.mdiCurrencyUsd"       
             text
             >
             Versements
@@ -211,7 +227,7 @@ import { VStepper } from 'vuetify/labs/VStepper';
 import {
         mdiAccountCircle,
         mdiAccountSchool,
-        mdiCash100,
+        mdiCurrencyUsd,
         mdiPlus,
         mdiClose,
     } from '@mdi/js'
@@ -220,7 +236,7 @@ export default {
             VStepper,
             mdiAccountCircle,
             mdiAccountSchool,
-            mdiCash100,
+            mdiCurrencyUsd,
             mdiPlus,
             mdiClose,
         },
@@ -230,7 +246,7 @@ export default {
       icon: {
         mdiAccountCircle,
         mdiAccountSchool,
-        mdiCash100,
+        mdiCurrencyUsd,
         mdiPlus,
         mdiClose,
       },

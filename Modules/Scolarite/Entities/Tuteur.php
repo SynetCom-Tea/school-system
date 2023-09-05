@@ -12,8 +12,8 @@ class Tuteur extends Model
 
     protected $fillable = ['nom','prenom','tel','adresse'];
     
-    public function etudiants(): HasMany
+    public function apprenants(): HasMany
     {
-        return $this->hasMany(Etudiant::class);
+        return $this->hasMany(Apprenant::class);
     }
 }

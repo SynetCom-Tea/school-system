@@ -7,7 +7,7 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
-use Modules\Scolarite\Entities\Annee;
+use Modules\Scolarite\Entities\AnneeScolaire;
 
 class AnneeController extends Controller
 {
@@ -18,7 +18,7 @@ class AnneeController extends Controller
     public function index()
     {
         return Inertia::render('Annee/Index', [
-            'annees' => Annee::all()
+            'annees' => AnneeScolaire::all()
         ]);
     }
 
@@ -41,7 +41,7 @@ class AnneeController extends Controller
         request()->validate([
             'annee' => 'required|string',
         ]);
-        Annee::create($request->all());
+        AnneeScolaire::create($request->all());
         return redirect()->route('annees.index')->with('message', [
             'type' => 'success',
             'text' => "L'année a été créée avec succès !",
@@ -66,7 +66,7 @@ class AnneeController extends Controller
     public function edit($id)
     {
         return Inertia::render('Annee/Edit', [
-            'annee' => Annee::find($id)
+            'annee' => AnneeScolaire::find($id)
         ]);
     }
 
@@ -78,7 +78,7 @@ class AnneeController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $annee = Annee::find($id);
+        $annee = AnneeScolaire::find($id);
         $annee->update($request->all());
         return redirect()->route('annees.index');
     }
@@ -91,7 +91,7 @@ class AnneeController extends Controller
     public function destroy($id)
     {
         try{
-            $annee = Annee::find($id);
+            $annee = AnneeScolaire::find($id);
             $annee->delete();
         }
         catch(\Illuminate\Database\QueryException $e){

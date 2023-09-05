@@ -13,9 +13,9 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('annees', function (Blueprint $table) {
+        Schema::create('annee_scolaires', function (Blueprint $table) {
             $table->id();
-            $table->string('annee');
+            $table->string('libele');
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('annees');
+        Schema::dropIfExists('annee_scolaires');
     }
 };

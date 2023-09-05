@@ -6,15 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-
-class Annee extends Model
+class AnneeScolaire extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['annee'];
-
-    public function anneeClasses(): HasMany
+    protected $fillable = ['libele'];
+    
+    public function classeAnnees(): HasMany
     {
-        return $this->hasMany(AnneeClasse::class);
+        return $this->hasMany(ClasseAnnee::class);
     }
 }
