@@ -29,7 +29,7 @@ return new class extends Migration
             $table->string('cefficient')->nullable();
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
-                ->references('id')->on('niveaus');
+                ->references('id')->on('niveaux');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)
                 ->index()
                 ->references('id')->on('matieres');

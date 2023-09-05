@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Inertia\Response;
+use Modules\Enseignement\Entities\Niveau;
 
 class AuthenticatedSessionController extends Controller
 {
@@ -19,6 +20,7 @@ class AuthenticatedSessionController extends Controller
      */
     public function create(): Response
     {
+        dd(Niveau::all());
         return Inertia::render('Auth/Login', [
             'canResetPassword' => Route::has('password.request'),
             'status' => session('status'),
