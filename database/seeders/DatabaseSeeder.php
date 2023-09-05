@@ -4,7 +4,6 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Modules\Enseignement\Database\Seeders\EnseignementDatabaseSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -18,7 +17,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             TypeEtablissementSeeder::class,
             SectionSeeder::class,
-            NiveauTableSeeder::class
+            // NiveauTableSeeder::class
             // EtablissementsTableSeeder::class,
             // ClasseSeeder::class,
             // AnneeScolaireSeeder::class,
