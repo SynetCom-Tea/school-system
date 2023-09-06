@@ -124,7 +124,7 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group> -->
+                </v-list-group>
 
                 <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles = 'Administrateur'">
                   <template v-slot:activator="{ props }">

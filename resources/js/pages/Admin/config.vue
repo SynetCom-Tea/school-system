@@ -16,7 +16,7 @@
           v-text="step"
         ></v-avatar>
       </v-card-title>
-  
+
       <v-window v-model="step">
         <v-window-item :value="1">
           <v-card-text>
@@ -33,9 +33,9 @@
                   chips
                   closable-chips
                   color="blue-grey-lighten-2"
-                  
+
                   label="Select"
-                  
+
                 ></v-autocomplete>
               </v-col>
               <v-col>
@@ -56,9 +56,11 @@
             </v-row>
           </v-card-text>
         </v-window-item>
-  
+
         <v-window-item :value="2">
-          <v-card-text>
+
+          <v-card-text v-if="type == '3'">
+
             <v-text-field
               label="Password"
               type="password"
@@ -72,7 +74,9 @@
             </span>
           </v-card-text>
         </v-window-item>
-  
+
+
+
         <v-window-item :value="3">
           <div class="pa-4 text-center">
             <v-img
@@ -88,9 +92,9 @@
           </div>
         </v-window-item>
       </v-window>
-  
+
       <v-divider></v-divider>
-  
+
       <v-card-actions>
         <v-btn
           v-if="step > 1"
@@ -101,7 +105,7 @@
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
-          v-if="step < 3"
+          v-if="step < 4"
           color="primary"
           variant="flat"
           @click="step++"
@@ -148,7 +152,9 @@
       currentTitle () {
         switch (this.step) {
           case 1: return 'Sign-up'
-          case 2: return 'Create a password'
+          case 2:if (this.type === '3') {
+                    return 'Filiere';
+                }else{return 'Frais';}
           default: return 'Account created'
         }
       },
