@@ -27,7 +27,10 @@ export default {
     styleToolbar: { type: String, default: "" },
     dialogModel: { type: Boolean, default: true },
     addCloseButton: { type: Boolean, default: false },
-    onClickLeftButton: { type: Function, default: () => router.get(route("dashboard")) },
+    onClickLeftButton: {
+      type: Function,
+      default: () => window.history.back(),
+    },
   },
   data() {
     return {
@@ -70,17 +73,12 @@ export default {
       rounded="0"
     >
       <v-toolbar color="white" :style="styleToolbar" extended extension-height="50">
-        <Button
-          variant="flat"
-          class="mb-2"
-          fab
-          color="white"
-          title="Icon de la page"
-          style="height: 30px"
-          :prependIcon="icon"
-        >
-          <!-- <v-icon :icon="icon" size="medium"></v-icon> -->
-        </Button>
+        <v-icon
+          style="margin: 10px"
+          color="secondary"
+          :icon="icon"
+          size="x-large"
+        ></v-icon>
 
         <v-toolbar-title
           style="
@@ -111,7 +109,7 @@ export default {
             variant="solo"
           ></Autocomplete>
         </div>
-        <div style="display: absolute; bottom: 0; top: 0;height=40px">
+        <div style="display: absolute; bottom: 0; top: 0; height: 40px">
           <Button class="ma-2" color="bold" :onClickButton="onClickLeftButton">
             <v-icon start :icon="icons.mdiReply"></v-icon>
             {{ leftButtonName }}

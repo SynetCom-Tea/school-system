@@ -1,10 +1,13 @@
 <script>
 import Datatable from "./Datatable.vue";
+import { router, useForm } from "@inertiajs/vue3";
+import TextFieldC from "./TextFieldC.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
+import { inject } from "vue";
 export default {
   components: {
     Datatable,
-
+    TextFieldC,
     mdiAccount,
     mdiPurse,
     mdiHomeOutline,
@@ -12,7 +15,9 @@ export default {
     mdiGift,
   },
   data() {
+    console.log("Test:", this.my_data);
     return {
+      onDetailUpdate: false,
       headersH: [
         {
           title: "Dessert (100g serving)",
@@ -118,9 +123,24 @@ export default {
       ],
     };
   },
-  mounted() {},
+  inject: ["my_data"],
+  mounted() {
+    console.log("loggedIn:", this.my_data);
+  },
+  computed: {
+    location() {
+      return ref("North Pole");
+    },
+  },
 
   methods: {
+    updateLocation() {
+      location.value = "South Pole";
+    },
+    functionOnClickAddButton() {
+      console.log("herer");
+      router.get(route("users.index"));
+    },
     editItem(item) {
       console.log("item from editItem:", item);
     },
@@ -135,13 +155,23 @@ export default {
   <div>
     <!-- :headers="headers" :items="dataH" -->
     <Datatable
+      :addDialog="true"
+      :dialogDetailUpdate="true"
       titleDatatable="Liste des items"
       :functionDeleteItem="deleteItem"
       :editedObject="editedObject"
       :functionEditItem="editItem"
       :headers="headersH"
       :items="desserts"
-    />
+    >
+      <template v-slot:contentDialogUpdateDetail>
+        <ModalDetailUpdate :dialogDetailUpdate="onDetailUpdate">
+          <template v-slot:contentForm>
+            <TextFieldC />
+          </template>
+        </ModalDetailUpdate>
+      </template>
+    </Datatable>
   </div>
 </template>
 <style scoped></style>

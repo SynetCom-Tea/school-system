@@ -8,7 +8,9 @@ import {
   mdiMagnify,
   mdiContentSaveEditOutline,
 } from "@mdi/js";
+import TextFieldC from "./TextFieldC.vue";
 import ModalDetailUpdate from "./ModalDetailUpdate.vue";
+// import { provide, reactive, ref } from "vue";
 export default {
   props: {
     headers: {
@@ -19,18 +21,14 @@ export default {
       type: Array,
       required: true,
     },
-    // selectedItemForCRUD: {
-    //   type: String,
-    //   required: false,
-    // },
+
     editedObject: {
       type: Object,
       required: false,
     },
-    // defaultObject: {
-    //   type: Object,
-    //   required: false,
-    // },
+    addDialog: { type: Boolean, default: false },
+    dialogDetailUpdate: { type: Boolean, default: false },
+
     titleDatatable: {
       type: String,
       default: "Titre du datatable",
@@ -49,41 +47,56 @@ export default {
     mdiPlus,
     mdiCancel,
     mdiContentSaveEditOutline,
+    TextFieldC,
   },
-  data: () => ({
-    dialog: false,
-    alert: true,
-    dialogDetailUpdate: false,
-    searchQuery: null,
-    dialogDelete: false,
-    toolbarTitle: { update: "Modification", detail: "Détail" },
-    icons: {
-      mdiAccount,
-      mdiMagnify,
-      mdiDelete,
-      mdiPencil,
-      mdiPlus,
-      mdiCancel,
-      mdiContentSaveEditOutline,
-    },
-    // detailUpdateTitle: "",
-    detailEdit: -1,
-    editedIndex: -1,
-    isEditingModal: null,
-  }),
+  provide() {
+    return {
+      my_data: this.my_data,
+    };
+  },
+
+  data() {
+    return {
+      location: "North Pole",
+      dialog: false,
+      status: false,
+      alert: true,
+      my_data: {
+        foo: "1",
+        fuu: "2",
+      },
+      onDetailUpdate: false,
+      searchQuery: null,
+      dialogDelete: false,
+      toolbarTitle: "Détail",
+      // toolbarTitle: { update: "Modification", detail: "Détail" },
+      icons: {
+        mdiAccount,
+        mdiMagnify,
+        mdiDelete,
+        mdiPencil,
+        mdiPlus,
+        mdiCancel,
+        mdiContentSaveEditOutline,
+      },
+
+      detailEdit: -1,
+      editedIndex: -1,
+      isEditingModal: null,
+    };
+  },
+
   mounted() {
-    // console.log("this.isEditingModal22:", this.isEditingModal);
+    console.log("this.isEditingModal22:", this.my_data);
   },
   computed: {
-    // getEditemItemFunction() {
-    //   if (this.selectedItemForCRUD) return this.editItem(this.selectedItemForCRUD);
-    // },
     detailUpdateTitle() {
-      console.log("isEditingModal:", this.isEditingModal);
-
-      //   this.detailUpdateTitle = "Détail";
-
-      // this.detailUpdateTitle = "Modifier une ligne";
+      console.log("trouve:", this.isEditingModal);
+      if (this.isEditingModal) {
+        this.toolbarTitle = "Modification";
+      }
+      this.toolbarTitle = "Détail";
+      return this.toolbarTitle;
     },
     modelEditedObject: {
       get() {
@@ -117,16 +130,16 @@ export default {
   },
 
   methods: {
-    // detailUpdateTitle(val) {
-    //   console.log("this.isEditingModal:", this.isEditingModal);
-    //   return val ? "Détail" : "Modifier une ligne";
-    // },
+    updateLocation() {
+      this.location.value = "South Pole";
+    },
     //Fonction en ecoute lorsqu'on clique sur le bouton 'Ajouter'
     onClickAddButton() {
-      if (this.functionOnClickAddButton) {
+      if (this.addDialog) {
+        this.dialog = true;
+      } else {
         return this.functionOnClickAddButton();
       }
-      this.dialog = true;
     },
     initialize() {
       this.items;
@@ -134,13 +147,15 @@ export default {
     //Fonction en ecoute lorsqu'on clique sur l'icon 'Modifier'
     onEditItem(item) {
       console.log("isEditingModal:", this.isEditingModal);
-      this.editedIndex = this.items.indexOf(item);
-      this.modelEditedObject = Object.assign({}, item);
-      this.dialogDetailUpdate = true;
+
+      if (this.dialogDetailUpdate) {
+        this.onDetailUpdate = true;
+        this.isEditingModal = !this.isEditingModal;
+      }
       this.functionEditItem(item);
     },
     onClickCancelButtonForEditing() {
-      this.dialogDetailUpdate = false;
+      this.onDetailUpdate = false;
     },
     //Fonction en ecoute lorsqu'on clique sur l'icon 'Supprimer'
     onDeleteItem(item) {
@@ -214,75 +229,59 @@ export default {
         </div>
 
         <v-spacer></v-spacer>
+        <!-- <div class="divadd"> -->
         <Button
           variant="flat"
-          class="mb-2"
+          class="add-button-style"
           nameButton="Ajouter"
           title="Ajouter une nouvelle ligne"
-          style="height: 30px; text-transform: none"
           :prependIcon="icons.mdiPlus"
           :onClickButton="onClickAddButton"
         >
         </Button>
-        <ModalDetailUpdate
-          :onClickCancelButton="onClickCancelButtonForEditing"
-          :toolbarTitle="toolbarTitle"
-          :dialogDetailUpdate="dialogDetailUpdate"
-          :isEditing="isEditingModal"
-          :iconValueDetail="icons.mdiPencil"
-          :iconUpdate="icons.mdiAccount"
-        ></ModalDetailUpdate>
-        <v-dialog v-model="dialog" max-width="500px" persistent>
-          <!-- <template v-slot:activator="{ props }">
-            <Button
-              variant="flat"
-              class="mb-2"
-              nameButton="Ajouter"
-              title="Ajouter une nouvelle ligne"
-              style="height: 30px; text-transform: none"
-              :prependIcon="icons.mdiPlus"
-              v-bind="props"
-            >
-            </Button>
-          </template> -->
-          <v-card>
-            <v-card-title style="background-color: #7d002c">
-              <span class="text-h5 text-white">{{ formTitle }}</span>
-            </v-card-title>
 
-            <v-card-text>
-              <v-container>
-                <v-row>
-                  <slot name="addDialogContent" />
-                </v-row>
-              </v-container>
-            </v-card-text>
+        <slot name="contentDialogUpdateDetail" />
+        <div v-if="addDialog">
+          <v-dialog v-model="dialog" max-width="500px" persistent>
+            <v-card>
+              <v-card-title style="background-color: #7d002c">
+                <span class="text-h5 text-white">{{ formTitle }}</span>
+              </v-card-title>
 
-            <v-card-actions class="card-actions-style">
-              <Button
-                variant="text"
-                class="mb-2"
-                color="red"
-                nameButton="Annuler"
-                title="Annuler et Fermer la modale"
-                style="height: 30px"
-                :prependIcon="icons.mdiCancel"
-                :onClickButton="close"
-              ></Button>
+              <v-card-text>
+                <v-container>
+                  <v-row>
+                    <slot name="addDialogContent" />
+                  </v-row>
+                </v-container>
+              </v-card-text>
 
-              <Button
-                variant="text"
-                class="mb-2"
-                nameButton="Enregistrer"
-                title="Valider et Fermer la modale"
-                style="height: 30px"
-                :prependIcon="icons.mdiContentSaveEditOutline"
-                :onClickButton="save"
-              ></Button>
-            </v-card-actions>
-          </v-card>
-          <slot />
-        </v-dialog>
+              <v-card-actions class="card-actions-style">
+                <Button
+                  variant="text"
+                  class="mb-2"
+                  color="red"
+                  nameButton="Annuler"
+                  title="Annuler et Fermer la modale"
+                  style="height: 30px"
+                  :prependIcon="icons.mdiCancel"
+                  :onClickButton="close"
+                ></Button>
+
+                <Button
+                  variant="text"
+                  class="mb-2"
+                  nameButton="Enregistrer"
+                  title="Valider et Fermer la modale"
+                  style="height: 30px"
+                  :prependIcon="icons.mdiContentSaveEditOutline"
+                  :onClickButton="save"
+                ></Button>
+              </v-card-actions>
+            </v-card>
+            <slot />
+          </v-dialog>
+        </div>
         <v-dialog v-model="dialogDelete" max-width="500px" persistent>
           <v-card>
             <v-card-title style="background-color: #7d002c" class="text-h5 text-white"
@@ -358,6 +357,19 @@ export default {
   </v-data-table>
 </template>
 <style scoped>
+.add-button-style:hover {
+  background-color: #7d002c;
+  box-shadow: 0px 0px 8px #7d002c;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+.add-button-style {
+  height: 30px;
+  /* background-color: #7d002c; */
+  text-transform: none;
+  box-shadow: 10px 5px 5px #7d002c;
+  /* 0px 0px 5px #7d002c; */
+}
 .search-field {
   border: 1px solid #7d002c;
   border-radius: 4px;

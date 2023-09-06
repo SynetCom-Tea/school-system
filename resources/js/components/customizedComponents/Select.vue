@@ -48,7 +48,7 @@ export default {
       type: String,
       default: "primary",
     },
-    colorValue: {
+    color: {
       type: String,
       default: "primary",
     },
@@ -119,9 +119,8 @@ export default {
       :rules="rules"
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
-      :color="colorValue"
+      :color="color"
       :error-messages="errorMessageValue"
-      :multiple="isMultiple"
       @update:modelValue="onchangeModelValue"
     >
       <template #label v-if="isRequired">
@@ -130,6 +129,7 @@ export default {
       <template #label v-else>
         {{ label }}
       </template>
+      <slot />
     </v-select>
   </v-responsive>
 </template>

@@ -10,15 +10,11 @@ import {
 export default {
   components: { mdiCancel, mdiContentSaveEditOutline },
   props: {
-    toolbarTitle: {
-      type: Object,
-      default: "text",
-    },
+    // toolbarTitle: {
+    //   type: String,
+    //   default: "text",
+    // },
     dialogDetailUpdate: {
-      type: Boolean,
-      default: false,
-    },
-    isEditing: {
       type: Boolean,
       default: false,
     },
@@ -44,7 +40,8 @@ export default {
 
   data: () => ({
     hasSaved: false,
-    // isEditing: null,
+    isEditing: null,
+    toolbarTitle: "Détail",
     icons: {
       mdiMagnify,
       mdiDelete,
@@ -63,61 +60,51 @@ export default {
     },
   },
   computed: {
-    //detailUpdateTitle() {
-    //   if (this.isEditing) return this.toolbarTitle.detail;
-    //   this.toolbarTitle.update;
-    // },
-    // modelValueToolbarTitle: {
-    //   get() {
-    //     return this.toolbarTitle;
-    //   },
-    //   set(newValue) {
-    //     this.$emit("input", newValue);
-    //   },
-    // },
-    modelValue: {
+    modelValueIsEditing: {
       get() {
-        return this.dialogDetailUpdate;
+        return this.isEditing;
       },
       set(newValue) {
         this.$emit("input", newValue);
       },
     },
+
+    modelValue: {
+      get() {
+        return this.dialogDetailUpdate;
+      },
+      set(newValue) {
+        console.log("newValue:", newValue);
+        this.$emit("input", newValue);
+      },
+    },
   },
   methods: {
-    onClickButton() {
-      console.log("EEEE:", this.isEditing);
-      if (this.isEditing) {
-        this.detailUpdateTitle = this.toolbarTitle.detail;
-      } else {
-        this.detailUpdateTitle = this.toolbarTitle.update;
+    onClickTransition() {
+      if (this.modelValue) {
+        this.isEditing = !this.isEditing;
+        this.toolbarTitle = this.isEditing ? "Mise à jour" : "Détail";
       }
-      return (this.isEditing = !this.isEditing);
-    },
-    onchangeModelField(e) {
-      console.log("EEEE:", e);
-    },
-    customFilter(itemTitle, queryText, item) {
-      const textOne = item.raw.name.toLowerCase();
-      const textTwo = item.raw.abbr.toLowerCase();
-      const searchText = queryText.toLowerCase();
-
-      return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1;
-    },
-    testChange(e) {
-      console.log("e from testChange:", e);
     },
     save() {
-      this.isEditing = !this.isEditing;
-      this.hasSaved = true;
-      this.onClickSaveButton();
+      this.modelValue = false;
+      // this.hasSaved = true;
+      if (this.onClickSaveButton) {
+        return this.onClickSaveButton();
+      }
     },
   },
 };
 </script>
 <template>
-  <v-dialog v-model="modelValue" max-width="500px" persistent>
-    <v-card class="mx-auto" max-width="500">
+  <v-dialog v-model="modelValue" min-width="500" persistent>
+    <v-card
+      class="mx-auto"
+      min-width="500"
+      min-height="200"
+      max-height="1000"
+      max-width="900"
+    >
       <v-toolbar flat color="primary">
         <v-toolbar-title class="font-weight-light">
           {{ toolbarTitle }}
@@ -125,11 +112,15 @@ export default {
 
         <v-spacer></v-spacer>
 
-        <v-btn icon @click="isEditing = !isEditing">
+        <v-btn icon @click="onClickTransition()">
           <v-fade-transition leave-absolute>
-            <v-icon v-if="isEditing" :icon="iconValueDetail"></v-icon>
+            <v-icon
+              v-if="isEditing"
+              :icon="iconValueDetail"
+              title="Voir le détail"
+            ></v-icon>
 
-            <v-icon v-else :icon="iconUpdate"></v-icon>
+            <v-icon v-else :icon="iconUpdate" title="Faire une mise à jour"></v-icon>
           </v-fade-transition>
         </v-btn>
       </v-toolbar>
@@ -137,7 +128,6 @@ export default {
       <v-card-text>
         <v-form :disabled="!isEditing">
           <slot name="contentForm" />
-          <slot />
         </v-form>
       </v-card-text>
 
@@ -182,11 +172,15 @@ export default {
 </template>
 <style scoped>
 .card-actions-style {
-  display: flex;
+  display: absolute;
+  bottom: 0;
+  top: 0;
+  height: 52px;
+  /* display: flex;
   justify-content: flex-end;
   margin-left: auto;
   flex: none;
   min-height: 52px;
-  padding: 0.5rem;
+  padding: 0.5rem; */
 }
 </style>
