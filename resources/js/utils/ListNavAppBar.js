@@ -48,12 +48,12 @@ export function listMenus() {
             link: "/dashboard",
             permissions: "manage_system",
         },
-        // {
-        //     title: "Evaluation",
-        //     icon: mdiCogOutline,
-        //     link: "/gestionnote/evaluation",
-        //     permissions: "manage_system",
-        // },
+        {
+            title: "Test",
+            icon: mdiCogOutline,
+            link: "/enseignement/test",
+            permissions: "manage_system",
+        },
         // {
         //     title: "Attribution de notes",
         //     icon: mdiReceiptTextCheckOutline,

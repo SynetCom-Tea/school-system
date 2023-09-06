@@ -43,7 +43,7 @@ class HandleInertiaRequests extends Middleware
             'permissions' => fn () => auth()->user()
                 ? auth()->user()->getAllPermissions()->pluck('name')
                 : null,
-            $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first(),
+            auth()->user()? $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
             'sections' => fn () => auth()->user()
             ? SectionEtablissement::where('etablissement_id', $etablissement->etablissement->id)->with('section')->get()
             : null,

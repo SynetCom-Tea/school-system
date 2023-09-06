@@ -19,42 +19,7 @@
   
       <v-window v-model="step">
         <v-window-item :value="1">
-          <v-card-text>
-            <v-row>
-              <v-alert text="Cette section vous permet de configurer" type="info"></v-alert>
-            </v-row>
-            <v-row  v-if="type == '3'">
-              <v-col>
-                <v-switch label="Souhaiterez-vous appliquez le système LMD ?" color="primary" inset></v-switch>
-              </v-col>
-              <v-col>
-                <v-autocomplete
-                  :items="['Type 1', 'Type 2']"
-                  chips
-                  closable-chips
-                  color="blue-grey-lighten-2"
-                  
-                  label="Select"
-                  
-                ></v-autocomplete>
-              </v-col>
-              <v-col>
-                <v-switch label="Souhaiterez-vous appliquez le régime d'évaluation ?" color="indigo" inset></v-switch>
-              </v-col>
-              <v-col>
-                <v-text-field
-                  label="Pourcentage"
-                  type="number"
-                  placeholder="%"
-                ></v-text-field>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-switch label="Souhaiterez-vous importez le fichier des matieres ?" color="info" inset></v-switch>
-              </v-col>
-            </v-row>
-          </v-card-text>
+          <matiere-form @formSubmitted="handleFormSubmission" :type="type" />
         </v-window-item>
   
         <v-window-item :value="2">
@@ -97,7 +62,7 @@
           variant="text"
           @click="step--"
         >
-          Back
+          Retour
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
@@ -106,21 +71,24 @@
           variant="flat"
           @click="step++"
         >
-          Next
+          Suivant
         </v-btn>
       </v-card-actions>
     </v-card>
     </AuthenticatedLayout>
   </template>
   <script>
+    import MatiereForm from '@/components/admin/matiere.vue';
+    import { router,useForm} from '@inertiajs/vue3';
     import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
     import Toolbar from "@/components/customizedComponents/Toolbar.vue";
     import Datatable from "@/components/customizedComponents/datatable.vue";
     import Loader from "@/components/customizedComponents/Loader.vue";
-    import { mdiAccount, mdiPurse, mdiHomeOutline, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
+    import { mdiAccount, mdiPurse, mdiHomeOutline, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
     props:['type'],
     components: {
+    MatiereForm,
     Loader,
     Datatable,
     Toolbar,
@@ -129,14 +97,51 @@
     mdiCogOutline,
     mdiPurse,
     mdiHomeOutline,
+    mdiPlusCircle,
     mdiPresentation,
+    mdiCloseCircle,
     mdiGift,
   },
     data: () => ({
-        icons: [mdiAccount,mdiPurse,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline],
+        icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiPurse,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
+        form: useForm({
+            matieres: [],
+        }),
     }),
+    
+    methods: {
+        handleFormSubmission(formData) {
+          // Traitez les données du formulaire soumises par l'événement
+          console.log('Données du formulaire soumises :', formData);
+        },
+        goBack() {
+            router.get(route('etablissements.index'))
+            console.log()
+        },
+        // addRow() {
+        //     this.form.matieres.push({
+        //         code: null,
+        //         libelle: null,
+        //         before: null,
+        //         after: null
+        //     })
+        // },
+        // removeRow(id) {
+        //     this.form.matieres = this.form.matieres.filter((el) => el !== id)
+        // },
+        // async verify(element) {
+        //     const array = this.form.matieres.filter(el => el.code !== null && el.code == element.code)
 
+        //     if (array.length > 1) {
+        //         this.removeRow(element)
+        //         this.$alert.error("L'élément existe déjà !");
+        //     }
+        // },
+    },
+    // mounted() {
+    //     this.addRow()
+    // },
     computed: {
       Title () {
         switch (this.type) {
