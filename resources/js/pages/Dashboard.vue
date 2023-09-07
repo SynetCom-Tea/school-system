@@ -1,9 +1,9 @@
 <script>
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
-import TextInput from "../components/customizedComponents/TextField.vue";
+
 import TextInputC from "../components/customizedComponents/TextFieldC.vue";
-import Button from "../components/customizedComponents/Button.vue";
+import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
@@ -14,6 +14,7 @@ import Datatable from "../components/customizedComponents/datatable.vue";
 import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
   components: {
+    ExampleApplicationDatatable,
     Loader,
     Datatable,
     Toolbar,
@@ -23,8 +24,7 @@ export default {
     VueSpinner,
     Head,
     Dialog,
-    Button,
-    TextInput,
+
     Vue3Marquee,
     TextInputC,
     mdiAccount,
@@ -35,6 +35,19 @@ export default {
   },
   data() {
     return {
+      headersH: [
+        {
+          title: "Dessert (100g serving)",
+          align: "start",
+          sortable: false,
+          key: "name",
+        },
+        { title: "Calories", key: "calories" },
+        { title: "Fat (g)", key: "fat" },
+        { title: "Carbs (g)", key: "carbs" },
+        { title: "Protein (g)", key: "protein" },
+        { title: "Actions", key: "actions", sortable: false },
+      ],
       headers: [
         {
           title: "N°",
@@ -60,6 +73,78 @@ export default {
           title: "Sani",
         },
       ],
+      desserts: [
+        {
+          name: "Frozen Yogurt",
+          calories: 159,
+          fat: 6.0,
+          carbs: 24,
+          protein: 4.0,
+        },
+        {
+          name: "Ice cream sandwich",
+          calories: 237,
+          fat: 9.0,
+          carbs: 37,
+          protein: 4.3,
+        },
+        {
+          name: "Eclair",
+          calories: 262,
+          fat: 16.0,
+          carbs: 23,
+          protein: 6.0,
+        },
+        {
+          name: "Cupcake",
+          calories: 305,
+          fat: 3.7,
+          carbs: 67,
+          protein: 4.3,
+        },
+        {
+          name: "Gingerbread",
+          calories: 356,
+          fat: 16.0,
+          carbs: 49,
+          protein: 3.9,
+        },
+        {
+          name: "Jelly bean",
+          calories: 375,
+          fat: 0.0,
+          carbs: 94,
+          protein: 0.0,
+        },
+        {
+          name: "Lollipop",
+          calories: 392,
+          fat: 0.2,
+          carbs: 98,
+          protein: 0,
+        },
+        {
+          name: "Honeycomb",
+          calories: 408,
+          fat: 3.2,
+          carbs: 87,
+          protein: 6.5,
+        },
+        {
+          name: "Donut",
+          calories: 452,
+          fat: 25.0,
+          carbs: 51,
+          protein: 4.9,
+        },
+        {
+          name: "KitKat",
+          calories: 518,
+          fat: 26.0,
+          carbs: 65,
+          protein: 7,
+        },
+      ],
       test: "Abou",
       isDialog: false,
       rules: {
@@ -70,6 +155,14 @@ export default {
           return pattern.test(value) || "Invalid e-mail.";
         },
       },
+      editedObject: {
+        name: "",
+        calories: 0,
+        fat: 0,
+        carbs: 0,
+        protein: 0,
+      },
+
       icons: { mdiGift, mdiAccount },
       listGreetings: [
         { id: 1, text: "Wa fonda kayan!", color: "red" },
@@ -90,6 +183,13 @@ export default {
       this.isDialog = false;
     },
     onChangeTitle(e) {},
+
+    editItem(item) {
+      console.log("item from editItem:", item);
+    },
+    deleteItem(item) {
+      console.log("item from deleteItem:", item);
+    },
   },
 };
 </script>
@@ -141,7 +241,8 @@ export default {
     ></Toolbar> -->
     <br /><br />
     <div>
-      <Datatable titleDatatable="Liste des items " :headers="headers" :items="dataH" />
+      <!-- :headers="headers" :items="dataH" -->
+      <ExampleApplicationDatatable />
     </div>
     <br /><br />
 
@@ -156,7 +257,7 @@ export default {
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <Dialog
+    <!-- <Dialog
       :modelDialog="isDialog"
       :onCloseModale="onCloseModale"
       :iconHeaderModal="icons.mdiAccount"
@@ -175,7 +276,7 @@ export default {
           style="float: right; margin: 10px; height: 30px"
         ></Button
       ></template>
-    </Dialog>
+    </Dialog> -->
  <!-- <TextInput
       type="text"
       v-model="test"
@@ -190,13 +291,14 @@ export default {
     <div>{{ test }}</div>
     <br /><br /><br /><br /><br /><br />
 
-    <div>
+     <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"
         :iconUpdate="icons.mdiGift"
       />
     </div> -->
+    <!-- </div> -->
   </AuthenticatedLayout>
 </template>
 <!-- <style scoped>
@@ -222,4 +324,3 @@ export default {
   }
 }
 </style> -->
-

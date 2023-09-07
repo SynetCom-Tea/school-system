@@ -17,7 +17,7 @@
         &nbsp;
         <span>{{ currentTitle }}</span>&nbsp;
       </v-card-title>
-  
+
       <v-window v-model="step">
         <!-- Tabs de la Matieres pour toute les sections -->
         <v-window-item :value="1">
@@ -31,24 +31,47 @@
         </v-window-item>
         <!-- Tabs de la Classes pour toute les sections -->
 
+        
         <v-window-item :value="3">
-          <div class="pa-4 text-center">
-            <v-img
-              class="mb-4"
-              contain
-              height="128"
-              src="https://cdn.vuetifyjs.com/images/logos/v.svg"
-            ></v-img>
-            <h3 class="text-h6 font-weight-light mb-2">
-              Welcome to Vuetify
-            </h3>
-            <span class="text-caption text-grey">Thanks for signing up!</span>
-          </div>
+          <!-- Tabs de la Filiere pour toute les sections -->
+          <v-card-text v-if="type == '3'">
+            <filiere-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
+          <!-- Tabs de la Filiere pour toute les sections -->
+
+          <!-- Tabs de la Frais pour toute les sections -->
+          <v-card-text v-else>
+            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
+          <!-- Tabs de la Frais pour toute les sections -->
+        </v-window-item>
+
+
+
+        <v-window-item :value="4">
+          <v-card-text v-if="type == '3'">
+            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
+          <v-card-text v-else>
+            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
+        </v-window-item>
+
+        <v-window-item :value="5" v-if="type == '3'">
+          <v-card-text>
+            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
+        </v-window-item>
+
+        <v-window-item :value="6" v-if="type == '3'">
+          <v-card-text>
+            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
         </v-window-item>
       </v-window>
-  
+
       <v-divider></v-divider>
-  
+
       <v-card-actions>
         <v-btn
           v-if="step > 1"
@@ -61,7 +84,7 @@
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
-          v-if="step < 3"
+          v-if="step < pause"
           color="info"
           variant="flat"
           @click="step++"
@@ -75,6 +98,8 @@
   <script>
     import MatiereForm from '@/components/admin/matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
+    import filiereForm from '@/components/admin/filiere.vue';
+    import fraisForm from '@/components/admin/frais.vue';
     import { router,useForm} from '@inertiajs/vue3';
     import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
     import Toolbar from "@/components/customizedComponents/Toolbar.vue";
@@ -86,6 +111,8 @@
     components: {
     MatiereForm,
     ClasseForm,
+    filiereForm,
+    fraisForm,
     Loader,
     Datatable,
     Toolbar,
@@ -103,13 +130,14 @@
     data: () => ({
         icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
+        pause: null,
         formMatiere: {},
         formClasse: {},
         form: useForm({
             matieres: [],
         }),
     }),
-    
+
     methods: {
         getMatiereForm(donnees) {
           this.formMatiere = donnees
@@ -127,6 +155,11 @@
         },
     },
     mounted() {
+      if(this.type == '3'){
+        this.pause = 6
+      }else{
+        this.pause = 4
+      }
       // console.log('Admin etablissement',this.$page.props.admin_etablissement.etablissement_id)
     },
     computed: {
@@ -141,7 +174,14 @@
         switch (this.step) {
           case 1: return 'MATIERES'
           case 2: return 'SALLES'
-          default: return 'Account created'
+          case 3:if (this.type === '3') {
+                    return 'Filiere';
+                }else{return 'Frais';}
+          case 4:if (this.type === '3') {
+              return 'Frais';
+          }else{return 'Affectation de la matiere par niveau';}
+          case 5: return 'Unités d\enseignements'
+          case 6: return 'Affectation de la matiere par niveau'
         }
       },
     },

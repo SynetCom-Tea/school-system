@@ -43,12 +43,12 @@ class HandleInertiaRequests extends Middleware
             'permissions' => fn () => auth()->user()
                 ? auth()->user()->getAllPermissions()->pluck('name')
                 : null,
-            auth()->user()? $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
+                auth()->user() ? $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
             'sections' => fn () => auth()->user()
             ? EtablissementSection::where('etablissement_id', $etablissement->etablissement->id)->with('section')->get()
             : null,
 
-            // 'admin_etablissement' => fn () => auth()->user()->etablissement_id ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
+            'admin_etablissement' => fn () => auth()->user()->etablissement_id ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
            
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [

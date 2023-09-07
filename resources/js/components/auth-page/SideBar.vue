@@ -6,7 +6,7 @@
         <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
         <div class="d-flex">
           <SiteWebButton />
-          <MenuTopButton :onClickMenuButton="onClickMenuButton" />
+          <MenuTopButton />
         </div>
       </div>
     </v-app-bar>
@@ -50,7 +50,6 @@
                   class="list-case"
                   v-for="link in getListMenus[0]"
                   :key="link.title"
-
                   @click="page(link.link)"
                 >
                   <template v-slot:prepend>
@@ -61,7 +60,7 @@
                     v-text="link.title"
                   ></v-list-item-title>
                 </v-list-item>
-                <!-- <v-list-group :value="getListMenus[1].title">
+                <!-- <v-list-group :value="getListMenus[1].title"> -->
                 <v-list-group :value="getListMenus[4].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
@@ -125,7 +124,7 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group> -->
+                </v-list-group>
 
                 <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles = 'Administrateur'">
                   <template v-slot:activator="{ props }">
@@ -214,7 +213,7 @@ import { router } from "@inertiajs/vue3";
 import { mdiChevronLeft, mdiSchool, mdiCogOutline, mdiLogout, mdiMenu } from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
-import Button from "../customizedComponents/Button.vue";
+
 import SiteWebButton from "./SiteWebButton.vue";
 import MenuTopButton from "./MenuTopButton.vue";
 export default {
@@ -291,7 +290,7 @@ export default {
         model: false,
         children: enfants
     };
-    
+
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
     console.log('console sections',this.$page.props.sections);

@@ -92,7 +92,7 @@ export function listMenus() {
     let configsMenu = {
         icon: mdiCog,
         "icon-alt": mdiChevronDown,
-        title: "Notes",
+        title: "Configuration",
         permissions: "manage_system",
         divider: true,
         model: false,
