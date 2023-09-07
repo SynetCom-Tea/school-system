@@ -21,9 +21,9 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
                 ->index()
                 ->references('id')->on('etablissements');
-            $table->foreignIdFor(\App\Models\SectionEtablissement::class)->nullable()
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
-                ->references('id')->on('section_etablissements');
+                ->references('id')->on('etablissement_sections');
             $table->foreignIdFor(\App\Models\User::class)->nullable()
                 ->index()
                 ->references('id')->on('users');

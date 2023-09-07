@@ -104,28 +104,16 @@
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
-        section: null,
         form: useForm({
             lmd: false,
             regime_evaluation: false,
             fichier_matiere: null,
             type_lmd: null,
             matieres: [],
-            etablissement_section_id: null
         }),
     }),
     
     methods: {
-        getSection(type){
-            console.log('type',type)
-            if(type == '1'){
-                return 'Primaire'
-            }else if(type == '2'){
-                return 'Secondaire'
-            }else{
-                return 'Supérieur'
-            }
-        },
         resetForm(check){
             if(check){
                 this.form.matieres = []
@@ -137,7 +125,6 @@
             event.preventDefault();
             // Valide le formulaire avant de l'envoyer
             if (this.isValid()) {
-                this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section.libelle == this.section)
                 this.$emit('formSubmitted', this.form);
                 this.$swal.fire({
                     title: 'Réussi',
@@ -205,7 +192,6 @@
     },
     mounted() {
         this.addRow()
-        this.section = this.getSection(this.type)
     },
   }
 </script>

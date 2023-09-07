@@ -7,7 +7,7 @@ use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
 
 use App\Models\User;
-use App\Models\SectionEtablissement;
+use App\Models\EtablissementSection;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -45,9 +45,11 @@ class HandleInertiaRequests extends Middleware
                 : null,
             auth()->user()? $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
             'sections' => fn () => auth()->user()
-            ? SectionEtablissement::where('etablissement_id', $etablissement->etablissement->id)->with('section')->get()
+            ? EtablissementSection::where('etablissement_id', $etablissement->etablissement->id)->with('section')->get()
             : null,
 
+            // 'admin_etablissement' => fn () => auth()->user()->etablissement_id ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
+           
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),

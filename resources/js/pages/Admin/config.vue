@@ -2,26 +2,29 @@
     <AuthenticatedLayout>
     <Toolbar
       styleToolbar="background-color: white;"
-      :icon="icons.mdiAccount"
+      :icon="icons.mdiSchool"
       :toolbarTitle="Title"
     ></Toolbar>
     <br>
     <v-card
     >
       <v-card-title class="text-h6 font-weight-regular justify-space-between">
-        <span>{{ currentTitle }}</span>&nbsp;
-        <v-avatar
+        <v-icon
           color="primary"
-          size="24"
-          v-text="step"
-        ></v-avatar>
+          size="35"
+          :icon="icons.mdiSchool"
+        ></v-icon>
+        &nbsp;
+        <span>{{ currentTitle }}</span>&nbsp;
       </v-card-title>
   
       <v-window v-model="step">
+        <!-- Tabs de la Matieres pour toute les sections -->
         <v-window-item :value="1">
-          <matiere-form @formSubmitted="handleFormSubmission" :type="type" />
+          <matiere-form @formSubmitted="getMatiereForm" :type="type" />
         </v-window-item>
-  
+        <!-- Tabs de la Matieres pour toute les sections -->
+        
         <v-window-item :value="2">
           <v-card-text>
             <v-text-field
@@ -59,15 +62,17 @@
       <v-card-actions>
         <v-btn
           v-if="step > 1"
-          variant="text"
+          variant="flat"
+          color="info"
           @click="step--"
         >
-          Retour
+        Retour
+          <!-- <v-icon :icon="icons.mdiCloseCircle"></v-icon> -->
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
           v-if="step < 3"
-          color="primary"
+          color="info"
           variant="flat"
           @click="step++"
         >
@@ -84,7 +89,7 @@
     import Toolbar from "@/components/customizedComponents/Toolbar.vue";
     import Datatable from "@/components/customizedComponents/datatable.vue";
     import Loader from "@/components/customizedComponents/Loader.vue";
-    import { mdiAccount, mdiPurse, mdiHomeOutline, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
+    import { mdiAccount, mdiSchool, mdiHomeOutline, mdiInformation, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
     props:['type'],
     components: {
@@ -95,7 +100,8 @@
     AuthenticatedLayout,
     mdiAccount,
     mdiCogOutline,
-    mdiPurse,
+    mdiInformation,
+    mdiSchool,
     mdiHomeOutline,
     mdiPlusCircle,
     mdiPresentation,
@@ -103,56 +109,39 @@
     mdiGift,
   },
     data: () => ({
-        icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiPurse,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
+        icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
+        formMatiere: {},
         form: useForm({
             matieres: [],
         }),
     }),
     
     methods: {
-        handleFormSubmission(formData) {
+        getMatiereForm(donnees) {
+          this.formMatiere = donnees
           // Traitez les données du formulaire soumises par l'événement
-          console.log('Données du formulaire soumises :', formData);
+          console.log('Données du formulaire soumises :', this.formMatiere);
         },
         goBack() {
             router.get(route('etablissements.index'))
             console.log()
         },
-        // addRow() {
-        //     this.form.matieres.push({
-        //         code: null,
-        //         libelle: null,
-        //         before: null,
-        //         after: null
-        //     })
-        // },
-        // removeRow(id) {
-        //     this.form.matieres = this.form.matieres.filter((el) => el !== id)
-        // },
-        // async verify(element) {
-        //     const array = this.form.matieres.filter(el => el.code !== null && el.code == element.code)
-
-        //     if (array.length > 1) {
-        //         this.removeRow(element)
-        //         this.$alert.error("L'élément existe déjà !");
-        //     }
-        // },
     },
-    // mounted() {
-    //     this.addRow()
-    // },
+    mounted() {
+      // console.log('Admin etablissement',this.$page.props.admin_etablissement.etablissement_id)
+    },
     computed: {
       Title () {
         switch (this.type) {
-          case '1': return 'Section Primaire'
-          case '2': return 'Section Sécondaire'
-          default: return 'Section Supérieur'
+          case '1': return 'SECTION PRIMAIRE'
+          case '2': return 'SECTION SECONDAIRE'
+          default: return 'SECTION SUPERIEUR'
         }
       },
       currentTitle () {
         switch (this.step) {
-          case 1: return 'Sign-up'
+          case 1: return 'MATIERES'
           case 2: return 'Create a password'
           default: return 'Account created'
         }

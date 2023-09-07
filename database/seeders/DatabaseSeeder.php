@@ -19,12 +19,13 @@ class DatabaseSeeder extends Seeder
             NiveauTableSeeder::class,
             EtablissementsTableSeeder::class,
             RoleSeeder::class,
+            EtablissementSectionSeeder::class,
             ClasseSeeder::class,
             AnneeScolaireSeeder::class,
             ClasseAnneeSeeder::class,
             ApprenantSeeder::class,
             // SalleSeeder::class,
-            EtablissementSectionSeeder::class,
+            
             // EnseignementDatabaseSeeder::class,
         ]);
     }

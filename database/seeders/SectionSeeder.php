@@ -17,10 +17,10 @@ class SectionSeeder extends Seeder
             'libelle' => 'Primaire'
         ]);
         Section::create([
-            'libelle' => 'Sécondaire'
+            'libelle' => 'Secondaire'
         ]);
         Section::create([
-            'libelle' => 'Superieur'
+            'libelle' => 'Supérieur'
         ]);
     }
 }

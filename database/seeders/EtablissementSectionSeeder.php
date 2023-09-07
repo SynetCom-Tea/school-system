@@ -12,9 +12,9 @@ class EtablissementSectionSeeder extends Seeder
      */
     public function run(): void
     {
-        \DB::table('section_etablissements')->delete();
+        \DB::table('etablissement_sections')->delete();
 
-        \DB::table('section_etablissements')->insert(array (
+        \DB::table('etablissement_sections')->insert(array (
             0 =>
             array (
                 'etablissement_id' => 1,

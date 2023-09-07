@@ -30,12 +30,6 @@ class EnseignementController extends Controller
         ]);
     }
 
-    public function test()
-    {
-        // dd(Auth::user());
-        return Inertia::render('Admin/tester');
-    }
-
     /**
      * Show the form for creating a new resource.
      * @return Renderable

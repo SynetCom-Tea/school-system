@@ -17,14 +17,4 @@ class Niveau extends Model
     {
         return \Modules\Enseignement\Database\factories\NiveauFactory::new();
     }
-
-    public function niveauMatieres(): HasMany
-    {
-        return $this->hasMany(NiveauMatiere::class);
-    }
-
-    public function niveau(): BelongsTo
-    {
-        return $this->belongsTo(Niveau::class);
-    }
 }

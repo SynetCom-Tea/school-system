@@ -14,6 +14,5 @@ Route::middleware('auth')->group(function () {
     Route::prefix('enseignement')->group(function() {
         Route::get('/', 'EnseignementController@index');
         Route::get('/configuration/{type}',[\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'config'])->name('admin.config');
-        Route::get('/test',[\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'test'])->name('admin.test');
     });
 });
