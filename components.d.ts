@@ -9,6 +9,9 @@ declare module 'vue' {
   export interface GlobalComponents {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    VAuto: typeof import('vuetify/lib')['VAuto']
+    VAutocomple: typeof import('vuetify/lib')['VAutocomple']
+    VData: typeof import('vuetify/lib')['VData']
     VDataTable: typeof import('vuetify/labs/VDataTable')['VDataTable']
   }
 }

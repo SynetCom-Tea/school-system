@@ -16,6 +16,15 @@ class PermissionSeeder extends Seeder
         'user' => 'un utilisateur',
         'permission' => 'une permission',
         'evaluation' => 'une évaluation',
+        'matiere' => 'une matiere',
+        'niveau' => 'un niveau',
+        'Filiere' => 'une Filière',
+        'ue' => 'un ue',
+        'apprenant' => 'un apprenant',
+        'etablissement' => 'un etablissement',
+        'annee' => 'une annee',
+        'salle' => 'une salle',
+        'horaire' => 'un horaire',
 
     ];
     public function run(): void

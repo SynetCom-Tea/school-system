@@ -76,13 +76,13 @@ export function listMenus() {
             {
                 icon: mdiSquareMedium,
                 title: "Rôles",
-                link: "/roles",
+                link: "/enseignement/roles",
                 permissions: "manage_system",
             },
             {
                 icon: mdiSquareMedium,
                 title: "Permissions",
-                link: "/permissions",
+                link: "/enseignement/permissions",
                 permissions: "manage_system",
             },
         ],
@@ -143,7 +143,7 @@ export function listMenus() {
             {
                 icon: mdiSchool,
                 title: "Etablissements",
-                link: "/organizations",
+                link: "/enseignement/etablissements",
                 permissions: "manage_system",
             },
             {

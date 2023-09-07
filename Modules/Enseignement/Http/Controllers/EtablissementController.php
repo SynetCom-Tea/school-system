@@ -17,8 +17,9 @@ class EtablissementController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Etablissement/Index', [
-            'etablissements' => Etablissement::with('type_etablissement', 'facultes.fillieres', 'fillieres')->get()
+        return Inertia::render('Enseignement/Etablissement/Index', [
+            'type_etablissements' => TypeEtablissement::all(),
+            'etablissements' => Etablissement::with('type_etablissement')->get()
         ]);
     }
 
@@ -27,7 +28,7 @@ class EtablissementController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Etablissement/Create', [
+        return Inertia::render('Enseignement/Etablissement/Create', [
             'types' => TypeEtablissement::all(),
             'fillieres' => Filliere::all()
         ]);
@@ -39,27 +40,11 @@ class EtablissementController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        $this->validate($request, [
-            'name' => 'required|string|max:255',
-            'adresse' => 'required|string|max:255',
-            'mail' => 'required|string|email|max:255|unique:etablissements',
-            'telephone' => 'required|array',
-            'pays' => 'required|string|max:255',
-            'ville' => 'required|string|max:255',
-            'type_etablissement_id' => 'required',
-        ]);
+        // $this->validate($request, [
+        //     'name' => 'required|string|max:255',
+        //     'type_etablissement_id' => 'required',
+        // ]);
         $etablissement = Etablissement::create($request->all());
-        if($request->type_etablissement_id == 1){
-            foreach($request->facultes as $faculte){
-                Faculte::create([
-                    'code' => $faculte['code'],
-                    'name'=>$faculte['name'],
-                    'etablissement_id' => $etablissement->id
-                ])->fillieres()->attach($faculte['filliere']);
-            }
-        }else{
-            $etablissement->fillieres()->attach($request->filliere);
-        }
         return redirect()->route('etablissements.index')->with('message', [
             'type' => 'success',
             'text' => "L'etablissement a été crée avec succès !",
@@ -80,7 +65,7 @@ class EtablissementController extends Controller
     public function edit(Etablissement $etablissement)
     {
         // dd($etablissement->load('type_etablissement', 'facultes.fillieres', 'fillieres'));
-        return Inertia::render('Etablissement/Edit', [
+        return Inertia::render('Enseignement/Etablissement/Edit', [
             'types' => TypeEtablissement::all(),
             'fillieres' => Filliere::all(),
             'etablissement' => $etablissement->load('type_etablissement', 'facultes.fillieres', 'fillieres')

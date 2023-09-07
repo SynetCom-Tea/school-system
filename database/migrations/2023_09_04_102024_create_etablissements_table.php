@@ -13,11 +13,11 @@ return new class extends Migration
     {
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('mail');
-            $table->string('adresse');
-            $table->json('telephone');
-            $table->string('ville');
+            $table->string('name')->nullable();
+            $table->string('mail')->nullable();
+            $table->string('adresse')->nullable();
+            $table->string('telephone')->nullable();
+            $table->string('ville')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
                 ->references('id')->on('type_etablissements');
             $table->foreignIdFor(\App\Models\SystemeLmd::class)->nullable()->index()
@@ -26,14 +26,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-<<<<<<< HEAD:database/migrations/2023_09_04_102024_create_etablissements_table.php
         Schema::create('section_etablissements', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
-=======
-        Schema::create('etablissement_section', function (Blueprint $table) {
-            
->>>>>>> 390e7a47c809f2dfd9114ff12c9172a63ec3c548:database/migrations/2023_08_23_102036_create_etablissements_table.php
             $table->foreignIdFor(\App\Models\Etablissement::class)
                 ->index()
                 ->references('id')->on('etablissements');
