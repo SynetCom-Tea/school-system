@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
+use Modules\Enseignement\Entities\Niveau;
+
 use Inertia\Inertia;
 
 
@@ -24,9 +26,9 @@ class EnseignementController extends Controller
 
     public function config($type)
     {
-        // dd($type);
         return Inertia::render('Admin/config',[
-            'type' => $type
+            'type' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get()
         ]);
     }
 

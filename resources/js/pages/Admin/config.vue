@@ -25,22 +25,12 @@
         </v-window-item>
         <!-- Tabs de la Matieres pour toute les sections -->
         
+        <!-- Tabs de la Classes pour toute les sections -->
         <v-window-item :value="2">
-          <v-card-text>
-            <v-text-field
-              label="Password"
-              type="password"
-            ></v-text-field>
-            <v-text-field
-              label="Confirm Password"
-              type="password"
-            ></v-text-field>
-            <span class="text-caption text-grey-darken-1">
-              Please enter a password for your account
-            </span>
-          </v-card-text>
+          <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
         </v-window-item>
-  
+        <!-- Tabs de la Classes pour toute les sections -->
+
         <v-window-item :value="3">
           <div class="pa-4 text-center">
             <v-img
@@ -84,6 +74,7 @@
   </template>
   <script>
     import MatiereForm from '@/components/admin/matiere.vue';
+    import ClasseForm from '@/components/admin/classe.vue';
     import { router,useForm} from '@inertiajs/vue3';
     import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
     import Toolbar from "@/components/customizedComponents/Toolbar.vue";
@@ -91,9 +82,10 @@
     import Loader from "@/components/customizedComponents/Loader.vue";
     import { mdiAccount, mdiSchool, mdiHomeOutline, mdiInformation, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
-    props:['type'],
+    props:['type','niveaux'],
     components: {
     MatiereForm,
+    ClasseForm,
     Loader,
     Datatable,
     Toolbar,
@@ -112,6 +104,7 @@
         icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
         formMatiere: {},
+        formClasse: {},
         form: useForm({
             matieres: [],
         }),
@@ -121,7 +114,12 @@
         getMatiereForm(donnees) {
           this.formMatiere = donnees
           // Traitez les données du formulaire soumises par l'événement
-          console.log('Données du formulaire soumises :', this.formMatiere);
+          console.log('Données du formulaire de la matiere :', this.formMatiere);
+        },
+        getClasseForm(donnees) {
+          this.formClasse = donnees
+          // Traitez les données du formulaire soumises par l'événement
+          console.log('Données du formulaire de la classe :', this.formClasse);
         },
         goBack() {
             router.get(route('etablissements.index'))
@@ -142,7 +140,7 @@
       currentTitle () {
         switch (this.step) {
           case 1: return 'MATIERES'
-          case 2: return 'Create a password'
+          case 2: return 'SALLES'
           default: return 'Account created'
         }
       },
