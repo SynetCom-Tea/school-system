@@ -19,7 +19,7 @@
 
       <v-window v-model="step">
         <v-window-item :value="1">
-          <v-card-text>
+          <!-- <v-card-text>
             <v-row>
               <v-alert text="Cette section vous permet de configurer" type="info"></v-alert>
             </v-row>
@@ -54,42 +54,26 @@
                 <v-switch label="Souhaiterez-vous importez le fichier des matieres ?" color="info" inset></v-switch>
               </v-col>
             </v-row>
-          </v-card-text>
+          </v-card-text> -->
+          <matiere-form @formSubmitted="handleFormSubmission" :type="type" />
         </v-window-item>
 
         <v-window-item :value="2">
 
           <v-card-text v-if="type == '3'">
-
-            <v-text-field
-              label="Password"
-              type="password"
-            ></v-text-field>
-            <v-text-field
-              label="Confirm Password"
-              type="password"
-            ></v-text-field>
-            <span class="text-caption text-grey-darken-1">
-              Please enter a password for your account
-            </span>
+            <filiere-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
+          <v-card-text v-if="type !== '3'">
+            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
           </v-card-text>
         </v-window-item>
 
 
 
         <v-window-item :value="3">
-          <div class="pa-4 text-center">
-            <v-img
-              class="mb-4"
-              contain
-              height="128"
-              src="https://cdn.vuetifyjs.com/images/logos/v.svg"
-            ></v-img>
-            <h3 class="text-h6 font-weight-light mb-2">
-              Welcome to Vuetify
-            </h3>
-            <span class="text-caption text-grey">Thanks for signing up!</span>
-          </div>
+          <v-card-text v-if="type == '3'">
+            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+          </v-card-text>
         </v-window-item>
       </v-window>
 
@@ -101,7 +85,7 @@
           variant="text"
           @click="step--"
         >
-          Back
+          Retour
         </v-btn>
         <v-spacer></v-spacer>
         <v-btn
@@ -110,21 +94,28 @@
           variant="flat"
           @click="step++"
         >
-          Next
+          Suivant
         </v-btn>
       </v-card-actions>
     </v-card>
     </AuthenticatedLayout>
   </template>
   <script>
+    import MatiereForm from '@/components/admin/matiere.vue';
+    import filiereForm from '@/components/admin/filiere.vue';
+    import fraisForm from '@/components/admin/frais.vue';
+    import { router,useForm} from '@inertiajs/vue3';
     import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
     import Toolbar from "@/components/customizedComponents/Toolbar.vue";
     import Datatable from "@/components/customizedComponents/datatable.vue";
     import Loader from "@/components/customizedComponents/Loader.vue";
-    import { mdiAccount, mdiPurse, mdiHomeOutline, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
+    import { mdiAccount, mdiPurse, mdiHomeOutline, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
     props:['type'],
     components: {
+    MatiereForm,
+    filiereForm,
+    fraisForm,
     Loader,
     Datatable,
     Toolbar,
@@ -133,14 +124,53 @@
     mdiCogOutline,
     mdiPurse,
     mdiHomeOutline,
+    mdiPlusCircle,
     mdiPresentation,
+    mdiCloseCircle,
     mdiGift,
   },
     data: () => ({
-        icons: [mdiAccount,mdiPurse,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline],
+        icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiPurse,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
+        form: useForm({
+            matieres: [],
+        }),
     }),
 
+    methods: {
+        handleFormSubmission(formData) {
+          // Traitez les données du formulaire soumises par l'événement
+          console.log('Données du formulaire soumises :', formData);
+        },
+        goBack() {
+            router.get(route('etablissements.index'))
+            console.log()
+        },
+        // addRow() {
+        //     this.form.matieres.push({
+        //         code: null,
+        //         libelle: null,
+        //         before: null,
+        //         after: null
+        //     })
+        // },
+        // removeRow(id) {
+        //     this.form.matieres = this.form.matieres.filter((el) => el !== id)
+        // },
+        // async verify(element) {
+        //     const array = this.form.matieres.filter(el => el.code !== null && el.code == element.code)
+
+        //     if (array.length > 1) {
+        //         this.removeRow(element)
+        //         this.$alert.error("L'élément existe déjà !");
+        //     }
+        // },
+    },
+
+    // mounted() {
+    //     console.log('admin_etablissement',this.$page.props.admin_etablissement.admin_etablissement);
+    //     // this.addRow()
+    // },
     computed: {
       Title () {
         switch (this.type) {

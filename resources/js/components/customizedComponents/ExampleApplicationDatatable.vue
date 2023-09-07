@@ -1,5 +1,5 @@
 <script>
-import Datatable from "./Datatable.vue";
+import Datatable from "./datatable.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
 export default {
   components: {
