@@ -1,50 +1,118 @@
 <template>
-    <form @submit.prevent="submitForm">
+    <form @submit.prevent="submitForm" novalidate>
         <v-container fluid>
         <v-card-text>
-
             <v-row>
-                <v-alert text="Cette section vous permet de configurer" type="info"></v-alert>
+                <v-alert type="info">
+                    <li>Cette section vous permet de configurer les filières de cet établissement</li>
+                    <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
+                </v-alert>
             </v-row>
-
-            <v-row >
-
-                <v-col cols="5">
-                    <v-switch  label="Souhaiterez-vous importez le fichier des filieres ?" v-model="importation" color="info" ></v-switch>
-                </v-col>
-                <v-col>
-
-                    <v-file-input v-if="importation"
-                        clearable
-                        label="File input"
-                        variant="solo-inverted"
-                        v-model="form.fichier_filiere"
-                    ></v-file-input>
-                </v-col>
-                <v-col></v-col>
-            </v-row>
-            <v-card v-if="!importation">
-                <v-card-title class="text-h6 font-weight-regular justify-space-between">
-                    <span style="color:blue">Renseigner les filieres</span>&nbsp;
-                </v-card-title>
+            <br><br>
+            <v-card>
                 <v-card-text>
-                    <v-row disabled :key="filieres.id" v-for="(filieres, i) in form.filieres">
-                        <v-col md="2"></v-col>
+
+                    <v-row>
+                        <v-col>
+                            <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                        </v-col>
+                        <v-col v-if="importation">
+                            <span style="color: red; font-size: x-large;">*</span>
+                            <v-file-input
+                                clearable
+                                required
+                                v-model="form.fichier_filiere"
+                                label="Charger le fichier des filiére"
+                                variant="solo-inverted"
+                            ></v-file-input>
+                        </v-col>
+                        <v-col></v-col>
+                    </v-row>
+                </v-card-text>
+            </v-card>
+            <v-divider></v-divider>
+            <v-card v-if="!importation">
+                <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
+                <v-card-text v-if="type == '3'">
+                    <v-row disabled :key="filiere.id" v-for="(filiere, i) in form.filieres">
                         <v-col md="2">
-                            <text-field label="Code filiere" placeholder="Code filiere" @change="verify(filieres)" v-model="filieres.code"></text-field>
+                            <span style="color: red; font-size: x-large;">*</span>
+                            <text-field label="Code filiere" placeholder="Code filiere" required @change="verify(filiere)" v-model="filiere.code"></text-field>
                         </v-col>
                         <v-col md="3">
-                            <text-field label="Nom de la filiere" placeholder="Nom de la filiere" v-model="filieres.name"></text-field>
+                            <span style="color: red; font-size: x-large;">*</span>
+                            <text-field label="Nom de la filiere" placeholder="Nom de la filiere" required v-model="filiere.libelle"></text-field>
                         </v-col>
                         <v-col md="1">
-                            <v-btn variant="outlined" :disabled="!(form.filieres.length > 1)" icon @click="removeRow(filieres)" fab small color="error">
+                            <br>
+                            <v-btn variant="outlined" :disabled="!(form.filieres.length > 1)" icon @click="removeRow(filiere)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                             </v-btn>
                         </v-col>
                     </v-row>
                     <v-row>
+
                         <v-col offset-md="11" md="1">
-                            <v-btn variant="outlined" icon @click="addRow" fab small color="green">
+                            <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
+                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+
+                <v-card-text v-if="type == '4'">
+                    <v-chip color="primary " variant="outlined">
+                        Departement
+                    </v-chip>
+                    <v-row disabled :key="filiere.id" v-for="(filiere, i) in form.filieres">
+                        <v-col md="5">
+
+                            <TextField label="Code filiere" placeholder="Code filiere" isRequired="true" @change="verify(filiere)" v-model="filiere.code">
+                            </TextField>
+                        </v-col>
+                        <v-col md="6">
+
+                            <TextField label="Nom de la filiere" isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle">
+                            </TextField>
+                        </v-col>
+
+                        <v-col md="1">
+                            <v-btn variant="outlined" :disabled="!(form.filieres.length > 1)" icon @click="removeRow(filiere)" fab small color="error">
+                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                            </v-btn>
+                        </v-col>
+
+                        <v-row style="margin-left: 60px;" >
+                            <v-chip color="primary " variant="outlined">
+                                    filière
+                                </v-chip>
+
+
+                                <v-row disabled :key="filiere.id" v-for="(filiere, i) in form.filieres">
+                                    <br>
+                                    <v-col md="3">
+
+                                    <TextField label="Code filiere" placeholder="Code filiere" isRequired="true" @change="verify(filiere)" v-model="filiere.code">
+                                    </TextField>
+                                </v-col>
+                                <v-col md="4">
+
+                                    <TextField label="Nom de la filiere" isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle">
+                                    </TextField>
+                                </v-col>
+                                <v-col md="1">
+                                    <v-btn variant="outlined" :disabled="!(form.filieres.length > 1)" icon @click="removeRow(filiere)" fab small color="error">
+                                        <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                                    </v-btn>
+                                </v-col>
+                                </v-row>
+
+                        </v-row>
+                    </v-row>
+                    <v-row>
+
+                        <v-col offset-md="11" md="1">
+                            <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
                                 <v-icon :icon="icons.mdiPlusCircle"></v-icon>
                             </v-btn>
                         </v-col>
@@ -52,29 +120,30 @@
                 </v-card-text>
             </v-card>
         </v-card-text>
+    </v-container>
         <v-row>
             <v-col md="5"></v-col>
             <v-col md="4">
-                <v-btn type="submit" title="enregistrer" color="green">
+                <v-btn type="submit" title="enregistrer" color="info">
                     Enregistrer
                 </v-btn>
             </v-col>
         </v-row>
-    </v-container>
+        <br>
     </form>
 </template>
 <script>
     import { router,useForm} from '@inertiajs/vue3';
-    import { mdiCloseCircle, mdiPlusCircle } from "@mdi/js";
+    import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
     props:['type'],
     components: {
-    mdiPlusCircle,
-    mdiCloseCircle,
-
-  },
+        mdiPlusCircle,
+        mdiCloseCircle,
+        mdiInformation
+    },
     data: () => ({
-        icons: {mdiPlusCircle,mdiCloseCircle},
+        icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
         form: useForm({
@@ -84,8 +153,60 @@
     }),
 
     methods: {
+        formatNiveauLabel(item) {
+            if(item){
+                return `${item?.code} - ${item?.libelle}`;
+            }
+        },
+        resetForm(check){
+            if(check){
+                this.form.filieres = []
+                this.addRow()
+            }
+        },
         submitForm() {
-            this.$emit('formSubmitted', this.form);
+            // Empêche l'envoi du formulaire par défaut
+            event.preventDefault();
+            // Valide le formulaire avant de l'envoyer
+            if (this.isValid()) {
+                this.$emit('formSubmitted', this.form);
+                this.$swal.fire({
+                    title: 'Réussi',
+                    text: "Mise à jour réussi avec succes!",
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+                // this.$swal("Enregistrement réussi avec succes!")
+            }else{
+                // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
+                this.$swal.fire({
+                    title: 'Erreur',
+                    text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
+                    icon: 'warning',
+                    confirmButtonText: 'OK',
+                });
+
+            }
+        },
+        isValid() {
+            let fichier = false
+            let valid = false
+
+            if(this.importation && this.form.fichier_filiere != null){
+                fichier = true
+            }else if(!this.importation && !this.form.filieres.find((el) => {
+                return el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
+            }))
+            {
+                fichier = true
+            }
+
+            if(fichier){
+                valid = true
+            }else{
+                valid = false
+            }
+            return valid
         },
         goBack() {
             router.get(route('etablissements.index'))
@@ -94,7 +215,7 @@
         addRow() {
             this.form.filieres.push({
                 code: null,
-                name: null,
+                libelle: null,
                 etablissement: this.$page.props.admin_etablissement.etablissement_id,
                 before: null,
                 after: null
@@ -118,3 +239,6 @@
     },
   }
 </script>
+
+
+

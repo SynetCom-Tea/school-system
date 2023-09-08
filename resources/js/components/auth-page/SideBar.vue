@@ -269,29 +269,29 @@ export default {
       let primaire = {icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"}
       let secondaire = {icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"}
       let superieur = {icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"}
-      let universite = {icon: mdiSchool, title: "Université", link: "/enseignement/configuration/4"}
+      let universite = {icon: mdiSchool, title: "Universitaire", link: "/enseignement/configuration/4"}
 
-      if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur') && tabs.includes('Université')) {
+      if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur') && tabs.includes('Universitaire')) {
         enfants.push(primaire,secondaire,superieur,universite)
       } else if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur')){
         enfants.push(primaire,secondaire,superieur)
-      }else if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Université')){
+      }else if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Universitaire')){
         enfants.push(primaire,secondaire,universite)
-      }else if (tabs.includes('Supérieur') && tabs.includes('Secondaire') && tabs.includes('Université')){
+      }else if (tabs.includes('Supérieur') && tabs.includes('Secondaire') && tabs.includes('Universitaire')){
         enfants.push(secondaire,superieur,universite)
-      }else if (tabs.includes('Supérieur') && tabs.includes('Primaire') && tabs.includes('Université')){
+      }else if (tabs.includes('Supérieur') && tabs.includes('Primaire') && tabs.includes('Universitaire')){
         enfants.push(primaire,superieur,universite)
       }else if (tabs.includes('Primaire') && tabs.includes('Secondaire')){
         enfants.push(primaire,secondaire)
       } else if (tabs.includes('Primaire') && tabs.includes('Supérieur')){
         enfants.push(primaire,superieur)
-      }else if (tabs.includes('Primaire') && tabs.includes('Université')){
+      }else if (tabs.includes('Primaire') && tabs.includes('Universitaire')){
         enfants.push(primaire,universite)
       }else if (tabs.includes('Secondaire') && tabs.includes('Supérieur')){
         enfants.push(secondaire,superieur)
-      }else if (tabs.includes('Secondaire') && tabs.includes('Université')){
+      }else if (tabs.includes('Secondaire') && tabs.includes('Universitaire')){
         enfants.push(secondaire,universite)
-      }else if (tabs.includes('Supérieur') && tabs.includes('Université')){
+      }else if (tabs.includes('Supérieur') && tabs.includes('Universitaire')){
         enfants.push(superieur,universite)
       }else if (tabs.includes('Primaire')){
         enfants.push(primaire)
@@ -299,7 +299,7 @@ export default {
         enfants.push(secondaire)
       }else if (tabs.includes('Supérieur')){
         enfants.push(superieur)
-      }else if (tabs.includes('Université')){
+      }else if (tabs.includes('Universitaire')){
         enfants.push(universite)
       }else{
 

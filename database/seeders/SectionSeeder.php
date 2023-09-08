@@ -23,7 +23,7 @@ class SectionSeeder extends Seeder
             'libelle' => 'Supérieur'
         ]);
         Section::create([
-            'libelle' => 'Université'
+            'libelle' => 'Universitaire'
         ]);
     }
 }

@@ -49,7 +49,6 @@ class HandleInertiaRequests extends Middleware
             : null,
 
             'admin_etablissement' => fn () => auth()->user() ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
-           
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),

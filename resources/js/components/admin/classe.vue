@@ -17,7 +17,7 @@
                         </v-col>
                         <v-col v-if="form.lmd">
                             <span style="color: red; font-size: x-large;">*</span>
-                            <v-autocomplete 
+                            <v-autocomplete
                                 :items="['Type 1', 'Type 2']"
                                 chips
                                 closable-chips
@@ -54,12 +54,12 @@
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-card-text>
                     <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes">
-                        <v-col md="2" v-if="type !== '3'">
+                        <v-col md="2" v-if="type !== '3' && type !== '4'">
                             <span style="color: red; font-size: x-large;">*</span>
-                            <v-autocomplete 
+                            <v-autocomplete
                                 :items="niveaux"
                                 v-model="classe.niveau"
-                                :item-title="formatNiveauLabel" 
+                                :item-title="formatNiveauLabel"
                                 item-value="id"
                                 chips
                                 closable-chips
@@ -112,7 +112,7 @@
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
-        mdiInformation 
+        mdiInformation
     },
     data: () => ({
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
@@ -123,7 +123,7 @@
             classes: [],
         }),
     }),
-    
+
     methods: {
         formatNiveauLabel(item) {
             if(item){
@@ -157,7 +157,7 @@
                     icon: 'warning',
                     confirmButtonText: 'OK',
                 });
-               
+
             }
         },
         isValid() {
@@ -167,15 +167,15 @@
             if(this.importation && this.form.fichier_classe != null){
                 fichier = true
             }else if(!this.importation && !this.form.classes.find((el) => {
-                if(this.type !== '3'){
+                if(this.type !== '3' || this.type !== '4'){
                     return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
                 }else{
-                    return el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
+                    return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
                 }}))
             {
                 fichier = true
             }
-            
+
             if(fichier){
                 valid = true
             }else{
