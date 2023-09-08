@@ -1,5 +1,6 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
+        <v-container fluid>
         <v-card-text>
             <v-row>
                 <v-alert type="info">
@@ -75,6 +76,7 @@
                             <text-field label="Libelle salle" placeholder="Libelle salle" required v-model="classe.libelle"></text-field>
                         </v-col>
                         <v-col md="1">
+                            <br>
                             <v-btn variant="outlined" :disabled="!(form.classes.length > 1)" icon @click="removeRow(classe)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                             </v-btn>
@@ -98,6 +100,7 @@
                 </v-btn>
             </v-col>
         </v-row>
+        </v-container>
         <br>
     </form>
 </template>

@@ -22,5 +22,8 @@ class SectionSeeder extends Seeder
         Section::create([
             'libelle' => 'Supérieur'
         ]);
+        Section::create([
+            'libelle' => 'Université'
+        ]);
     }
 }

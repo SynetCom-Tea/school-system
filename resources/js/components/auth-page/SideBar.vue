@@ -28,7 +28,7 @@
         <div class="sidebar-body">
           <div class="sidebar-profile">
             <img
-              :src="'../assets/' + getProfile.photo.file"
+              :src="'/assets/' + getProfile.photo.file"
               :alt="getProfile.photo.title"
             />
             <v-slide-x-transition mode="in-out" leave-absolute>
@@ -266,20 +266,41 @@ export default {
       .map(function (el) {
         return el.section.libelle;
       });
-      if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur')) {
-        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
-      } else if (tabs.includes('Primaire') && tabs.includes('Secondaire')){
-        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"})
+      let primaire = {icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"}
+      let secondaire = {icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"}
+      let superieur = {icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"}
+      let universite = {icon: mdiSchool, title: "Université", link: "/enseignement/configuration/4"}
+
+      if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur') && tabs.includes('Université')) {
+        enfants.push(primaire,secondaire,superieur,universite)
+      } else if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur')){
+        enfants.push(primaire,secondaire,superieur)
+      }else if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Université')){
+        enfants.push(primaire,secondaire,universite)
+      }else if (tabs.includes('Supérieur') && tabs.includes('Secondaire') && tabs.includes('Université')){
+        enfants.push(secondaire,superieur,universite)
+      }else if (tabs.includes('Supérieur') && tabs.includes('Primaire') && tabs.includes('Université')){
+        enfants.push(primaire,superieur,universite)
+      }else if (tabs.includes('Primaire') && tabs.includes('Secondaire')){
+        enfants.push(primaire,secondaire)
       } else if (tabs.includes('Primaire') && tabs.includes('Supérieur')){
-        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
+        enfants.push(primaire,superieur)
+      }else if (tabs.includes('Primaire') && tabs.includes('Université')){
+        enfants.push(primaire,universite)
       }else if (tabs.includes('Secondaire') && tabs.includes('Supérieur')){
-        enfants.push({icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
+        enfants.push(secondaire,superieur)
+      }else if (tabs.includes('Secondaire') && tabs.includes('Université')){
+        enfants.push(secondaire,universite)
+      }else if (tabs.includes('Supérieur') && tabs.includes('Université')){
+        enfants.push(superieur,universite)
       }else if (tabs.includes('Primaire')){
-        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"})
+        enfants.push(primaire)
       }else if (tabs.includes('Secondaire')){
-        enfants.push({icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"})
+        enfants.push(secondaire)
       }else if (tabs.includes('Supérieur')){
-        enfants.push({icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
+        enfants.push(superieur)
+      }else if (tabs.includes('Université')){
+        enfants.push(universite)
       }else{
 
       }

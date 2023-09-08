@@ -10,59 +10,40 @@
                 </v-alert>
             </v-row>
             <br><br>
-            <v-card>
-                <v-card-text>
-                    <v-row  v-if="type == '3'">
-                        <v-col>
-                            <v-switch label="Souhaiterez-vous appliquez le système LMD ?" v-model="form.lmd" color="primary" inset></v-switch>
-                        </v-col>
-                        <v-col v-if="form.lmd">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <v-autocomplete 
-                                :items="['Type 1', 'Type 2']"
-                                chips
-                                closable-chips
-                                :required="form.lmd"
-                                color="blue-grey-lighten-2"
-                                v-model="form.type_lmd"
-                                label="Select"
-                            ></v-autocomplete>
-                        </v-col>
-                        <v-col>
-                            <v-switch label="Souhaiterez-vous appliquez le régime d'évaluation ?" v-model="form.regime_evaluation" color="indigo" inset></v-switch>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des matieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
-                        </v-col>
-                        <v-col v-if="importation">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <v-file-input
-                                clearable
-                                required
-                                v-model="form.fichier_matiere"
-                                label="File input"
-                                variant="solo-inverted"
-                            ></v-file-input>
-                        </v-col>
-                        <v-col></v-col>
-                    </v-row>
-                </v-card-text>
-            </v-card>
+           
             <v-divider></v-divider>
-            <v-card v-if="!importation">
+            <v-card>
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
+                <v-row>
+                <v-col md="2"></v-col>
+                <v-col md="4">
+                    <span style="color: red; font-size: x-large;">*</span>
+                    <v-autocomplete label="Filieres" :items="['IG','MIEL']" chips></v-autocomplete>
+                </v-col>
+                <v-col md="4">
+                    <span style="color: red; font-size: x-large;">*</span>
+                    <v-autocomplete label="Niveaux" :items="['1ere année','2e année']" chips></v-autocomplete>
+                </v-col>
+                </v-row>
+                <v-card>
+                    <v-card-text>
+                        
+                    </v-card-text>
                 <v-card-text>
                     <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
-                        <v-col md="2"></v-col>
-                        <v-col md="2">
+                        <!-- <v-col md="2"></v-col> -->
+                        <v-col md="5">
                             <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Code matiere" placeholder="Code matiere" required @change="verify(matiere)" v-model="matiere.code"></text-field>
+                            <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="matieres" chips v-model="matiere.matiere">
+                            </v-autocomplete>
                         </v-col>
                         <v-col md="3">
                             <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Libelle matiere" placeholder="Libelle matiere" required v-model="matiere.libelle"></text-field>
+                            <text-field label="Coefficient" placeholder="Coefficient" required v-model="matiere.coefficient"></text-field>
+                        </v-col>
+                        <v-col md="3">
+                            <span style="color: red; font-size: x-large;">*</span>
+                            <text-field label="Volume horaire" placeholder="Volume horaire" required v-model="matiere.coefficient"></text-field>
                         </v-col>
                         <v-col md="1">
                             <br>
@@ -79,6 +60,7 @@
                         </v-col>
                     </v-row>
                 </v-card-text>
+                </v-card>
             </v-card>
         </v-card-text>
         <v-row>
@@ -125,10 +107,8 @@
                 return 'Primaire'
             }else if(type == '2'){
                 return 'Secondaire'
-            }else if(type == '3'){
-                return 'Supérieur'
             }else{
-                return 'Université'
+                return 'Supérieur'
             }
         },
         resetForm(check){

@@ -53,7 +53,7 @@
             <frais-form @formSubmitted="handleFormSubmission" :type="type" />
           </v-card-text>
           <v-card-text v-else>
-            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+            <niveau-matiere-form @formSubmitted="handleFormSubmission" :type="type" />
           </v-card-text>
         </v-window-item>
 
@@ -97,6 +97,7 @@
   </template>
   <script>
     import MatiereForm from '@/components/admin/matiere.vue';
+    import NiveauMatiereForm from '@/components/admin/niveau-matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
     import filiereForm from '@/components/admin/filiere.vue';
     import fraisForm from '@/components/admin/frais.vue';
@@ -113,6 +114,7 @@
     ClasseForm,
     filiereForm,
     fraisForm,
+    NiveauMatiereForm,
     Loader,
     Datatable,
     Toolbar,

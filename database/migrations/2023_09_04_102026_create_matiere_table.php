@@ -24,22 +24,22 @@ return new class extends Migration
         Schema::create('filiere_matiere_ues_', function (Blueprint $table) {
             $table->id();
             $table->string('volume_horaire')->nullable();
-            $table->string('cefficient')->nullable();
+            $table->string('coefficient')->nullable();
             $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)
-                ->index()
+                ->nullable()->index()
                 ->references('id')->on('cycle_filieres');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)
-                ->index()
+                ->nullable()->index()
                 ->references('id')->on('matieres');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Ue::class)
-                ->index()
+                ->nullable()->index()
                 ->references('id')->on('ues');
         });
 
         Schema::create('niveau_matieres', function (Blueprint $table) {
             $table->id();
             $table->string('volume_horaire')->nullable();
-            $table->string('cefficient')->nullable();
+            $table->string('coefficient')->nullable();
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
                 ->references('id')->on('niveaux');
