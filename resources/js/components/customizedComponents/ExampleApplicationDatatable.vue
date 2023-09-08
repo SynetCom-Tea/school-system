@@ -14,8 +14,8 @@ export default {
     mdiPresentation,
     mdiGift,
   },
+
   data() {
-    console.log("Test:", this.my_data);
     return {
       onDetailUpdate: false,
       headersH: [
@@ -121,11 +121,13 @@ export default {
         { id: 1, text: "Welcome!", color: "green" },
         { id: 1, text: "Marhaba!", color: "red" },
       ],
+      dialogDetailUpdate: true,
+      selectedItemForUpdate: "",
     };
   },
-  inject: ["my_data"],
+
   mounted() {
-    console.log("loggedIn:", this.my_data);
+
   },
   computed: {
     location() {
@@ -138,14 +140,30 @@ export default {
       location.value = "South Pole";
     },
     functionOnClickAddButton() {
-      console.log("herer");
+      // console.log("herer");
       router.get(route("users.index"));
     },
     editItem(item) {
-      console.log("item from editItem:", item);
+      // console.log("item from editItem:", item);
+      this.editedObject = Object.assign({}, item);
+      if (item) {
+        this.selectedItemForUpdate = item;
+      }
+      if (this.dialogDetailUpdate) {
+        this.onDetailUpdate = true;
+      }
+      // console.log("this.selectedItemForUpdate:", this.selectedItemForUpdate);
+      // console.log("this.dialogDetailUpdate:", this.dialogDetailUpdate);
     },
     deleteItem(item) {
-      console.log("item from deleteItem:", item);
+      // console.log("item from deleteItem:", item);
+    },
+    onClickCancelButtonOfMDU() {
+      this.onDetailUpdate = false;
+    },
+    onClickSaveButtonOfMDU() {
+      // console.log("enregistrer la mise à jour:");
+      this.onDetailUpdate = false;
     },
   },
 };
@@ -153,21 +171,25 @@ export default {
 
 <template>
   <div>
-    <!-- :headers="headers" :items="dataH" -->
     <Datatable
-      :addDialog="true"
-      :dialogDetailUpdate="true"
+
+      :dialogDetailUpdate="dialogDetailUpdate"
       titleDatatable="Liste des items"
       :functionDeleteItem="deleteItem"
       :editedObject="editedObject"
       :functionEditItem="editItem"
       :headers="headersH"
       :items="desserts"
+       :functionOnClickAddButton="functionOnClickAddButton"
     >
       <template v-slot:contentDialogUpdateDetail>
-        <ModalDetailUpdate :dialogDetailUpdate="onDetailUpdate">
+        <ModalDetailUpdate
+          :dialogDetailUpdate="onDetailUpdate"
+          :onClickCancelButton="onClickCancelButtonOfMDU"
+          :onClickSaveButton="onClickSaveButtonOfMDU"
+        >
           <template v-slot:contentForm>
-            <TextFieldC />
+            <TextFieldC :item="editedObject" />
           </template>
         </ModalDetailUpdate>
       </template>

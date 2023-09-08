@@ -86,18 +86,8 @@ export default {
     };
   },
 
-  mounted() {
-    console.log("this.isEditingModal22:", this.my_data);
-  },
+  mounted() {},
   computed: {
-    detailUpdateTitle() {
-      console.log("trouve:", this.isEditingModal);
-      if (this.isEditingModal) {
-        this.toolbarTitle = "Modification";
-      }
-      this.toolbarTitle = "Détail";
-      return this.toolbarTitle;
-    },
     modelEditedObject: {
       get() {
         return this.editedObject;
@@ -120,7 +110,7 @@ export default {
       val || this.close();
     },
     dialogDelete(val) {
-      console.log("val22:", val);
+
       val || this.closeDelete();
     },
   },
@@ -146,12 +136,6 @@ export default {
     },
     //Fonction en ecoute lorsqu'on clique sur l'icon 'Modifier'
     onEditItem(item) {
-      console.log("isEditingModal:", this.isEditingModal);
-
-      if (this.dialogDetailUpdate) {
-        this.onDetailUpdate = true;
-        this.isEditingModal = !this.isEditingModal;
-      }
       this.functionEditItem(item);
     },
     onClickCancelButtonForEditing() {
@@ -161,9 +145,9 @@ export default {
     onDeleteItem(item) {
       this.editedIndex = this.items.indexOf(item);
       this.modelEditedObject = Object.assign({}, item);
-      console.log("this.modelEditedObject ffrom delete:", this.modelEditedObject);
+
       this.dialogDelete = true;
-      //this.selectedItemForCRUD = item;
+
       this.functionDeleteItem(item);
     },
 
@@ -199,6 +183,7 @@ export default {
     :items="items"
     :search="searchQuery"
     :sort-by="[{ key: 'calories', order: 'asc' }]"
+    :pagination.sync="pagination"
     class="style-table"
   >
     <template v-slot:top>
@@ -211,9 +196,12 @@ export default {
             white-space: pre-wrap;
             word-break: break-word;
           "
-          >{{ titleDatatable }}</v-toolbar-title
+          ><p class="text-wrap">
+            {{ titleDatatable }}
+          </p></v-toolbar-title
         >
-        <v-divider class="mx-4 color-white" inset vertical></v-divider>
+
+        <v-divider class="mx-4 color-secondary" inset vertical></v-divider>
         <div style="width: 250px">
           <TextField
             density="compact"

@@ -34,6 +34,7 @@ export default {
   },
   data() {
     return {
+      modelItem: "",
       closeCard: true,
       items: [
         { name: "Florida", abbr: "FL", id: 1 },
@@ -95,13 +96,14 @@ export default {
         <v-spacer></v-spacer>
         <div style="width: 200px">
           <Autocomplete
+            v-model="modelItem"
             :items="items"
             :append-inner-icon="icons.mdiMicrophone"
             auto-select-first
             style="margin-top: 20px"
             density="comfortable"
-            item-title="name"
-            item-value="abbr"
+            itemTitle="name"
+            itemValue="abbr"
             placeholder="Rechercher"
             :prepend-inner-icon="icons.mdiMagnify"
             rounded

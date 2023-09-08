@@ -274,14 +274,27 @@ export default {
         ></Button
       ></template>
     </Dialog> -->
-
     <div>
+      <h2>HERREER</h2>
+      <TextField
+        v-model="test"
+        :counter="10"
+        variant="solo"
+        hint="Ne pas depasser"
+        :isRequired="true"
+        label="Name"
+        classResponsive="py-4"
+        :maxHeightResponsive="100"
+        :maxWidthResponsive="250"
+      ></TextField>
+    </div>
+    <!-- <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"
         :iconUpdate="icons.mdiGift"
       />
-    </div>
+    </div> -->
     <!-- </div> -->
   </AuthenticatedLayout>
 </template>

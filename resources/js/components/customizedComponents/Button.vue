@@ -68,7 +68,6 @@ export default {
     :rounded="isRounded"
     :style="style"
     :loading="isLoading"
-    :disabled="conditionDisabled"
     :variant="variant"
     :density="density"
     v-bind="$attrs"

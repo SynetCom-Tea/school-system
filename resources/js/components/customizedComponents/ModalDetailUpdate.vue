@@ -5,10 +5,12 @@ import {
   mdiPlus,
   mdiCancel,
   mdiMagnify,
+  mdiAccount,
   mdiContentSaveEditOutline,
 } from "@mdi/js";
+import { provide } from 'vue'
 export default {
-  components: { mdiCancel, mdiContentSaveEditOutline },
+  components: { mdiPencil, mdiAccount, mdiCancel, mdiContentSaveEditOutline },
   props: {
     // toolbarTitle: {
     //   type: String,
@@ -20,11 +22,11 @@ export default {
     },
     iconUpdate: {
       type: String,
-      required: false,
+      default: mdiPencil,
     },
     iconValueDetail: {
       type: String,
-      required: false,
+      default: mdiAccount,
     },
     titleSubmittingButton: {
       type: String,
@@ -39,6 +41,7 @@ export default {
   },
 
   data: () => ({
+
     hasSaved: false,
     isEditing: null,
     toolbarTitle: "Détail",
@@ -52,13 +55,10 @@ export default {
     },
     detailUpdateTitle: "",
   }),
+    //  provide('username',  'hello!'),
+    // provide(){return this.save()},
   updated() {},
-  watch: {
-    modelValue(val) {
-      console.log("Test:", this.isEditing);
-      console.log("verif:", val);
-    },
-  },
+  watch: {},
   computed: {
     modelValueIsEditing: {
       get() {
@@ -74,11 +74,12 @@ export default {
         return this.dialogDetailUpdate;
       },
       set(newValue) {
-        console.log("newValue:", newValue);
+
         this.$emit("input", newValue);
       },
     },
   },
+
   methods: {
     onClickTransition() {
       if (this.modelValue) {
@@ -88,7 +89,6 @@ export default {
     },
     save() {
       this.modelValue = false;
-      // this.hasSaved = true;
       if (this.onClickSaveButton) {
         return this.onClickSaveButton();
       }
@@ -109,7 +109,16 @@ export default {
         <v-toolbar-title class="font-weight-light">
           {{ toolbarTitle }}
         </v-toolbar-title>
-
+        <template v-slot:prepend>
+          <v-btn
+            outlined
+            icon="$close"
+            fab
+            color="white"
+            title="Fermer la modale"
+            @click="onClickCancelButton"
+          ></v-btn>
+        </template>
         <v-spacer></v-spacer>
 
         <v-btn icon @click="onClickTransition()">
@@ -127,11 +136,12 @@ export default {
 
       <v-card-text>
         <v-form :disabled="!isEditing">
+
           <slot name="contentForm" />
         </v-form>
       </v-card-text>
 
-      <v-divider></v-divider>
+    <v-divider></v-divider>
 
       <v-card-actions class="card-actions-style">
         <Button
@@ -172,15 +182,9 @@ export default {
 </template>
 <style scoped>
 .card-actions-style {
-  display: absolute;
-  bottom: 0;
-  top: 0;
-  height: 52px;
-  /* display: flex;
-  justify-content: flex-end;
+  float: right;
+  margin-right: 0px;
   margin-left: auto;
-  flex: none;
-  min-height: 52px;
-  padding: 0.5rem; */
+  height: 52px;
 }
 </style>

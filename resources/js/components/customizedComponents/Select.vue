@@ -72,10 +72,10 @@ export default {
       type: [Object, String],
       required: false,
     },
-    errorMessageValue: {
-      type: [Object, String],
-      required: false,
-    },
+    // errorMessageValue: {
+    //   type: [Object, String],
+    //   required: false,
+    // },
     onchangeModelValue: { type: Function },
     customFilter: { type: Function },
     classLabel: { type: String, default: "defaultClassLabel" },
@@ -120,7 +120,6 @@ export default {
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="color"
-      :error-messages="errorMessageValue"
       @update:modelValue="onchangeModelValue"
     >
       <template #label v-if="isRequired">
