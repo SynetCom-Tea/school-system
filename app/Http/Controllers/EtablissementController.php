@@ -92,7 +92,12 @@ class EtablissementController extends Controller
     public function update(Request $request, string $id)
     {
         $ets = Etablissement::find($id);
-        $ets->sections()->sync($request->section);
+        if($request->type_etablissement_id == 2){
+            $ets->sections()->sync($request->section);
+        }else{
+            $ets->sections()->sync(3);
+        }
+        //$ets->sections()->sync($request->section);
         $ets->update($request->all());
         
         return redirect()->route('etablissements.index');
