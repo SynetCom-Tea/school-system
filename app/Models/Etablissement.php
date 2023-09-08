@@ -31,6 +31,11 @@ class Etablissement extends Model
         return $this->belongsToMany(Section::class);
     }
 
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
+    }
+
     protected function telephone(): Attribute
     {
         return new Attribute(
