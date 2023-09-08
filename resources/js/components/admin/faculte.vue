@@ -4,44 +4,25 @@
         <v-card-text>
             <v-row>
                 <v-alert type="info">
-                    <li>Cette section vous permet de configurer les salles de cet établissement</li>
+                    <li>Cette section vous permet de configurer les facultes de cet établissement</li>
                     <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
                 </v-alert>
             </v-row>
             <br><br>
             <v-card>
                 <v-card-text>
-                    <!-- <v-row  v-if="type == '3'">
-                        <v-col>
-                            <v-switch label="Souhaiterez-vous appliquez le système LMD ?" v-model="form.lmd" color="primary" inset></v-switch>
-                        </v-col>
-                        <v-col v-if="form.lmd">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <v-autocomplete
-                                :items="['Type 1', 'Type 2']"
-                                chips
-                                closable-chips
-                                :required="form.lmd"
-                                color="blue-grey-lighten-2"
-                                v-model="form.type_lmd"
-                                label="Select"
-                            ></v-autocomplete>
-                        </v-col>
-                        <v-col>
-                            <v-switch label="Souhaiterez-vous appliquez le régime d'évaluation ?" v-model="form.regime_evaluation" color="indigo" inset></v-switch>
-                        </v-col>
-                    </v-row> -->
+
                     <v-row>
                         <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des salles ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                            <v-switch label="Souhaiterez-vous importez le fichier des facultés ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
                             <span style="color: red; font-size: x-large;">*</span>
                             <v-file-input
                                 clearable
                                 required
-                                v-model="form.fichier_classe"
-                                label="Charger le fichier de salles"
+                                v-model="form.fichier_faculte"
+                                label="Charger le fichier des facultés"
                                 variant="solo-inverted"
                             ></v-file-input>
                         </v-col>
@@ -53,36 +34,24 @@
             <v-card v-if="!importation">
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-card-text>
-                    <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes">
-                        <v-col md="2" v-if="type !== '3' && type !== '4'">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <v-autocomplete
-                                :items="niveaux"
-                                v-model="classe.niveau"
-                                :item-title="formatNiveauLabel"
-                                item-value="id"
-                                chips
-                                closable-chips
-                                color="blue-grey-lighten-2"
-                                label="Niveaux"
-                            ></v-autocomplete>
-                        </v-col>
+                    <v-row disabled :key="faculte.id" v-for="(faculte, i) in form.facultes">
                         <v-col md="2">
                             <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Code salle" placeholder="Code salle" required @change="verify(classe)" v-model="classe.code"></text-field>
+                            <text-field label="Code faculte" placeholder="Code faculte" required @change="verify(faculte)" v-model="faculte.code"></text-field>
                         </v-col>
                         <v-col md="3">
                             <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Libelle salle" placeholder="Libelle salle" required v-model="classe.libelle"></text-field>
+                            <text-field label="Nom de la faculte" placeholder="Nom de la faculte" required v-model="faculte.libelle"></text-field>
                         </v-col>
                         <v-col md="1">
                             <br>
-                            <v-btn variant="outlined" :disabled="!(form.classes.length > 1)" icon @click="removeRow(classe)" fab small color="error">
+                            <v-btn variant="outlined" :disabled="!(form.facultes.length > 1)" icon @click="removeRow(faculte)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                             </v-btn>
                         </v-col>
                     </v-row>
                     <v-row>
+
                         <v-col offset-md="11" md="1">
                             <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
                                 <v-icon :icon="icons.mdiPlusCircle"></v-icon>
@@ -92,6 +61,7 @@
                 </v-card-text>
             </v-card>
         </v-card-text>
+    </v-container>
         <v-row>
             <v-col md="5"></v-col>
             <v-col md="4">
@@ -101,14 +71,13 @@
             </v-col>
         </v-row>
         <br>
-    </v-container>
     </form>
 </template>
 <script>
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
-    props:['type','niveaux'],
+    props:['type'],
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
@@ -119,8 +88,8 @@
         step: 1,
         importation: false,
         form: useForm({
-            fichier_classe: null,
-            classes: [],
+            fichier_faculte: null,
+            facultes: [],
         }),
     }),
 
@@ -132,7 +101,7 @@
         },
         resetForm(check){
             if(check){
-                this.form.classes = []
+                this.form.facultes = []
                 this.addRow()
             }
         },
@@ -164,14 +133,11 @@
             let fichier = false
             let valid = false
 
-            if(this.importation && this.form.fichier_classe != null){
+            if(this.importation && this.form.fichier_faculte != null){
                 fichier = true
-            }else if(!this.importation && !this.form.classes.find((el) => {
-                if(this.type !== '3' || this.type !== '4'){
-                    return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
-                }else{
-                    return el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
-                }}))
+            }else if(!this.importation && !this.form.facultes.find((el) => {
+                return el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
+            }))
             {
                 fichier = true
             }
@@ -188,19 +154,19 @@
             console.log()
         },
         addRow() {
-            this.form.classes.push({
-                niveau: null,
+            this.form.facultes.push({
                 code: null,
                 libelle: null,
+                etablissement: this.$page.props.admin_etablissement.etablissement_id,
                 before: null,
                 after: null
             })
         },
         removeRow(id) {
-            this.form.classes = this.form.classes.filter((el) => el !== id)
+            this.form.facultes = this.form.facultes.filter((el) => el !== id)
         },
         async verify(element) {
-            const array = this.form.classes.filter(el => el.code !== null && el.code == element.code)
+            const array = this.form.facultes.filter(el => el.code !== null && el.code == element.code)
 
             if (array.length > 1) {
                 this.removeRow(element)
@@ -214,3 +180,4 @@
     },
   }
 </script>
+

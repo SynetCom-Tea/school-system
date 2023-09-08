@@ -266,20 +266,29 @@ export default {
       .map(function (el) {
         return el.section.libelle;
       });
-      if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur')) {
-        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
+      if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur') && tabs.includes('Universitaire')){
+        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"},{icon: mdiSchool, title: "Universitaire", link: "/enseignement/configuration/4"})
       } else if (tabs.includes('Primaire') && tabs.includes('Secondaire')){
         enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"})
       } else if (tabs.includes('Primaire') && tabs.includes('Supérieur')){
         enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
       }else if (tabs.includes('Secondaire') && tabs.includes('Supérieur')){
         enfants.push({icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
+      }else if (tabs.includes('Secondaire') && tabs.includes('Universitaire')){
+        enfants.push({icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"},{icon: mdiSchool, title: "Universitaire", link: "/enseignement/configuration/4"})
+      }else if (tabs.includes('Primaire') && tabs.includes('Universitaire')){
+        enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"},{icon: mdiSchool, title: "Universitaire", link: "/enseignement/configuration/4"})
+      }else if (tabs.includes('Supérieur') && tabs.includes('Universitaire')){
+        enfants.push({icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"},{icon: mdiSchool, title: "Universitaire", link: "/enseignement/configuration/4"})
       }else if (tabs.includes('Primaire')){
         enfants.push({icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"})
       }else if (tabs.includes('Secondaire')){
         enfants.push({icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"})
       }else if (tabs.includes('Supérieur')){
         enfants.push({icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"})
+      }
+      else if (tabs.includes('Universitaire')){
+        enfants.push({icon: mdiSchool, title: "Universitaire", link: "/enseignement/configuration/4"})
       }else{
 
       }

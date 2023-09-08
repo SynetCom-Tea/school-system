@@ -24,24 +24,30 @@
           <matiere-form @formSubmitted="getMatiereForm" :type="type" />
         </v-window-item>
         <!-- Tabs de la Matieres pour toute les sections -->
-        
+
         <!-- Tabs de la Classes pour toute les sections -->
         <v-window-item :value="2">
           <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
         </v-window-item>
         <!-- Tabs de la Classes pour toute les sections -->
 
-        
+
         <v-window-item :value="3">
           <!-- Tabs de la Filiere pour toute les sections -->
           <v-card-text v-if="type == '3'">
-            <filiere-form @formSubmitted="handleFormSubmission" :type="type" />
+            <filiere-form @formSubmitted="getFiliereForm" :type="type"  />
           </v-card-text>
           <!-- Tabs de la Filiere pour toute les sections -->
 
+           <!-- Tabs de la Faculté pour toute les sections -->
+           <v-card-text v-else-if ="type == '4'">
+            <faculte-form @formSubmitted="getFaculteForm" :type="type"  />
+          </v-card-text>
+          <!-- Tabs de la Faculté pour toute les sections -->
+
           <!-- Tabs de la Frais pour toute les sections -->
           <v-card-text v-else>
-            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
           </v-card-text>
           <!-- Tabs de la Frais pour toute les sections -->
         </v-window-item>
@@ -50,20 +56,29 @@
 
         <v-window-item :value="4">
           <v-card-text v-if="type == '3'">
-            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux"  />
+          </v-card-text>
+          <v-card-text v-else-if ="type == '4'">
+            <filiere-form @formSubmitted="getFiliereForm" :type="type"  />
           </v-card-text>
           <v-card-text v-else>
-            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+            <frais-form @formSubmitted="getFraisForm" :type="type" />
           </v-card-text>
         </v-window-item>
 
-        <v-window-item :value="5" v-if="type == '3'">
+        <v-window-item :value="5" >
           <v-card-text>
-            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+            <frais-form @formSubmitted="getFraisForm" :type="type" />
           </v-card-text>
         </v-window-item>
 
-        <v-window-item :value="6" v-if="type == '3'">
+        <v-window-item :value="6" >
+          <v-card-text>
+            <frais-form @formSubmitted="getFraisForm" :type="type" />
+          </v-card-text>
+        </v-window-item>
+
+        <v-window-item :value="7" >
           <v-card-text>
             <frais-form @formSubmitted="handleFormSubmission" :type="type" />
           </v-card-text>
@@ -99,6 +114,7 @@
     import MatiereForm from '@/components/admin/matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
     import filiereForm from '@/components/admin/filiere.vue';
+    import faculteForm from '@/components/admin/faculte.vue';
     import fraisForm from '@/components/admin/frais.vue';
     import { router,useForm} from '@inertiajs/vue3';
     import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
@@ -111,6 +127,7 @@
     components: {
     MatiereForm,
     ClasseForm,
+    faculteForm,
     filiereForm,
     fraisForm,
     Loader,
@@ -133,8 +150,11 @@
         pause: null,
         formMatiere: {},
         formClasse: {},
+        formFaculte: {},
+        formFiliere:{},
+        formFrais:{},
         form: useForm({
-            matieres: [],
+        matieres: [],
         }),
     }),
 
@@ -149,6 +169,23 @@
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la classe :', this.formClasse);
         },
+        getFiliereForm(donnees) {
+          this.formFiliere = donnees
+          // Traitez les données du formulaire soumises par l'événement
+          console.log('Données du formulaire de la filiere :', this.formFiliere);
+        },
+        getFraisForm(donnees) {
+          this.formFrais = donnees
+          // Traitez les données du formulaire soumises par l'événement
+          console.log('Données du formulaire de frais :', this.formFrais);
+        },
+        getFaculteForm(donnees) {
+          this.formFaculte = donnees
+          // Traitez les données du formulaire soumises par l'événement
+          console.log('Données du formulaire de faculté :', this.formFaculte);
+        },
+
+
         goBack() {
             router.get(route('etablissements.index'))
             console.log()
@@ -157,6 +194,8 @@
     mounted() {
       if(this.type == '3'){
         this.pause = 6
+      }else if(this.type == '4'){
+        this.pause = 7
       }else{
         this.pause = 4
       }
@@ -167,7 +206,8 @@
         switch (this.type) {
           case '1': return 'SECTION PRIMAIRE'
           case '2': return 'SECTION SECONDAIRE'
-          default: return 'SECTION SUPERIEUR'
+          case '3': return 'SECTION SUPERIEUR'
+          default: return 'SECTION UNIVERSITAIRE'
         }
       },
       currentTitle () {
@@ -176,12 +216,21 @@
           case 2: return 'SALLES'
           case 3:if (this.type === '3') {
                     return 'Filiere';
+                }else if (this.type === '4') {
+                    return 'Faculté';
                 }else{return 'Frais';}
           case 4:if (this.type === '3') {
-              return 'Frais';
-          }else{return 'Affectation de la matiere par niveau';}
-          case 5: return 'Unités d\enseignements'
-          case 6: return 'Affectation de la matiere par niveau'
+                    return 'Frais';
+                }else if (this.type === '4') {
+                            return 'Filiere';
+                }else{return 'Affectation de la matiere par niveau';}
+          case 5:if (this.type === '4') {
+                    return 'Frais';
+                }else{ return 'Unités d\enseignements'}
+          case 6:if (this.type === '4') {
+                    return 'Unités d\enseignements';
+                }else{ return 'Affectation de la matiere par niveau'}
+          case 7: return 'Affectation de la matiere par niveau'
         }
       },
     },

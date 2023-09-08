@@ -1,5 +1,6 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
+        <v-container fluid>
         <v-card-text>
             <v-row>
                 <v-alert type="info">
@@ -17,7 +18,7 @@
                         </v-col>
                         <v-col v-if="form.lmd">
                             <span style="color: red; font-size: x-large;">*</span>
-                            <v-autocomplete 
+                            <v-autocomplete
                                 :items="['Type 1', 'Type 2']"
                                 chips
                                 closable-chips
@@ -64,6 +65,7 @@
                             <text-field label="Libelle matiere" placeholder="Libelle matiere" required v-model="matiere.libelle"></text-field>
                         </v-col>
                         <v-col md="1">
+                            <br>
                             <v-btn variant="outlined" :disabled="!(form.matieres.length > 1)" icon @click="removeRow(matiere)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                             </v-btn>
@@ -88,6 +90,7 @@
             </v-col>
         </v-row>
         <br>
+    </v-container>
     </form>
 </template>
 <script>
@@ -98,7 +101,7 @@
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
-        mdiInformation 
+        mdiInformation
     },
     data: () => ({
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
@@ -114,7 +117,7 @@
             etablissement_section_id: null
         }),
     }),
-    
+
     methods: {
         getSection(type){
             console.log('type',type)
@@ -154,7 +157,7 @@
                     icon: 'warning',
                     confirmButtonText: 'OK',
                 });
-               
+
             }
         },
         isValid() {
