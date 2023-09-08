@@ -168,7 +168,7 @@
                 fichier = true
             }else if(!this.importation && !this.form.classes.find((el) => {
                 if(this.type !== '3'){
-                    return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
+                    return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
                 }else{
                     return el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
                 }}))

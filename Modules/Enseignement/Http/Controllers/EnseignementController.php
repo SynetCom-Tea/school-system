@@ -8,6 +8,9 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 
 use Modules\Enseignement\Entities\Niveau;
+use Modules\Enseignement\Entities\Matiere;
+use App\Models\EtablissementSection;
+
 
 use Inertia\Inertia;
 
@@ -26,9 +29,13 @@ class EnseignementController extends Controller
 
     public function config($type)
     {
+        // dd(Auth::user());
+        $eta_section_id = EtablissementSection::where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first();
+        // dd($eta_section_id);
         return Inertia::render('Admin/config',[
             'type' => $type,
-            'niveaux' => Niveau::where('section_id',$type)->get()
+            'niveaux' => Niveau::where('section_id',$type)->get(),
+            'matieres' => Matiere::where('etablissement_section_id',$eta_section_id->id)->get()
         ]);
     }
 

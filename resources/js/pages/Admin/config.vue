@@ -53,7 +53,7 @@
             <frais-form @formSubmitted="handleFormSubmission" :type="type" />
           </v-card-text>
           <v-card-text v-else>
-            <niveau-matiere-form @formSubmitted="handleFormSubmission" :type="type" />
+            <niveau-matiere-form @formSubmitted="handleFormSubmission" :type="type" :niveaux="niveaux"/>
           </v-card-text>
         </v-window-item>
 
@@ -65,7 +65,7 @@
 
         <v-window-item :value="6" v-if="type == '3'">
           <v-card-text>
-            <frais-form @formSubmitted="handleFormSubmission" :type="type" />
+            <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
           </v-card-text>
         </v-window-item>
       </v-window>
@@ -108,7 +108,7 @@
     import Loader from "@/components/customizedComponents/Loader.vue";
     import { mdiAccount, mdiSchool, mdiHomeOutline, mdiInformation, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
-    props:['type','niveaux'],
+    props:['type','niveaux','matieres'],
     components: {
     MatiereForm,
     ClasseForm,
@@ -135,6 +135,7 @@
         pause: null,
         formMatiere: {},
         formClasse: {},
+        formNiveauMatiere: {},
         form: useForm({
             matieres: [],
         }),
@@ -150,6 +151,11 @@
           this.formClasse = donnees
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la classe :', this.formClasse);
+        },
+        getNiveauMatiereForm(donnees){
+          this.formNiveauMatiere = donnees
+          console.log('Données du formulaire de la classe :', this.formNiveauMatiere);
+
         },
         goBack() {
             router.get(route('etablissements.index'))
