@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\TypeEtablissement;
+use App\Models\Etablissement;
+use App\Models\Section;
+use App\Models\SectionEtablissement;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Auth;
+
+class EtablissementController extends Controller
+{
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+        return Inertia::render('Etablissement/Index', [
+            'ecoles' => Etablissement::with('type_etablissement', 'sections')->where('type_etablissement_id','2')->get(),
+            'instituts' => Etablissement::with('type_etablissement', 'sections')->where('type_etablissement_id','3')->get(),
+            'universités' => Etablissement::with('type_etablissement', 'sections')->where('type_etablissement_id','1')->get()
+        ]);
+    }
+
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create()
+    {
+        return Inertia::render('Etablissement/Create', [
+            'types' => TypeEtablissement::all(),
+            'sections' => Section::all()
+        ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(Request $request)
+    {
+        $logo = '';
+        $data = ['name' => $request->name,'email' => $request->email,'adresse' => $request->adresse,
+        'telephone' => $request->telephone,'telephone' => $request->telephone,
+        'ville' => $request->ville,'type_etablissement_id' => $request->type_etablissement_id];
+        if ($request->file('logo')) {
+
+            $logo = $request->file('logo')[0]->getClientOriginalName();
+            $request->file('logo')[0]->move('logos/', $request->file('logo')[0]->getClientOriginalName());
+            $data['logo'] = $logo;
+        }
+        $ets = Etablissement::create($data);
+        if($request->section){
+            $ets->sections()->attach($request->section);
+        }else{
+            $ets->sections()->attach(3);
+        }
+
+        $user = ['nom' => $request->nom,'prenom' => $request->prenom,'email' => $request->mail, 
+        'password' => $request->password ?? Hash::make('password'), 'etablissement_id' => $ets->id];
+        $admin = User::create($user);
+        $admin->givePermissionTo('manage_system');
+            Auth::attempt(["email"=>$admin->mail,"password"=>$admin->password]);
+            
+        return redirect()->route('etablissements.index');
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(string $id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(string $id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(Request $request, string $id)
+    {
+        //
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(string $id)
+    {
+        //
+    }
+}

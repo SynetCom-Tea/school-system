@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EtablissementController;
 
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
@@ -63,6 +64,7 @@ Route::resource('classes', ClasseController::class);
 Route::resource('promotions', AnneeClasseController::class);
 Route::resource('tuteurs', TuteurController::class);
 Route::resource('niveaux', NiveauController::class);
+Route::resource('etablissements', EtablissementController::class);
 Route::resource('inscriptions', InscriptionController::class);
 
 require __DIR__ . '/auth.php';

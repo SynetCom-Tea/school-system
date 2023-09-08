@@ -61,7 +61,7 @@
                   ></v-list-item-title>
                 </v-list-item>
                 <!-- <v-list-group :value="getListMenus[1].title"> -->
-                <v-list-group :value="getListMenus[4].title">
+                <!-- <v-list-group :value="getListMenus[4].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -92,8 +92,8 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group>
-                <v-list-group :value="getListMenus[1].title">
+                </v-list-group> -->
+                <!-- <v-list-group :value="getListMenus[1].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -124,8 +124,8 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group>
-                <v-list-group :value="getListMenus[2].title">
+                </v-list-group> -->
+                <!-- <v-list-group :value="getListMenus[2].title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -156,7 +156,7 @@
                       v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </v-list-group>
+                </v-list-group> -->
 
                 <!-- Déconnexion doit etre le dernier menu -->
                 <v-list-item class="list-case" @click="logout" key="logout">
