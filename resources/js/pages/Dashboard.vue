@@ -278,6 +278,8 @@ export default {
       ></template>
     </Dialog> -->
  <!-- <TextInput
+    </Dialog>
+    <TextInput
       type="text"
       v-model="test"
       label="Mot de passe"

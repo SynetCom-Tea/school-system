@@ -9,10 +9,11 @@ use Illuminate\Support\Facades\Auth;
 
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\Matiere;
-use App\Models\EtablissementSection;
-
+use App\Models\Etablissement;
+use App\Models\Section;
 
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
 
 
 class EnseignementController extends Controller
@@ -30,12 +31,13 @@ class EnseignementController extends Controller
     public function config($type)
     {
         // dd(Auth::user());
-        $eta_section_id = EtablissementSection::where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first();
+        
+        $pivotId = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first()->id;
         // dd($eta_section_id);
         return Inertia::render('Admin/config',[
             'type' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
-            'matieres' => Matiere::where('etablissement_section_id',$eta_section_id->id)->get()
+            'matieres' => Matiere::where('etablissement_section_id',$pivotId)->get()
         ]);
     }
 
