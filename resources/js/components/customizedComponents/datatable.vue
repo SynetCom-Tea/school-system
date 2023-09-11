@@ -49,27 +49,16 @@ export default {
     mdiContentSaveEditOutline,
     TextFieldC,
   },
-  provide() {
-    return {
-      my_data: this.my_data,
-    };
-  },
 
   data() {
     return {
-      location: "North Pole",
       dialog: false,
       status: false,
       alert: true,
-      my_data: {
-        foo: "1",
-        fuu: "2",
-      },
       onDetailUpdate: false,
       searchQuery: null,
       dialogDelete: false,
       toolbarTitle: "Détail",
-      // toolbarTitle: { update: "Modification", detail: "Détail" },
       icons: {
         mdiAccount,
         mdiMagnify,
@@ -101,7 +90,8 @@ export default {
     },
 
     formTitle() {
-      return this.editedIndex === -1 ? "Ajouter une ligne" : "Modifier une ligne";
+      return "Ajout d'une nouvelle ligne";
+      // return this.editedIndex === -1 ? "Ajouter une ligne" : "Modifier une ligne";
     },
   },
 
@@ -110,7 +100,6 @@ export default {
       val || this.close();
     },
     dialogDelete(val) {
-
       val || this.closeDelete();
     },
   },
@@ -120,9 +109,6 @@ export default {
   },
 
   methods: {
-    updateLocation() {
-      this.location.value = "South Pole";
-    },
     //Fonction en ecoute lorsqu'on clique sur le bouton 'Ajouter'
     onClickAddButton() {
       if (this.addDialog) {
@@ -152,7 +138,6 @@ export default {
     },
 
     deleteItemConfirm() {
-      // this.items.splice(this.editedIndex, 1);
       this.functionOnConfirmDeleting();
       this.closeDelete();
     },
@@ -163,15 +148,6 @@ export default {
 
     closeDelete() {
       this.dialogDelete = false;
-    },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.items[this.editedIndex], this.modelEditedObject);
-      } else {
-        this.items.push(this.modelEditedObject);
-      }
-      this.close();
     },
   },
 };
@@ -217,7 +193,7 @@ export default {
         </div>
 
         <v-spacer></v-spacer>
-        <!-- <div class="divadd"> -->
+
         <Button
           variant="flat"
           class="add-button-style"
@@ -230,47 +206,43 @@ export default {
 
         <slot name="contentDialogUpdateDetail" />
         <div v-if="addDialog">
-          <v-dialog v-model="dialog" max-width="500px" persistent>
+          <v-dialog v-model="dialog" max-width="600px" persistent>
             <v-card>
-              <v-card-title style="background-color: #7d002c">
-                <span class="text-h5 text-white">{{ formTitle }}</span>
-              </v-card-title>
+              <v-toolbar flat color="secondary">
+                <v-toolbar-title>
+                  <span
+                    style="
+                      font-size: 1.1em;
+                      width: 450px;
+                      word-wrap: break-word;
+                      white-space: pre-wrap;
+                      word-break: break-word;
+                    "
+                    class="text-white"
+                    >{{ formTitle }}</span
+                  >
+                </v-toolbar-title>
+                <template v-slot:prepend>
+                  <v-btn
+                    outlined
+                    icon="$close"
+                    fab
+                    color="white"
+                    title="Fermer la modale"
+                    @click="dialog = false"
+                  ></v-btn>
+                </template>
 
-              <v-card-text>
-                <v-container>
-                  <v-row>
-                    <slot name="addDialogContent" />
-                  </v-row>
-                </v-container>
-              </v-card-text>
-
-              <v-card-actions class="card-actions-style">
-                <Button
-                  variant="text"
-                  class="mb-2"
-                  color="red"
-                  nameButton="Annuler"
-                  title="Annuler et Fermer la modale"
-                  style="height: 30px"
-                  :prependIcon="icons.mdiCancel"
-                  :onClickButton="close"
-                ></Button>
-
-                <Button
-                  variant="text"
-                  class="mb-2"
-                  nameButton="Enregistrer"
-                  title="Valider et Fermer la modale"
-                  style="height: 30px"
-                  :prependIcon="icons.mdiContentSaveEditOutline"
-                  :onClickButton="save"
-                ></Button>
-              </v-card-actions>
+                <v-spacer></v-spacer>
+              </v-toolbar>
+              <v-container>
+                <slot name="addDialogContent" />
+              </v-container>
             </v-card>
             <slot />
           </v-dialog>
         </div>
-        <v-dialog v-model="dialogDelete" max-width="500px" persistent>
+        <v-dialog v-model="dialogDelete" max-width="600px" persistent>
           <v-card>
             <v-card-title style="background-color: #7d002c" class="text-h5 text-white"
               >Confirmation de la suppression</v-card-title
@@ -340,7 +312,6 @@ export default {
           <v-btn color="primary" @click="alert = true"> Réinitialiser</v-btn>
         </div>
       </div>
-      <!-- <v-btn color="primary" @click="initialize"> Réinitialiser </v-btn> -->
     </template>
   </v-data-table>
 </template>

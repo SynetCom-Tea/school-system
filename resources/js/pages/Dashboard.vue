@@ -274,7 +274,7 @@ export default {
         ></Button
       ></template>
     </Dialog> -->
-    <div>
+    <!-- <div>
       <h2>HERREER</h2>
       <TextField
         v-model="test"
@@ -287,7 +287,7 @@ export default {
         :maxHeightResponsive="100"
         :maxWidthResponsive="250"
       ></TextField>
-    </div>
+    </div> -->
     <!-- <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"

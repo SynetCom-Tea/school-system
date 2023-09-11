@@ -171,6 +171,7 @@ export default {
         onChangeTitle(e) {
             console.log("testE:", e.target.value);
         },
+        editItem(){console.log("testE:");}
     }
 }
 </script>
@@ -182,10 +183,13 @@ export default {
       toolbarTitle="Gestion des Salles"
     ></Toolbar>
     <v-card-text>
-        <Datatable titleDatatable="Liste des salles de cours " :headers="headers" :items="salles" />
-        
+        <Datatable titleDatatable="Liste des salles de cours "
+        :headers="headers" :items="salles"
+          :functionEditItem="editItem"
+        />
+
     </v-card-text>
-    
+
 </v-card>
 </template>
 

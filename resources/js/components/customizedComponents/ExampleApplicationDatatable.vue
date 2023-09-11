@@ -114,33 +114,17 @@ export default {
       },
 
       icons: { mdiGift, mdiAccount },
-      listGreetings: [
-        { id: 1, text: "Wa fonda kayan!", color: "red" },
-        { id: 2, text: "Barka da zouwa!", color: "blue" },
-        { id: 3, text: "Bienvenue!", color: "gray" },
-        { id: 1, text: "Welcome!", color: "green" },
-        { id: 1, text: "Marhaba!", color: "red" },
-      ],
+
       dialogDetailUpdate: true,
       selectedItemForUpdate: "",
     };
   },
 
-  mounted() {
-
-  },
-  computed: {
-    location() {
-      return ref("North Pole");
-    },
-  },
+  mounted() {},
+  computed: {},
 
   methods: {
-    updateLocation() {
-      location.value = "South Pole";
-    },
     functionOnClickAddButton() {
-      // console.log("herer");
       router.get(route("users.index"));
     },
     editItem(item) {
@@ -170,9 +154,13 @@ export default {
 </script>
 
 <template>
+  <!-- Pour afficher une modal d'ajout de nouvelle ligne, il suffit
+ d'ajouter le props " :addDialog='true' " >> pour l'activer  et definir le contenu de la modale en utilisant le slot "addDialogContent".
+ Pour faire une redirection vers une nouvelle page (Ajout de nouvelle ligne), il suffit d'ajouter le props "functionOnClickAddButton"
+ -->
   <div>
     <Datatable
-
+      :addDialog="true"
       :dialogDetailUpdate="dialogDetailUpdate"
       titleDatatable="Liste des items"
       :functionDeleteItem="deleteItem"
@@ -180,8 +168,11 @@ export default {
       :functionEditItem="editItem"
       :headers="headersH"
       :items="desserts"
-       :functionOnClickAddButton="functionOnClickAddButton"
+      :functionOnClickAddButton="functionOnClickAddButton"
     >
+      <template v-slot:addDialogContent
+        ><div>Ici le contenu de la modal ajout d'une nouvelle ligne</div></template
+      >
       <template v-slot:contentDialogUpdateDetail>
         <ModalDetailUpdate
           :dialogDetailUpdate="onDetailUpdate"

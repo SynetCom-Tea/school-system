@@ -8,14 +8,10 @@ import {
   mdiAccount,
   mdiContentSaveEditOutline,
 } from "@mdi/js";
-import { provide } from 'vue'
+import { computed, provide, onUpdated } from "vue";
 export default {
   components: { mdiPencil, mdiAccount, mdiCancel, mdiContentSaveEditOutline },
   props: {
-    // toolbarTitle: {
-    //   type: String,
-    //   default: "text",
-    // },
     dialogDetailUpdate: {
       type: Boolean,
       default: false,
@@ -32,16 +28,11 @@ export default {
       type: String,
       default: "Enregistrer",
     },
-    messageSnackbar: {
-      type: String,
-      default: "Modification réussie",
-    },
-    onClickSaveButton: { type: Function },
+
     onClickCancelButton: { type: Function },
   },
 
   data: () => ({
-
     hasSaved: false,
     isEditing: null,
     toolbarTitle: "Détail",
@@ -55,8 +46,8 @@ export default {
     },
     detailUpdateTitle: "",
   }),
-    //  provide('username',  'hello!'),
-    // provide(){return this.save()},
+  // provide('isEditing', modelValueIsEditing ),
+
   updated() {},
   watch: {},
   computed: {
@@ -74,7 +65,6 @@ export default {
         return this.dialogDetailUpdate;
       },
       set(newValue) {
-
         this.$emit("input", newValue);
       },
     },
@@ -87,17 +77,14 @@ export default {
         this.toolbarTitle = this.isEditing ? "Mise à jour" : "Détail";
       }
     },
-    save() {
-      this.modelValue = false;
-      if (this.onClickSaveButton) {
-        return this.onClickSaveButton();
-      }
-    },
+  },
+  provide() {
+    return { editing: computed(() => this.modelValueIsEditing) };
   },
 };
 </script>
 <template>
-  <v-dialog v-model="modelValue" min-width="500" persistent>
+  <v-dialog v-model="modelValue" max-width="700" persistent>
     <v-card
       class="mx-auto"
       min-width="500"
@@ -136,46 +123,10 @@ export default {
 
       <v-card-text>
         <v-form :disabled="!isEditing">
-
           <slot name="contentForm" />
         </v-form>
       </v-card-text>
 
-    <v-divider></v-divider>
-
-      <v-card-actions class="card-actions-style">
-        <Button
-          variant="text"
-          class="mb-2"
-          color="red"
-          nameButton="Annuler"
-          title="Annuler et Fermer la modale"
-          style="height: 30px"
-          :prependIcon="icons.mdiCancel"
-          :onClickButton="onClickCancelButton"
-        ></Button>
-
-        <Button
-          variant="text"
-          class="mb-2"
-          nameButton="Enregistrer"
-          title="Valider et Fermer la modale"
-          style="height: 30px"
-          :disabled="!isEditing"
-          :prependIcon="icons.mdiContentSaveEditOutline"
-          :onClickButton="save"
-        ></Button>
-      </v-card-actions>
-
-      <v-snackbar
-        v-model="hasSaved"
-        :timeout="2000"
-        attach
-        position="absolute"
-        location="bottom left"
-      >
-        {{ messageSnackbar }}
-      </v-snackbar>
       <slot />
     </v-card>
   </v-dialog>
