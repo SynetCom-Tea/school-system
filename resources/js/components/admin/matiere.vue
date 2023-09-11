@@ -142,7 +142,7 @@
             event.preventDefault();
             // Valide le formulaire avant de l'envoyer
             if (this.isValid()) {
-                this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section.libelle == this.section)
+                this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(el => el.libelle == this.section)
                 this.$emit('formSubmitted', this.form);
                 this.$swal.fire({
                     title: 'Réussi',

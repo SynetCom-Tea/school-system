@@ -105,7 +105,8 @@
           v-if="step < pause"
           color="info"
           variant="flat"
-          @click="step++"
+          @click="step++,btnsuivant()"
+         
         >
           Suivant
         </v-btn>
@@ -152,6 +153,7 @@
     data: () => ({
         icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
+        suivant: false,
         pause: null,
         formMatiere: {},
         formClasse: {},
@@ -165,33 +167,42 @@
     }),
 
     methods: {
+        btnsuivant(){
+          this.suivant = false
+        },
         getMatiereForm(donnees) {
           this.formMatiere = donnees
+          this.suivant = true
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la matiere :', this.formMatiere);
         },
         getClasseForm(donnees) {
           this.formClasse = donnees
+          this.suivant = true
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la classe :', this.formClasse);
         },
         getNiveauMatiereForm(donnees){
           this.formNiveauMatiere = donnees
+          this.suivant = true
           console.log('Données du formulaire de la classe :', this.formNiveauMatiere);
 
         },
         getFiliereForm(donnees) {
           this.formFiliere = donnees
+          this.suivant = true
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la filiere :', this.formFiliere);
         },
         getFraisForm(donnees) {
           this.formFrais = donnees
+          this.suivant = true
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de frais :', this.formFrais);
         },
         getFaculteForm(donnees) {
           this.formFaculte = donnees
+          this.suivant = true
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de faculté :', this.formFaculte);
         },

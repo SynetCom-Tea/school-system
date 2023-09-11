@@ -29,19 +29,19 @@
                                 <v-col md="1"></v-col>
                                 <v-col md="3">
                                     <span style="color: red; font-size: x-large;">*</span>
-                                    <v-autocomplete label="Unité d'enseignement" :items="['UE102','UE103']" v-model="ue.ue" chips></v-autocomplete>
+                                    <v-autocomplete label="Unité d'enseignement" :items="uetabs" v-model="ue.ue" @update:modelValue="onSelectChange(form.ues[i].ue)" chips></v-autocomplete>
                                 </v-col>
                                 <v-col md="2">
                                     <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="credit" placeholder="credit" v-model="ue.credit" required></text-field>
+                                    <text-field label="credit" placeholder="credit" v-model="form.ues[i].credit" required></text-field>
                                 </v-col>
                                 <v-col md="2">
                                     <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="Volume horaire" placeholder="Volume horaire" v-model="ue.volume_horaire" required></text-field>
+                                    <text-field label="Volume horaire" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></text-field>
                                 </v-col>
                                 <v-col md="1">
                                     <br>
-                                    <v-btn variant="outlined" :disabled="!(form.ues.length > 1)" icon @click="removeRowUe(ue)" fab small color="error">
+                                    <v-btn variant="outlined" :disabled="!(form.ues.length > 1)" icon @click="removeRowUe(form.ues[i])" fab small color="error">
                                         <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                                     </v-btn>
                                 </v-col>
@@ -53,20 +53,20 @@
                                         <v-col md="1"></v-col>
                                         <v-col md="4">
                                             <span style="color: red; font-size: x-large;">*</span>
-                                            <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="['Algo','Merise']" chips v-model="matiere.matiere">
+                                            <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="['Algo','Merise']" chips v-model="ue.matieres[i].matiere" @update:modelValue="verify(ue,i, $event)">
                                             </v-autocomplete>
                                         </v-col>
                                         <v-col md="2">
                                             <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="Coeff" placeholder="Coeff" required v-model="matiere.coefficient"></text-field>
+                                            <text-field label="Coeff" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></text-field>
                                         </v-col>
                                         <v-col md="2">
                                             <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="VH" placeholder="VH" required v-model="matiere.volume_horaire"></text-field>
+                                            <text-field label="VH" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="test(ue,i)"></text-field>
                                         </v-col>
                                         <v-col md="1">
                                             <br>
-                                            <v-btn variant="outlined" :disabled="!(ue.matieres.length > 1)" icon @click="removeRow(ue,matiere)" fab small color="error">
+                                            <v-btn variant="outlined" :disabled="!(ue.matieres.length > 1)" icon @click="removeRow(ue,ue.matieres[i])" fab small color="error">
                                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                                             </v-btn>
                                         </v-col>
@@ -83,7 +83,7 @@
                         </v-card-text>
                         <v-row>
                             <v-col offset-md="11" md="1">
-                                <v-btn variant="outlined" icon @click="addRowUe" fab small color="info">
+                                <v-btn variant="outlined" :disabled="(uetabs.length == 0)" icon @click="addRowUe" fab small color="info">
                                     <v-icon :icon="icons.mdiPlusCircle"></v-icon>
                                 </v-btn>
                             </v-col>
@@ -116,8 +116,10 @@
     data: () => ({
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
+        somme: 0,
         importation: false,
         section: null,
+        uetabs: [],
         form: useForm({
             filiere: null,
             niveau: null,
@@ -127,13 +129,29 @@
     }),
     
     methods: {
+        test(ue,i){
+            const somme = ue.matieres.reduce((accumulator, currentItem) => {
+                return accumulator + parseFloat(currentItem.volume_horaire);
+            }, 0);
+            if(somme > ue.volume_horaire){
+                this.removeRow(ue,ue.matieres[i])
+                this.$swal("La somme des volumes horaires ne doivent pas dépasser "+ue.volume_horaire+"!")
+            }      // this.somme =  this.somme + parseFloat(nbre || 0);
+            console.log('somme',somme,'ue',ue.volume_horaire)
+        },
+        onSelectChange(itemToRemove){
+            const indexToRemove = this.uetabs.indexOf(itemToRemove);
+            if (indexToRemove !== -1) {
+                // Si l'élément existe dans le tableau, supprimez-le
+                this.uetabs.splice(indexToRemove, 1);
+            }
+        },
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;
             }
         },
         getSection(type){
-            console.log('type',type)
             if(type == '1'){
                 return 'Primaire'
             }else if(type == '2'){
@@ -196,13 +214,12 @@
         },
         goBack() {
             router.get(route('etablissements.index'))
-            console.log()
         },
         addRowUe() {
             this.form.ues.push({
                 ue_id: null,
-                credit: null,
-                volume_horaire: null,
+                credit: 0,
+                volume_horaire: 0,
                 matieres: [],
                 before: null,
                 after: null
@@ -213,19 +230,11 @@
         addRow(ue) {
             ue.matieres.push({
                 matiere_id: null,
-                coefficient: null,
-                volume_horaire: null,
+                coefficient: 0,
+                volume_horaire: 0,
                 after: null
             })
         },
-        // addRowInit(){
-        //     this.form.ues[0].matieres.push({
-        //         matiere_id: null,
-        //         coefficient: null,
-        //         volume_horaire: null,
-        //         after: null
-        //     })
-        // },
         removeRowUe(id) {
             this.form.ues = this.form.ues.filter((el) => el !== id)
         },
@@ -241,17 +250,19 @@
                 // this.$alert.error("L'élément existe déjà !");
             }
         },
-        async verify(element) {
-            const array = this.form.matieres.filter(el => el.code !== null && el.code == element.code)
-
+        async verify(ue,index,matiere) {
+            // console.log('ue',ue,'index',index,'matiere',matiere)
+            const array = ue.matieres.filter(el => el.matiere !== null && el.matiere == matiere)
             if (array.length > 1) {
-                this.removeRow(element)
+                this.removeRow(ue,ue.matieres[index])
                 this.$swal("L'élément existe déjà !")
                 // this.$alert.error("L'élément existe déjà !");
             }
         },
     },
+    created(){},
     mounted() {
+        this.uetabs = ['UE101','UE102']
         this.addRowUe()
         // this.addRowInit()
         this.section = this.getSection(this.type)

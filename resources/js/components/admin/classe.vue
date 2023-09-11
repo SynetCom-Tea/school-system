@@ -54,7 +54,7 @@
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-card-text>
                     <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes">
-                        <v-col md="2" v-if="type !== '3' && type !== '4'">
+                        <v-col md="2" v-if="type == '3' || type == '4'">
                             <span style="color: red; font-size: x-large;">*</span>
                             <v-autocomplete
                                 :items="niveaux"
@@ -167,7 +167,7 @@
             if(this.importation && this.form.fichier_classe != null){
                 fichier = true
             }else if(!this.importation && !this.form.classes.find((el) => {
-                if(this.type !== '3' || this.type !== '4'){
+                if(this.type == '3' || this.type == '4'){
                     return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
                 }else{
                     return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
