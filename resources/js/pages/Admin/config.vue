@@ -67,14 +67,17 @@
         </v-window-item>
 
         <v-window-item :value="5" >
-          <v-card-text>
+            <v-card-text v-if="type=='4'">
             <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
+          </v-card-text>
+          <v-card-text v-if="type=='3'">
+            <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
           </v-card-text>
         </v-window-item>
 
         <v-window-item :value="6" >
           <v-card-text v-if="type=='4'">
-            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
+            <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
           </v-card-text>
           <v-card-text v-if="type=='3'">
             <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
@@ -121,6 +124,7 @@
     import filiereForm from '@/components/admin/filiere.vue';
     import filieresupForm from '@/components/admin/filieresup.vue';
     import faculteForm from '@/components/admin/faculte.vue';
+    import ueForm from '@/components/admin/ue.vue';
     import fraisForm from '@/components/admin/frais.vue';
     import { router,useForm} from '@inertiajs/vue3';
     import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
@@ -136,6 +140,7 @@
     faculteForm,
     filieresupForm,
     filiereForm,
+    ueForm,
     fraisForm,
     NiveauMatiereForm,
     Loader,
@@ -163,6 +168,7 @@
         formFaculte: {},
         formFiliere:{},
         formFrais:{},
+        formUE:{},
         form: useForm({
         matieres: [],
         }),
@@ -195,6 +201,13 @@
           this.suivant = true
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la filiere :', this.formFiliere);
+        },
+
+        getUEForm(donnees) {
+          this.formUE = donnees
+          this.suivant = true
+          // Traitez les données du formulaire soumises par l'événement
+          console.log('Données du formulaire de l\'unité d\'enseignement :', this.formUE);
         },
         getFraisForm(donnees) {
           this.formFrais = donnees

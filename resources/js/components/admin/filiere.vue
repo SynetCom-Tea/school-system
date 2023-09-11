@@ -9,12 +9,12 @@
                 </v-alert>
             </v-row>
             <br>
-            <v-card>
+            <v-card >
                 <v-card-text>
 
                     <v-row>
                         <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                            <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset> </v-switch>
                         </v-col>
                         <v-col v-if="importation">
                             <span style="color: red; font-size: x-large;">*</span>
@@ -34,7 +34,7 @@
             <v-card v-if="!importation">
                 <v-card-text >
                     <v-row>
-                        <v-col offset-md="4" md="4">
+                        <v-col offset-md="3" md="4">
                             <span style="color: red; font-size: x-large;">*</span>
                             <v-autocomplete label="Faculté" :items="['FAST','FASE']" v-model="form.faculte" chips></v-autocomplete>
                         </v-col>
@@ -47,12 +47,12 @@
                         <v-card-text disabled :key=" departement.id" v-for="( departement, i) in form. departements">
                             <v-card class="mx-auto" max-width="1000">
                             <v-row>
-                                <v-col offset-md="2" md="4">
+                                <v-col offset-md="3" md="4">
                                     <span style="color: red; font-size: x-large;">*</span>
                                     <text-field  label="Departement" placeholder="Departement" v-model=" departement.departement" required></text-field>
                                 </v-col>
                                
-                                <v-col offset-md="5" md="1">
+                                <v-col offset-md="4" md="1">
                                     <br>
                                     <v-btn variant="outlined" :disabled="!(form. departements.length > 1)" icon @click="removeRowUe( departement)" fab small color="error">
                                         <v-icon :icon="icons.mdiCloseCircle"></v-icon>
@@ -147,14 +147,19 @@
                 return 'Primaire'
             }else if(type == '2'){
                 return 'Secondaire'
-            }else{
+            }else if(type == '3'){
                 return 'Supérieur'
+            }else{
+                return 'Universitaire'
             }
         },
         resetForm(check){
             if(check){
                 this.form.filieres = []
-                this.addRow()
+                if (this.importation==false){
+                    this.addRow()
+                }
+               
             }
         },
         submitForm() {
