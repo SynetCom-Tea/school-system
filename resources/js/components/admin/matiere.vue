@@ -17,7 +17,7 @@
                             <v-switch label="Souhaiterez-vous appliquez le système LMD ?" v-model="form.lmd" color="primary" inset></v-switch>
                         </v-col>
                         <v-col v-if="form.lmd">
-                            <span style="color: red; font-size: x-large;">*</span>
+                              
                             <v-autocomplete
                                 :items="['Type 1', 'Type 2']"
                                 chips
@@ -37,7 +37,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des matieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                            <span style="color: red; font-size: x-large;">*</span>
+                              
                             <v-file-input
                                 clearable
                                 required
@@ -57,12 +57,12 @@
                     <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
                         <v-col md="2"></v-col>
                         <v-col md="2">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Code matiere" placeholder="Code matiere" required @change="verify(matiere)" v-model="matiere.code"></text-field>
+                              
+                            <TextField label="Code matiere"  isRequired="true" placeholder="Code matiere" r @change="verify(matiere)" v-model="matiere.code"></TextField>
                         </v-col>
                         <v-col md="3">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Libelle matiere" placeholder="Libelle matiere" required v-model="matiere.libelle"></text-field>
+                              
+                            <TextField label="Libelle matiere"  isRequired="true" placeholder="Libelle matiere" required v-model="matiere.libelle"></TextField>
                         </v-col>
                         <v-col md="1">
                             <br>

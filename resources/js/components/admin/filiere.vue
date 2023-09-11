@@ -17,7 +17,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset> </v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                            <span style="color: red; font-size: x-large;">*</span>
+                              
                             <v-file-input
                                 clearable
                                 required
@@ -35,7 +35,7 @@
                 <v-card-text >
                     <v-row>
                         <v-col offset-md="3" md="4">
-                            <span style="color: red; font-size: x-large;">*</span>
+                              
                             <v-autocomplete label="Faculté" :items="['FAST','FASE']" v-model="form.faculte" chips></v-autocomplete>
                         </v-col>
 
@@ -48,8 +48,8 @@
                             <v-card class="mx-auto" max-width="1000">
                             <v-row>
                                 <v-col offset-md="3" md="4">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field  label="Departement" placeholder="Departement" v-model=" departement.departement" required></text-field>
+                                      
+                                    <TextField  label="Departement"  isRequired="true" placeholder="Departement" v-model=" departement.departement" required></TextField>
                                 </v-col>
                                
                                 <v-col offset-md="4" md="1">
@@ -64,12 +64,12 @@
                                     <v-row disabled :key="filiere.id" v-for="(filiere, i) in  departement.filieres">
                                         <v-col md="3"></v-col>
                                         <v-col md="2">
-                                            <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="Code filiere" placeholder="Code filiere" required @change="verify(filiere)" v-model="filiere.code"></text-field>
+                                              
+                                            <TextField label="Code filiere"  isRequired="true" placeholder="Code filiere" required @change="verify(filiere)" v-model="filiere.code"></TextField>
                                         </v-col>
                                         <v-col md="4">
-                                            <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="Nom de la filiere" placeholder="Nom de la filiere" required v-model="filiere.libelle"></text-field>
+                                              
+                                            <TextField label="Nom de la filiere"  isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle"></TextField>
                                         </v-col>
                                         <v-col md="1">
                                             <br>

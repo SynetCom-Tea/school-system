@@ -14,11 +14,11 @@
                     <v-row>
                         <v-col md="2"></v-col>
                         <v-col md="4">
-                            <span style="color: red; font-size: x-large;">*</span>
+                              
                             <v-autocomplete label="Filieres" :items="['IG','MIEL']" v-model="form.filiere" chips></v-autocomplete>
                         </v-col>
                         <v-col md="4">
-                            <span style="color: red; font-size: x-large;">*</span>
+                              
                             <v-autocomplete label="Niveaux" :item-title="formatNiveauLabel" item-value="id" :items="niveaux" v-model="form.niveau" chips></v-autocomplete>
                         </v-col>
                     </v-row>
@@ -28,16 +28,16 @@
                             <v-row>
                                 <v-col md="1"></v-col>
                                 <v-col md="3">
-                                    <span style="color: red; font-size: x-large;">*</span>
+                                      
                                     <v-autocomplete label="Unité d'enseignement" :items="uetabs" v-model="ue.ue" @update:modelValue="onSelectChange(form.ues[i].ue)" chips></v-autocomplete>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="credit" placeholder="credit" v-model="form.ues[i].credit" required></text-field>
+                                      
+                                    <TextField label="credit" isRequired="true" placeholder="credit" v-model="form.ues[i].credit" required></TextField>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="Volume horaire" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></text-field>
+                                      
+                                    <TextField label="Volume horaire" isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></TextField>
                                 </v-col>
                                 <v-col md="1">
                                     <br>
@@ -52,17 +52,17 @@
                                     <v-row disabled :key="matiere.id" v-for="(matiere, i) in ue.matieres">
                                         <v-col md="1"></v-col>
                                         <v-col md="4">
-                                            <span style="color: red; font-size: x-large;">*</span>
+                                              
                                             <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="['Algo','Merise']" chips v-model="ue.matieres[i].matiere" @update:modelValue="verify(ue,i, $event)">
                                             </v-autocomplete>
                                         </v-col>
                                         <v-col md="2">
-                                            <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="Coeff" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></text-field>
+                                              
+                                            <TextField label="Coeff" isRequired="true" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></TextField>
                                         </v-col>
                                         <v-col md="2">
-                                            <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="VH" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="test(ue,i)"></text-field>
+                                              
+                                            <TextField label="VH" isRequired="true" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="test(ue,i)"></TextField>
                                         </v-col>
                                         <v-col md="1">
                                             <br>

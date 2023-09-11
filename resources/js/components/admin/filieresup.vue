@@ -17,7 +17,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                            <span style="color: red; font-size: x-large;">*</span>
+                              
                             <v-file-input
                                 clearable
                                 required
