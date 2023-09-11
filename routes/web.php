@@ -3,11 +3,20 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\EtablissementController;
 
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Modules\Scolarite\Http\Controllers\EtudiantsController;
+use Modules\Scolarite\Http\Controllers\AnneeController;
+use Modules\Scolarite\Http\Controllers\ClasseController;
+use Modules\Scolarite\Http\Controllers\AnneeClasseController;
+use Modules\Scolarite\Http\Controllers\TuteurController;
+use Modules\Scolarite\Http\Controllers\NiveauController;
+use Modules\Scolarite\Http\Controllers\InscriptionController;
+
 
 
 /*
@@ -48,5 +57,14 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('salles', SalleController::class);
 });
+
+Route::resource('etudiants', EtudiantsController::class);
+Route::resource('annees', AnneeController::class);
+Route::resource('classes', ClasseController::class);
+Route::resource('promotions', AnneeClasseController::class);
+Route::resource('tuteurs', TuteurController::class);
+Route::resource('niveaux', NiveauController::class);
+Route::resource('etablissements', EtablissementController::class);
+Route::resource('inscriptions', InscriptionController::class);
 
 require __DIR__ . '/auth.php';

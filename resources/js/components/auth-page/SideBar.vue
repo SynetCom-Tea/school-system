@@ -2,7 +2,7 @@
   <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
       <div class="app-bar-content">
-        <div class="text-white text-h5">Bienvenue sur Système scolaire!</div>
+        <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
         <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
         <div class="d-flex">
           <SiteWebButton />
@@ -126,7 +126,7 @@
                   </v-list-item>
                 </v-list-group>
 
-                <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles = 'Administrateur'">
+                <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles == 'Administrateur'">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -142,7 +142,7 @@
                     </v-list-item>
                   </template>
 
-                  <v-list-item
+                  <v-list-item 
                     class="sub-list-group"
                     v-for="(item, i) in MenuAdmin.children"
                     :key="i"
@@ -260,57 +260,41 @@ export default {
     };
   },
   mounted() {
+    console.log('ici',this.$page.props.sections)
     let tabs = []
     let enfants = []
-    tabs = this.$page.props.sections
-      .map(function (el) {
-        return el.section.libelle;
+    const sections = [
+      { title: 'Primaire', icon: mdiSchool, link: '/enseignement/configuration/1' },
+      { title: 'Secondaire', icon: mdiSchool, link: '/enseignement/configuration/2' },
+      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/4' },
+    ];
+
+    if(this.$page.props.roles == 'Administrateur'){
+        tabs = this.$page.props.sections[0].sections
+        .map(function (el) {
+          return el.libelle;
+        })
+    }
+      
+    if(tabs != []){
+      sections.forEach(section => {
+        if (tabs.includes(section.title)) {
+          enfants.push(section);
+        }
       });
-      let primaire = {icon: mdiSchool, title: "Primaire", link: "/enseignement/configuration/1"}
-      let secondaire = {icon: mdiSchool, title: "Secondaire", link: "/enseignement/configuration/2"}
-      let superieur = {icon: mdiSchool, title: "Supérieur", link: "/enseignement/configuration/3"}
-      let universite = {icon: mdiSchool, title: "Universitaire", link: "/enseignement/configuration/4"}
+    }
 
-      if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur') && tabs.includes('Universitaire')) {
-        enfants.push(primaire,secondaire,superieur,universite)
-      } else if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Supérieur')){
-        enfants.push(primaire,secondaire,superieur)
-      }else if (tabs.includes('Primaire') && tabs.includes('Secondaire') && tabs.includes('Universitaire')){
-        enfants.push(primaire,secondaire,universite)
-      }else if (tabs.includes('Supérieur') && tabs.includes('Secondaire') && tabs.includes('Universitaire')){
-        enfants.push(secondaire,superieur,universite)
-      }else if (tabs.includes('Supérieur') && tabs.includes('Primaire') && tabs.includes('Universitaire')){
-        enfants.push(primaire,superieur,universite)
-      }else if (tabs.includes('Primaire') && tabs.includes('Secondaire')){
-        enfants.push(primaire,secondaire)
-      } else if (tabs.includes('Primaire') && tabs.includes('Supérieur')){
-        enfants.push(primaire,superieur)
-      }else if (tabs.includes('Primaire') && tabs.includes('Universitaire')){
-        enfants.push(primaire,universite)
-      }else if (tabs.includes('Secondaire') && tabs.includes('Supérieur')){
-        enfants.push(secondaire,superieur)
-      }else if (tabs.includes('Secondaire') && tabs.includes('Universitaire')){
-        enfants.push(secondaire,universite)
-      }else if (tabs.includes('Supérieur') && tabs.includes('Universitaire')){
-        enfants.push(superieur,universite)
-      }else if (tabs.includes('Primaire')){
-        enfants.push(primaire)
-      }else if (tabs.includes('Secondaire')){
-        enfants.push(secondaire)
-      }else if (tabs.includes('Supérieur')){
-        enfants.push(superieur)
-      }else if (tabs.includes('Universitaire')){
-        enfants.push(universite)
-      }else{
-
-      }
-     this.MenuAdmin = {
+    this.MenuAdmin = {
         icon: mdiCogOutline,
         title: "Configurations",
         "icon-alt": mdiChevronLeft,
         model: false,
         children: enfants
-    };
+      };
+    //
+     
+
 
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);

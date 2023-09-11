@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('mail');
+            $table->string('email');
             $table->string('adresse');
             $table->json('telephone');
             $table->string('ville');
+            $table->string('logo')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
                 ->references('id')->on('type_etablissements');
             $table->foreignIdFor(\App\Models\SystemeLmd::class)->nullable()->index()
@@ -26,7 +27,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('etablissement_sections', function (Blueprint $table) {
+        Schema::create('etablissement_section', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
             $table->foreignIdFor(\App\Models\Etablissement::class)
