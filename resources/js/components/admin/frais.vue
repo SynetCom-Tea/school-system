@@ -54,7 +54,19 @@
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-card-text>
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
-                        <v-col md="2" >
+                        <v-col md="4" v-if="type == '3' || type == '4'" >
+                            <span style="color: red; font-size: x-large;">*</span>
+                            <v-autocomplete
+                                :items="['IG','MIEL']"
+                                v-model="frais.filiere"
+                                item-value="id"
+                                chips
+                                closable-chips
+                                color="blue-grey-lighten-2"
+                                label="filiere"
+                            ></v-autocomplete>
+                        </v-col>
+                        <v-col md="4" >
                             <span style="color: red; font-size: x-large;">*</span>
                             <v-autocomplete
                                 :items="niveaux"
@@ -67,15 +79,20 @@
                                 label="Niveaux"
                             ></v-autocomplete>
                         </v-col>
-                        <v-col md="2">
+                        <v-col md="4">
                             <span style="color: red; font-size: x-large;">*</span>
                             <text-field label="Code frais" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></text-field>
                         </v-col>
-                        <v-col md="3">
+                        <v-col md="4">
                             <span style="color: red; font-size: x-large;">*</span>
                             <text-field label="Libelle frais" placeholder="Libelle frais" required v-model="frais.libelle"></text-field>
                         </v-col>
-                        <v-col md="1">
+                        <v-col md="4">
+                            <span style="color: red; font-size: x-large;">*</span>
+                            <text-field label="Montant frais" placeholder="Montant frais" required v-model="frais.montant"></text-field>
+                        </v-col>
+                        <v-col md="4" v-if="type == '1' || type == '2'"></v-col>
+                        <v-col md="1" offset-md="3">
                             <br>
                             <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
@@ -189,9 +206,11 @@
         },
         addRow() {
             this.form.frais.push({
+                filiere: null,
                 niveau: null,
                 code: null,
                 libelle: null,
+                montant: null,
                 before: null,
                 after: null
             })

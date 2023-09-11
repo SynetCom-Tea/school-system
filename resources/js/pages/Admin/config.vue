@@ -35,7 +35,7 @@
         <v-window-item :value="3">
           <!-- Tabs de la Filiere pour toute les sections -->
           <v-card-text v-if="type == '3'">
-            <filiere-form @formSubmitted="getFiliereForm" :type="type"  />
+            <filieresup-form @formSubmitted="getFiliereForm" :type="type"  />
           </v-card-text>
           <!-- Tabs de la Filiere pour toute les sections -->
 
@@ -68,13 +68,13 @@
 
         <v-window-item :value="5" >
           <v-card-text>
-            <frais-form @formSubmitted="getFraisForm" :type="type" />
+            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
           </v-card-text>
         </v-window-item>
 
         <v-window-item :value="6" >
           <v-card-text v-if="type=='4'">
-            <frais-form @formSubmitted="getFraisForm" :type="type" />
+            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
           </v-card-text>
           <v-card-text v-if="type=='3'">
             <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
@@ -118,6 +118,7 @@
     import NiveauMatiereForm from '@/components/admin/niveau-matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
     import filiereForm from '@/components/admin/filiere.vue';
+    import filieresupForm from '@/components/admin/filieresup.vue';
     import faculteForm from '@/components/admin/faculte.vue';
     import fraisForm from '@/components/admin/frais.vue';
     import { router,useForm} from '@inertiajs/vue3';
@@ -132,6 +133,7 @@
     MatiereForm,
     ClasseForm,
     faculteForm,
+    filieresupForm,
     filiereForm,
     fraisForm,
     NiveauMatiereForm,
