@@ -115,7 +115,7 @@
           color="info"
           variant="flat"
           @click="step++, btnsuivant()"
-          :disabled="!git"
+          :disabled="!suivant"
         >
           Suivant
         </v-btn>
@@ -188,7 +188,7 @@ export default {
       mdiCogOutline,
     },
     step: 1,
-    git: false,
+    suivant: false,
     pause: null,
     formMatiere: {},
     formClasse: {},

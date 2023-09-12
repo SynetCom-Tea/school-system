@@ -126,14 +126,14 @@
                   </v-list-item>
                 </v-list-group>
 
-                <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles == 'Administrateur'">
+                <v-list-group
+                  :value="MenuAdmin.title"
+                  v-if="$page.props.roles == 'Administrateur'"
+                >
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
-                        <v-icon
-                          :title="MenuAdmin.title"
-                          :icon="MenuAdmin.icon"
-                        ></v-icon>
+                        <v-icon :title="MenuAdmin.title" :icon="MenuAdmin.icon"></v-icon>
                       </template>
                       <v-list-item-title
                         class="text-wrap"
@@ -142,14 +142,14 @@
                     </v-list-item>
                   </template>
 
-                  <v-list-item 
+                  <v-list-item
                     class="sub-list-group"
                     v-for="(item, i) in MenuAdmin.children"
                     :key="i"
                     @click="page(item.link)"
                   >
                     <template v-slot:prepend>
-                      <v-icon :title="item.title" :icon="item.icon" ></v-icon>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
                     </template>
 
                     <v-list-item-title
@@ -159,7 +159,10 @@
                   </v-list-item>
                 </v-list-group>
 
-                <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles == 'Note'">
+                <v-list-group
+                  :value="getListMenus[2].title"
+                  v-if="$page.props.roles == 'Note'"
+                >
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -260,25 +263,26 @@ export default {
     };
   },
   mounted() {
-    console.log('ici',this.$page.props.sections)
-    let tabs = []
-    let enfants = []
+    console.log("ici", this.$page.props.sections);
+    let tabs = [];
+    let enfants = [];
     const sections = [
-      { title: 'Primaire', icon: mdiSchool, link: '/enseignement/configuration/1' },
-      { title: 'Secondaire', icon: mdiSchool, link: '/enseignement/configuration/2' },
-      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/3' },
-      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/4' },
+      { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
+      { title: "Secondaire", icon: mdiSchool, link: "/enseignement/configuration/2" },
+      { title: "Supérieur", icon: mdiSchool, link: "/enseignement/configuration/3" },
+      { title: "Universitaire", icon: mdiSchool, link: "/enseignement/configuration/4" },
     ];
 
-    if(this.$page.props.roles == 'Administrateur'){
-        tabs = this.$page.props.sections[0].sections
-        .map(function (el) {
+    if (this.$page.props.roles == "Administrateur") {
+      if (this.$page.props.sections[0].sections) {
+        tabs = this.$page.props.sections[0].sections.map(function (el) {
           return el.libelle;
-        })
+        });
+      }
     }
-      
-    if(tabs != []){
-      sections.forEach(section => {
+
+    if (tabs != []) {
+      sections.forEach((section) => {
         if (tabs.includes(section.title)) {
           enfants.push(section);
         }
@@ -286,19 +290,17 @@ export default {
     }
 
     this.MenuAdmin = {
-        icon: mdiCogOutline,
-        title: "Configurations",
-        "icon-alt": mdiChevronLeft,
-        model: false,
-        children: enfants
-      };
+      icon: mdiCogOutline,
+      title: "Configurations",
+      "icon-alt": mdiChevronLeft,
+      model: false,
+      children: enfants,
+    };
     //
-     
-
 
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
-    console.log('console sections',this.$page.props.sections);
+    console.log("console sections", this.$page.props.sections);
     this.username =
       this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
   },

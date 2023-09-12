@@ -31,7 +31,7 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "py-1",
+      default: "py-2",
     },
     maxWidthResponsive: {
       type: Number,
@@ -118,7 +118,6 @@ export default {
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="colorValue"
-      @update:modelValue="onchangeModelValue"
       @change="onchangeField"
       :class="class"
     >

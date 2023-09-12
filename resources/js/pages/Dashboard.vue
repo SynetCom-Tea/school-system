@@ -161,6 +161,20 @@ export default {
       },
 
       icons: { mdiGift, mdiAccount },
+      etablissements1: [
+        { id: 1, name: "e1" },
+        { id: 2, name: "e2" },
+        { id: 3, name: "e3" },
+        { id: 4, name: "e4" },
+      ],
+      etablissements2: [
+        { id: 1, name: "e1" },
+        { id: 2, name: "e2" },
+        { id: 3, name: "e3" },
+        { id: 4, name: "e4" },
+      ],
+      etat1: "",
+      etat2: "",
       listGreetings: [
         { id: 1, text: "Wa fonda kayan!", color: "red" },
         { id: 2, text: "Barka da zouwa!", color: "blue" },
@@ -173,6 +187,13 @@ export default {
   mounted() {},
 
   methods: {
+    onChangeName(e) {
+      console.log(" onChangeName:", e);
+    },
+    function1(e) {},
+    function2(e) {
+      console.log("function2:", e);
+    },
     onClickBt() {
       this.isDialog = !this.isDialog;
     },
@@ -225,7 +246,66 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <Loader :modelDialog="isDialog">
+    <div>
+      <!-- <v-autocomplete
+        item-value="id"
+        item-title="name"
+        label="Etablissement1"
+        @update:modelValue="function1"
+        :items="etablissements1"
+      >
+      </v-autocomplete> -->
+      <br />
+      <br />
+      <v-row>
+        <v-col cols="6">
+          <Select
+            itemValue="name"
+            v-model="etat2"
+            :isRequired="true"
+            itemTitle="name"
+            @update:modelValue="function2(etat2)"
+            label="Etablissement2"
+            :items="etablissements2"
+          >
+          </Select>
+        </v-col>
+        <v-col cols="6">
+          <TextField
+            v-model="etat1"
+            label="protein"
+            :isRequired="true"
+            classResponsive="py-2"
+            @update:modelValue="onChangeName"
+          ></TextField>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="6">
+          <Autocomplete
+            itemValue="name"
+            v-model="etat1"
+            :isRequired="true"
+            itemTitle="name"
+            @update:modelValue="function2(etat1)"
+            label="Etablissement2"
+            :items="etablissements2"
+          >
+          </Autocomplete>
+        </v-col>
+        <v-col cols="6">
+          <TextField
+            v-model="etat1"
+            label="protein"
+            :isRequired="true"
+            classResponsive="py-2"
+            @update:modelValue="onChangeName"
+          ></TextField>
+        </v-col>
+      </v-row>
+    </div>
+
+    <!-- <Loader :modelDialog="isDialog">
       <template v-slot:spinnertype>
         <VueSpinner size="50" color="white"></VueSpinner
       ></template>
@@ -235,7 +315,7 @@ export default {
     <br /><br />
     <div>
       <ExampleApplicationDatatable />
-    </div>
+    </div> -->
     <br /><br />
   </AuthenticatedLayout>
 </template>

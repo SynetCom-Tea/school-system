@@ -30,7 +30,7 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "py-4",
+      default: "ml-2 py-2",
     },
     maxWidthResponsive: {
       type: Number,
@@ -78,7 +78,7 @@ export default {
     // },
     onchangeModelValue: { type: Function },
     customFilter: { type: Function },
-    classLabel: { type: String, default: "defaultClassLabel" },
+    classLabel: { type: String, required: false },
     style: { type: String },
     isRequired: { type: Boolean, default: false },
     isMultiple: { type: Boolean, default: false },
@@ -96,6 +96,7 @@ export default {
     },
   },
 };
+//  @update:modelValue="onchangeModelValue"
 </script>
 <template>
   <v-responsive
@@ -106,7 +107,6 @@ export default {
   >
     <v-select
       :items="items"
-      v-model="modelValue"
       :variant="variant"
       :hint="hint"
       :density="density"
@@ -120,7 +120,6 @@ export default {
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="color"
-      @update:modelValue="onchangeModelValue"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>
