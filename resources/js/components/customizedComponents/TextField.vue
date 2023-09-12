@@ -73,10 +73,10 @@ export default {
       type: [Object, String],
       required: false,
     },
-    errorMessageValue: {
-      type: [Object, String],
-      required: false,
-    },
+    // errorMessageValue: {
+    //   type: [Object, String],
+    //   required: false,
+    // },
     onchangeModelValue: { type: Function },
     onchangeField: { type: Function },
     class: { type: String, required: false },
@@ -118,7 +118,6 @@ export default {
       :color="colorValue"
       @update:modelValue="onchangeModelValue"
       @change="onchangeField"
-      :error-messages="errorMessageValue"
       :class="class"
     >
       <template #label v-if="isRequired">

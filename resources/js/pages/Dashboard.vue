@@ -2,7 +2,6 @@
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 
-import TextInputC from "../components/customizedComponents/TextFieldC.vue";
 import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
@@ -24,9 +23,7 @@ export default {
     VueSpinner,
     Head,
     Dialog,
-
     Vue3Marquee,
-    TextInputC,
     mdiAccount,
     mdiPurse,
     mdiHomeOutline,
@@ -200,7 +197,7 @@ export default {
   <AuthenticatedLayout>
     <Toolbar
       styleToolbar="background-color: white;"
-      :icon="icons.mdiAccount"
+      :icon="icons.mdiHome"
       toolbarTitle="Acceuil"
     ></Toolbar>
     <div class="mt-10">
@@ -246,7 +243,7 @@ export default {
     </div>
     <br /><br />
 
-    <Button
+    <!-- <Button
       variant="flat"
       density="comfortable"
       title="title"
@@ -277,23 +274,21 @@ export default {
         ></Button
       ></template>
     </Dialog> -->
- <!-- <TextInput
-    </Dialog>
-    <TextInput
-      type="text"
-      v-model="test"
-      label="Mot de passe"
-      :isRequired="true"
-      classResponsive="py-4"
-      :maxHeightResponsive="100"
-      :maxWidthResponsive="150"
-      :onchangeField="onChangeTitle"
-      :rules="[rules.required, rules.counter]"
-    />
-    <div>{{ test }}</div>
-    <br /><br /><br /><br /><br /><br />
-
-     <div>
+    <!-- <div>
+      <h2>HERREER</h2>
+      <TextField
+        v-model="test"
+        :counter="10"
+        variant="solo"
+        hint="Ne pas depasser"
+        :isRequired="true"
+        label="Name"
+        classResponsive="py-4"
+        :maxHeightResponsive="100"
+        :maxWidthResponsive="250"
+      ></TextField>
+    </div> -->
+    <!-- <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"

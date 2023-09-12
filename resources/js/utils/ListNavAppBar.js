@@ -111,7 +111,7 @@ export function listMenus() {
                 permissions: "manage_system",
             },
         ],
-    }; 
+    };
     // Gestion de Notes
     let configsMenu = {
         icon: mdiCog,

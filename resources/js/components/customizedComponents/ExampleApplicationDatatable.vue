@@ -1,18 +1,23 @@
 <script>
-import Datatable from "./datatable.vue";
+import Datatable from "./Datatable.vue";
+import { router, useForm } from "@inertiajs/vue3";
+import TextFieldC from "./TextFieldC.vue";
 import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
+import { inject } from "vue";
 export default {
   components: {
     Datatable,
-
+    TextFieldC,
     mdiAccount,
     mdiPurse,
     mdiHomeOutline,
     mdiPresentation,
     mdiGift,
   },
+
   data() {
     return {
+      onDetailUpdate: false,
       headersH: [
         {
           title: "Dessert (100g serving)",
@@ -109,39 +114,77 @@ export default {
       },
 
       icons: { mdiGift, mdiAccount },
-      listGreetings: [
-        { id: 1, text: "Wa fonda kayan!", color: "red" },
-        { id: 2, text: "Barka da zouwa!", color: "blue" },
-        { id: 3, text: "Bienvenue!", color: "gray" },
-        { id: 1, text: "Welcome!", color: "green" },
-        { id: 1, text: "Marhaba!", color: "red" },
-      ],
+
+      dialogDetailUpdate: true,
+      selectedItemForUpdate: "",
     };
   },
+
   mounted() {},
+  computed: {},
 
   methods: {
+    functionOnClickAddButton() {
+      router.get(route("users.index"));
+    },
     editItem(item) {
-      console.log("item from editItem:", item);
+      // console.log("item from editItem:", item);
+      this.editedObject = Object.assign({}, item);
+      if (item) {
+        this.selectedItemForUpdate = item;
+      }
+      if (this.dialogDetailUpdate) {
+        this.onDetailUpdate = true;
+      }
+      // console.log("this.selectedItemForUpdate:", this.selectedItemForUpdate);
+      // console.log("this.dialogDetailUpdate:", this.dialogDetailUpdate);
     },
     deleteItem(item) {
-      console.log("item from deleteItem:", item);
+      // console.log("item from deleteItem:", item);
+    },
+    onClickCancelButtonOfMDU() {
+      this.onDetailUpdate = false;
+    },
+    onClickSaveButtonOfMDU() {
+      // console.log("enregistrer la mise à jour:");
+      this.onDetailUpdate = false;
     },
   },
 };
 </script>
 
 <template>
+  <!-- Pour afficher une modal d'ajout de nouvelle ligne, il suffit
+ d'ajouter le props " :addDialog='true' " >> pour l'activer  et definir le contenu de la modale en utilisant le slot "addDialogContent".
+ Pour faire une redirection vers une nouvelle page (Ajout de nouvelle ligne), il suffit d'ajouter le props "functionOnClickAddButton"
+ -->
   <div>
-    <!-- :headers="headers" :items="dataH" -->
     <Datatable
+      :addDialog="true"
+      :dialogDetailUpdate="dialogDetailUpdate"
       titleDatatable="Liste des items"
       :functionDeleteItem="deleteItem"
       :editedObject="editedObject"
       :functionEditItem="editItem"
       :headers="headersH"
       :items="desserts"
-    />
+      :functionOnClickAddButton="functionOnClickAddButton"
+    >
+      <template v-slot:addDialogContent
+        ><div>Ici le contenu de la modal ajout d'une nouvelle ligne</div></template
+      >
+      <template v-slot:contentDialogUpdateDetail>
+        <ModalDetailUpdate
+          :dialogDetailUpdate="onDetailUpdate"
+          :onClickCancelButton="onClickCancelButtonOfMDU"
+          :onClickSaveButton="onClickSaveButtonOfMDU"
+        >
+          <template v-slot:contentForm>
+            <TextFieldC :item="editedObject" />
+          </template>
+        </ModalDetailUpdate>
+      </template>
+    </Datatable>
   </div>
 </template>
 <style scoped></style>

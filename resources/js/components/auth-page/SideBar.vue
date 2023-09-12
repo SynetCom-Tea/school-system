@@ -324,6 +324,7 @@ export default {
     listMenus,
     logout() {
       router.post("/logout");
+      // window.location.reload(true);
     },
     onClickMenuItem(item) {
       router.get(item);

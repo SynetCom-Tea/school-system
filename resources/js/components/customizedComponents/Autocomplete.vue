@@ -85,7 +85,6 @@ export default {
     class: { type: String, default: "py-3" },
     style: { type: Object, required: false },
     isRequired: { type: Boolean, default: false },
-    isMultiple: { type: Boolean, default: false },
   },
   setup() {},
   updated() {},
@@ -135,7 +134,6 @@ export default {
     :base-color="baseColorValue"
     :color="colorValue"
     :error-messages="errorMessageValue"
-    :multiple="isMultiple"
     @update:modelValue="onchangeModelValue"
   >
     <template #label v-if="isRequired">

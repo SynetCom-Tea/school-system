@@ -48,7 +48,7 @@ export default {
       type: String,
       default: "primary",
     },
-    colorValue: {
+    color: {
       type: String,
       default: "primary",
     },
@@ -72,10 +72,10 @@ export default {
       type: [Object, String],
       required: false,
     },
-    errorMessageValue: {
-      type: [Object, String],
-      required: false,
-    },
+    // errorMessageValue: {
+    //   type: [Object, String],
+    //   required: false,
+    // },
     onchangeModelValue: { type: Function },
     customFilter: { type: Function },
     classLabel: { type: String, default: "defaultClassLabel" },
@@ -119,9 +119,7 @@ export default {
       :rules="rules"
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
-      :color="colorValue"
-      :error-messages="errorMessageValue"
-      :multiple="isMultiple"
+      :color="color"
       @update:modelValue="onchangeModelValue"
     >
       <template #label v-if="isRequired">
@@ -130,6 +128,7 @@ export default {
       <template #label v-else>
         {{ label }}
       </template>
+      <slot />
     </v-select>
   </v-responsive>
 </template>
