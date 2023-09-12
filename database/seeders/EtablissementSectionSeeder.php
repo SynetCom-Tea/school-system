@@ -30,6 +30,11 @@ class EtablissementSectionSeeder extends Seeder
                 'etablissement_id' => 1,
                 'section_id' => 3,
             ),
+            3 =>
+            array (
+                'etablissement_id' => 1,
+                'section_id' => 4,
+            ),
         ));
     }
 }
