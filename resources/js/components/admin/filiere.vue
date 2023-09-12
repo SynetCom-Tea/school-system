@@ -17,7 +17,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset> </v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                              
+
                             <v-file-input
                                 clearable
                                 required
@@ -35,7 +35,7 @@
                 <v-card-text >
                     <v-row>
                         <v-col offset-md="3" md="4">
-                              
+
                             <v-autocomplete label="Faculté" :items="['FAST','FASE']" v-model="form.faculte" chips></v-autocomplete>
                         </v-col>
 
@@ -48,10 +48,10 @@
                             <v-card class="mx-auto" max-width="1000">
                             <v-row>
                                 <v-col offset-md="3" md="4">
-                                      
+
                                     <TextField  label="Departement"  isRequired="true" placeholder="Departement" v-model=" departement.departement" required></TextField>
                                 </v-col>
-                               
+
                                 <v-col offset-md="4" md="1">
                                     <br>
                                     <v-btn variant="outlined" :disabled="!(form. departements.length > 1)" icon @click="removeRowUe( departement)" fab small color="error">
@@ -64,11 +64,11 @@
                                     <v-row disabled :key="filiere.id" v-for="(filiere, i) in  departement.filieres">
                                         <v-col md="3"></v-col>
                                         <v-col md="2">
-                                              
+
                                             <TextField label="Code filiere"  isRequired="true" placeholder="Code filiere" required @change="verify(filiere)" v-model="filiere.code"></TextField>
                                         </v-col>
                                         <v-col md="4">
-                                              
+
                                             <TextField label="Nom de la filiere"  isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle"></TextField>
                                         </v-col>
                                         <v-col md="1">
@@ -131,7 +131,7 @@
             faculte: null,
             fichier_filiere: null,
             departements: [],
-           
+
         }),
     }),
 
@@ -155,11 +155,11 @@
         },
         resetForm(check){
             if(check){
-                this.form.filieres = []
+                this.form = []
                 if (this.importation==false){
                     this.addRow()
                 }
-               
+
             }
         },
         submitForm() {
@@ -214,6 +214,7 @@
         },
         addRowUe() {
             this.form. departements.push({
+                etablissement: this.$page.props.admin_etablissement.etablissement_id,
                 departement: null,
                 filieres: [],
                 before: null,
@@ -226,7 +227,6 @@
              departement.filieres.push({
                 code: null,
                 libelle: null,
-                etablissement: this.$page.props.admin_etablissement.etablissement_id,
                 before: null,
                 after: null
             })
