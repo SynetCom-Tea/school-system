@@ -80,13 +80,13 @@
             <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
           </v-card-text>
           <v-card-text v-if="type=='3'">
-            <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+            <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
           </v-card-text>
         </v-window-item>
 
         <v-window-item :value="7">
           <v-card-text>
-            <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+            <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
           </v-card-text>
         </v-window-item>
       </v-window>
@@ -109,7 +109,7 @@
           color="info"
           variant="flat"
           @click="step++,btnsuivant()"
-         
+            :disabled="!git "
         >
           Suivant
         </v-btn>
@@ -119,6 +119,7 @@
   </template>
   <script>
     import MatiereForm from '@/components/admin/matiere.vue';
+    import NiveauMatiereSupForm from '@/components/admin/niveau-matiere-sup.vue';
     import NiveauMatiereForm from '@/components/admin/niveau-matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
     import filiereForm from '@/components/admin/filiere.vue';
@@ -142,6 +143,7 @@
     filiereForm,
     ueForm,
     fraisForm,
+    NiveauMatiereSupForm,
     NiveauMatiereForm,
     Loader,
     Datatable,
@@ -160,10 +162,11 @@
     data: () => ({
         icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
-        suivant: false,
+        git : false,
         pause: null,
         formMatiere: {},
         formClasse: {},
+        formNiveauMatiereSup: {},
         formNiveauMatiere: {},
         formFaculte: {},
         formFiliere:{},
@@ -190,10 +193,16 @@
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la classe :', this.formClasse);
         },
+        getNiveauMatiereSupForm(donnees){
+          this.formNiveauSupMatiere = donnees
+          this.suivant = true
+          console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSup);
+
+        },
         getNiveauMatiereForm(donnees){
           this.formNiveauMatiere = donnees
           this.suivant = true
-          console.log('Données du formulaire de la classe :', this.formNiveauMatiere);
+          console.log('Données du formulaire niveau matiere :', this.formNiveauMatiere);
 
         },
         getFiliereForm(donnees) {
@@ -260,13 +269,13 @@
                     return 'Frais';
                 }else if (this.type === '4') {
                             return 'Filiere';
-                }else{return 'Affectation de la matiere par niveau';}
+                }else{return 'Affectation des matieres par niveau';}
           case 5:if (this.type === '4') {
                     return 'Frais';
                 }else{ return 'Unités d\enseignements'}
           case 6:if (this.type === '4') {
                     return 'Unités d\enseignements';
-                }else{ return 'Affectation de la matiere par niveau'}
+                }else{ return 'Affectation des matieres par niveau'}
           case 7: return 'Affectation de la matiere par niveau'
         }
       },
