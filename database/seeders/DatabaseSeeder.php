@@ -18,8 +18,8 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             TypeEtablissementSeeder::class,
             SectionSeeder::class,
-            NiveauTableSeeder::class
-            // EtablissementsTableSeeder::class,
+            NiveauTableSeeder::class,
+            EtablissementsTableSeeder::class,
             // ClasseSeeder::class,
             // AnneeScolaireSeeder::class,
             // ClasseAnneeSeeder::class,

@@ -94,17 +94,6 @@ export default {
             val || this.closeDelete()
         },
     },
-
-    created() {
-        this.initialize()
-        // if (this.$page.props.flash ? .message ? .type == 'success') {
-        //     this.$swal(
-        //         'Enregistrement / Modification!',
-        //         this.$page.props.flash ? .message ? .text,
-        //         'success'
-        //     )
-        // }
-    },
     methods: {
         initialize() {
             this.users
@@ -113,6 +102,21 @@ export default {
             router.get(route("users.create"));
         },
     },
+    created() {
+        this.initialize()
+        if (this.$page.props.flash.message) {
+            this.$swal({
+                icon: 'success',
+                title: 'Creation',
+                text: this.$page.props.flash.message,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+            });
+        }
+    }
 };
 </script>
 

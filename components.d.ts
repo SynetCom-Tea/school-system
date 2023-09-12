@@ -13,5 +13,6 @@ declare module 'vue' {
     VAutocomple: typeof import('vuetify/lib')['VAutocomple']
     VData: typeof import('vuetify/lib')['VData']
     VDataTable: typeof import('vuetify/labs/VDataTable')['VDataTable']
+    VUtocomplete: typeof import('vuetify/lib')['VUtocomplete']
   }
 }

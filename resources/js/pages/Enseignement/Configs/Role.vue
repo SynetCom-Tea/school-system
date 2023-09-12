@@ -1,3 +1,28 @@
+<!-- public function create(Request $request)
+    {
+        $anneeScolaireId = AnneeScolaire::find(1)->id;
+        $sections = Etablissement::with('sections')->find(1);
+        $niveaux = $request->section ? Niveau::where('section_id', $request->section)->get() : collect();
+        $classes = $request->niveau ? DB::select("
+            SELECT * FROM classes c
+            JOIN classe_annees AS ca ON c.id = ca.classe_id
+            JOIN annee_scolaires a ON a.id = ca.annee_scolaire_id
+            JOIN enseignant_annees AS ea ON ca.id = ea.classe_annee_id
+            JOIN niveau_matieres AS nm ON nm.id = ea.niveau_matiere_id
+            WHERE a.id = :anneeScolaireId AND nm.niveau_id = :niveauId
+        ", [
+            'anneeScolaireId' => $anneeScolaireId,
+            'niveauId' => $request->niveau,
+        ]) : collect();
+        // dd($sections->sections, $niveaux, $classes, $anneeScolaireId);
+        return Inertia::render('Emplois/Create', [
+            'sections' => $sections->sections,
+            'niveaux' => $niveaux
+        ]);
+    }
+
+    /** -->
+
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {
@@ -27,12 +52,15 @@ export default {
         mdiCloseCircle
     },
     layout: AuthenticatedLayout,
-    props: ["roles", "permissions"],
+    props: ["permission_role_users", "roles", "permissions","permission"],
     data() {
         return {
+            role_p_a: null,
+            role_p_u: null,
             form: useForm({
+                role_id: null,
                 name: '',
-                permission: [],
+                permissions: null,
             }),
             icon: {
                 mdiPencil,
@@ -44,8 +72,7 @@ export default {
                 mdiCancel,
                 mdiCheckCircle
             },
-            headers: [
-                {
+            headers: [{
                     title: 'Libellé',
                     align: 'center',
                     key: 'name'
@@ -53,7 +80,7 @@ export default {
                 {
                     title: 'Permissions',
                     align: 'center',
-                    key: 'permissions'
+                    key: 'permission_roles'
                 },
                 {
                     title: 'Actions',
@@ -71,35 +98,53 @@ export default {
             this.dialog = true;
         },
         submit() {
+            // console.log(this.form)
             this.form.post(route('roles.store'), {
                 onFinish: () => {
                     this.form.reset()
                     this.dialog = false
-                    this.$swal({
-                        icon: 'success',
-                        title: 'Enregistrement',
-                        text: 'Role enregistré avec succes',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 5000,
-                        timerProgressBar: true,
-                    });
+                    if (this.$page.props.flashd.messages) {
+                        this.$swal({
+                            icon: 'error',
+                            title: 'Attetion!!',
+                            text: this.$page.props.flashd.messages,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+                    if (this.$page.props.flash.message) {
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: this.$page.props.flash.message,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+
                 },
             });
         },
         editItem(item) {
+            this.form.permissions = item.permission_roles.map(function (el) {
+                return el.permission
+            })
             this.item = item.id
             this.dialogEdit = true
             this.form.name = item.name
-            this.form.permission = item.permissions
         },
         update() {
             this.form.put(route('roles.update', this.item), {
                 onFinish: () => {
                     this.form.reset()
                     this.dialogEdit = false
-                    
+
                     this.$swal({
                         position: 'top-end',
                         icon: 'success',
@@ -116,11 +161,11 @@ export default {
             })
         },
         deleteItem(item) {
+            console.log(this.$page.props.auth.id)
             this.$swal({
                 title: 'Es-tu sûr?',
                 text: "Vous ne pourrez pas revenir en arrière !",
                 icon: 'warning',
-                
                 showCancelButton: true,
                 confirmButtonColor: 'orange',
                 cancelButtonColor: '#d33',
@@ -152,17 +197,26 @@ export default {
         },
         closeEdit() {
             this.dialogEdit = false
+        },
+        setPermission() {
+            console.log(this.form.role_id)
+            // this.$inertia.replace(this.$page.url, {
+            //     data: {
+            //         role: 2,
+            //     }
+            // })
         }
     },
-    created() {
-        // console.log(this.roles)
+    mounted() {
+        this.role_p_u = this.roles.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
+        this.role_p_a = this.roles.filter(el => el.name !== 'Super-administrateur')
     }
 }
 </script>
 
 <template>
 <v-card>
-    <page-toolbar :icon="icon.mdiSecurity">Gestion des rôles</page-toolbar>
+    <page-toolbar :icon="icon.mdiSecurity"> Gestion des rôles</page-toolbar>
     <v-card-text>
 
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
@@ -184,16 +238,21 @@ export default {
                     </v-toolbar>
                     <v-card-text>
                         <v-form>
-                            <v-row>
-                                <v-col cols="12" md="12">
-                                    <text-field name="name" label="Rôle" placeholder="Rôle" v-model="form.name"></text-field>
-                                </v-col>
+                            <v-row v-if="$page.props.auth.user.id == 1">
+                                <Autocomplete label="Role" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable v-model="form.role_id">
+                                </Autocomplete>
                             </v-row>
-                            <v-row>
-                                <v-col cols="12" md="12">
-                                    <v-autocomplete label="Permission" item-title="description" item-value="id" :items="permissions" variant="solo-filled" multiple chips clearable v-model="form.permission">
-                                    </v-autocomplete>
-                                </v-col>
+                            <v-row v-if="$page.props.auth.user.id !=1">
+                                <Autocomplete label="Role"  :onchangeModelValue="setPermission" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" chips clearable v-model="form.role_id">
+                                </Autocomplete>
+                            </v-row>
+                            <v-row v-if="$page.props.auth.user.id ==1">
+                                <v-autocomplete label="Permission" item-title="description" item-value="id" :items="permissions" variant="solo-filled" multiple chips clearable v-model="form.permissions">
+                                </v-autocomplete>
+                            </v-row>
+                            <v-row v-if="$page.props.auth.user.id !== 1">
+                                <v-autocomplete label="Permission" item-title="description" item-value="id" :items="permission" variant="solo-filled" multiple chips clearable v-model="form.permissions">
+                                </v-autocomplete>
                             </v-row>
                         </v-form>
                     </v-card-text>
@@ -225,7 +284,7 @@ export default {
                             </v-row>
                             <v-row>
                                 <v-col cols="12" md="12">
-                                    <v-autocomplete label="Permission" item-title="description" item-value="id" :items="permissions" variant="solo-filled" multiple chips clearable v-model="form.permission">
+                                    <v-autocomplete label="Permission" item-title="description" item-value="id" :items="permissions" variant="solo-filled" multiple chips clearable v-model="form.permissions">
                                     </v-autocomplete>
                                 </v-col>
                             </v-row>
@@ -240,11 +299,11 @@ export default {
                 </v-card>
             </template>
         </v-dialog>
-        <v-data-table :headers="headers" :items="roles">
-            <template v-slot:item.permissions="{item}">
+        <v-data-table :headers="headers" :items="permission_role_users">
+            <template v-slot:item.permission_roles="{item}">
                 <v-chip-group column selected-class="text-purple">
-                    <v-chip v-for="tag in item.columns.permissions" :key="tag">
-                        {{ tag.description }}
+                    <v-chip v-for="tag in item.columns.permission_roles" :key="tag">
+                        {{ tag.permission.description }}
                     </v-chip>
                 </v-chip-group>
             </template>

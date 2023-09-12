@@ -8,6 +8,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class User extends Authenticatable
 {
@@ -22,14 +24,13 @@ class User extends Authenticatable
     protected $fillable = [
         'nom',
         'prenom',
-        'sex',
-        'date_naissance',
-        'lieu_naissance',
-        'telephone',
         'email',
+        'user_id',
+        'etablissement_id',
+        'tuteur_id',
+        'etablissement_section_id',
+        'enseignemant_id',
         'password',
-
-
     ];
 
     /**
@@ -51,4 +52,8 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function permission_roles(): HasMany
+    {
+        return $this->HasMany(PermissionRole::class);
+    }
 }

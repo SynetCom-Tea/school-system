@@ -8,21 +8,32 @@ use Illuminate\Routing\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use App\Models\PermissionRole;
 
 class RoleController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $collection = Role::with(['permissions'])->get();
+        // dd(PermissionRoleUser::all());
+    $user = Auth::user();
+    $permissions = Permission::with('permission_roles.user','permission_roles.role')->get();
+    // dd($permissions);
+    $permission = $request->role ? Permission::whereHas('permission_roles.user', function ($query) use($user){
+            $query->where('id',1);})->whereHas('permission_roles.role', function ($query) use($request){
+            $query->where('id',$request->role);})->with('permission_roles.role')->get() : collect();
+    // dd($permission);
+    $role = Role::whereHas('permission_roles.user', function ($query) use($user){
+            $query->where('id',$user->id);})->with('permission_roles.permission')->get();
         return Inertia::render('Enseignement/Configs/Role', [
-            'roles' => $collection,
-            'permissions' => Permission::all()
+            'permission_role_users' => $role,
+            'roles'=>Role::all(),
+            'permissions' => $permissions,
+            'permission'=>$permission
         ]);
     }
-
     /**
      * Show the form for creating a new resource.
      */
@@ -36,23 +47,20 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        //dd($request->all());
-        // $data = $this->validate($request, [
-        //     'name' => 'required',
-        // ]);
-        // $permission = $this->validate($request, [
-        //     'permission' => 'required'
-        // ]);
+        $role = Role::find($request->role_id);
+        if (PermissionRole::where('role_id',$role->id)->where('user_id',Auth::user()->id)->exists()){
+        return redirect()->back()->with('messages', 'Ce rôle existe déjâ!');
+        }else {
+            foreach($request->permissions as $permssion){
+                PermissionRole::create([
+                    'user_id' => Auth::user()->id,
+                    'role_id'=>$role->id,
+                    'permission_id' => $permssion
+                ]);
+            }
+        return redirect()->back()->with('message', 'Rôle créé avec succès!');
+        }
         
-        $role = Role::create([
-            'name' =>
-            $request->name]);
-        $role->syncPermissions([
-            'permission'=>$request->permission]);
-        return redirect()->back()->with('message', [
-            'type' => 'success',
-            'text' => 'Rôle créé avec succès!',
-        ]);
     }
 
     /**
@@ -76,11 +84,15 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $role = Role::find($id);
-        $role->update(['name'=>$request->name]);
-        $role->syncPermissions(['permission'=>$request->permission]);
+        foreach($request->permissions as $permssion){
+            $permssion_roles = PermissionRole::
+                PermissionRole::update([
+                    'user_id' => Auth::user()->id,
+                    'role_id'=>$role->id,
+                    'permission_id' => $permssion
+                ]);
+            }
     }
-
     /**
      * Remove the specified resource from storage.
      */

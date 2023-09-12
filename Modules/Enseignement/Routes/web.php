@@ -28,6 +28,7 @@ Route::prefix('enseignement')->group(function() {
     Route::resource('fillieres', FilliereController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     Route::resource('etablissements', EtablissementController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     Route::resource('cycles',CycleController::class)->only(['index','create','destroy','store','update']);
-    Route::resource('permissions', PermissionController::class);
-    Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
+        Route::resource('permissions', PermissionController::class);
+        Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
+    
 });

@@ -1,9 +1,6 @@
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {
-    Form
-} from 'vee-validate';
-import {
     router,
     usePage,
     useForm
@@ -22,7 +19,7 @@ export default {
         mdiCheckCircle
     },
     layout: AuthenticatedLayout,
-    props:['roles','etablissements'],
+    props: ['roles', 'sections', 'etablissements'],
     data() {
         return {
             icon: {
@@ -34,9 +31,9 @@ export default {
             form: useForm({
                 nom: '',
                 prenom: '',
-                tel: '',
-                sex: '',
-                roles: '',
+                roles: [],
+                etablissement_id: null,
+                sections: []
             }),
         }
     },
@@ -46,10 +43,24 @@ export default {
         },
         submit() {
             this.form.post(route('users.store'), {
-                onFinish: () => this.form.reset(),
+                onFinish: () => {
+                    // this.form.reset()
+                    if (this.$page.props.flashd.messages) {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'Création',
+                            text: this.$page.props.flashd.messages,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+                },
             });
         },
-        
+
     },
 }
 </script>
@@ -60,27 +71,24 @@ export default {
         <v-form>
             <v-row>
                 <v-col md="6">
-                    <TextField name="nom" label="Nom" placeholder="Nom" v-model="form.nom"></TextField>
-                    <TextField name="prenom" label="Prenom" placeholder="Prenom" v-model="form.prenom"></TextField>
-                    <TextField name="tel" label="Téléphone" placeholder="Téléphone" v-model="form.tel"></TextField>
+                    <TextField name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true"></TextField>
+                    <TextField name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom"></TextField>
+                    <v-autocomplete label="Roles" item-title="name"  item-value="id" :items="roles" variant="solo-filled" multiple chips clearable v-model="form.roles">
+                    </v-autocomplete>
                 </v-col>
                 <v-col md="6">
-                    <v-radio-group color="orange" label="Sexe" v-model="form.sex">
-                        <v-radio label="Masculin" value="M"></v-radio>
-                        <v-radio label="Féminin" value="F"></v-radio>
-                    </v-radio-group>
-                    <v-autocomplete label="Roles" :items="roles" v-model="form.roles">
+                    <v-autocomplete label="Etablissement" isRequired="true" item-title="name" item-value="id" variant="solo-filled" :items="etablissements" v-model="form.etablissement_id">
                     </v-autocomplete>
-                    <v-autocomplete label="Etablissement" :items="etablissements" v-model="form.roles">
+                    <v-autocomplete label="Section" item-title="libelle" item-value="id" variant="solo-filled" :items="sections" multiple chips clearable v-model="form.sections">
                     </v-autocomplete>
                 </v-col>
             </v-row>
             <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn dark small type="button" color="red" @click="goBack">
+                <v-btn dark small type="button" variant="outlined" color="red" @click="goBack">
                     <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
                 </v-btn>
-                <v-btn small color="success" @click="submit">
+                <v-btn small color="success" variant="outlined" @click="submit">
                     <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
                 </v-btn>
             </v-card-actions>

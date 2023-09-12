@@ -3,8 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Models\PermissionRole;
+use App\Models\Permission;
 use App\Models\Etablissement;
 use App\Models\Role;
+use App\Models\Section;
+use App\Models\EtablissementSection;
 use Inertia\Inertia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -22,9 +26,8 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $collection = User::all();
         return Inertia::render('user/Index', [
-           'users'=> User::all() 
+           'users'=> User::where('user_id',Auth::user()->id)->get() 
         ]);
     }
 
@@ -33,9 +36,12 @@ class UserController extends Controller
      */
     public function create()
     {
+        // dd(EtablissementSection::all());
         return Inertia::render('user/Create', [
             'etablissements'=>Etablissement::all(),
-            'roles'=>Role::all(),            
+            'roles'=>Role::all(),  
+            'sections'=>Section::all(),
+            'permissions'=>Permission::all(),
         ]);
     }
 
@@ -44,19 +50,37 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+        $permis = [];
+        $user = Auth::user();
+        $nom = str_replace(' ', '', $request->nom);
+        $prenom = str_replace(' ', '', $request->prenom);
+        $login  = strtolower($nom).'-'. strtolower($prenom) . '@gmail.com';
+        if($request->nom and $request->prenom and $request->etablissement_id and $request->sections){
         $user = User::create([
             'nom' => $request->nom,
             'prenom' => $request->prenom,
-            'sex' => $request->sex,
-            'telephone' => $request->tel,
-            'email' => $request->email,
-            'password' => Hash::make($request->email),
+            'email' => $login,
+            'user_id'=>Auth::user()->id,
+            'password' => Hash::make($login),
+            'etablissement_id'=>$request->etablissement_id
         ]);
-        $user->syncRoles($request->roles);
-        return redirect()->route('users.index')->with('message', [
-            'type' => 'success',
-            'text' => 'Utilisateur a été crée avec succès !',
-        ]);
+        foreach($request->roles as $role) {            
+            $permissions = PermissionRole::where('role_id',$role)->where('user_id',Auth::user()->id)->get();
+        }
+        foreach ($permissions as $permission) {
+            $permis[] = $permission->permission_id;
+        }
+        $user->syncPermissions($permis);
+        
+        $etablissement = Etablissement::find($request->etablissement_id);
+        $etablissement->sections()->attach($request->sections);
+        return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
+        }
+        else {
+            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoille rouge!');
+
+        }
+        
     }
 
     /**
