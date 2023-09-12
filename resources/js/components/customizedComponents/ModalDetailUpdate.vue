@@ -29,7 +29,7 @@ export default {
       default: "Enregistrer",
     },
 
-    onClickCancelButton: { type: Function },
+    onClickCloseDialog: { type: Function },
   },
 
   data: () => ({
@@ -65,7 +65,8 @@ export default {
         return this.dialogDetailUpdate;
       },
       set(newValue) {
-        this.$emit("input", newValue);
+        console.log("newValue:", newValue);
+        this.$emit("value", newValue);
       },
     },
   },
@@ -78,8 +79,12 @@ export default {
       }
     },
   },
+  //  provide('vmodelDialoDU', this.modelValue)
   provide() {
-    return { editing: computed(() => this.modelValueIsEditing) };
+    return {
+      editing: computed(() => this.modelValueIsEditing),
+      vmodelDialoDU: computed(() => this.modelValue),
+    };
   },
 };
 </script>
@@ -103,7 +108,7 @@ export default {
             fab
             color="white"
             title="Fermer la modale"
-            @click="onClickCancelButton"
+            @click="onClickCloseDialog"
           ></v-btn>
         </template>
         <v-spacer></v-spacer>

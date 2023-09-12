@@ -29,7 +29,16 @@ export default {
     addCloseButton: { type: Boolean, default: false },
     onClickLeftButton: {
       type: Function,
-      default: () => window.history.back(),
+      default: () => {
+        let previousRoute = window.history.state?.url;
+        let previousRouteName;
+
+        previousRouteName = previousRoute?.includes("/")
+          ? previousRoute?.split("/").pop()
+          : null;
+
+        return window.history.back();
+      },
     },
   },
   data() {

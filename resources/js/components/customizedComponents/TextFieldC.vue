@@ -66,23 +66,39 @@ function clear() {
     // state[key] = value;
   }
 }
-function onClickCancelButton() {
-  console.log("onClickCancelButton12:");
-}
-const onClickSaveButton = async () => {
-  console.log(" onClickSaveButton:");
+const enableEditing = inject("editing");
+const vmodelDialoDU = inject("vmodelDialoDU");
+
+const onClickSaveButton = async (e) => {
+  console.log(" onClickSaveButton:", e);
+  e.preventDefault();
   await submitHandler();
 };
-const enableEditing = inject("editing");
-
+const statusClose = ref(false);
 watch(
-  enableEditing,
-  (newConfig) => {
-    // console.log("config:",  enableEditing);
+  [enableEditing, vmodelDialoDU],
+  // vmodelDialoDU,
+  ([newConfig, newConfigvmodelDialoDU]) => {
+    // console.log("config11:", vmodelDialoDU);
+    // console.log(" statusClose11:", statusClose);
+    if (statusClose) {
+      newConfigvmodelDialoDU = false;
+    }
+    // console.log("newConfig11:", newConfigvmodelDialoDU);
+    // console.log("config:", enableEditing);
     // console.log("newConfig:", newConfig);
   },
+
   { deep: true }
 );
+function onClickCancelButton(e) {
+  console.log("onClickCancelButton12:", vmodelDialoDU);
+  e.preventDefault();
+  vmodelDialoDU.value = false;
+  console.log(" statusClose:", vmodelDialoDU);
+
+  // return (vmodelDialoDU.value = false);
+}
 </script>
 
 <template>
