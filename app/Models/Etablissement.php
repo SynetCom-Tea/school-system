@@ -14,7 +14,7 @@ class Etablissement extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'mail', 'adresse','type_etablissement_id', 'telephone', 'ville'];
+    protected $fillable = ['name', 'email', 'adresse','type_etablissement_id', 'telephone', 'ville', 'logo'];
 
     public function type_etablissement(): BelongsTo
     {
@@ -29,6 +29,11 @@ class Etablissement extends Model
     public function sections(): BelongsToMany
     {
         return $this->belongsToMany(Section::class);
+    }
+
+    public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
     }
 
     protected function telephone(): Attribute

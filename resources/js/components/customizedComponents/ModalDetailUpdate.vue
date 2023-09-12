@@ -5,46 +5,37 @@ import {
   mdiPlus,
   mdiCancel,
   mdiMagnify,
+  mdiAccount,
   mdiContentSaveEditOutline,
 } from "@mdi/js";
+import { computed, provide, onUpdated } from "vue";
 export default {
-  components: { mdiCancel, mdiContentSaveEditOutline },
+  components: { mdiPencil, mdiAccount, mdiCancel, mdiContentSaveEditOutline },
   props: {
-    toolbarTitle: {
-      type: Object,
-      default: "text",
-    },
     dialogDetailUpdate: {
-      type: Boolean,
-      default: false,
-    },
-    isEditing: {
       type: Boolean,
       default: false,
     },
     iconUpdate: {
       type: String,
-      required: false,
+      default: mdiPencil,
     },
     iconValueDetail: {
       type: String,
-      required: false,
+      default: mdiAccount,
     },
     titleSubmittingButton: {
       type: String,
       default: "Enregistrer",
     },
-    messageSnackbar: {
-      type: String,
-      default: "Modification réussie",
-    },
-    onClickSaveButton: { type: Function },
-    onClickCancelButton: { type: Function },
+
+    onClickCloseDialog: { type: Function },
   },
 
   data: () => ({
     hasSaved: false,
-    // isEditing: null,
+    isEditing: null,
+    toolbarTitle: "Détail",
     icons: {
       mdiMagnify,
       mdiDelete,
@@ -55,81 +46,82 @@ export default {
     },
     detailUpdateTitle: "",
   }),
+  // provide('isEditing', modelValueIsEditing ),
+
   updated() {},
-  watch: {
-    modelValue(val) {
-      console.log("Test:", this.isEditing);
-      console.log("verif:", val);
-    },
-  },
+  watch: {},
   computed: {
-    //detailUpdateTitle() {
-    //   if (this.isEditing) return this.toolbarTitle.detail;
-    //   this.toolbarTitle.update;
-    // },
-    // modelValueToolbarTitle: {
-    //   get() {
-    //     return this.toolbarTitle;
-    //   },
-    //   set(newValue) {
-    //     this.$emit("input", newValue);
-    //   },
-    // },
-    modelValue: {
+    modelValueIsEditing: {
       get() {
-        return this.dialogDetailUpdate;
+        return this.isEditing;
       },
       set(newValue) {
         this.$emit("input", newValue);
       },
     },
-  },
-  methods: {
-    onClickButton() {
-      console.log("EEEE:", this.isEditing);
-      if (this.isEditing) {
-        this.detailUpdateTitle = this.toolbarTitle.detail;
-      } else {
-        this.detailUpdateTitle = this.toolbarTitle.update;
-      }
-      return (this.isEditing = !this.isEditing);
-    },
-    onchangeModelField(e) {
-      console.log("EEEE:", e);
-    },
-    customFilter(itemTitle, queryText, item) {
-      const textOne = item.raw.name.toLowerCase();
-      const textTwo = item.raw.abbr.toLowerCase();
-      const searchText = queryText.toLowerCase();
 
-      return textOne.indexOf(searchText) > -1 || textTwo.indexOf(searchText) > -1;
+    modelValue: {
+      get() {
+        return this.dialogDetailUpdate;
+      },
+      set(newValue) {
+        console.log("newValue:", newValue);
+        this.$emit("value", newValue);
+      },
     },
-    testChange(e) {
-      console.log("e from testChange:", e);
+  },
+
+  methods: {
+    onClickTransition() {
+      if (this.modelValue) {
+        this.isEditing = !this.isEditing;
+        this.toolbarTitle = this.isEditing ? "Mise à jour" : "Détail";
+      }
     },
-    save() {
-      this.isEditing = !this.isEditing;
-      this.hasSaved = true;
-      this.onClickSaveButton();
-    },
+  },
+  //  provide('vmodelDialoDU', this.modelValue)
+  provide() {
+    return {
+      editing: computed(() => this.modelValueIsEditing),
+      vmodelDialoDU: computed(() => this.modelValue),
+    };
   },
 };
 </script>
 <template>
-  <v-dialog v-model="modelValue" max-width="500px" persistent>
-    <v-card class="mx-auto" max-width="500">
+  <v-dialog v-model="modelValue" max-width="700" persistent>
+    <v-card
+      class="mx-auto"
+      min-width="500"
+      min-height="200"
+      max-height="1000"
+      max-width="900"
+    >
       <v-toolbar flat color="primary">
         <v-toolbar-title class="font-weight-light">
           {{ toolbarTitle }}
         </v-toolbar-title>
-
+        <template v-slot:prepend>
+          <v-btn
+            outlined
+            icon="$close"
+            fab
+            color="white"
+            title="Fermer la modale"
+            @click="onClickCloseDialog"
+          ></v-btn>
+        </template>
         <v-spacer></v-spacer>
 
-        <v-btn icon @click="isEditing = !isEditing">
+        <v-btn icon @click="onClickTransition()">
           <v-fade-transition leave-absolute>
-            <v-icon v-if="isEditing" :icon="iconValueDetail"></v-icon>
+            <v-icon
+              v-if="isEditing"
+              :icon="iconValueDetail"
+              title="Voir le détail"
+            ></v-icon>
 
-            <v-icon v-else :icon="iconUpdate"></v-icon>
+            <v-icon v-else :icon="iconUpdate" title="Faire une mise à jour"></v-icon>
           </v-fade-transition>
         </v-btn>
       </v-toolbar>
@@ -137,56 +129,18 @@ export default {
       <v-card-text>
         <v-form :disabled="!isEditing">
           <slot name="contentForm" />
-          <slot />
         </v-form>
       </v-card-text>
 
-      <v-divider></v-divider>
-
-      <v-card-actions class="card-actions-style">
-        <Button
-          variant="text"
-          class="mb-2"
-          color="red"
-          nameButton="Annuler"
-          title="Annuler et Fermer la modale"
-          style="height: 30px"
-          :prependIcon="icons.mdiCancel"
-          :onClickButton="onClickCancelButton"
-        ></Button>
-
-        <Button
-          variant="text"
-          class="mb-2"
-          nameButton="Enregistrer"
-          title="Valider et Fermer la modale"
-          style="height: 30px"
-          :disabled="!isEditing"
-          :prependIcon="icons.mdiContentSaveEditOutline"
-          :onClickButton="save"
-        ></Button>
-      </v-card-actions>
-
-      <v-snackbar
-        v-model="hasSaved"
-        :timeout="2000"
-        attach
-        position="absolute"
-        location="bottom left"
-      >
-        {{ messageSnackbar }}
-      </v-snackbar>
       <slot />
     </v-card>
   </v-dialog>
 </template>
 <style scoped>
 .card-actions-style {
-  display: flex;
-  justify-content: flex-end;
+  float: right;
+  margin-right: 0px;
   margin-left: auto;
-  flex: none;
-  min-height: 52px;
-  padding: 0.5rem;
+  height: 52px;
 }
 </style>

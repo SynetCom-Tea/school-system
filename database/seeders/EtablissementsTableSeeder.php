@@ -19,7 +19,7 @@ class EtablissementsTableSeeder extends Seeder
             array (
                 'id' => 1,
                 'name' => 'CSP Algoza',
-                'mail' => 'uin@gmail.com',
+                'email' => 'uin@gmail.com',
                 'adresse' => 'Recassement',
                 'telephone' => '["90099012", "89999000", "90099002"]',
                 'ville' => 'Niamey',
@@ -32,7 +32,7 @@ class EtablissementsTableSeeder extends Seeder
             array (
                 'id' => 2,
                 'name' => 'Université Abdou Moumouni',
-                'mail' => 'uam@gmail.com',
+                'email' => 'uam@gmail.com',
                 'adresse' => 'HBD',
                 'telephone' => '["96898990", "92231223", "90123456"]',
                 'ville' => 'Niamey',
@@ -45,7 +45,7 @@ class EtablissementsTableSeeder extends Seeder
             array (
                 'id' => 3,
                 'name' => 'IAI-Niger',
-                'mail' => 'iai@gmail.com',
+                'email' => 'iai@gmail.com',
                 'adresse' => 'Plateau',
                 'telephone' => '["89909000", "89900090", "88787878"]',
                 'ville' => 'Niamey',

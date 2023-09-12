@@ -1,5 +1,5 @@
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { router, useForm } from "@inertiajs/vue3";
 import {
     mdiTimetable,
@@ -139,7 +139,7 @@ export default {
                                         ></autocomplete>
                                     </v-col>
                                     <v-col>
-                                        <VueDatePicker 
+                                        <VueDatePicker
                                             v-model="date"
                                             @focus="handleFocusDate"
                                             @update:model-value="handleDate"
@@ -195,7 +195,7 @@ export default {
                     </v-card-text>
                 </v-row>
                 <br>
-                
+
             </v-form>
         </v-card-text>
     </v-card>
