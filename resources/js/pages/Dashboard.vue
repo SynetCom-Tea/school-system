@@ -231,71 +231,12 @@ export default {
       ></template>
     </Loader>
     <br /><br />
-    <!-- <Toolbar
-      styleToolbar="background-color:#004980"
-      :icon="icons.mdiAccount"
-      toolbarTitle="Toolbar title"
-    ></Toolbar> -->
+
     <br /><br />
     <div>
-      <!-- :headers="headers" :items="dataH" -->
       <ExampleApplicationDatatable />
     </div>
     <br /><br />
-
-    <!-- <Button
-      variant="flat"
-      density="comfortable"
-      title="title"
-      class="m-4"
-      color="red"
-      nameButton="Test Loader"
-      :prependIcon="icons.mdiAccount"
-      :appendIcon="icons.mdiGift"
-      :onClickButton="onClickBt"
-    ></Button>
-    <!-- <Dialog
-      :modelDialog="isDialog"
-      :onCloseModale="onCloseModale"
-      :iconHeaderModal="icons.mdiAccount"
-      :widthDialog="300"
-    >
-      <template v-slot:content>
-        <h1>TEST CONTENU</h1>
-      </template>
-      <template #otherButtons>
-        <Button
-          title="Fermer la modale"
-          variant="text"
-          color="primary"
-          nameButton="Enregistrer"
-          :onClickButton="onCloseModale"
-          style="float: right; margin: 10px; height: 30px"
-        ></Button
-      ></template>
-    </Dialog> -->
-    <!-- <div>
-      <h2>HERREER</h2>
-      <TextField
-        v-model="test"
-        :counter="10"
-        variant="solo"
-        hint="Ne pas depasser"
-        :isRequired="true"
-        label="Name"
-        classResponsive="py-4"
-        :maxHeightResponsive="100"
-        :maxWidthResponsive="250"
-      ></TextField>
-    </div> -->
-    <!-- <div>
-      <ModalDetailUpdate
-        toolbarTitle="Modale"
-        :iconValueDetail="icons.mdiAccount"
-        :iconUpdate="icons.mdiGift"
-      />
-    </div> -->
-    <!-- </div> -->
   </AuthenticatedLayout>
 </template>
 <!-- <style scoped>
