@@ -32,7 +32,7 @@
                 title="Valider"
                 variant="flat"
                 nameButton="Connexion"
-                :onClickButton="goToLogin"
+                @click="goToLogin"
                 density="comfortable"
                 class="text-center"
                 :isBlock="true"
@@ -99,7 +99,7 @@
               color="secondary"
               size="large"
               variant="flat"
-              :onClickButton="goToNextWindow"
+              @click="goToNextWindow"
             >
             </Button>
           </div>

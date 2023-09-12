@@ -9,7 +9,6 @@ export default {
     },
     variant: {
       type: String,
-      default: "text",
       required: false,
     },
     nameButton: {
@@ -50,7 +49,7 @@ export default {
       default: "small",
     },
     style: { type: Object, required: false },
-    onClickButton: { type: Function },
+    // onClickButton: { type: Function },
     class: { type: String, required: false },
     isRequired: { type: Boolean, default: false },
     isBlock: { type: Boolean, default: false },
@@ -76,7 +75,6 @@ export default {
     :append-icon="appendIcon"
     :color="color"
     :size="sizeButton"
-    @click="onClickButton"
     :block="isBlock"
   >
     {{ nameButton }}

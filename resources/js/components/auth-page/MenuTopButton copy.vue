@@ -6,7 +6,7 @@
       ripple
       title="Voir la liste de Menu"
       nameButton="Menu"
-      :onClickButton="onClickMenuButton"
+      @click="onClickMenuButton"
     ></Button>
   </div>
 </template>

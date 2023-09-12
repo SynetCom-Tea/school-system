@@ -23,6 +23,7 @@ export default {
     maxHeightResponsive: {
       type: Number,
       required: false,
+      // default: 100,
     },
     heightResponsive: {
       type: Number,
@@ -35,6 +36,7 @@ export default {
     maxWidthResponsive: {
       type: Number,
       required: false,
+      // default: 250,
     },
     name: {
       type: String,

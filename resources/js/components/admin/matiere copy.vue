@@ -1,13 +1,8 @@
 <template>
   <form @submit.prevent="submitForm" novalidate>
     <v-container fluid>
-      <v-card variant="outlined">
-        <v-card-title style="color: white; background-color: #7d002c"
-          >Matières</v-card-title
-        >
-        <v-divider></v-divider>
-        <br />
-        <div style="margin: 10px">
+      <v-card>
+        <v-row>
           <v-alert
             v-model="alertFirst"
             border="start"
@@ -43,126 +38,159 @@
             >
             </Button>
           </div>
-        </div>
+        </v-row>
+        <br /><br />
+        <v-card>
+          <v-card-text>
+            <v-row v-if="type == '3'">
+              <v-col>
+                <v-switch
+                  label="Souhaiterez-vous appliquez le système LMD ?"
+                  v-model="form.lmd"
+                  color="red"
+                  inset
+                ></v-switch>
+              </v-col>
+              <v-col v-if="form.lmd">
+                <v-autocomplete
+                  :items="['Type 1', 'Type 2']"
+                  chips
+                  closable-chips
+                  :required="form.lmd"
+                  color="blue-grey-lighten-2"
+                  v-model="form.type_lmd"
+                  label="Select"
+                ></v-autocomplete>
+              </v-col>
+              <v-col>
+                <v-switch
+                  label="Souhaiterez-vous appliquez le régime d'évaluation ?"
+                  v-model="form.regime_evaluation"
+                  color="indigo"
+                  inset
+                ></v-switch>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col>
+                <v-switch
+                  label="Souhaiterez-vous importez le fichier des matieres ?"
+                  @update:modelValue="resetForm(importation)"
+                  v-model="importation"
+                  color="#004980"
+                  inset
+                ></v-switch>
+              </v-col>
+              <v-col v-if="importation">
+                <v-file-input
+                  clearable
+                  required
+                  v-model="form.fichier_matiere"
+                  label="File input"
+                  variant="solo-inverted"
+                ></v-file-input>
+              </v-col>
+              <v-col></v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
 
-        <v-card-text style="margin: 10px">
-          <v-row v-if="type == '3'">
-            <v-col>
-              <v-switch
-                label="Souhaiterez-vous appliquez le système LMD ?"
-                v-model="form.lmd"
-                color="red"
-                inset
-              ></v-switch>
-            </v-col>
-            <v-col v-if="form.lmd">
-              <v-autocomplete
-                :items="['Type 1', 'Type 2']"
-                chips
-                closable-chips
-                :required="form.lmd"
-                color="blue-grey-lighten-2"
-                v-model="form.type_lmd"
-                label="Select"
-              ></v-autocomplete>
-            </v-col>
-            <v-col>
-              <v-switch
-                label="Souhaiterez-vous appliquez le régime d'évaluation ?"
-                v-model="form.regime_evaluation"
-                color="indigo"
-                inset
-              ></v-switch>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col>
-              <v-switch
-                @update:modelValue="resetForm(importation)"
-                v-model="importation"
-                color="#004980"
-                inset
-                :label="`${
-                  !importation
-                    ? 'Renseignement des données par champs'
-                    : 'Importatation d\'un fichier pour alimenter les matières'
-                }`"
-              ></v-switch>
-            </v-col>
-            <v-col v-if="importation">
-              <v-file-input
-                clearable
-                required
-                v-model="form.fichier_matiere"
-                label="File input"
-                variant="solo-inverted"
-              ></v-file-input>
-            </v-col>
-            <v-col></v-col>
-          </v-row>
-        </v-card-text>
+        <br /><br />
 
-        <v-card-text v-if="!importation">
-          <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
-            <!-- <v-col md="2"></v-col> -->
-            <v-col cols="4">
-              <TextField
-                label="Code matiere"
-                class="mt-2"
-                :isRequired="true"
-                placeholder="Code matiere"
-                @change="verify(matiere)"
-                v-model="matiere.code"
-              ></TextField>
-            </v-col>
-            <v-col cols="4">
-              <TextField
-                class="mt-2"
-                label="Libelle matiere"
-                isRequired="true"
-                placeholder="Libelle matiere"
-                required
-                v-model="matiere.libelle"
-              ></TextField>
-            </v-col>
-            <v-col cols="4">
-              <br />
-              <v-btn
-                variant="outlined"
-                :disabled="!(form.matieres.length > 1)"
-                icon
-                @click="removeRow(matiere)"
-                fab
-                small
-                color="error"
-              >
-                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col offset-md="11" md="1">
-              <v-btn variant="outlined" icon @click="addRow" fab small color="info">
-                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-              </v-btn>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-row class="text-center ml-3 mb-3"
-          ><v-col cols="auto">
-            <Button
-              title="Enregistrer cette étape"
-              nameButton="Enregistrer"
-              variant="flat"
-              :onclickAlertButton="submitForm"
-              density="comfortable"
-              class="text-center"
-              :isBlock="true"
-              size="large"
-              style="text-transform: none"
+        <v-card variant="outlined">
+          <v-card-title style="color: white; background-color: #7d002c"
+            >Attribution de code matière et titre matière</v-card-title
+          >
+          <v-divider></v-divider>
+          <br />
+          <v-row v-if="!importation">
+            <v-alert
+              v-model="alertSecond"
+              border="start"
+              variant="tonal"
+              closable
+              close-label="Close Alert"
+              color="primary"
+              type="info"
+              title="Note"
             >
-            </Button> </v-col
-        ></v-row>
+              <li>Tous les champs de chaque ligne à renseigner sont obligatoires</li>
+            </v-alert>
+
+            <div v-if="!alertSecond" style="margin: auto; width: 50%; padding: 10px">
+              <Button
+                style="height: 30px"
+                title="Plier la note"
+                @click="onclickAlertButton('second')"
+                variant="outlined"
+                color="primary"
+                nameButton="Relire la note"
+              >
+              </Button>
+            </div>
+          </v-row>
+          <v-card-text>
+            <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
+              <!-- <v-col md="2"></v-col> -->
+              <v-col cols="4">
+                <TextField
+                  label="Code matiere"
+                  class="mt-2"
+                  :isRequired="true"
+                  placeholder="Code matiere"
+                  @change="verify(matiere)"
+                  v-model="matiere.code"
+                ></TextField>
+              </v-col>
+              <v-col cols="4">
+                <TextField
+                  class="mt-2"
+                  label="Libelle matiere"
+                  isRequired="true"
+                  placeholder="Libelle matiere"
+                  required
+                  v-model="matiere.libelle"
+                ></TextField>
+              </v-col>
+              <v-col cols="4">
+                <br />
+                <v-btn
+                  variant="outlined"
+                  :disabled="!(form.matieres.length > 1)"
+                  icon
+                  @click="removeRow(matiere)"
+                  fab
+                  small
+                  color="error"
+                >
+                  <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col offset-md="11" md="1">
+                <v-btn variant="outlined" icon @click="addRow" fab small color="info">
+                  <v-icon :icon="icons.mdiPlusCircle"></v-icon>
+                </v-btn>
+              </v-col>
+            </v-row>
+          </v-card-text>
+          <v-row class="text-center ml-3 mb-3"
+            ><v-col cols="auto">
+              <Button
+                title="Enregistrer cette étape"
+                nameButton="Enregistrer"
+                variant="flat"
+                :onclickAlertButton="submitForm"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+              >
+              </Button> </v-col
+          ></v-row>
+        </v-card>
       </v-card>
     </v-container>
     <br />

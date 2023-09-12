@@ -121,7 +121,7 @@ export default {
           ></Autocomplete>
         </div>
         <div style="display: absolute; bottom: 0; top: 0; height: 40px">
-          <Button class="ma-2" color="bold" :onClickButton="onClickLeftButton">
+          <Button class="ma-2" color="bold" @click="onClickLeftButton">
             <v-icon start :icon="icons.mdiReply"></v-icon>
             {{ leftButtonName }}
           </Button>
