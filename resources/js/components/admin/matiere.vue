@@ -1,7 +1,7 @@
 <template>
-  <form @submit.prevent="submitForm" novalidate>
+  <form novalidate>
     <v-container fluid>
-      <v-card variant="outlined">
+      <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
           >Matières</v-card-title
         >
@@ -68,10 +68,12 @@
             </v-col>
             <v-col>
               <v-switch
-                label="Souhaiterez-vous appliquez le régime d'évaluation ?"
                 v-model="form.regime_evaluation"
                 color="indigo"
                 inset
+                :label="`Souhaiterez-vous appliquez le régime d'évaluation ?${
+                  !form.regime_evaluation ? 'Non' : 'Oui'
+                }`"
               ></v-switch>
             </v-col>
           </v-row>
@@ -103,7 +105,7 @@
         </v-card-text>
 
         <v-card-text v-if="!importation">
-          <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
+          <v-row :key="matiere.id" v-for="(matiere, i) in form.matieres">
             <!-- <v-col md="2"></v-col> -->
             <v-col cols="4">
               <TextField
@@ -127,34 +129,41 @@
             </v-col>
             <v-col cols="4">
               <br />
-              <v-btn
+              <Button
                 variant="outlined"
                 :disabled="!(form.matieres.length > 1)"
                 icon
                 @click="removeRow(matiere)"
-                fab
+                size="large"
                 small
                 color="error"
               >
                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-              </v-btn>
+              </Button>
             </v-col>
           </v-row>
           <v-row>
-            <v-col offset-md="11" md="1">
-              <v-btn variant="outlined" icon @click="addRow" fab small color="info">
-                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-              </v-btn>
+            <v-col offset-md="11" cols="4">
+              <Button
+                variant="outlined"
+                @click="addRow"
+                icon
+                size="large"
+                color="primary"
+              >
+                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+              </Button>
             </v-col>
           </v-row>
         </v-card-text>
         <v-row class="text-center ml-3 mb-3"
           ><v-col cols="auto">
             <Button
+              type="submit"
               title="Enregistrer cette étape"
               nameButton="Enregistrer"
               variant="flat"
-              :onclickAlertButton="submitForm"
+              @click="submitForm"
               density="comfortable"
               class="text-center"
               :isBlock="true"
@@ -220,9 +229,10 @@ export default {
         this.addRow();
       }
     },
-    submitForm() {
+    submitForm(e) {
       // Empêche l'envoi du formulaire par défaut
-      event.preventDefault();
+      console.log("e from submit:", e);
+      e.preventDefault();
       // Valide le formulaire avant de l'envoyer
       if (this.isValid()) {
         this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
@@ -282,6 +292,8 @@ export default {
       console.log();
     },
     addRow() {
+      // console.log("e from addrom:", e);
+      // e.preventDefault();
       this.form.matieres.push({
         code: null,
         libelle: null,
