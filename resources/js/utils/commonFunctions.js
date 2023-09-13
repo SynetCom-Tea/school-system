@@ -1,3 +1,14 @@
+export function getTypeEtablissementById(vId) {
+  let formatVId = vId ? parseInt(vId) : null
+  if (formatVId) {
+    if (formatVId == 1) return 'Université'
+     if(formatVId==2) return 'École'
+      if(formatVId==3) return 'Institut'
+  }
+
+}
+
+
 //Fonction pour autoriser la saisie des chiffres positifs uniquement. Le point est autorisé pour indiquer un nombre à virgule
 export function isNumber(e) {
   let char = String.fromCharCode(e.keyCode); // Get the character
