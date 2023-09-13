@@ -339,7 +339,6 @@ export default {
       let user = this.$page.props.auth?.user;
 
       let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
-
       fullName = user?.nom + " " + user?.prenom;
       let item = {
         name: fullName,
@@ -354,6 +353,7 @@ export default {
     },
     getListMenus() {
       let list = listMenus(this.$page.props);
+      let role = this.$page.props.roles ? this.$page.props.roles[0] : null;
       this.MenuAdmin = list[5];
       return list;
     },

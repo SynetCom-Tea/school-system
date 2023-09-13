@@ -80,6 +80,7 @@ MenuAdmin = {
       children: enfants,
 }
 
+
     let singleItems = [
         {
             title: "Profil",
@@ -89,7 +90,7 @@ MenuAdmin = {
         },
         {
             icon: mdiSchool,
-            title: "Etablissements",
+            title: "Établissements",
             link: "/etablissements",
             permissions: "manage_system",
         },
@@ -123,6 +124,7 @@ MenuAdmin = {
             permissions: "manage_system",
         }, */
     ];
+
     let usersMenu = {
         icon: mdiAccountCogOutline,
         title: "Gestion Utilisateurs",
@@ -179,7 +181,7 @@ MenuAdmin = {
             },
             {
                 icon: mdiSchool,
-                title: "Etablissements",
+                title: "Établissements",
                 link: "/organizations",
                 permissions: "manage_system",
             },
@@ -302,5 +304,8 @@ MenuAdmin = {
             // },
         ],
     };
+       if (page?.roles == "Administrateur") {
+         singleItems= singleItems.filter(el=>el.title!="Établissements")
+    }
     return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
 }
