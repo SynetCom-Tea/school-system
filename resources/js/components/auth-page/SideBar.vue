@@ -159,7 +159,6 @@
                   </template>
 
                   <v-list-item
-                  <v-list-item
                     class="sub-list-group"
                     v-for="(item, i) in MenuAdmin.children"
                     :key="i"

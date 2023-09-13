@@ -25,12 +25,13 @@
                         :items="lmds"
                         item-title="libelle"
                         item-value="id"
+                        v-model="form.type_lmd"
                         @update:modelValue="test()"
                         chips
                         closable-chips
                         required
                         color="blue-grey-lighten-2"
-                        v-model="form.type_lmd"
+                        
                         label="Select"
                     ></v-autocomplete>
                 </v-col>
@@ -101,7 +102,9 @@
         test(){
             if(this.form.lmd == true && this.form.type_lmd !== null){
                 this.check = false
-            }else {
+            }else if(this.form.lmd == false ){
+                this.check = false
+            }else{
                 this.check = true
             }
             console.log('check',this.check,'type_lmd', this.form.type_lmd );

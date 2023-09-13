@@ -50,8 +50,8 @@ export function listMenus(page) {
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
       { title: "Secondaire", icon: mdiSchool, link: "/enseignement/configuration/2" },
-      { title: "Supérieur", icon: mdiSchool, link: "/enseignement/configuration/3" },
-      { title: "Universitaire", icon: mdiSchool, link: "/enseignement/configuration/4" },
+      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/lmd/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/lmd/4' },
     ];
 
     if (page?.roles == "Administrateur") {

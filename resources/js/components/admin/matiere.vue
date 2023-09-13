@@ -121,7 +121,7 @@
               <TextField
                 class="mt-2"
                 label="Libelle matiere"
-                isRequired="true"
+                :isRequired="true"
                 placeholder="Libelle matiere"
                 required
                 v-model="matiere.libelle"
@@ -145,6 +145,7 @@
           <v-row>
             <v-col offset-md="11" cols="4">
               <Button
+                type="button"
                 variant="outlined"
                 @click="addRow"
                 icon
