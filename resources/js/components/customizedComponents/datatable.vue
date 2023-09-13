@@ -200,7 +200,7 @@ export default {
           nameButton="Ajouter"
           title="Ajouter une nouvelle ligne"
           :prependIcon="icons.mdiPlus"
-          :onClickButton="onClickAddButton"
+          @click="onClickAddButton"
         >
         </Button>
 
@@ -256,7 +256,7 @@ export default {
                 nameButton="Annuler"
                 title="Annuler et Fermer la modale"
                 style="height: 30px"
-                :onClickButton="closeDelete"
+                @click="closeDelete"
               ></Button>
 
               <Button
@@ -265,7 +265,7 @@ export default {
                 nameButton="Oui"
                 title="Confirmer et Fermer la modale"
                 style="height: 30px"
-                :onClickButton="deleteItemConfirm"
+                @click="deleteItemConfirm"
               ></Button>
 
               <v-spacer></v-spacer>

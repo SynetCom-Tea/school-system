@@ -15,6 +15,9 @@ export default {
     FooterIndex,
   },
   computed: {},
+  created() {
+    //console.log(this.$page.props)
+  },
   methods: {
     //   goToLoginPage() {
     //     //   return router.visit("/login", {
@@ -30,4 +33,3 @@ export default {
   },
 };
 </script>
-

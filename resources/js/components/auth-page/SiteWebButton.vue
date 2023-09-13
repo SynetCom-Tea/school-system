@@ -8,7 +8,7 @@
       title="Visiter le site Web"
       nameButton=" Site web"
       :isRounded="true"
-      :onClickButton="redirectToWebsite"
+      @click="redirectToWebsite"
     ></Button>
   </div>
 </template>

@@ -65,6 +65,7 @@ Route::resource('promotions', AnneeClasseController::class);
 Route::resource('tuteurs', TuteurController::class);
 Route::resource('niveaux', NiveauController::class);
 Route::resource('etablissements', EtablissementController::class);
+Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->name('etablissement.activer');
 Route::resource('inscriptions', InscriptionController::class);
 
 require __DIR__ . '/auth.php';

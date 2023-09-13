@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('adresse');
             $table->json('telephone');
             $table->string('ville');
+            $table->boolean('statut');
             $table->string('logo')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
                 ->references('id')->on('type_etablissements');

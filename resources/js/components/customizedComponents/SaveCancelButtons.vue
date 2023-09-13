@@ -34,7 +34,7 @@ export default {
       title="Annuler et Fermer la modale"
       style="height: 30px"
       :prependIcon="icons.mdiCancel"
-      :onClickButton="onClickCancelButton"
+      @click="onClickCancelButton"
     ></Button>
 
     <Button
@@ -45,7 +45,7 @@ export default {
       style="height: 30px"
       :disabled="!isEditing"
       :prependIcon="icons.mdiContentSaveEditOutline"
-      :onClickButton="onClickSaveButton"
+      @click="onClickSaveButton"
     ></Button>
   </div>
 </template>
