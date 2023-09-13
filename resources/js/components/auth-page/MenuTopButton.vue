@@ -82,7 +82,6 @@ export default {
       let list = this.listMenus(this.$page.props);
       let flattened;
       let flattened2 = [];
-      console.log(" list:", list);
 
       list.forEach((element) => {
         if (element instanceof Array) {

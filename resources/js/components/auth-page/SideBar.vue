@@ -43,13 +43,17 @@
               :src="'/logos/' + getOrganizationProfile.photo.file"
               :alt="getOrganizationProfile.photo.title"
             />
-            <v-slide-x-transition mode="in-out" leave-absolute>
+            <v-slide-x-transition mode="in-out" leave-absolute class="text-wrap">
               <v-list-item
                 id="profile-name"
                 lines="two"
                 :title="getOrganizationProfile.organization.name"
-                :subtitle="getOrganizationProfile.organization.type"
               >
+                <template v-slot:subtitle="{ subtitle }">
+                  <span class="text-wrap" style="font-size: 0.9em, color:bold">
+                    {{ getOrganizationProfile.organization.type }}
+                  </span>
+                </template>
               </v-list-item>
             </v-slide-x-transition>
           </div>
@@ -291,10 +295,18 @@ export default {
       let fullName;
       let organization;
       let user = this.$page.props.auth?.user;
-
+      let sections, allSections;
       if (this.$page.props && this.$page.props.admin_etablissement) {
         organization = this.$page.props.admin_etablissement.etablissement;
+        if (this.$page.props.sections[0] && this.$page.props.sections[0].sections) {
+          sections = this.$page.props.sections[0].sections;
+        }
       }
+
+      if (sections && sections.length == 4) {
+        allSections = "Toutes les Sections";
+      }
+
       if (this.$page.props.admin_etablissement == null) {
         organization = {
           name: "Concepteur logiciel",
@@ -302,7 +314,9 @@ export default {
         };
       }
       let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
-      let organizationName = getTypeEtablissementById(organization.type_etablissement_id);
+      let organizationName = allSections
+        ? allSections
+        : getTypeEtablissementById(organization.type_etablissement_id);
 
       fullName = user?.nom + " " + user?.prenom;
       let item = {

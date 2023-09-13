@@ -55,7 +55,7 @@ export function listMenus(page) {
     ];
 
     if (page?.roles == "Administrateur") {
-        // console.log('Test:',page?.sections[0]?.sections)
+
       if (page?.sections[0]?.sections) {
         tabs = page?.sections[0].sections.map(function (el) {
           return el.libelle;

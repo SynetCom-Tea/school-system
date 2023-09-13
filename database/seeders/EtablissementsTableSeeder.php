@@ -19,6 +19,23 @@ class EtablissementsTableSeeder extends Seeder
             0 =>
             array(
                 'id' => 1,
+                'name' => 'Etablmt All sections',
+                'email' => 'etageneral@gmail.com',
+                'adresse' => 'Plateau',
+                'telephone' => '\"20142564A\"',
+                'ville' => 'Niamey',
+                'statut' => 1,
+                'logo' => 'boDema.png',
+                'type_etablissement_id' => 1,
+                'systeme_lmd_id' => NULL,
+                'deleted_at' => NULL,
+                'created_at' => '2023-09-06 11:11:35',
+                'updated_at' => '2023-09-06 11:11:35',
+            ),
+
+            1 =>
+            array(
+                'id' => 2,
                 'name' => 'IAI-Niger',
                 'email' => 'iainiger@gmail.com',
                 'adresse' => 'Plateau',
@@ -32,10 +49,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-06 11:11:35',
                 'updated_at' => '2023-09-06 11:11:35',
             ),
-            1 =>
+            2 =>
 
             array(
-                'id' => 2,
+                'id' => 3,
                 'name' => 'UAM',
                 'email' => 'uamniger@gmail.com',
                 'adresse' =>  'Harobanda',
@@ -49,10 +66,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-07 13:17:12',
                 'updated_at' => '2023-09-07 13:17:12',
             ),
-            2 =>
+            3 =>
 
             array(
-                'id' => 3,
+                'id' => 4,
                 'name' => 'IAT-Niger',
                 'email' => 'iatniger@gmail.com',
                 'adresse' => 'Francophonie',
@@ -66,10 +83,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-07 13:33:37',
                 'updated_at' => '2023-09-07 13:33:37',
             ),
-            3 =>
+            4 =>
 
             array(
-                'id' => 4,
+                'id' => 5,
                 'name' => 'Gamma',
                 'email' => 'gamma@niger.com',
                 'adresse' => 'Yantala',
@@ -83,10 +100,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-07 13:43:21',
                 'updated_at' => '2023-09-07 13:43:21',
             ),
-            4 =>
+            5 =>
 
             array(
-                'id' => 5,
+                'id' => 6,
                 'name' => 'Université de Maradi',
                 'email' => 'uddm@gmail.com',
                 'adresse' => 'Maradi',
@@ -100,10 +117,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 08:49:59',
                 'updated_at' => '2023-09-08 08:49:59',
             ),
-            5 =>
+            6 =>
 
             array(
-                'id' => 6,
+                'id' => 7,
                 'name' => 'Université de Dosso',
                 'email' => 'udoniger@gmail.com',
                 'adresse' => 'Dosso',
@@ -117,10 +134,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 08:52:42',
                 'updated_at' => '2023-09-08 08:52:42',
             ),
-            6 =>
+            7 =>
 
             array(
-                'id' => 7,
+                'id' => 8,
                 'name' => 'Université de Tillabéri',
                 'email' => 'utiniger@gmail.com',
                 'adresse' => 'Tillaberi',
@@ -134,10 +151,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 08:54:32',
                 'updated_at' => '2023-09-08 08:54:32',
             ),
-            7 =>
+            8 =>
 
             array(
-                'id' => 8,
+                'id' => 9,
                 'name' => 'Université de Tahoua',
                 'email' => 'utaniger@gmail.com',
                 'adresse' => 'Tahoua',
@@ -151,10 +168,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 08:56:07',
                 'updated_at' => '2023-09-08 08:56:07',
             ),
-            8 =>
+            9 =>
 
             array(
-                'id' => 9,
+                'id' => 10,
                 'name' => 'Université d\'Agadez',
                 'email' =>  'uazniger@gmail.com',
                 'adresse' => 'Arlit',
@@ -168,10 +185,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 08:57:42',
                 'updated_at' => '2023-09-08 08:57:42',
             ),
-            9 =>
+            10 =>
 
             array(
-                'id' => 10,
+                'id' => 11,
                 'name' => 'Université de Zinder',
                 'email' => 'uzniger@gmail.com',
                 'adresse' => 'Zinder',
@@ -185,10 +202,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 09:01:06',
                 'updated_at' => '2023-09-08 09:01:06',
             ),
-            10 =>
+            11 =>
 
             array(
-                'id' => 11,
+                'id' => 12,
                 'name' => 'IPSP',
                 'email' => 'ipsp@gmail.com',
                 'adresse' => 'Niamey 2000',
@@ -202,11 +219,11 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 09:03:01',
                 'updated_at' => '2023-09-08 09:03:01',
             ),
-            11 =>
+            12 =>
 
 
             array(
-                'id' => 12,
+                'id' => 13,
                 'name' => 'IFTIC',
                 'email' => 'ifticne@gmail.com',
                 'adresse' => 'Plateau',
@@ -220,11 +237,11 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 09:11:44',
                 'updated_at' => '2023-09-08 09:11:44',
             ),
-            12 =>
+            13 =>
 
 
             array(
-                'id' => 13,
+                'id' => 14,
                 'name' =>  'Collège-Lycée Mariama',
                 'email' => 'clmariama@gmail.com',
                 'adresse' => 'Nouveau Marché',
@@ -238,11 +255,11 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 09:15:20',
                 'updated_at' => '2023-09-08 09:15:20',
             ),
-            13 =>
+            14 =>
 
 
             array(
-                'id' => 14,
+                'id' => 15,
                 'name' =>  'INIME',
                 'email' => 'inime@gmail.com',
                 'adresse' => 'Francophonie',
@@ -256,10 +273,10 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 09:17:26',
                 'updated_at' => '2023-09-08 09:17:26',
             ),
-            14 =>
+            15 =>
 
             array(
-                'id' => 15,
+                'id' => 16,
                 'name' =>  'CSP Lumière',
                 'email' => 'lumiere@gmail.com',
                 'adresse' =>  'Kalley-Sud',
@@ -273,11 +290,11 @@ class EtablissementsTableSeeder extends Seeder
                 'created_at' => '2023-09-08 09:19:59',
                 'updated_at' => '2023-09-08 09:19:59',
             ),
-            15 =>
+            16 =>
 
 
             array(
-                'id' => 16,
+                'id' => 17,
                 'name' => 'Lycée d\'Excellence',
                 'email' => 'lexni@gmail.com',
                 'adresse' => 'Bassora',
@@ -292,9 +309,9 @@ class EtablissementsTableSeeder extends Seeder
                 'updated_at' => '2023-09-08 09:22:18',
             ),
 
-            16 =>
+            17 =>
             array(
-                'id' => 17,
+                'id' => 18,
                 'name' => 'La Relève',
                 'email' => 'releve@gmail.com',
                 'adresse' => 'Koira Kano',
