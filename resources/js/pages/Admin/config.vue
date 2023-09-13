@@ -71,16 +71,22 @@
                 <v-card-text v-if="type=='4'">
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
-                <v-card-text v-if="type=='3'">
+                <v-card-text v-if="type=='3' && lmd != null">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
+                </v-card-text>
+                <v-card-text v-if="type=='3'&& lmd == null">
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
             </v-card>
         </template>
-
-        <template v-slot:item.6>
+       
+        <template v-slot:item.6 >
             <v-card :title="currentTitle" flat>
-                <v-card-text v-if="type=='4'">
+                <v-card-text v-if="type=='4' && lmd != null">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
+                </v-card-text>
+                <v-card-text v-if="type=='4' && lmd == null">
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
                 <v-card-text v-if="type=='3'">
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
@@ -119,7 +125,7 @@
     import Loader from "@/components/customizedComponents/Loader.vue";
     import { mdiAccount, mdiSchool, mdiHomeOutline, mdiInformation, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
-    props:['type','niveaux','matieres'],
+    props:['type','niveaux','matieres','lmd'],
     components: {
     MatiereForm,
     ClasseForm,
@@ -242,9 +248,19 @@
             if(this.type == '1' || this.type == '2'){
                 this.items = ['MATIERES','SALLES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
             }else if(this.type == '3'){
-                this.items = ['MATIERES','SALLES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
+                if(this.lmd!=null){
+                    this.items = ['MATIERES','SALLES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }else{
+                    this.items = ['MATIERES','SALLES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }
+                
             }else if(this.type == '4'){
-                this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
+                if(this.lmd!=null){
+                    this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }else{
+                    this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }
+               
             }
             return this.items
         },
@@ -272,9 +288,24 @@
                 }else{return 'AFFECTATION DE MATIERES AUX NIVEAUX';}
           case 5:if (this.type === '4') {
                     return 'FRAIS';
-                }else{ return 'UNITE D\'ENSEIGNEMENT'}
+                }else{
+                    if(this.lmd!=null){
+                        return 'UNITE D\'ENSEIGNEMENT';
+                       
+                    }else{
+                        return 'AFFECTATION DE MATIERES AUX NIVEAUX'
+                    }
+                    
+                    
+                    }
           case 6:if (this.type === '4') {
-                    return 'UNITE D\'ENSEIGNEMENT';
+                    if(this.lmd!=null){
+                        return 'UNITE D\'ENSEIGNEMENT';
+                       
+                    }else{
+                        return 'AFFECTATION DE MATIERES AUX NIVEAUX'
+                    }
+                    
                 }else{ return 'AFFECTATION DE MATIERES AUX NIVEAUX'}
           case 7: return 'AFFECTATION DE MATIERES AUX NIVEAUX'
         }

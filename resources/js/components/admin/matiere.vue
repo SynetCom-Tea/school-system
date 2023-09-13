@@ -130,6 +130,7 @@
             <v-col cols="4">
               <br />
               <Button
+                type="button"
                 variant="outlined"
                 :disabled="!(form.matieres.length > 1)"
                 icon
