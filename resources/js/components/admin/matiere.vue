@@ -1,5 +1,5 @@
 <template>
-  <form novalidate>
+  <form novalidate @submit.prevent="submitForm">
     <v-container fluid>
       <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
@@ -121,7 +121,7 @@
               <TextField
                 class="mt-2"
                 label="Libelle matiere"
-                isRequired="true"
+                :isRequired="true"
                 placeholder="Libelle matiere"
                 required
                 v-model="matiere.libelle"
@@ -166,7 +166,7 @@
               @click="submitForm"
               density="comfortable"
               class="text-center"
-              :isBlock="true"
+              block
               size="large"
               style="text-transform: none"
             >
@@ -229,10 +229,10 @@ export default {
         this.addRow();
       }
     },
-    submitForm(e) {
+    submitForm() {
       // Empêche l'envoi du formulaire par défaut
-      console.log("e from submit:", e);
-      e.preventDefault();
+      // console.log("e from submit:", e);
+      // e.preventDefault();
       // Valide le formulaire avant de l'envoyer
       if (this.isValid()) {
         this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
