@@ -77,7 +77,12 @@
                   ></v-list-item-title>
                 </v-list-item>
                 <!-- <v-list-group :value="getListMenus[1].title"> -->
-                <v-list-group :value="getListMenus[4].title">
+                <v-list-group
+                  v-if="
+                    $page.props.roles[0] && $page.props.roles[0] != 'Super-administrateur'
+                  "
+                  :value="getListMenus[4].title"
+                >
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>

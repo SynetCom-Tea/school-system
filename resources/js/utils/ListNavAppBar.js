@@ -82,6 +82,12 @@ MenuAdmin = {
 
 
     let singleItems = [
+     {
+            title: "Home",
+            icon: mdiHomeCity,
+            link: "/dashboard",
+            permissions: "manage_system",
+        },
         {
             title: "Profil",
             icon: mdiAccount,
@@ -305,7 +311,7 @@ MenuAdmin = {
         ],
     };
        if (page?.roles == "Administrateur") {
-         singleItems= singleItems.filter(el=>el.title!="Établissements")
+           singleItems = singleItems.filter(el => el.title != "Établissements")
     }
     return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
 }
