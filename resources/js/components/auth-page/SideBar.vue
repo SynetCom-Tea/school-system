@@ -142,7 +142,7 @@
                     </v-list-item>
                   </template>
 
-                  <v-list-item 
+                  <v-list-item
                     class="sub-list-group"
                     v-for="(item, i) in MenuAdmin.children"
                     :key="i"
@@ -266,8 +266,8 @@ export default {
     const sections = [
       { title: 'Primaire', icon: mdiSchool, link: '/enseignement/configuration/1' },
       { title: 'Secondaire', icon: mdiSchool, link: '/enseignement/configuration/2' },
-      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/3' },
-      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/4' },
+      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/lmd/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/lmd/4' },
     ];
 
     if(this.$page.props.roles == 'Administrateur'){
@@ -276,7 +276,7 @@ export default {
           return el.libelle;
         })
     }
-      
+
     if(tabs != []){
       sections.forEach(section => {
         if (tabs.includes(section.title)) {
@@ -293,7 +293,7 @@ export default {
         children: enfants
       };
     //
-     
+
 
 
     this.$gates.setRoles(this.$page.props.roles);

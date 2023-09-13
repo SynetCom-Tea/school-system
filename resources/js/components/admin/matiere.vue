@@ -21,35 +21,18 @@
         <br /><br />
         <v-card>
           <v-card-text>
-            <v-row v-if="type == '3'">
-              <v-col>
-                <v-switch
-                  label="Souhaiterez-vous appliquez le système LMD ?"
-                  v-model="form.lmd"
-                  color="primary"
-                  inset
-                ></v-switch>
-              </v-col>
-              <v-col v-if="form.lmd">
-                <v-autocomplete
-                  :items="['Type 1', 'Type 2']"
-                  chips
-                  closable-chips
-                  :required="form.lmd"
-                  color="blue-grey-lighten-2"
-                  v-model="form.type_lmd"
-                  label="Select"
-                ></v-autocomplete>
-              </v-col>
-              <v-col>
-                <v-switch
-                  label="Souhaiterez-vous appliquez le régime d'évaluation ?"
-                  v-model="form.regime_evaluation"
-                  color="indigo"
-                  inset
-                ></v-switch>
-              </v-col>
-            </v-row>
+            <!-- <section>
+      <input type="file" @change="onChange" />
+      <xlsx-read :file="file">
+        <xlsx-json :sheet="selectedSheet">
+          <template #default="{collection}">
+            <div>
+              {{ collection }}
+            </div>
+          </template>
+        </xlsx-json>
+      </xlsx-read>
+    </section> -->
             <v-row>
               <v-col>
                 <v-switch
@@ -84,7 +67,7 @@
               <v-col md="2">
                 <TextField
                   label="Code matiere"
-                  isRequired="true"
+                  :isRequired="true"
                   placeholder="Code matiere"
                   r
                   @change="verify(matiere)"
@@ -94,7 +77,7 @@
               <v-col md="3">
                 <TextField
                   label="Libelle matiere"
-                  isRequired="true"
+                  :isRequired="true"
                   placeholder="Libelle matiere"
                   required
                   v-model="matiere.libelle"
@@ -138,16 +121,20 @@
 <script>
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+import { XlsxRead, XlsxJson } from "vue3-xlsx/dist/vue3-xlsx.cjs.prod.js";
 export default {
   props: ["type"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
     mdiInformation,
+    XlsxRead,
+    XlsxJson
   },
   data: () => ({
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
     step: 1,
+    file: null,
     importation: false,
     section: null,
     form: useForm({
@@ -161,6 +148,10 @@ export default {
   }),
 
   methods: {
+    onChange(event) {
+      this.file = event.target.files ? event.target.files[0] : null;
+      console.log('collection',this.selectedSheet)
+    },
     getSection(type) {
       console.log("type", type);
       if (type == "1") {

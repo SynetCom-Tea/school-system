@@ -16,7 +16,7 @@
                             <v-switch label="Souhaiterez-vous appliquez le système LMD ?" v-model="form.lmd" color="primary" inset></v-switch>
                         </v-col>
                         <v-col v-if="form.lmd">
-                              
+
                             <v-autocomplete
                                 :items="['Type 1', 'Type 2']"
                                 chips
@@ -36,7 +36,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des frais ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                              
+
                             <v-file-input
                                 clearable
                                 required
@@ -55,7 +55,7 @@
                 <v-card-text>
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
                         <v-col md="4" v-if="type == '3' || type == '4'" >
-                              
+
                             <v-autocomplete
                                 :items="['IG','MIEL']"
                                 v-model="frais.filiere"
@@ -67,7 +67,7 @@
                             ></v-autocomplete>
                         </v-col>
                         <v-col md="4" >
-                              
+
                             <v-autocomplete
                                 :items="niveaux"
                                 v-model="frais.niveau"
@@ -80,16 +80,16 @@
                             ></v-autocomplete>
                         </v-col>
                         <v-col md="4">
-                              
-                            <TextField label="Code frais"  isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
+
+                            <TextField label="Code frais"  :isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
                         </v-col>
                         <v-col md="4">
-                              
-                            <TextField label="Libelle frais"  isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField>
+
+                            <TextField label="Libelle frais"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField>
                         </v-col>
                         <v-col md="4">
-                              
-                            <TextField label="Montant frais"  isRequired="true" placeholder="Montant frais" required v-model="frais.montant"></TextField>
+
+                            <TextField label="Montant frais"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant"></TextField>
                         </v-col>
                         <v-col md="4" v-if="type == '1' || type == '2'"></v-col>
                         <v-col md="1" offset-md="3">

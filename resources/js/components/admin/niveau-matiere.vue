@@ -27,17 +27,17 @@
                             <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
                                 <v-col md="1"></v-col>
                                 <v-col md="4">
-                                    <span style="color: red; font-size: x-large;">*</span>
+
                                     <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="['maths','pc']" chips v-model="matiere.matiere" @update:modelValue="verify(matiere,i, $event)">
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="Coeff" placeholder="Coeff" required v-model="matiere.coefficient"></text-field>
+
+                                    <TextField label="Coeff" :isRequired="true" placeholder="Coeff" required v-model="matiere.coefficient"></TextField>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="VH" placeholder="VH" required v-model="matiere.volume_horaire"></text-field>
+
+                                    <TextField label="VH" :isRequired="true" placeholder="VH" required v-model="matiere.volume_horaire"></TextField>
                                 </v-col>
                                 <v-col md="1">
                                     <br>
