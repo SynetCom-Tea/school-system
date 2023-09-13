@@ -17,7 +17,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des facultés ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                              
+
                             <v-file-input
                                 clearable
                                 required
@@ -36,12 +36,12 @@
                 <v-card-text>
                     <v-row disabled :key="faculte.id" v-for="(faculte, i) in form.facultes">
                         <v-col md="2">
-                              
-                            <TextField label="Code faculte"  isRequired="true" placeholder="Code faculte" required @change="verify(faculte)" v-model="faculte.code"></TextField>
+
+                            <TextField label="Code faculte"  :isRequired="true" placeholder="Code faculte" required @change="verify(faculte)" v-model="faculte.code"></TextField>
                         </v-col>
                         <v-col md="3">
-                              
-                            <TextField label="Nom de la faculte"  isRequired="true" placeholder="Nom de la faculte"  v-model="faculte.libelle"></TextField>
+
+                            <TextField label="Nom de la faculte"  :isRequired="true" placeholder="Nom de la faculte"  v-model="faculte.libelle"></TextField>
                         </v-col>
                         <v-col md="1">
                             <br>

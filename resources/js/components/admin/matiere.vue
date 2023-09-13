@@ -145,6 +145,7 @@
           <v-row>
             <v-col offset-md="11" cols="4">
               <Button
+                type="button"
                 variant="outlined"
                 @click="addRow"
                 icon
@@ -180,18 +181,22 @@
 <script>
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+import { XlsxRead, XlsxJson } from "vue3-xlsx/dist/vue3-xlsx.cjs.prod.js";
 export default {
   props: ["type"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
     mdiInformation,
+    XlsxRead,
+    XlsxJson
   },
   data: () => ({
     alertFirst: true,
     alertSecond: true,
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
     step: 1,
+    file: null,
     importation: false,
     section: null,
     form: useForm({

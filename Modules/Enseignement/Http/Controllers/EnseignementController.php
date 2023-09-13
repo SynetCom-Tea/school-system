@@ -11,7 +11,7 @@ use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\Matiere;
 use App\Models\Etablissement;
 use App\Models\Section;
-
+use App\Models\SystemeLmd;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
@@ -39,6 +39,24 @@ class EnseignementController extends Controller
             'niveaux' => Niveau::where('section_id',$type)->get(),
             'matieres' => Matiere::where('etablissement_section_id',$pivotId)->get()
         ]);
+    }
+
+    public function lmd($type)
+    {   
+        return Inertia::render('Admin/lmd',[
+            'type' => $type,
+            'lmds' => SystemeLmd::all()
+        ]);
+    }
+
+    public function storelmd(Request $request)
+    {   dd($request->all());
+        $ligne = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->first();
+        $ligne->update([
+            ''
+        ]);
+        
+        return redirect()->route('admin.config',$request->type);
     }
 
     /**

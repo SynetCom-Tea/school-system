@@ -36,12 +36,12 @@
                 <v-card-text>
                     <v-row disabled :key="ue.id" v-for="(ue, i) in form.ues">
                         <v-col md="2">
-                            <span style="color: red; font-size: x-large;">*</span>
+
                             <TextField label="Code UE"  isRequired="true" placeholder="Code UE" required @change="verify(ue)" v-model="ue.code"></TextField>
                         </v-col>
                         <v-col md="3">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <TextField label="Nom de l'UE"  isRequired="true" placeholder="Nom de l'UE" required v-model="ue.libelle"></TextField>
+                        
+                            <TextField label="Nom de l'UE"  :isRequired="true" placeholder="Nom de l'UE" required v-model="ue.libelle"></TextField>
                         </v-col>
                         <v-col md="1">
                             <br>
