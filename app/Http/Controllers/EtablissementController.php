@@ -49,7 +49,7 @@ class EtablissementController extends Controller
         $logo = '';
         $data = ['name' => $request->name,'email' => $request->email,'adresse' => $request->adresse,
         'telephone' => $request->telephone,'telephone' => $request->telephone,
-        'ville' => $request->ville,'type_etablissement_id' => $request->type_etablissement_id];
+        'ville' => $request->ville,'type_etablissement_id' => $request->type_etablissement_id, 'statut' => 1];
         if ($request->file('logo')) {
 
             $logo = $request->file('logo')[0]->getClientOriginalName();
@@ -99,8 +99,24 @@ class EtablissementController extends Controller
         }else{
             $ets->sections()->sync(3);
         }
-        //$ets->sections()->sync($request->section);
+
         $ets->update($request->all());
+        
+        return redirect()->route('etablissements.index');
+    }
+
+    /**
+     * Active or desactive the specified resource in storage.
+     */
+
+    public function activer(Request $request, string $id)
+    {
+        $ets = Etablissement::find($id);
+         if($ets->statut == 1){
+            $ets->update(['statut' => 0]);
+        }else{
+            $ets->update(['statut' => 1]);
+        }
         
         return redirect()->route('etablissements.index');
     }
