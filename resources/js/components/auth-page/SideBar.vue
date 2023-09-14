@@ -61,7 +61,7 @@
             <small>Menu</small>
             <hr class="divider" />
             <div class="links">
-              <v-list density="compact" v-model:opened="open">
+              <v-list density="compact">
                 <v-list-item
                   class="list-case"
                   v-for="link in getListMenus[0]"
@@ -79,7 +79,8 @@
                 <!-- <v-list-group :value="getListMenus[1].title"> -->
                 <v-list-group
                   v-if="
-                    $page.props.roles[0] && $page.props.roles[0] != 'Super-administrateur'
+                    $page.props?.roles[0] &&
+                    $page.props?.roles[0] != 'Super-administrateur'
                   "
                   :value="getListMenus[4].title"
                 >
@@ -114,25 +115,25 @@
                     ></v-list-item-title>
                   </v-list-item>
                 </v-list-group>
-                <v-list-group :value="getListMenus[1].title">
+                <v-list-group :value="getListMenus[1]?.title">
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
                         <v-icon
-                          :title="getListMenus[1].title"
-                          :icon="getListMenus[1].icon"
+                          :title="getListMenus[1]?.title"
+                          :icon="getListMenus[1]?.icon"
                         ></v-icon>
                       </template>
                       <v-list-item-title
                         class="text-wrap"
-                        v-text="getListMenus[1].title"
+                        v-text="getListMenus[1]?.title"
                       ></v-list-item-title>
                     </v-list-item>
                   </template>
 
                   <v-list-item
                     class="sub-list-group"
-                    v-for="(item, i) in getListMenus[1].children"
+                    v-for="(item, i) in getListMenus[1]?.children"
                     :key="i"
                     @click="page(item.link)"
                   >
@@ -288,22 +289,35 @@ export default {
   },
   mounted() {
     // console.log("ici", this.$page.props);
-
+    axios.interceptors.response.use(
+      function (response) {
+        // console.log("response:", response);
+        return response;
+      },
+      function (error) {
+        // console.log("error:", error);
+        if (error.response?.status === 403) {
+          alert(
+            "Session expirée. Vous serez redirigé(e) vers la page d'authentification!!"
+          );
+          window.location.href = "/login";
+        }
+        return Promise.reject(error);
+      }
+    );
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
     // console.log("console sections", this.$page.props.sections);
-    this.username =
-      this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
   },
   computed: {
     getOrganizationProfile() {
       let fullName;
       let organization;
-      let user = this.$page.props.auth?.user;
+      let user = this.$page.props.auth ? this.$page.props.auth.user : null;
       let sections, allSections;
       if (this.$page.props && this.$page.props.admin_etablissement) {
         organization = this.$page.props.admin_etablissement.etablissement;
-        if (this.$page.props.sections[0] && this.$page.props.sections[0].sections) {
+        if (this.$page.props?.sections[0] && this.$page.props?.sections[0].sections) {
           sections = this.$page.props.sections[0].sections;
         }
       }
@@ -318,7 +332,7 @@ export default {
           type: "Super-Admin",
         };
       }
-      let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
+      let roles = this.$page.props?.roles ? this.$page.props?.roles[0] : null;
       let organizationName = allSections
         ? allSections
         : getTypeEtablissementById(organization.type_etablissement_id);
@@ -341,7 +355,7 @@ export default {
     getUserProfile() {
       let fullName;
       let organization;
-      let user = this.$page.props.auth?.user;
+      let user = this.$page.props.auth ? this.$page.props.auth.user : null;
 
       let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
       fullName = user?.nom + " " + user?.prenom;
@@ -395,6 +409,7 @@ export default {
     },
   },
 };
+// <v-list density="compact" v-model:opened="open">
 </script>
 <style scoped>
 .defile {
