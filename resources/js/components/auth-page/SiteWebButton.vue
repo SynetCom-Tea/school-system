@@ -7,7 +7,7 @@
       color="white"
       title="Visiter le site Web"
       nameButton=" Site web"
-      :isRounded="true"
+      rounded
       @click="redirectToWebsite"
     ></Button>
   </div>

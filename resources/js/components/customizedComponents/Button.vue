@@ -59,9 +59,7 @@ export default {
 <template>
   <v-btn
     :class="class"
-    :rounded="isRounded"
     :style="style"
-    :loading="isLoading"
     :variant="variant"
     :density="density"
     v-bind="$attrs"
