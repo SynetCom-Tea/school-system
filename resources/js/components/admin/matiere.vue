@@ -23,12 +23,13 @@
               établissement
             </li>
             <li v-if="type == '3'">
-              Configurer également si l'établissement prend en charge le systeme
+              Configurer également si l'établissement prend en charge le système
               LMD(Licence Master Doctorat) et le régime d'évaluation
             </li>
             <li>
-              Le formulaire sera valide si est seulement si tous les champs obligatoires
-              marqués par <span style="color: red">*</span> sont renseignés
+              Le formulaire sera valide <strong>si et seulement si </strong>tous les
+              champs obligatoires marqués par <span style="color: red">*</span> sont
+              renseignés
             </li>
           </v-alert>
 
@@ -120,22 +121,42 @@
             <v-col cols="4">
               <TextField
                 class="mt-2"
-                label="Libelle matiere"
+                label="Libelle matière"
                 :isRequired="true"
-                placeholder="Libelle matiere"
+                placeholder="Libelle matière"
                 required
                 v-model="matiere.libelle"
               ></TextField>
             </v-col>
             <v-col cols="4">
               <br />
+
+              <v-tooltip v-model="tooltipModel" v-if="form.matieres.length == 1" bottom>
+                <template v-slot:activator="{ props }">
+                  <Button
+                    variant="outlined"
+                    v-bind="props"
+                    icon
+                    size="large"
+                    small
+                    color="error"
+                  >
+                    <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                  </Button>
+                </template>
+                <div style="width: 200px">
+                  Ce bouton reste inactif.Vous ne pouvez supprimer que s'il y'a au moins 2
+                  lignes.
+                </div>
+              </v-tooltip>
               <Button
                 variant="outlined"
-                :disabled="!(form.matieres.length > 1)"
+                v-if="form.matieres.length >= 2"
                 icon
                 @click="removeRow(matiere)"
                 size="large"
                 small
+                title="Supprimer la ligne"
                 color="error"
               >
                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
@@ -148,6 +169,7 @@
                 type="button"
                 variant="outlined"
                 @click="addRow"
+                title="Ajouter une nouvelle ligne"
                 icon
                 size="large"
                 color="primary"
@@ -189,9 +211,10 @@ export default {
     mdiCloseCircle,
     mdiInformation,
     XlsxRead,
-    XlsxJson
+    XlsxJson,
   },
   data: () => ({
+    tooltipModel: false,
     alertFirst: true,
     alertSecond: true,
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
@@ -246,7 +269,7 @@ export default {
         this.$emit("formSubmitted", this.form);
         this.$swal.fire({
           title: "Réussi",
-          text: "Mise à jour réussi avec succes!",
+          text: "Mise à jour réussie avec succès!",
           icon: "success",
           confirmButtonText: "OK",
         });

@@ -273,29 +273,29 @@ export default {
     getItems() {
       if (this.type == "1" || this.type == "2") {
         this.items = [
-          "MATIERES",
+          "MATIÈRES",
           "SALLES",
           "FRAIS",
-          "AFFECTATION DE MATIERES AUX NIVEAUX",
+          "AFFECTATION DE MATIÈRES AUX NIVEAUX",
         ];
       } else if (this.type == "3") {
         this.items = [
-          "MATIERES",
+          "MATIÈRES",
           "SALLES",
-          "FILIERES",
+          "FILIÈRES",
           "FRAIS",
           "UNITE D'ENSEIGNEMENT",
-          "AFFECTATION DE MATIERES AUX NIVEAUX",
+          "AFFECTATION DE MATIÈRES AUX NIVEAUX",
         ];
       } else if (this.type == "4") {
         this.items = [
-          "MATIERES",
+          "MATIÈRES",
           "SALLES",
-          "FACULTES",
-          "FILIERES",
+          "FACULTÉS",
+          "FILIÈRES",
           "FRAIS",
           "UNITE D'ENSEIGNEMENT",
-          "AFFECTATION DE MATIERES AUX NIVEAUX",
+          "AFFECTATION DE MATIÈRES AUX NIVEAUX",
         ];
       }
       return this.items;
@@ -315,14 +315,14 @@ export default {
     currentTitle() {
       switch (this.step) {
         case 1:
-          return "MATIERES";
+          return "MATIÈRES";
         case 2:
           return "SALLES";
         case 3:
           if (this.type === "3") {
-            return "FILIERES";
+            return "FILIÈRES";
           } else if (this.type === "4") {
-            return "FACULTES";
+            return "FACULTÉS";
           } else {
             return "FRAIS";
           }
@@ -330,26 +330,35 @@ export default {
           if (this.type === "3") {
             return "FRAIS";
           } else if (this.type === "4") {
-            return "FILIERES";
+            return "FILIÈRES";
           } else {
-            return "AFFECTATION DE MATIERES AUX NIVEAUX";
+            return "AFFECTATION DE MATIÈRES AUX NIVEAUX";
           }
         case 5:
           if (this.type === "4") {
             return "FRAIS";
           } else {
-            return "UNITE D'ENSEIGNEMENT";
+            return "UNITÉ D'ENSEIGNEMENT";
           }
         case 6:
           if (this.type === "4") {
-            return "UNITE D'ENSEIGNEMENT";
+            return "UNITÉ D'ENSEIGNEMENT";
           } else {
-            return "AFFECTATION DE MATIERES AUX NIVEAUX";
+            return "AFFECTATION DE MATIÈRES AUX NIVEAUX";
           }
         case 7:
-          return "AFFECTATION DE MATIERES AUX NIVEAUX";
+          return "AFFECTATION DE MATIÈRES AUX NIVEAUX";
       }
     },
   },
 };
 </script>
+<style scoped>
+.v-stepper-header.v-stepper--alt-labels .v-stepper-item {
+  text-transform: lowercase;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  flex-basis: 175px;
+}
+</style>
