@@ -11,10 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('niveauX', function (Blueprint $table) {
+        Schema::create('niveaux', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
             $table->string('libelle')->nullable();
+            $table->foreignIdFor(\App\Models\Section::class)->nullable()
+                ->index()
+                ->references('id')->on('sections');
             $table->timestamps();
         });
     }
@@ -24,6 +27,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('niveauX');
+        Schema::dropIfExists('niveaux');
     }
 };

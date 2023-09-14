@@ -33,10 +33,12 @@ import Button from "../js/Components/customizedComponents/Button.vue"
 import Autocomplete from "../js/Components/customizedComponents/Autocomplete.vue"
 import DateRangePicker from "../js/Components/customizedComponents/DateRangePicker.vue"
 import Btn from "../js/Components/Btn.vue";
+import TableComponent from "../js/components/customizedComponents/datatable.vue";
+import TextField from "../js/components/customizedComponents/TextField.vue";
+import Dialog from "../js/components/customizedComponents/Dialog.vue";
 import Index from "./pages/welcome/Index.vue";
 import Button from '../js/components/customizedComponents/Button.vue'
 import TextField from '../js/components/customizedComponents/TextField.vue'
-import Autocomplete from '../js/components/customizedComponents/Autocomplete.vue'
 import Select from '../js/components/customizedComponents/Select.vue'
 import ModalDetailUpdate from '../js/components/customizedComponents/ModalDetailUpdate.vue'
 import Toolbar from '../js/components/customizedComponents/Toolbar.vue'
@@ -137,7 +139,6 @@ createInertiaApp({
         .component('VueDatePicker', VueDatePicker)
         .component('page-toolbar', PageToolbar)
         .component('text-field', TextField)
-        .component('autocomplete', Autocomplete)
         .component('date-range-picker', DateRangePicker)
         .component('btn', Btn)
         .component('Datatable', Datatable)

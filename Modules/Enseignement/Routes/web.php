@@ -30,5 +30,10 @@ Route::prefix('enseignement')->group(function() {
     Route::resource('cycles',CycleController::class)->only(['index','create','destroy','store','update']);
         Route::resource('permissions', PermissionController::class);
         Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
-    
+});
+Route::middleware('auth')->group(function () {
+    Route::prefix('enseignement')->group(function() {
+        Route::get('/', 'EnseignementController@index');
+        Route::get('/configuration/{type}',[\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'config'])->name('admin.config');
+    });
 });

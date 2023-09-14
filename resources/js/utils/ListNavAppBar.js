@@ -1,7 +1,7 @@
 import articlesIcon from "@iconify-icons/fluent-mdl2/articles";
 import formsAppsScriptOutlineRounded from "@iconify-icons/material-symbols/forms-apps-script-outline-rounded";
 import {
-    mdiTimetable,
+  mdiTimetable,
   mdiAccount,
   mdiPurse,
   mdiHomeOutline,
@@ -39,30 +39,55 @@ import {
   mdiMail,
   mdiReceiptTextSendOutline,
   mdiReceiptTextCheckOutline,
+  mdiCalendar,
 } from "@mdi/js";
 export function listMenus() {
     let singleItems = [
         {
+            title: "Profil",
+            icon: mdiAccount,
+            link: "/profile",
+            permissions: "manage_school",
+        },
+        {
+            icon: mdiSchool,
+            title: "Etablissements",
+            link: "/etablissements",
+            permissions: "manage_system",
+        },
+        /* {
             title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
             permissions: "manage_system",
         },
-        {
-            title: "Evaluation",
-            icon: mdiCogOutline,
-            link: "/gestionnote/evaluation",
-        },
+        // {
+        //     title: "Test",
+        //     icon: mdiCogOutline,
+        //     link: "/enseignement/test",
+        //     permissions: "manage_system",
+        // },
         // {
         //     title: "Attribution de notes",
         //     icon: mdiReceiptTextCheckOutline,
         //     link: "/receptions",
         //     permissions: "manage_system",
         // },
+        {
+            title: "Evaluation",
+            icon: mdiCogOutline,
+            link: "/gestionnote/evaluation",
+        },
+        {
+            title: "Inscription",
+            icon: mdiAccountSchool,
+            link: "/inscriptions/create",
+            permissions: "manage_system",
+        }, */
     ];
     let usersMenu = {
         icon: mdiAccountCogOutline,
-        title: "Gestions Utilisateurs",
+        title: "Gestion Utilisateurs",
         "icon-alt": mdiChevronDown,
         permissions: "manage_system",
         model: false,
@@ -101,11 +126,12 @@ export function listMenus() {
                 permissions: "manage_system",
             },
         ],
-    };
+    }; 
+    // Gestion de Notes
     let configsMenu = {
         icon: mdiCog,
         "icon-alt": mdiChevronDown,
-        title: "Configuration",
+        title: "Notes",
         permissions: "manage_system",
         divider: true,
         model: false,
@@ -122,18 +148,6 @@ export function listMenus() {
                 link: "/gestionnote/note/attribution",
                 permissions: "manage_system",
             },
-                 {
-                icon: mdiGift,
-                title: "Programmes",
-                link: "/program",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiWalletMembership,
-                title: "Emploi du temps",
-                link: "/schedule",
-                permissions: "manage_system",
-            },
             {
                 icon: mdiAccountSchool,
                 title: "Enseignants",
@@ -147,12 +161,26 @@ export function listMenus() {
                 permissions: "manage_system",
             },
             {
+                icon: mdiCalendar,
+                title: "Années Scolaires",
+                link: "/annees",
+                permissions: "manage_system",
+            },
+
+            {
+                icon: mdiGoogleClassroom,
+                title: "Niveaux",
+                link: "/niveaux",
+                permissions: "manage_system",
+            },
+            {
                 icon: mdiGoogleClassroom,
                 title: "Salle de cours",
                 link: "/salles",
+                title: "Attribution de notes",
+                link: "/gestionnote/note/attribution",
                 permissions: "manage_system",
             },
-        ],
             // {
             //     icon: mdiAccountSchool,
             //     title: "Enseignants",
@@ -165,7 +193,7 @@ export function listMenus() {
             //     link: "/organizations",
             //     permissions: "manage_system",
             // },
-        // ],
+        ],
     };
     // Gestion de Notes
     let welcomeMenu = {
@@ -223,5 +251,33 @@ export function listMenus() {
             // },
         ],
     };
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,enseignements]
+
+    let admin = {
+        icon: mdiTimetable,
+        title: "Configurations",
+        "icon-alt": mdiChevronDown,
+        // permissions: "manage_system",
+        model: false,
+        children: [
+            {
+                icon: mdiGift,
+                title: "Config 1",
+                link: "/enseignement/test",
+                // permissions: "manage_system",
+            },
+            {
+                icon: mdiWalletMembership,
+                title: "Config 2",
+                link: "/emploi/emplois/create",
+                // permissions: "manage_system",
+            },
+            // {
+            //     icon: mdiSquareMedium,
+            //     title: "Permissions",
+            //     link: "/permissions",
+            //     permissions: "manage_system",
+            // },
+        ],
+    };
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu]
 }

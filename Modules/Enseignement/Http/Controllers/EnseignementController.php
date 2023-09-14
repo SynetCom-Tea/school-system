@@ -5,6 +5,16 @@ namespace Modules\Enseignement\Http\Controllers;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
+
+use Modules\Enseignement\Entities\Niveau;
+use Modules\Enseignement\Entities\Matiere;
+use App\Models\Etablissement;
+use App\Models\Section;
+
+use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+
 
 class EnseignementController extends Controller
 {
@@ -14,7 +24,21 @@ class EnseignementController extends Controller
      */
     public function index()
     {
-        return view('enseignement::index');
+        // dd(Auth::user());
+        return Inertia::render('Admin/accueil');
+    }
+
+    public function config($type)
+    {
+        // dd(Auth::user());
+        
+        $pivotId = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first()->id;
+        // dd($eta_section_id);
+        return Inertia::render('Admin/config',[
+            'type' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get(),
+            'matieres' => Matiere::where('etablissement_section_id',$pivotId)->get()
+        ]);
     }
 
     /**

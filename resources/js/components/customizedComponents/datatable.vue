@@ -207,12 +207,27 @@ export default {
                 <TextField density="compact" variant="solo" label="Rechercher" v-model="searchQuery" placeholder="Rechercher..." class="search-field" :icon="icons.mdiMagnify" single-line hide-details></TextField>
             </div>
 
-            <v-spacer></v-spacer>
-            <Button variant="flat" class="mb-2" nameButton="Ajouter" title="Ajouter une nouvelle ligne" style="height: 30px; text-transform: none" :prependIcon="icons.mdiPlus" :onClickButton="onClickAddButton">
-            </Button>
-            <ModalDetailUpdate :onClickCancelButton="onClickCancelButtonForEditing" :toolbarTitle="toolbarTitle" :dialogDetailUpdate="dialogDetailUpdate" :isEditing="isEditingModal" :iconValueDetail="icons.mdiPencil" :iconUpdate="icons.mdiAccount"></ModalDetailUpdate>
-            <v-dialog v-model="dialog" max-width="500px" persistent>
-                <!-- <template v-slot:activator="{ props }">
+        <v-spacer></v-spacer>
+        <Button
+          variant="flat"
+          class="mb-2"
+          nameButton="Ajouter"
+          title="Ajouter une nouvelle ligne"
+          style="height: 30px; text-transform: none"
+          :prependIcon="icons.mdiPlus"
+          :onClickButton="onClickAddButton"
+        >
+        </Button>
+        <ModalDetailUpdate
+          :onClickCancelButton="onClickCancelButtonForEditing"
+          :toolbarTitle="toolbarTitle"
+          :dialogDetailUpdate="dialogDetailUpdate"
+          :isEditing="isEditingModal"
+          :iconValueDetail="icons.mdiPencil"
+          :iconUpdate="icons.mdiAccount"
+        ></ModalDetailUpdate>
+        <v-dialog v-model="dialog" max-width="900px" persistent>
+          <!-- <template v-slot:activator="{ props }">
             <Button
               variant="flat"
               class="mb-2"
@@ -229,13 +244,10 @@ export default {
                         <span class="text-h5 text-white">{{ formTitle }}</span>
                     </v-card-title>
 
-                    <v-card-text>
-                        <v-container>
-                            <v-row>
-                                <slot name="addDialogContent" />
-                            </v-row>
-                        </v-container>
-                    </v-card-text>
+            
+                  <slot name="addDialogContent" />
+
+                
 
                     <v-card-actions class="card-actions-style">
                         <Button variant="text" class="mb-2" color="red" nameButton="Annuler" title="Annuler et Fermer la modale" style="height: 30px" :prependIcon="icons.mdiCancel" :onClickButton="close"></Button>

@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use App\Models\PermissionRole;
+use Illuminate\Support\Facades\DB;
 
 class RoleController extends Controller
 {
@@ -17,18 +18,29 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-        // dd(PermissionRoleUser::all());
     $user = Auth::user();
+    $tabs = [];
+    $all = [];
+    $roles = Role::has('permission_roles')->get();
+        foreach ($roles as  $role) {
+            $yy = PermissionRole::where('user_id',$user->id)->where('role_id',$role->id)->with('permission')->get();
+            if($yy->count() != 0){
+                // $key = $key - 1;
+                $tabs = [
+                    'role' => $role,
+                    'permissions' => $yy
+                ];
+                $all[] = $tabs ;
+                
+            } 
+        }
+        // dd($all);
     $permissions = Permission::with('permission_roles.user','permission_roles.role')->get();
-    // dd($permissions);
     $permission = $request->role ? Permission::whereHas('permission_roles.user', function ($query) use($user){
             $query->where('id',1);})->whereHas('permission_roles.role', function ($query) use($request){
             $query->where('id',$request->role);})->with('permission_roles.role')->get() : collect();
-    // dd($permission);
-    $role = Role::whereHas('permission_roles.user', function ($query) use($user){
-            $query->where('id',$user->id);})->with('permission_roles.permission')->get();
         return Inertia::render('Enseignement/Configs/Role', [
-            'permission_role_users' => $role,
+            'permission_role_users' => $all,
             'roles'=>Role::all(),
             'permissions' => $permissions,
             'permission'=>$permission

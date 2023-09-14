@@ -110,16 +110,14 @@ export default {
 };
 </script>
 <template>
-  <!-- <v-responsive
+  <v-responsive
     :class="classResponsive"
     :height="heightResponsive"
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
-  > -->
+  >
   <v-autocomplete
     :items="items"
-    v-model="modelValue"
-    v-model:search="modelSearch"
     :variant="variant"
     :hint="hint"
     :density="density"
@@ -134,9 +132,6 @@ export default {
     :prepend-inner-icon="icon"
     :base-color="baseColorValue"
     :color="colorValue"
-    :error-messages="errorMessageValue"
-    :multiple="isMultiple"
-    @update:modelValue="onchangeModelValue"
   >
     <template #label v-if="isRequired">
       <span id="required-field">{{ label }}</span>
@@ -146,7 +141,7 @@ export default {
     </template>
     <slot />
   </v-autocomplete>
-  <!-- </v-responsive> -->
+  </v-responsive>
 </template>
 <style scoped>
 #required-field::after {

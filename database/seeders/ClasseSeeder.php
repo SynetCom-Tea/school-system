@@ -14,13 +14,22 @@ class ClasseSeeder extends Seeder
     public function run(): void
     {
         Classe::create([
-            'libelle' => '6eme A'
+            'code' => '6e A',
+            'libelle' => 'Sixieme A',
+            'etablissement_section_id' => 2,
+            'niveau_id' => 7
         ]);
         Classe::create([
-            'libelle' => '6eme B'
+            'code' => '6e B',
+            'libelle' => 'Sixieme B',
+            'etablissement_section_id' => 2,
+            'niveau_id' => 7
         ]);
         Classe::create([
-            'libelle' => '3eme A'
+            'code' => '3e A',
+            'libelle' => 'Troisieme A',
+            'etablissement_section_id' => 2,
+            'niveau_id' => 10
         ]);
     }
 }

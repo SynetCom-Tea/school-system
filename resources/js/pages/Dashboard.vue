@@ -286,25 +286,54 @@ export default {
     </div>
     <br /><br />
 
-    <Button variant="flat" density="comfortable" title="title" class="m-4" color="red" nameButton="Test Loader" :prependIcon="icons.mdiAccount" :appendIcon="icons.mdiGift" :onClickButton="onClickBt"></Button>
-    <Dialog :modelDialog="isDialog" :onCloseModale="onCloseModale" :iconHeaderModal="icons.mdiAccount" :widthDialog="300">
-        <template v-slot:content>
-            <h1>TEST CONTENU</h1>
-        </template>
-        <template #otherButtons>
-            <Button title="Fermer la modale" variant="text" color="primary" nameButton="Enregistrer" :onClickButton="onCloseModale" style="float: right; margin: 10px; height: 30px"></Button></template>
+    <Button
+      variant="flat"
+      density="comfortable"
+      title="title"
+      class="m-4"
+      color="red"
+      nameButton="Test Loader"
+      :prependIcon="icons.mdiAccount"
+      :appendIcon="icons.mdiGift"
+      :onClickButton="onClickBt"
+    ></Button>
+    <!-- <Dialog
+      :modelDialog="isDialog"
+      :onCloseModale="onCloseModale"
+      :iconHeaderModal="icons.mdiAccount"
+      :widthDialog="300"
+    >
+      <template v-slot:content>
+        <h1>TEST CONTENU</h1>
+      </template>
+      <template #otherButtons>
+        <Button
+          title="Fermer la modale"
+          variant="text"
+          color="primary"
+          nameButton="Enregistrer"
+          :onClickButton="onCloseModale"
+          style="float: right; margin: 10px; height: 30px"
+        ></Button
+      ></template>
+    </Dialog> -->
+ <!-- <TextInput
     </Dialog>
-    label="Mot de passe"
-    classResponsive="py-4"
-    :maxHeightResponsive="100"
-    :maxWidthResponsive="150"
-    :onchangeField="onChangeTitle"
-    :rules="[rules.required, rules.counter]"
+    <TextInput
+      type="text"
+      v-model="test"
+      label="Mot de passe"
+      :isRequired="true"
+      classResponsive="py-4"
+      :maxHeightResponsive="100"
+      :maxWidthResponsive="150"
+      :onchangeField="onChangeTitle"
+      :rules="[rules.required, rules.counter]"
     />
     <div>{{ test }}</div>
     <br /><br /><br /><br /><br /><br />
 
-    <!-- <div>
+     <div>
       <ModalDetailUpdate
         toolbarTitle="Modale"
         :iconValueDetail="icons.mdiAccount"
