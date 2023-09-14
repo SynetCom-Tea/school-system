@@ -17,16 +17,34 @@
                   :errorMessageValue="form.errors.email"
                   hint="Respecter le format email"
                 />
-                <TextField
+                <!-- <TextField
                   label="Mot de passe"
                   v-model="form.password"
                   outlined
                   dense
                   :isRequired="true"
                   autocomplete="false"
-                  type="password"
                   hint="Un mot de passe composé de 8 caractères au min dont une lettre majuscule, caractères spéciaux,un chiffre et minuscules"
-                />
+                  :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
+                  :type="showPassword ? 'text' : 'password'"
+                  :error-messages="form.errors.password && ' Mot de passe incorrect!'"
+                  @click:append="showPassword = !showPassword"
+                /> -->
+
+                <TextField
+                  v-model="form.password"
+                  :type="showPassword ? 'text' : 'password'"
+                  :isRequired="true"
+                  outlined
+                  dense
+                  label="Message"
+                  type="text"
+                  @click:append="togglePassword()"
+                >
+                  <template v-slot:append>
+                    <v-icon :icon="showPassword ? icons.mdiEye : icons.mdiEyeOff" />
+                  </template>
+                </TextField>
               </v-form>
               <Button
                 title="Valider"
@@ -111,10 +129,17 @@
 
 <script>
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram } from "@mdi/js";
+import {
+  mdiGoogle,
+  mdiFacebook,
+  mdiTwitter,
+  mdiInstagram,
+  mdiEye,
+  mdiEyeOff,
+} from "@mdi/js";
 
 export default {
-  components: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+  components: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram, mdiEye, mdiEyeOff },
   props: {
     goToNextWindow: { type: Function },
     listSocialNetworks: { type: Array },
@@ -122,7 +147,8 @@ export default {
   },
   data: () => ({
     getErrors: "",
-    icons: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+    showPassword: false,
+    icons: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram, mdiEye, mdiEyeOff },
     errors: {},
     form: useForm({
       email: "",
@@ -147,6 +173,10 @@ export default {
     }
   },
   methods: {
+    togglePassword() {
+      console.log("show:", this.showPassword);
+      this.showPassword = !this.showPassword;
+    },
     goToSocialNetworksUrl(link) {
       if (link) return window.open(link);
     },
