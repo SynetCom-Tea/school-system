@@ -23,6 +23,7 @@ export default {
     maxHeightResponsive: {
       type: Number,
       required: false,
+      // default: 100,
     },
     heightResponsive: {
       type: Number,
@@ -30,11 +31,12 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "py-1",
+      default: "py-2",
     },
     maxWidthResponsive: {
       type: Number,
       required: false,
+      // default: 250,
     },
     name: {
       type: String,
@@ -73,10 +75,10 @@ export default {
       type: [Object, String],
       required: false,
     },
-    errorMessageValue: {
-      type: [Object, String],
-      required: false,
-    },
+    // errorMessageValue: {
+    //   type: [Object, String],
+    //   required: false,
+    // },
     onchangeModelValue: { type: Function },
     onchangeField: { type: Function },
     class: { type: String, required: false },
@@ -116,9 +118,7 @@ export default {
       :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="colorValue"
-      @update:modelValue="onchangeModelValue"
       @change="onchangeField"
-      :error-messages="errorMessageValue"
       :class="class"
     >
       <template #label v-if="isRequired">

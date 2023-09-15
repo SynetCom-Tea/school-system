@@ -32,7 +32,7 @@
                 title="Valider"
                 variant="flat"
                 nameButton="Connexion"
-                :onClickButton="goToLogin"
+                @click="goToLogin"
                 density="comfortable"
                 class="text-center"
                 :isBlock="true"
@@ -99,7 +99,7 @@
               color="secondary"
               size="large"
               variant="flat"
-              :onClickButton="goToNextWindow"
+              @click="goToNextWindow"
             >
             </Button>
           </div>
@@ -131,13 +131,29 @@ export default {
   }),
 
   computed: {},
+  created() {
+      console.log(this.$page.props.flash?.message?.text)
+      if (this.$page.props.flash?.message?.type == 'error') {
+            this.$swal({
+                icon: 'error',
+                title: 'Authentification',
+                text: this.$page.props.flash?.message?.text,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+            });
+        } 
+    },
   methods: {
     goToSocialNetworksUrl(link) {
       if (link) return window.open(link);
     },
 
     forgottenPassword() {},
-    goToLogin() {
+    goToLogin(e) {
+      e.preventDefault();
       this.form.post(route("login"), {
         onError: (e) => {
           if (e.email == "These credentials do not match our records.") {

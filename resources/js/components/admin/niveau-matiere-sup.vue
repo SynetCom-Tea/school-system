@@ -14,11 +14,9 @@
                     <v-row>
                         <v-col md="2"></v-col>
                         <v-col md="4">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <v-autocomplete label="Filieres" :items="['IG','MIEL']" v-model="form.filiere" chips></v-autocomplete>
+                            <v-autocomplete label="Filieres" item-title="libelle" item-value="id" :items="tabsFilieres" v-model="form.filiere" chips></v-autocomplete>
                         </v-col>
                         <v-col md="4">
-                            <span style="color: red; font-size: x-large;">*</span>
                             <v-autocomplete label="Niveaux" :item-title="formatNiveauLabel" item-value="id" :items="niveaux" v-model="form.niveau" chips></v-autocomplete>
                         </v-col>
                     </v-row>
@@ -28,20 +26,20 @@
                             <v-row>
                                 <v-col md="1"></v-col>
                                 <v-col md="3">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <v-autocomplete label="Unité d'enseignement" :items="uetabs" v-model="ue.ue" @update:modelValue="onSelectChange(form.ues[i].ue)" chips></v-autocomplete>
+
+                                    <v-autocomplete label="Unité d'enseignement" item-title="libelle" item-value="id" :items="uetabs" v-model="ue.ue" @update:modelValue="verifyUe(form.ues[i])" chips></v-autocomplete>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="credit" placeholder="credit" v-model="form.ues[i].credit" required></text-field>
+
+                                    <TextField label="credit" :isRequired="true" placeholder="credit" v-model="form.ues[i].credit" required></TextField>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="Volume horaire" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></text-field>
+
+                                    <TextField label="Volume horaire" :isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></TextField>
                                 </v-col>
                                 <v-col md="1">
                                     <br>
-                                    <v-btn variant="outlined" :disabled="!(form.ues.length > 1)" icon @click="removeRowUe(form.ues[i])" fab small color="error">
+                                    <v-btn variant="outlined" :disabled="form.ues ? !(form.ues.length > 1) : true" icon @click="removeRowUe(form.ues[i])" fab small color="error">
                                         <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                                     </v-btn>
                                 </v-col>
@@ -52,21 +50,20 @@
                                     <v-row disabled :key="matiere.id" v-for="(matiere, i) in ue.matieres">
                                         <v-col md="1"></v-col>
                                         <v-col md="4">
-                                            <span style="color: red; font-size: x-large;">*</span>
-                                            <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="['Algo','Merise']" chips v-model="ue.matieres[i].matiere" @update:modelValue="verify(ue,i, $event)">
+                                            <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="matieres" chips v-model="ue.matieres[i].matiere" @update:modelValue="verify(ue,i, $event)">
                                             </v-autocomplete>
                                         </v-col>
                                         <v-col md="2">
-                                            <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="Coeff" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></text-field>
+
+                                            <TextField label="Coeff" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></TextField>
                                         </v-col>
                                         <v-col md="2">
-                                            <span style="color: red; font-size: x-large;">*</span>
-                                            <text-field label="VH" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="verifySomme(ue,i)"></text-field>
+
+                                            <TextField label="VH" :isRequired="true" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="verifySomme(ue,i)"></TextField>
                                         </v-col>
                                         <v-col md="1">
                                             <br>
-                                            <v-btn variant="outlined" :disabled="!(ue.matieres.length > 1)" icon @click="removeRow(ue,ue.matieres[i])" fab small color="error">
+                                            <v-btn variant="outlined" :disabled="ue.matieres ? !(ue.matieres.length > 1) : true" icon @click="removeRow(ue,ue.matieres[i])" fab small color="error">
                                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                                             </v-btn>
                                         </v-col>
@@ -83,7 +80,7 @@
                         </v-card-text>
                         <v-row>
                             <v-col offset-md="11" md="1">
-                                <v-btn variant="outlined" :disabled="(uetabs.length == 0)" icon @click="addRowUe" fab small color="info">
+                                <v-btn variant="outlined" :disabled="uetabs ? (uetabs.length == 0) : true" icon @click="addRowUe" fab small color="info">
                                     <v-icon :icon="icons.mdiPlusCircle"></v-icon>
                                 </v-btn>
                             </v-col>
@@ -107,11 +104,11 @@
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
-    props:['type','niveaux'],
+    props:['type','niveaux','matieres','filieres','ues'],
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
-        mdiInformation 
+        mdiInformation
     },
     data: () => ({
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
@@ -119,6 +116,7 @@
         importation: false,
         section: null,
         uetabs: [],
+        tabsFilieres: [],
         form: useForm({
             filiere: null,
             niveau: null,
@@ -126,7 +124,6 @@
             etablissement_section_id: null
         }),
     }),
-    
     methods: {
         verifySomme(ue,i){
             const somme = ue.matieres.reduce((accumulator, currentItem) => {
@@ -187,7 +184,6 @@
                     icon: 'warning',
                     confirmButtonText: 'OK',
                 });
-               
             }
         },
         isValid() {
@@ -241,10 +237,9 @@
             ue.matieres = ue.matieres.filter((el) => el !== matiere)
         },
         async verifyUe(element) {
-            const array = this.form.ues.filter(el => el.ue_id !== null && el.ue_id == element.id)
-
+            const array = this.form.ues.filter(el => el.ue !== null && el.ue == element.ue)
             if (array.length > 1) {
-                this.removeRow(element)
+                this.removeRowUe(element)
                 this.$swal("L'élément existe déjà !")
                 // this.$alert.error("L'élément existe déjà !");
             }
@@ -259,9 +254,23 @@
             }
         },
     },
-    created(){},
+    created(){
+        if(this.type == '3'){
+            this.tabsFilieres = this.filieres ? this.filieres.filieres : []
+        }else if(this.type == '4'){
+            if (this.filieres.departements && Array.isArray(this.filieres.departements)) {
+                this.filieres.departements.forEach(element => {
+                    this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+                });
+            } 
+        } 
+    },
     mounted() {
-        this.uetabs = ['UE101','UE102']
+       
+        
+        console.log('resultat',this.tabsFilieres)
+        console.log('ues',this.ues)
+        this.uetabs = this.ues
         this.addRowUe()
         // this.addRowInit()
         this.section = this.getSection(this.type)

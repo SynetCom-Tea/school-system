@@ -16,7 +16,7 @@
                             <v-switch label="Souhaiterez-vous appliquez le système LMD ?" v-model="form.lmd" color="primary" inset></v-switch>
                         </v-col>
                         <v-col v-if="form.lmd">
-                            <span style="color: red; font-size: x-large;">*</span>
+
                             <v-autocomplete
                                 :items="['Type 1', 'Type 2']"
                                 chips
@@ -36,7 +36,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des frais ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                            <span style="color: red; font-size: x-large;">*</span>
+
                             <v-file-input
                                 clearable
                                 required
@@ -54,8 +54,21 @@
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-card-text>
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
-                        <v-col md="2" >
-                            <span style="color: red; font-size: x-large;">*</span>
+                        <v-col md="4" v-if="type == '3' || type == '4'" >
+
+                            <v-autocomplete
+                                :items="tabsFilieres"
+                                v-model="frais.filiere"
+                                item-value="id"
+                                item-title="libelle"
+                                chips
+                                closable-chips
+                                color="blue-grey-lighten-2"
+                                label="filiere"
+                            ></v-autocomplete>
+                        </v-col>
+                        <v-col md="4" >
+
                             <v-autocomplete
                                 :items="niveaux"
                                 v-model="frais.niveau"
@@ -67,15 +80,20 @@
                                 label="Niveaux"
                             ></v-autocomplete>
                         </v-col>
-                        <v-col md="2">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Code frais" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></text-field>
+                        <v-col md="4">
+
+                            <TextField label="Code frais"  :isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
                         </v-col>
-                        <v-col md="3">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Libelle frais" placeholder="Libelle frais" required v-model="frais.libelle"></text-field>
+                        <v-col md="4">
+
+                            <TextField label="Libelle frais"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField>
                         </v-col>
-                        <v-col md="1">
+                        <v-col md="4">
+
+                            <TextField label="Montant frais"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant"></TextField>
+                        </v-col>
+                        <v-col md="4" v-if="type == '1' || type == '2'"></v-col>
+                        <v-col md="1" offset-md="3">
                             <br>
                             <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
@@ -108,7 +126,7 @@
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
-    props:['type','niveaux'],
+    props:['type','niveaux','filieres'],
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
@@ -118,6 +136,7 @@
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
+        tabsFilieres: [],
         form: useForm({
             fichier_frais: null,
             frais: [],
@@ -189,9 +208,11 @@
         },
         addRow() {
             this.form.frais.push({
+                filiere: null,
                 niveau: null,
                 code: null,
                 libelle: null,
+                montant: null,
                 before: null,
                 after: null
             })
@@ -210,6 +231,15 @@
         },
     },
     mounted() {
+        if(this.type == '3'){
+            this.tabsFilieres = this.filieres.filieres
+        }else if(this.type == '4'){
+            this.filieres.departements.forEach(element => {
+                this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+            });
+        }
+        console.log('resultat',this.tabsFilieres)
+        
         this.addRow()
     },
   }
@@ -251,10 +281,10 @@
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
                         <v-col md="2"></v-col>
                         <v-col md="2">
-                            <text-field label="Code filiere" placeholder="Code filiere" @change="verify(frais)" v-model="frais.code"></text-field>
+                            <TextField label="Code filiere" placeholder="Code filiere" @change="verify(frais)" v-model="frais.code"></TextField>
                         </v-col>
                         <v-col md="3">
-                            <text-field label="Nom de la filiere" placeholder="Nom de la filiere" v-model="frais.name"></text-field>
+                            <TextField label="Nom de la filiere" placeholder="Nom de la filiere" v-model="frais.name"></TextField>
                         </v-col>
                         <v-col md="1">
                             <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">

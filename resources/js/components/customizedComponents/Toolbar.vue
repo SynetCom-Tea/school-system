@@ -27,10 +27,23 @@ export default {
     styleToolbar: { type: String, default: "" },
     dialogModel: { type: Boolean, default: true },
     addCloseButton: { type: Boolean, default: false },
-    onClickLeftButton: { type: Function, default: () => router.get(route("dashboard")) },
+    onClickLeftButton: {
+      type: Function,
+      default: () => {
+        let previousRoute = window.history.state?.url;
+        let previousRouteName;
+
+        previousRouteName = previousRoute?.includes("/")
+          ? previousRoute?.split("/").pop()
+          : null;
+
+        return window.history.back();
+      },
+    },
   },
   data() {
     return {
+      modelItem: "",
       closeCard: true,
       items: [
         { name: "Florida", abbr: "FL", id: 1 },
@@ -70,17 +83,12 @@ export default {
       rounded="0"
     >
       <v-toolbar color="white" :style="styleToolbar" extended extension-height="50">
-        <Button
-          variant="flat"
-          class="mb-2"
-          fab
-          color="white"
-          title="Icon de la page"
-          style="height: 30px"
-          :prependIcon="icon"
-        >
-          <!-- <v-icon :icon="icon" size="medium"></v-icon> -->
-        </Button>
+        <v-icon
+          style="margin: 10px"
+          color="secondary"
+          :icon="icon"
+          size="x-large"
+        ></v-icon>
 
         <v-toolbar-title
           style="
@@ -97,13 +105,14 @@ export default {
         <v-spacer></v-spacer>
         <div style="width: 200px">
           <Autocomplete
+            v-model="modelItem"
             :items="items"
             :append-inner-icon="icons.mdiMicrophone"
             auto-select-first
             style="margin-top: 20px"
             density="comfortable"
-            item-title="name"
-            item-value="abbr"
+            itemTitle="name"
+            itemValue="abbr"
             placeholder="Rechercher"
             :prepend-inner-icon="icons.mdiMagnify"
             rounded
@@ -111,8 +120,8 @@ export default {
             variant="solo"
           ></Autocomplete>
         </div>
-        <div style="display: absolute; bottom: 0; top: 0;height=40px">
-          <Button class="ma-2" color="bold" :onClickButton="onClickLeftButton">
+        <div style="display: absolute; bottom: 0; top: 0; height: 40px">
+          <Button class="ma-2" color="bold" @click="onClickLeftButton">
             <v-icon start :icon="icons.mdiReply"></v-icon>
             {{ leftButtonName }}
           </Button>

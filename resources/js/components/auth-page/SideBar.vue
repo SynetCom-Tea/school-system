@@ -4,6 +4,18 @@
       <div class="app-bar-content">
         <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
         <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
+        <div class="align-center" id="profile-bar">
+          <v-list-item
+            @click="goToProfilePage()"
+            lines="two"
+            :title="getUserProfile.name"
+            :subtitle="getUserProfile.typeUser"
+          >
+            <template v-slot:prepend>
+              <v-icon size="22" :icon="icons.mdiAccount"></v-icon>
+            </template>
+          </v-list-item>
+        </div>
         <div class="d-flex">
           <SiteWebButton />
           <MenuTopButton />
@@ -28,16 +40,20 @@
         <div class="sidebar-body">
           <div class="sidebar-profile">
             <img
-              :src="'/assets/' + getProfile.photo.file"
-              :alt="getProfile.photo.title"
+              :src="'/logos/' + getOrganizationProfile.photo.file"
+              :alt="getOrganizationProfile.photo.title"
             />
-            <v-slide-x-transition mode="in-out" leave-absolute>
+            <v-slide-x-transition mode="in-out" leave-absolute class="text-wrap">
               <v-list-item
                 id="profile-name"
                 lines="two"
-                :title="getProfile.name"
-                :subtitle="getProfile.typeUser"
+                :title="getOrganizationProfile.organization.name"
               >
+                <template v-slot:subtitle="{ subtitle }">
+                  <span class="text-wrap" style="font-size: 0.9em, color:bold">
+                    {{ getOrganizationProfile.organization.type }}
+                  </span>
+                </template>
               </v-list-item>
             </v-slide-x-transition>
           </div>
@@ -126,14 +142,14 @@
                   </v-list-item>
                 </v-list-group>
 
-                <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles == 'Administrateur'">
+                <v-list-group
+                  :value="MenuAdmin.title"
+                  v-if="$page.props.roles == 'Administrateur'"
+                >
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
-                        <v-icon
-                          :title="MenuAdmin.title"
-                          :icon="MenuAdmin.icon"
-                        ></v-icon>
+                        <v-icon :title="MenuAdmin.title" :icon="MenuAdmin.icon"></v-icon>
                       </template>
                       <v-list-item-title
                         class="text-wrap"
@@ -142,14 +158,14 @@
                     </v-list-item>
                   </template>
 
-                  <v-list-item 
+                  <v-list-item
                     class="sub-list-group"
                     v-for="(item, i) in MenuAdmin.children"
                     :key="i"
                     @click="page(item.link)"
                   >
                     <template v-slot:prepend>
-                      <v-icon :title="item.title" :icon="item.icon" ></v-icon>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
                     </template>
 
                     <v-list-item-title
@@ -159,7 +175,10 @@
                   </v-list-item>
                 </v-list-group>
 
-                <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles == 'Note'">
+                <v-list-group
+                  :value="getListMenus[2].title"
+                  v-if="$page.props.roles == 'Note'"
+                >
                   <template v-slot:activator="{ props }">
                     <v-list-item class="group-title" v-bind="props">
                       <template v-slot:prepend>
@@ -210,15 +229,23 @@
 
 <script>
 import { router } from "@inertiajs/vue3";
-import { mdiChevronLeft, mdiSchool, mdiCogOutline, mdiLogout, mdiMenu } from "@mdi/js";
+import {
+  mdiChevronLeft,
+  mdiAccount,
+  mdiSchool,
+  mdiCogOutline,
+  mdiLogout,
+  mdiMenu,
+} from "@mdi/js";
 import { listMenus } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
-
+import { getTypeEtablissementById } from "../../utils/commonFunctions.js";
 import SiteWebButton from "./SiteWebButton.vue";
 import MenuTopButton from "./MenuTopButton.vue";
 export default {
   name: "Sidebar",
   components: {
+    mdiAccount,
     mdiChevronLeft,
     mdiCogOutline,
     mdiLogout,
@@ -231,13 +258,7 @@ export default {
   data: () => {
     return {
       MenuAdmin: [],
-      listGreetings: [
-        { id: 1, text: "Wa fonda kayan!" },
-        { id: 2, text: "Barka da zouwa!" },
-        { id: 3, text: "Bienvenue!" },
-        { id: 1, text: "Welcome!" },
-        { id: 1, text: "Marhaba!" },
-      ],
+
       open: ["getListMenus[1]"],
       drawer: true,
       menuCompact: {
@@ -247,83 +268,105 @@ export default {
         mdiChevronLeft,
         mdiLogout,
         mdiMenu,
+        mdiAccount,
       },
       username: "",
-      profileInfo: {
-        name: "Super Admin",
-        photo: {
-          file: "team.png",
-          title: "photo profile user",
-        },
-      },
+
       rail: true,
     };
   },
+  created() {
+    this.getListMenus;
+    this.getUserProfile;
+    this.getOrganizationProfile;
+    listMenus(this.$page.props);
+  },
   mounted() {
-    console.log('ici',this.$page.props.sections)
-    let tabs = []
-    let enfants = []
-    const sections = [
-      { title: 'Primaire', icon: mdiSchool, link: '/enseignement/configuration/1' },
-      { title: 'Secondaire', icon: mdiSchool, link: '/enseignement/configuration/2' },
-      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/3' },
-      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/4' },
-    ];
-
-    if(this.$page.props.roles == 'Administrateur'){
-        tabs = this.$page.props.sections[0].sections
-        .map(function (el) {
-          return el.libelle;
-        })
-    }
-      
-    if(tabs != []){
-      sections.forEach(section => {
-        if (tabs.includes(section.title)) {
-          enfants.push(section);
-        }
-      });
-    }
-
-    this.MenuAdmin = {
-        icon: mdiCogOutline,
-        title: "Configurations",
-        "icon-alt": mdiChevronLeft,
-        model: false,
-        children: enfants
-      };
-    //
-     
-
+    // console.log("ici", this.$page.props);
 
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
-    console.log('console sections',this.$page.props.sections);
+    // console.log("console sections", this.$page.props.sections);
     this.username =
       this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
   },
   computed: {
-    getProfile() {
-      let fullName =
-        this.$page.props.auth?.user?.nom + " " + this.$page.props.auth?.user?.prenom;
+    getOrganizationProfile() {
+      let fullName;
+      let organization;
+      let user = this.$page.props.auth?.user;
+      let sections, allSections;
+      if (this.$page.props && this.$page.props.admin_etablissement) {
+        organization = this.$page.props.admin_etablissement.etablissement;
+        if (this.$page.props.sections[0] && this.$page.props.sections[0].sections) {
+          sections = this.$page.props.sections[0].sections;
+        }
+      }
+
+      if (sections && sections.length == 4) {
+        allSections = "Toutes les Sections";
+      }
+
+      if (this.$page.props.admin_etablissement == null) {
+        organization = {
+          name: "Concepteur logiciel",
+          type: "Super-Admin",
+        };
+      }
+      let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
+      let organizationName = allSections
+        ? allSections
+        : getTypeEtablissementById(organization.type_etablissement_id);
+
+      fullName = user?.nom + " " + user?.prenom;
       let item = {
-        name: fullName,
-        typeUser: "Super-Admin",
+        typeUser: roles,
+        organization: {
+          name: organization.name,
+          type: organizationName ?? organization.type,
+        },
         photo: {
-          file: "team.png",
-          title: "photo profile user",
+          file: organization.logo ?? "team.png",
+          title: "photo de l'établissement",
         },
       };
+
+      return item;
+    },
+    getUserProfile() {
+      let fullName;
+      let organization;
+      let user = this.$page.props.auth?.user;
+
+      let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
+
+      fullName = user?.nom + " " + user?.prenom;
+      let item = {
+        name: fullName,
+        typeUser: roles,
+        photo: {
+          file: "team.png",
+          title: "photo de l'établissement",
+        },
+      };
+
       return item;
     },
     getListMenus() {
-      return listMenus();
+      let list = listMenus(this.$page.props);
+      this.MenuAdmin = list[5];
+      return list;
     },
   },
   methods: {
     listMenus,
+    getTypeEtablissementById,
+    goToProfilePage() {
+      router.get("/profile");
+    },
     logout() {
       router.post("/logout");
+      // window.location.reload(true);
     },
     onClickMenuItem(item) {
       router.get(item);
@@ -369,6 +412,22 @@ export default {
 
 .sidebar-body {
   flex-grow: 1;
+}
+#profile-bar {
+  position: relative;
+  height: 50px;
+  display: flex;
+  flex-direction: row;
+  justify-content: left;
+  align-items: center;
+  margin-block: 3px;
+  margin-inline: 1px;
+  padding: 2px;
+  background-image: linear-gradient(to right, rgb(125, 0, 44, 0.7), rgb(125, 0, 44, 0.4));
+  border-radius: 20px;
+  border: 2px solid rgb(125, 0, 44, 0.75);
+  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  margin-bottom: 5px;
 }
 
 .sidebar-profile {

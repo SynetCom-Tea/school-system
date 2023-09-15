@@ -4,7 +4,7 @@
         <v-card-text>
             <v-row>
                 <v-alert type="info">
-                    <li>Cette section vous permet de configurer les facultes de cet établissement</li>
+                    <li>Cette section vous permet de configurer les unités des enseignements de cet établissement</li>
                     <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
                 </v-alert>
             </v-row>
@@ -14,15 +14,15 @@
 
                     <v-row>
                         <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des facultés ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                            <v-switch label="Souhaiterez-vous importez le fichier des unités des enseignements ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-
+                            <span style="color: red; font-size: x-large;">*</span>
                             <v-file-input
                                 clearable
                                 required
-                                v-model="form.fichier_faculte"
-                                label="Charger le fichier des facultés"
+                                v-model="form.fichier_ue"
+                                label="Charger le fichier des UES"
                                 variant="solo-inverted"
                             ></v-file-input>
                         </v-col>
@@ -34,18 +34,16 @@
             <v-card v-if="!importation">
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-card-text>
-                    <v-row disabled :key="faculte.id" v-for="(faculte, i) in form.facultes">
+                    <v-row disabled :key="ue.id" v-for="(ue, i) in form.ues">
                         <v-col md="2">
-
-                            <TextField label="Code faculte"  :isRequired="true" placeholder="Code faculte" required @change="verify(faculte)" v-model="faculte.code"></TextField>
+                            <TextField label="Code UE"  :isRequired="true" placeholder="Code UE" @change="verify(ue)" v-model="ue.code"></TextField>
                         </v-col>
                         <v-col md="3">
-
-                            <TextField label="Nom de la faculte"  :isRequired="true" placeholder="Nom de la faculte"  v-model="faculte.libelle"></TextField>
+                            <TextField label="Nom de l'UE"  :isRequired="true" placeholder="Nom de l'UE" v-model="ue.libelle"></TextField>
                         </v-col>
                         <v-col md="1">
                             <br>
-                            <v-btn variant="outlined" :disabled="!(form.facultes.length > 1)" icon @click="removeRow(faculte)" fab small color="error">
+                            <v-btn variant="outlined" :disabled="!(form.ues.length > 1)" icon @click="removeRow(ue)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                             </v-btn>
                         </v-col>
@@ -88,8 +86,8 @@
         step: 1,
         importation: false,
         form: useForm({
-            fichier_faculte: null,
-            facultes: [],
+            fichier_ue: null,
+            ues: [],
         }),
     }),
 
@@ -101,7 +99,7 @@
         },
         resetForm(check){
             if(check){
-                this.form.facultes = []
+                this.form.ues = []
                 this.addRow()
             }
         },
@@ -133,9 +131,9 @@
             let fichier = false
             let valid = false
 
-            if(this.importation && this.form.fichier_faculte != null){
+            if(this.importation && this.form.fichier_ue != null){
                 fichier = true
-            }else if(!this.importation && !this.form.facultes.find((el) => {
+            }else if(!this.importation && !this.form.ues.find((el) => {
                 return el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
             }))
             {
@@ -154,7 +152,7 @@
             console.log()
         },
         addRow() {
-            this.form.facultes.push({
+            this.form.ues.push({
                 code: null,
                 libelle: null,
                 etablissement: this.$page.props.admin_etablissement.etablissement_id,
@@ -163,10 +161,10 @@
             })
         },
         removeRow(id) {
-            this.form.facultes = this.form.facultes.filter((el) => el !== id)
+            this.form.ues = this.form.ues.filter((el) => el !== id)
         },
         async verify(element) {
-            const array = this.form.facultes.filter(el => el.code !== null && el.code == element.code)
+            const array = this.form.ues.filter(el => el.code !== null && el.code == element.code)
 
             if (array.length > 1) {
                 this.removeRow(element)

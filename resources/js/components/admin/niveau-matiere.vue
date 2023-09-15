@@ -14,30 +14,29 @@
                     <v-row>
                         <v-col md="4"></v-col>
                         <v-col md="4">
-                            <span style="color: red; font-size: x-large;">*</span>
                             <v-autocomplete label="Niveaux" :item-title="formatNiveauLabel" item-value="id" :items="niveaux" v-model="form.niveau" chips></v-autocomplete>
                         </v-col>
                     </v-row>
                     <!-- <v-divider></v-divider> -->
                     <v-card class="mx-auto" max-width="1200">
                         <v-card-text>
-                            
+
                             <!-- <v-divider></v-divider> -->
-                          
+
                             <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
                                 <v-col md="1"></v-col>
                                 <v-col md="4">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="['maths','pc']" chips v-model="matiere.matiere" @update:modelValue="verify(matiere,i, $event)">
+
+                                    <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="matieres" chips v-model="matiere.matiere" @update:modelValue="verify(matiere,i, $event)">
                                     </v-autocomplete>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="Coeff" placeholder="Coeff" required v-model="matiere.coefficient"></text-field>
+
+                                    <TextField label="Coeff" :isRequired="true" placeholder="Coeff" required v-model="matiere.coefficient"></TextField>
                                 </v-col>
                                 <v-col md="2">
-                                    <span style="color: red; font-size: x-large;">*</span>
-                                    <text-field label="VH" placeholder="VH" required v-model="matiere.volume_horaire"></text-field>
+
+                                    <TextField label="VH" :isRequired="true" placeholder="VH" required v-model="matiere.volume_horaire"></TextField>
                                 </v-col>
                                 <v-col md="1">
                                     <br>
@@ -73,11 +72,11 @@
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
-    props:['type','niveaux'],
+    props:['type','niveaux','matieres'],
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
-        mdiInformation 
+        mdiInformation
     },
     data: () => ({
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
@@ -91,9 +90,8 @@
             etablissement_section_id: null
         }),
     }),
-    
+
     methods: {
-        
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;
@@ -136,7 +134,7 @@
                     icon: 'warning',
                     confirmButtonText: 'OK',
                 });
-               
+
             }
         },
         isValid() {

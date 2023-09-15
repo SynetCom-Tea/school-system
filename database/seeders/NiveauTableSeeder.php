@@ -63,7 +63,7 @@ class NiveauTableSeeder extends Seeder
             'libelle' => 'Troisieme',
             'section_id' => 2,
         ]);
-        
+
         Niveau::create([
             'code' => '2nd A',
             'libelle' => 'Seconde A',
@@ -138,6 +138,27 @@ class NiveauTableSeeder extends Seeder
             'code' => '4A S',
             'libelle' => 'Quatrieme Année',
             'section_id' => 3,
+        ]);
+
+        Niveau::create([
+            'code' => '1A',
+            'libelle' => 'Prémiere Année',
+            'section_id' => 4,
+        ]);
+        Niveau::create([
+            'code' => '2A ',
+            'libelle' => 'Deuxieme Année',
+            'section_id' => 4,
+        ]);
+        Niveau::create([
+            'code' => '3A ',
+            'libelle' => 'Troisieme Année',
+            'section_id' => 4,
+        ]);
+        Niveau::create([
+            'code' => '4A ',
+            'libelle' => 'Quatrieme Année',
+            'section_id' => 4,
         ]);
     }
 }

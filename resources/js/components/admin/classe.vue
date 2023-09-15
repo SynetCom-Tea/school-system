@@ -16,7 +16,7 @@
                             <v-switch label="Souhaiterez-vous appliquez le système LMD ?" v-model="form.lmd" color="primary" inset></v-switch>
                         </v-col>
                         <v-col v-if="form.lmd">
-                            <span style="color: red; font-size: x-large;">*</span>
+
                             <v-autocomplete
                                 :items="['Type 1', 'Type 2']"
                                 chips
@@ -36,7 +36,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des salles ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                            <span style="color: red; font-size: x-large;">*</span>
+
                             <v-file-input
                                 clearable
                                 required
@@ -54,8 +54,8 @@
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-card-text>
                     <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes">
-                        <v-col md="2" v-if="type == '3' || type == '4'">
-                            <span style="color: red; font-size: x-large;">*</span>
+                        <v-col md="2" v-if="type == '1' || type == '2'">
+
                             <v-autocomplete
                                 :items="niveaux"
                                 v-model="classe.niveau"
@@ -68,12 +68,12 @@
                             ></v-autocomplete>
                         </v-col>
                         <v-col md="2">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Code salle" placeholder="Code salle" required @change="verify(classe)" v-model="classe.code"></text-field>
+
+                            <TextField label="Code salle"  :isRequired="true" placeholder="Code salle" required @change="verify(classe)" v-model="classe.code"></TextField>
                         </v-col>
                         <v-col md="3">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <text-field label="Libelle salle" placeholder="Libelle salle" required v-model="classe.libelle"></text-field>
+
+                            <TextField label="Libelle salle"  :isRequired="true" placeholder="Libelle salle" required v-model="classe.libelle"></TextField>
                         </v-col>
                         <v-col md="1">
                             <br>
@@ -167,7 +167,7 @@
             if(this.importation && this.form.fichier_classe != null){
                 fichier = true
             }else if(!this.importation && !this.form.classes.find((el) => {
-                if(this.type == '3' || this.type == '4'){
+                if(this.type == '1' || this.type == '2'){
                     return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
                 }else{
                     return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
