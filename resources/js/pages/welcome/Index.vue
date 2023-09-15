@@ -8,9 +8,9 @@
       </Link> -->
       <div><v-btn color="white" @click="goToLogin()">Connexion</v-btn></div>
     </v-app-bar>
-    <main>
+    <div style="margin-top: 120px">
       <BodyIndex />
-    </main>
+    </div>
 
     <!-- <v-card style="margin-top: 100px">
       <h1>Wa barka!!</h1>

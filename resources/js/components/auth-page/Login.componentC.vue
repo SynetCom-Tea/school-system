@@ -65,7 +65,7 @@ export default {
 </script>
 
 <style>
-@import url("https://fonts.googleapis.com/css?family=Montserrat:400,800");
+/* @import url("https://fonts.googleapis.com/css?family=Montserrat:400,800"); */
 
 form {
   background-color: #ffffff;

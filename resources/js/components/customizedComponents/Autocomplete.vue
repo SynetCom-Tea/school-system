@@ -85,7 +85,6 @@ export default {
     class: { type: String, default: "py-3" },
     style: { type: Object, required: false },
     isRequired: { type: Boolean, default: false },
-    isMultiple: { type: Boolean, default: false },
   },
   setup() {},
   updated() {},

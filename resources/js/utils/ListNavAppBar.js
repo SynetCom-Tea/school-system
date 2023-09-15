@@ -157,7 +157,7 @@ export function listMenus() {
             {
                 icon: mdiSchool,
                 title: "Etablissements",
-                link: "/enseignement/etablissements",
+                link: "/organizations",
                 permissions: "manage_system",
             },
             {

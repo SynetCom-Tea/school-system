@@ -4,7 +4,6 @@ import {
     Head
 } from "@inertiajs/vue3";
 
-import TextInputC from "../components/customizedComponents/TextFieldC.vue";
 import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
@@ -26,66 +25,47 @@ import {
 import Datatable from "../components/customizedComponents/datatable.vue";
 import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
-    components: {
-        ExampleApplicationDatatable,
-        Loader,
-        Datatable,
-        Toolbar,
-        ModalDetailUpdate,
-        VueSpinnerHourglass,
-        AuthenticatedLayout,
-        VueSpinner,
-        Head,
-        Dialog,
-        Vue3Marquee,
-        TextInputC,
-        mdiAccount,
-        mdiPurse,
-        mdiHomeOutline,
-        mdiPresentation,
-        mdiGift,
-    },
-    data() {
-        return {
-            headersH: [{
-                    title: "Dessert (100g serving)",
-                    align: "start",
-                    sortable: false,
-                    key: "name",
-                },
-                {
-                    title: "Calories",
-                    key: "calories"
-                },
-                {
-                    title: "Fat (g)",
-                    key: "fat"
-                },
-                {
-                    title: "Carbs (g)",
-                    key: "carbs"
-                },
-                {
-                    title: "Protein (g)",
-                    key: "protein"
-                },
-                {
-                    title: "Actions",
-                    key: "actions",
-                    sortable: false
-                },
-            ],
-            headers: [{
-                    title: "N°",
-                    align: "start",
-                    key: "id",
-                    sortable: false,
-                },
-                {
-                    title: "Titre",
-                    align: "center",
-                    key: "title"
-                },
+  components: {
+    ExampleApplicationDatatable,
+    Loader,
+    Datatable,
+    Toolbar,
+    ModalDetailUpdate,
+    VueSpinnerHourglass,
+    AuthenticatedLayout,
+    VueSpinner,
+    Head,
+    Dialog,
+    Vue3Marquee,
+    mdiAccount,
+    mdiPurse,
+    mdiHomeOutline,
+    mdiPresentation,
+    mdiGift,
+  },
+  data() {
+    return {
+      headersH: [
+        {
+          title: "Dessert (100g serving)",
+          align: "start",
+          sortable: false,
+          key: "name",
+        },
+        { title: "Calories", key: "calories" },
+        { title: "Fat (g)", key: "fat" },
+        { title: "Carbs (g)", key: "carbs" },
+        { title: "Protein (g)", key: "protein" },
+        { title: "Actions", key: "actions", sortable: false },
+      ],
+      headers: [
+        {
+          title: "N°",
+          align: "start",
+          key: "id",
+          sortable: false,
+        },
+        { title: "Titre", align: "center", key: "title" },
 
                 {
                     title: "Actions",
@@ -251,8 +231,12 @@ export default {
 <template>
 <Head title="Dashboard" />
 
-<AuthenticatedLayout>
-    <Toolbar styleToolbar="background-color: white;" :icon="icons.mdiAccount" toolbarTitle="Acceuil"></Toolbar>
+  <AuthenticatedLayout>
+    <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icons.mdiHome"
+      toolbarTitle="Acceuil"
+    ></Toolbar>
     <div class="mt-10">
         <Vue3Marquee :duration="25">
             <v-row>
@@ -274,15 +258,10 @@ export default {
         </template>
     </Loader>
     <br /><br />
-    <!-- <Toolbar
-      styleToolbar="background-color:#004980"
-      :icon="icons.mdiAccount"
-      toolbarTitle="Toolbar title"
-    ></Toolbar> -->
+
     <br /><br />
     <div>
-        <!-- :headers="headers" :items="dataH" -->
-        <ExampleApplicationDatatable />
+      <ExampleApplicationDatatable />
     </div>
     <br /><br />
 
@@ -344,7 +323,7 @@ export default {
 </AuthenticatedLayout>
 </template>
 
-<!-- 
+<!--
 
 <style scoped>
 .classTest {

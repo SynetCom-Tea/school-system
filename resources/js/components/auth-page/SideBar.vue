@@ -1,5 +1,5 @@
 <template>
-<div style="height: 100%">
+  <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
         <div class="app-bar-content">
             <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
@@ -126,7 +126,7 @@
             </div>
         </div>
     </v-navigation-drawer>
-</div>
+  </div>
 </template>
 
 <script>
@@ -311,9 +311,9 @@ export default {
 
 <style scoped>
 .defile {
-    cursor: pointer;
+  cursor: pointer;
 
-    border-radius: 3px;
+  border-radius: 3px;
 }
 
 #sidebar {
@@ -330,7 +330,7 @@ export default {
 }
 
 .sidebar-body {
-    flex-grow: 1;
+  flex-grow: 1;
 }
 
 .sidebar-profile {
@@ -350,10 +350,10 @@ export default {
 }
 
 .sidebar-profile:hover {
-    background-color: rgba(0, 255, 255, 0.85);
-    box-shadow: 0px 0px 8px rgba(0, 255, 255, 0.85);
-    transform: scale(1.05);
-    cursor: pointer;
+  background-color: rgba(0, 255, 255, 0.85);
+  box-shadow: 0px 0px 8px rgba(0, 255, 255, 0.85);
+  transform: scale(1.05);
+  cursor: pointer;
 }
 
 .sidebar-profile #profile-name {
@@ -365,13 +365,13 @@ export default {
 }
 
 .sidebar-profile img {
-    max-width: 60px;
-    border-radius: 100%;
-    border: 4px inset rgb(125, 0, 44, 0.25);
+  max-width: 60px;
+  border-radius: 100%;
+  border: 4px inset rgb(125, 0, 44, 0.25);
 }
 
 .sidebar-links {
-    padding-inline: 15px;
+  padding-inline: 15px;
 }
 
 .sidebar-links small {
@@ -382,14 +382,14 @@ export default {
 }
 
 .divider {
-    opacity: 0.25;
-    border-radius: 100%;
-    margin-bottom: 25px;
+  opacity: 0.25;
+  border-radius: 100%;
+  margin-bottom: 25px;
 }
 
 .sidebar-links .links .v-list {
-    display: flex;
-    flex-direction: column;
+  display: flex;
+  flex-direction: column;
 }
 
 .sidebar-links .v-list .list-case {
@@ -407,17 +407,17 @@ export default {
 }
 
 .sidebar-links .v-list .list-case:hover {
-    background-color: rgb(125, 0, 44, 1);
-    box-shadow: 0px 0px 8px rgb(125, 0, 44, 0.85);
-    border-color: rgb(125, 0, 44);
-    color: white;
+  background-color: rgb(125, 0, 44, 1);
+  box-shadow: 0px 0px 8px rgb(125, 0, 44, 0.85);
+  border-color: rgb(125, 0, 44);
+  color: white;
 }
 
 .sidebar-links .v-list .v-list-group .group-title:hover {
-    background-color: rgb(125, 0, 44, 1);
-    box-shadow: 0px 0px 8px rgb(125, 0, 44, 0.85);
-    border-color: rgb(125, 0, 44);
-    color: white;
+  background-color: rgb(125, 0, 44, 1);
+  box-shadow: 0px 0px 8px rgb(125, 0, 44, 0.85);
+  border-color: rgb(125, 0, 44);
+  color: white;
 }
 
 .sidebar-links .v-list .v-list-group .sub-list-group {
@@ -461,110 +461,110 @@ export default {
 }
 
 .v-list-group__items {
-    background-color: white;
-    border-radius: 25px;
-    margin-left: 15px;
+  background-color: white;
+  border-radius: 25px;
+  margin-left: 15px;
 }
 
 .sidebar-links .icon {
-    color: white;
-    margin-top: -1px;
-    margin-left: 3px;
+  color: white;
+  margin-top: -1px;
+  margin-left: 3px;
 }
 
 .sidebar-links .icon:hover {
-    color: #000000de;
+  color: #000000de;
 }
 
 .sidebar-toggle {
-    top: 0px;
-    right: 0px;
+  top: 0px;
+  right: 0px;
 }
 
 #btn-toggle {
-    background-color: rgba(255, 255, 255, 0.15);
-    transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    padding: 5px;
-    cursor: pointer;
-    display: flex;
-    justify-content: center;
+  background-color: rgba(255, 255, 255, 0.15);
+  transition: 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  padding: 5px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
 }
 
 #btn-toggle:hover {
-    background-color: rgb(125, 0, 44, 1);
-    box-shadow: 0px 0px 6px aqua;
+  background-color: rgb(125, 0, 44, 1);
+  box-shadow: 0px 0px 6px aqua;
 }
 
 .app-bar-content {
-    display: flex;
-    align-items: center;
-    width: 100%;
-    justify-content: space-between;
+  display: flex;
+  align-items: center;
+  width: 100%;
+  justify-content: space-between;
 }
 
 .app-bar-content h2 {
-    color: rgba(255, 255, 255, 0.75);
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .app-bar-content h2:hover {
-    color: rgba(255, 255, 255, 1);
+  color: rgba(255, 255, 255, 1);
 }
 
 .transition-default {
-    font-family: monospace;
-    font-size: 2em;
-    animation: color-change 1s infinite;
+  font-family: monospace;
+  font-size: 2em;
+  animation: color-change 1s infinite;
 }
 
 @keyframes color-change {
-    0% {
-        color: blue;
-    }
+  0% {
+    color: blue;
+  }
 
-    10% {
-        color: #8e44ad;
-    }
+  10% {
+    color: #8e44ad;
+  }
 
-    20% {
-        color: #1abc9c;
-    }
+  20% {
+    color: #1abc9c;
+  }
 
-    30% {
-        color: #d35400;
-    }
+  30% {
+    color: #d35400;
+  }
 
-    40% {
-        color: green;
-    }
+  40% {
+    color: green;
+  }
 
-    50% {
-        color: #34495e;
-    }
+  50% {
+    color: #34495e;
+  }
 
-    60% {
-        color: orange;
-    }
+  60% {
+    color: orange;
+  }
 
-    70% {
-        color: #2980b9;
-    }
+  70% {
+    color: #2980b9;
+  }
 
-    80% {
-        color: #f1c40f;
-    }
+  80% {
+    color: #f1c40f;
+  }
 
-    90% {
-        color: #2980b9;
-    }
+  90% {
+    color: #2980b9;
+  }
 
-    100% {
-        color: pink;
-    }
+  100% {
+    color: pink;
+  }
 }
 
 @media screen and (max-width: 600px) {
-    .app-bar-content h2 {
-        font-size: 18px;
-    }
+  .app-bar-content h2 {
+    font-size: 18px;
+  }
 }
 </style>

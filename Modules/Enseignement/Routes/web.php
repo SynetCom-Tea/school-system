@@ -1,4 +1,5 @@
 <?php
+
 use Spatie\Permission\Models\Permission;
 use App\Http\Controllers\UserController;
 use Modules\Enseignement\Http\Controllers\RoleController;
@@ -32,8 +33,8 @@ Route::prefix('enseignement')->group(function() {
         Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
 });
 Route::middleware('auth')->group(function () {
-    Route::prefix('enseignement')->group(function() {
+    Route::prefix('enseignement')->group(function () {
         Route::get('/', 'EnseignementController@index');
-        Route::get('/configuration/{type}',[\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'config'])->name('admin.config');
+        Route::get('/configuration/{type}', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'config'])->name('admin.config');
     });
 });
