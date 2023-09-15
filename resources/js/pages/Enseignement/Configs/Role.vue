@@ -250,12 +250,12 @@ export default {
                             <v-icon :icon="icon.mdiPencil" left></v-icon> Modifier
                         </v-btn>
                     </v-card-actions>
-                </v-card>
+                </v-card> 
             </template>
         </v-dialog>
         <Datatable :headers="headers" :items="permission_role_users" :search="searchQuery">
             <template v-slot:addDialogContent>
-                    
+                
                         <v-form>
                             <v-row v-if="$page.props.auth.user.id == 1">
                                 <Autocomplete label="Role" v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>

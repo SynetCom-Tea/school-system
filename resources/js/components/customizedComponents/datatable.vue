@@ -202,14 +202,14 @@ export default {
           :onClickButton="onClickAddButton"
         >
         </Button>
-        <ModalDetailUpdate
+        <!-- <ModalDetailUpdate
           :onClickCancelButton="onClickCancelButtonForEditing"
           :toolbarTitle="toolbarTitle"
           :dialogDetailUpdate="dialogDetailUpdate"
           :isEditing="isEditingModal"
           :iconValueDetail="icons.mdiPencil"
           :iconUpdate="icons.mdiAccount"
-        ></ModalDetailUpdate>
+        ></ModalDetailUpdate> -->
         <v-dialog v-model="dialog" max-width="900px" persistent>
           <!-- <template v-slot:activator="{ props }">
             <Button
