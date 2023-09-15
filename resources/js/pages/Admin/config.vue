@@ -75,7 +75,7 @@
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
                 <v-card-text v-if="type=='3'&& lmd == null">
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
             </v-card>
         </template>
@@ -86,10 +86,10 @@
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
                 <v-card-text v-if="type=='4' && lmd == null">
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
                 <v-card-text v-if="type=='3'">
-                    <niveau-matiere-sup-ue-form @formSubmitted="getNiveauMatiereUeSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
             </v-card>
         </template>
@@ -97,7 +97,7 @@
         <template v-slot:item.7>
             <v-card :title="currentTitle" flat>
                 <v-card-text>
-                    <niveau-matiere-sup-ue-form @formSubmitted="getNiveauMatiereUeSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
             </v-card>
         </template>
@@ -110,8 +110,8 @@
   </template>
   <script>
     import MatiereForm from '@/components/admin/matiere.vue';
+    import NiveauMatiereSansUeForm from '@/components/admin/niveau-matiere-sans-ue.vue';
     import NiveauMatiereSupForm from '@/components/admin/niveau-matiere-sup.vue';
-    import NiveauMatiereUeSupForm from '@/components/admin/niveau-matiere-sup-ue.vue';
     import NiveauMatiereForm from '@/components/admin/niveau-matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
     import filiereForm from '@/components/admin/filiere.vue';
@@ -135,8 +135,8 @@
     filiereForm,
     ueForm,
     fraisForm,
-    NiveauMatiereSupForm,
-    NiveauMatiereUeSupForm,
+    NiveauMatiereSansUeForm,
+    NiveauMatiereSupForm ,
     NiveauMatiereForm,
     Loader,
     // Datatable,
@@ -160,8 +160,8 @@
         pause: null,
         formMatiere: {},
         formClasse: {},
-        formNiveauMatiereSup: {},
-        NiveauMatiereUeSupForm:{},
+        formNiveauMatiereSansUe: {},
+        NiveauMatiereSupForm :{},
         formNiveauMatiere: {},
         formFaculte: {},
         formFiliere:{},
@@ -191,16 +191,16 @@
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la classe :', this.formClasse);
         },
-        getNiveauMatiereSupForm(donnees){
+        getNiveauMatiereSansUeForm(donnees){
+          this.formNiveauMatiereSansUe = donnees
+          this.suivant = true
+          console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSansUe);
+
+        },
+        getNiveauMatiereSupForm (donnees){
           this.formNiveauMatiereSup = donnees
           this.suivant = true
           console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSup);
-
-        },
-        getNiveauMatiereUeSupForm(donnees){
-          this.formNiveauMatiereUeSup = donnees
-          this.suivant = true
-          console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereUeSup);
 
         },
 

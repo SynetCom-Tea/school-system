@@ -1,203 +1,125 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
         <v-container fluid>
-        <v-card  variant="outlined" style="border: 2px solid #7d002c">
-        <v-card-title style="color: white; background-color: #7d002c"
-          >AFFECTATION DE MATIERES AUX NIVEAUX</v-card-title>
-        <v-divider></v-divider>
-        <br />
-        <div style="margin: 10px">
-          <v-alert
-            v-model="alertFirst"
-            border="start"
-            variant="tonal"
-            closable
-            close-label="Close Alert"
-            color="primary"
-            type="info"
-            title="Note"
-          >
-            <li>Cette section vous permet d'attribuer les matieres aux <span v-if="type == '3' || type == '4'">filieres</span><span v-else>niveaux</span></li>
-            <li v-if="type=='3'">Configurer également si l'établissement prend en charge le systeme LMD(Licence Master Doctorat) et le régime d'évaluation </li>
-            <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
-
-          </v-alert>
-
-          <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
-            <Button
-              style="height: 30px"
-              type="button"
-              title="Plier la note"
-              @click="onclickAlertButton('first')"
-              variant="outlined"
-              color="primary"
-              nameButton="Relire la note"
-            >
-            </Button>
-          </div>
-        </div>
-        <v-card>
-            <v-card-text style="margin: 10px">
-
-                <v-row>
-                <v-col>
-                    <v-switch
-                    @update:modelValue="resetForm(importation)"
-                    v-model="importation"
-                    color="#004980"
-                    inset
-                    :label="`${
-                        !importation
-                        ? 'Renseignement des données par champs'
-                        : 'Importatation d\'un fichier qui permet d\'attribuer les matieres aux filieres et niveaux'
-                    }`"
-                    ></v-switch>
-                </v-col>
-                <v-col v-if="importation">
-                    <v-file-input
-                    clearable
-                    required
-                    v-model="form.fichier_matiere"
-                    label="File input"
-                    variant="solo-inverted"
-                    ></v-file-input>
-                </v-col>
-                <v-col></v-col>
-                </v-row>
-            </v-card-text>
-            <v-card-text v-if="!importation">
-                <v-row>
-                    <!-- <v-col md="1"></v-col> -->
-                    <v-col md="6">
-                        <Autocomplete
-                            itemValue="id"
-                            class="mt-2"
-                            v-model="form.filiere"
-                            :isRequired="true"
-                            :itemTitle="libelle"
-                            @update:modelValue="verify(matiere,i, $event)"
-                            label="Filieres"
-                            :items="['IG','MIEL']"
-                        >
-
-                        </Autocomplete>
-                    </v-col>
-                    <v-col md="6">
-                        <Autocomplete
-                            itemValue="id"
-                            class="mt-2"
-                            v-model="form.niveau"
-                            :isRequired="true"
-                            :itemTitle="formatNiveauLabel"
-                            @update:modelValue="verify(matiere,i, $event)"
-                            label="Niveaux"
-                            :items="niveaux"
-                        >
-
-                        </Autocomplete>
-
-
-                    </v-col>
-                </v-row>
-                <!-- <v-divider></v-divider> -->
-                <v-card class="mx-auto" max-width="1200">
-                    <v-card-title flat style="color:#7d002c; background-color: white">les Matières</v-card-title>
-                    <v-divider></v-divider>
-                    <br />
-                    <v-card-text>
-
-                        <!-- <v-divider></v-divider> -->
-
-                        <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
-                            <v-col md="1"></v-col>
-                            <v-col md="4">
-                                <Autocomplete
-                                    itemValue="id"
-                                    class="mt-2"
-                                    v-model="matiere.matiere"
-                                    :isRequired="true"
-                                    itemTitle="libelle"
-                                    @update:modelValue="verify(matiere,i, $event)"
-                                    label="Matieres"
-                                    :items="['maths','pc']"
-                                >
-
-                                </Autocomplete>
-                            </v-col>
-                            <v-col md="2">
-
-                                <TextField label="Coeff" class="mt-2" :isRequired="true" placeholder="Coeff" required v-model="matiere.coefficient"></TextField>
-                            </v-col>
-                            <v-col md="2">
-
-                                <TextField label="VH" class="mt-2" :isRequired="true" placeholder="VH" required v-model="matiere.volume_horaire"></TextField>
-                            </v-col>
-                            <v-col md="1">
-                                <br>
-                                <Button
-                                    type="button"
-                                    variant="outlined"
-                                    :disabled="!(form.matieres.length > 1)"
-                                    icon
-                                    @click="removeRow(matiere)"
-                                    size="large"
-                                    small
-                                    color="error"
-                                >
-                                    <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                                </Button>
-                                <!-- <v-btn variant="outlined" :disabled="!(form.matieres.length > 1)" icon @click="removeRow(matiere)" fab small color="error">
-                                    <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                                </v-btn> -->
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col offset-md="11" cols="4">
-                                <Button
-                                    type="button"
-                                    variant="outlined"
-                                    @click="addRow"
-                                    icon
-                                    size="large"
-                                    color="primary"
-                                >
-                                    <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
-                                </Button>
-                            </v-col>
-
-                        </v-row>
-                    </v-card-text>
-                </v-card>
-            </v-card-text>
+            <v-row>
+                <v-alert type="info">
+                    <li>Cette section vous permet d'attribuer les matieres aux <span v-if="type == '3' || type == '4'">filieres</span><span v-else>niveaux</span></li>
+                    <li v-if="type=='3'">Configurer également si l'établissement prend en charge le systeme LMD(Licence Master Doctorat) et le régime d'évaluation </li>
+                    <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
+                </v-alert>
+            </v-row>
             <br>
-        </v-card>
-        <br>
-            <v-row class="text-center ml-3 mb-3"
-            ><v-col cols="auto">
-                <Button
-                type="submit"
-                title="Enregistrer cette étape"
-                nameButton="Enregistrer"
-                variant="flat"
-                @click="submitForm"
-                density="comfortable"
-                class="text-center"
-                :isBlock="true"
-                size="large"
-                style="text-transform: none"
-                >
-                </Button> </v-col
-            ></v-row>
+            <v-card>
+                <v-card-text>
+                    <v-row>
+                        <v-col md="2"></v-col>
+                        <v-col md="4">
+                            <Autocomplete
+                                itemValue="id"
+                                v-model="form.filiere"
+                                :isRequired="true"
+                                :itemTitle="libelle"
+                                @update:modelValue="verify(matiere,i, $event)"
+                                label="Filieres"
+                                :items="['IG','MIEL']"
+                            >
+
+                            </Autocomplete>
+                        </v-col>
+                        <v-col md="4">
+                            <Autocomplete
+                                itemValue="id"
+                                v-model="form.niveau"
+                                :isRequired="true"
+                                :itemTitle="formatNiveauLabel"
+                                @update:modelValue="verify(matiere,i, $event)"
+                                label="Niveaux"
+                                :items="niveaux"
+                            >
+
+                            </Autocomplete>
+
+
+                        </v-col>
+                    </v-row>
+                    <!-- <v-divider></v-divider> -->
+                    <v-card class="mx-auto" max-width="1200">
+                        <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
+                            <v-row>
+                                <v-col md="1"></v-col>
+                                <v-col md="3">
+
+                                    <v-autocomplete label="Unité d'enseignement" :items="uetabs" v-model="ue.ue" @update:modelValue="onSelectChange(form.ues[i].ue)" chips></v-autocomplete>
+                                </v-col>
+                                <v-col md="2">
+
+                                    <TextField label="credit" :isRequired="true" placeholder="credit" v-model="form.ues[i].credit" required></TextField>
+                                </v-col>
+                                <v-col md="2">
+
+                                    <TextField label="Volume horaire" :isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></TextField>
+                                </v-col>
+                                <v-col md="1">
+                                    <br>
+                                    <v-btn variant="outlined" :disabled="!(form.ues.length > 1)" icon @click="removeRowUe(form.ues[i])" fab small color="error">
+                                        <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <!-- <v-divider></v-divider> -->
+                            <v-card class="mx-auto" max-width="800">
+                                <v-card-text>
+                                    <v-row disabled :key="matiere.id" v-for="(matiere, i) in ue.matieres">
+                                        <v-col md="1"></v-col>
+                                        <v-col md="4">
+
+                                            <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="['Algo','Merise']" chips v-model="ue.matieres[i].matiere" @update:modelValue="verify(ue,i, $event)">
+                                            </v-autocomplete>
+                                        </v-col>
+                                        <v-col md="2">
+
+                                            <TextField label="Coeff" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></TextField>
+                                        </v-col>
+                                        <v-col md="2">
+
+                                            <TextField label="VH" :isRequired="true" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="verifySomme(ue,i)"></TextField>
+                                        </v-col>
+                                        <v-col md="1">
+                                            <br>
+                                            <v-btn variant="outlined" :disabled="!(ue.matieres.length > 1)" icon @click="removeRow(ue,ue.matieres[i])" fab small color="error">
+                                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                                            </v-btn>
+                                        </v-col>
+                                    </v-row>
+                                    <v-row>
+                                        <v-col offset-md="11" md="1">
+                                            <v-btn variant="outlined" icon @click="addRow(ue)" fab small color="info">
+                                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
+                                            </v-btn>
+                                        </v-col>
+                                    </v-row>
+                                </v-card-text>
+                            </v-card>
+                        </v-card-text>
+                        <v-row>
+                            <v-col offset-md="11" md="1">
+                                <v-btn variant="outlined" :disabled="(uetabs.length == 0)" icon @click="addRowUe" fab small color="info">
+                                    <v-icon :icon="icons.mdiPlusCircle"></v-icon>
+                                </v-btn>
+                            </v-col>
+                        </v-row>
+                    </v-card>
+                </v-card-text>
             </v-card>
             <br>
-            <!-- <v-row>
+            <v-row>
                 <v-col md="5"></v-col>
                 <v-col md="4">
                     <v-btn type="submit" title="enregistrer" color="info">
                         Enregistrer
                     </v-btn>
                 </v-col>
-            </v-row> -->
+            </v-row>
         </v-container>
     </form>
 </template>
@@ -212,8 +134,6 @@
         mdiInformation
     },
     data: () => ({
-        alertFirst: true,
-        alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -222,17 +142,28 @@
         form: useForm({
             filiere: null,
             niveau: null,
-            matieres: [],
+            ues: [],
             etablissement_section_id: null
         }),
     }),
 
     methods: {
-        onclickAlertButton(type) {
-        if (type == "second") {
-            this.alertSecond = true;
-        }
-        if (type == "first") this.alertFirst = true;
+        verifySomme(ue,i){
+            const somme = ue.matieres.reduce((accumulator, currentItem) => {
+                return accumulator + parseFloat(currentItem.volume_horaire);
+            }, 0);
+            if(somme > ue.volume_horaire){
+                this.removeRow(ue,ue.matieres[i])
+                this.$swal("La somme des volumes horaires ne doivent pas dépasser "+ue.volume_horaire+"!")
+            }      // this.somme =  this.somme + parseFloat(nbre || 0);
+            console.log('somme',somme,'ue',ue.volume_horaire)
+        },
+        onSelectChange(itemToRemove){
+            const indexToRemove = this.uetabs.indexOf(itemToRemove);
+            if (indexToRemove !== -1) {
+                // Si l'élément existe dans le tableau, supprimez-le
+                this.uetabs.splice(indexToRemove, 1);
+            }
         },
         formatNiveauLabel(item) {
             if(item){
@@ -303,21 +234,46 @@
         goBack() {
             router.get(route('etablissements.index'))
         },
-        addRow() {
-            this.form.matieres.push({
+        addRowUe() {
+            this.form.ues.push({
+                ue_id: null,
+                credit: 0,
+                volume_horaire: 0,
+                matieres: [],
+                before: null,
+                after: null
+            });
+            let ue = this.form.ues[this.form.ues.length - 1]
+            this.addRow(ue)
+        },
+        addRow(ue) {
+            ue.matieres.push({
+                matiere_id: null,
                 coefficient: 0,
                 volume_horaire: 0,
                 after: null
             })
         },
-        removeRow(matiere) {
-            this.form.matieres = this.form.matieres.filter((el) => el !== matiere)
+        removeRowUe(id) {
+            this.form.ues = this.form.ues.filter((el) => el !== id)
         },
-        async verify(matiere) {
-            // console.log('ue',ue,'index',index,'matiere',matiere)
-            const array = this.form.matieres.filter(el => el.matiere !== null && el.matiere == matiere.matiere)
+        removeRow(ue,matiere) {
+            ue.matieres = ue.matieres.filter((el) => el !== matiere)
+        },
+        async verifyUe(element) {
+            const array = this.form.ues.filter(el => el.ue_id !== null && el.ue_id == element.id)
+
             if (array.length > 1) {
-                this.removeRow(matiere)
+                this.removeRow(element)
+                this.$swal("L'élément existe déjà !")
+                // this.$alert.error("L'élément existe déjà !");
+            }
+        },
+        async verify(ue,index,matiere) {
+            // console.log('ue',ue,'index',index,'matiere',matiere)
+            const array = ue.matieres.filter(el => el.matiere !== null && el.matiere == matiere)
+            if (array.length > 1) {
+                this.removeRow(ue,ue.matieres[index])
                 this.$swal("L'élément existe déjà !")
                 // this.$alert.error("L'élément existe déjà !");
             }
@@ -325,8 +281,9 @@
     },
     created(){},
     mounted() {
+        this.uetabs = ['UE101','UE102']
+        this.addRowUe()
         // this.addRowInit()
-        this.addRow()
         this.section = this.getSection(this.type)
     },
   }
