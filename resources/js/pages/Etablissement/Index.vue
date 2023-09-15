@@ -10,10 +10,14 @@ import {
     mdiPencil,
     mdiEye,
     mdiChevronDown,
+    mdiContentSaveEditOutline,
+    mdiCancel,
 } from '@mdi/js'
+import PageToolbar from '@/components/PageToolbar.vue';
 export default {
+  components: { PageToolbar },
     layout: AuthenticatedLayout,
-    props: ["ecoles", "instituts", "universités", "types", "sections"],
+    props: ["ecoles", "instituts", "universites", "types", "sections"],
 
     data() {
         return {
@@ -23,12 +27,18 @@ export default {
                 mdiPencil,
                 mdiEye,
                 mdiChevronDown,
+                mdiContentSaveEditOutline,
+                mdiCancel,
             },
             tab: null,
             model: 'Activer',
-            page: 1,
+            ecolePage: 1,
+            institutPage: 1,
+            univPage: 1,
             itemsPerPageArray: [3, 6, 9],
-            itemsPerPage: 3,
+            ecolesPerPage: 3,
+            institutsPerPage: 3,
+            univsPerPage: 3,
             form: useForm({
                 type_etablissement_id: '',
                 section: [],
@@ -44,7 +54,7 @@ export default {
         },
         editItem(item) {
             this.dialog = true
-            this.dialog_title = 'Modifier ' + item.name
+            this.dialog_title = "Mise à jour de " + item.name;
             this.form.id = item.id
             this.form.type_etablissement_id = item.type_etablissement_id
             item.sections.forEach((it) => {
@@ -168,29 +178,38 @@ export default {
     },
     computed: {
         pageCount() {
-            return Math.ceil(this.instituts.length / this.itemsPerPage)
+            return Math.ceil(this.instituts.length / this.institutsPerPage)
         },
         ecolelenghtCount() {
-            return Math.ceil(this.ecoles.length / this.itemsPerPage)
+            return Math.ceil(this.ecoles.length / this.ecolesPerPage)
         },
         univlenghtCount() {
-            return Math.ceil(this.universités.length / this.itemsPerPage)
+            return Math.ceil(this.universites.length / this.univsPerPage)
         },
-        ecoles() {
-            return this.ecoles.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
+        getSchools() {
+            return this.ecoles.slice(
+                (this.ecolePage - 1) * this.ecolesPerPage,
+                this.ecolePage * this.ecolesPerPage
+            );
         },
-        instituts() {
-            return this.instituts.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
+        getInstituts() {
+            return this.instituts.slice(
+                (this.institutPage - 1) * this.institutsPerPage,
+                this.institutPage * this.institutsPerPage
+            );
         },
-        universités() {
-            return this.universités.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
+        getUniversities() {
+            return this.universites.slice(
+                (this.univPage - 1) * this.univsPerPage,
+                this.univPage * this.univsPerPage
+            );
         },
     },
-}
+};
 </script>
 <template>
 <v-card>
-    <page-toolbar :icon="icon.mdiSchool">Gestion des Etablissements</page-toolbar>
+    <Toolbar :icon="icon.mdiSchool" toolbarTitle="Gestion des Etablissements"></Toolbar>
     <v-dialog v-model="show" max-width="700" v-if="target">
         <v-card>
             <v-toolbar dark color="primary">
@@ -260,9 +279,19 @@ export default {
         <template v-slot:default="{ isActive }">
             <v-card>
                 <v-toolbar dense color="primary" dark width="500px">
-                    <v-toolbar-title width="500px">
-                        <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
-
+                    <v-toolbar-title style="
+                font-size: 0.9em;
+                width: auto;
+                word-wrap: break-word;
+                white-space: pre-wrap;
+                word-break: break-word;
+              ">
+                        <p style="width: auto" class="text-wrap">
+                            <v-icon left>{{
+                  form.id ? icon.mdiPencil : icon.mdiPlusCircle
+                }}</v-icon>
+                            {{ dialog_title }}
+                        </p>
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
 
@@ -284,12 +313,12 @@ export default {
                 </v-card-text>
                 <v-card-actions class="justify-end">
                     <v-spacer></v-spacer>
-                    <v-btn dark small type="button" color="red" @click="close">
-                        <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-                    </v-btn>
-                    <v-btn type="submit" small color="success" @click="submit">
-                        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-                    </v-btn>
+                    <Button dark  small type="button" title="Fermer et quitter" color="red" @click="close" nameButton="Annuler">
+                        <v-icon :icon="icon.mdiCancel" left></v-icon>
+                    </Button>
+                    <Button type="submit" small color="primary" @click="submit" title="Valider la modification" nameButton="Modifier">
+                        <v-icon :icon="icon.mdiContentSaveEditOutline" left></v-icon>
+                    </Button>
                 </v-card-actions>
             </v-card>
         </template>
@@ -309,16 +338,28 @@ export default {
             <v-window-item value="1">
                 <v-container>
                     <v-row>
-                        <v-col :key="i" v-for="(t, i) in ecoles">
+                        <v-col :key="i" v-for="(t, i) in getSchools">
                             <v-card elevation="6" width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
+                                <v-img v-if="t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
-                                            <v-btn :icon="icon.mdiEye" @click="showItem(t)"></v-btn>
+                                            <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
                                         </template>
 
                                         <template v-slot:append>
-                                            <v-btn :icon="icon.mdiPencil" @click="editItem(t)"></v-btn>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+                                        </template>
+                                    </v-toolbar>
+                                </v-img>
+                            
+                                <v-img v-if="!t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/defaultLogo.png'" class="text-white">
+                                    <v-toolbar color="rgba(0, 0, 0, 0)">
+                                        <template v-slot:prepend>
+                                            <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
+                                        </template>
+
+                                        <template v-slot:append>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
                                         </template>
                                     </v-toolbar>
                                 </v-img>
@@ -337,17 +378,17 @@ export default {
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
-                                {{ itemsPerPage }}
+                                {{ ecolesPerPage }}
                             </v-btn>
                         </template>
                         <v-list>
-                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="ecolesPerPage = number"></v-list-item>
                         </v-list>
                     </v-menu>
                     <v-spacer></v-spacer>
                     <span class="mr-4
           grey--text">
-                        <v-pagination v-model="page" :length="ecolelenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                        <v-pagination v-model="ecolePage" :length="ecolelenghtCount" :total-visible="6" :items-per-page="ecolesPerPage"></v-pagination>
                     </span>
                 </div>
             </v-window-item>
@@ -355,16 +396,27 @@ export default {
             <v-window-item value="2">
                 <v-container>
                     <v-row>
-                        <v-col :key="i" v-for="(t, i) in instituts">
+                        <v-col :key="i" v-for="(t, i) in getInstituts">
                             <v-card elevation="6" width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
+                                <v-img v-if="t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
-                                            <v-btn :icon="icon.mdiEye" @click="showItem(t)"></v-btn>
+                                            <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
                                         </template>
 
                                         <template v-slot:append>
-                                            <v-btn :icon="icon.mdiPencil" @click="editItem(t)"></v-btn>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+                                        </template>
+                                    </v-toolbar>
+                                </v-img>
+                                <v-img v-if="!t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/defaultLogo.png'" class="text-white">
+                                    <v-toolbar color="rgba(0, 0, 0, 0)">
+                                        <template v-slot:prepend>
+                                            <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
+                                        </template>
+
+                                        <template v-slot:append>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
                                         </template>
                                     </v-toolbar>
                                 </v-img>
@@ -382,17 +434,17 @@ export default {
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
-                                {{ itemsPerPage }}
+                                {{ institutsPerPage }}
                             </v-btn>
                         </template>
                         <v-list>
-                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="institutsPerPage = number"></v-list-item>
                         </v-list>
                     </v-menu>
                     <v-spacer></v-spacer>
                     <span class="mr-4
           grey--text">
-                        <v-pagination v-model="page" :length="pageCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                        <v-pagination v-model="institutPage" :length="pageCount" :total-visible="6" :items-per-page="institutsPerPage"></v-pagination>
                     </span>
                 </div>
             </v-window-item>
@@ -400,16 +452,27 @@ export default {
             <v-window-item value="3">
                 <v-container>
                     <v-row>
-                        <v-col :key="i" v-for="(t, i) in universités">
+                        <v-col :key="i" v-for="(t, i) in getUniversities">
                             <v-card elevation="6" max-width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
+                                <v-img v-if="t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
-                                            <v-btn :icon="icon.mdiEye" @click="showItem(t)"></v-btn>
+                                            <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
                                         </template>
 
                                         <template v-slot:append>
-                                            <v-btn :icon="icon.mdiPencil" @click="editItem(t)"></v-btn>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+                                        </template>
+                                    </v-toolbar>
+                                </v-img>
+                                <v-img v-if="!t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/defaultLogo.png'" class="text-white">
+                                    <v-toolbar color="rgba(0, 0, 0, 0)">
+                                        <template v-slot:prepend>
+                                            <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
+                                        </template>
+
+                                        <template v-slot:append>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
                                         </template>
                                     </v-toolbar>
                                 </v-img>
@@ -428,17 +491,17 @@ export default {
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
-                                {{ itemsPerPage }}
+                                {{ univsPerPage }}
                             </v-btn>
                         </template>
                         <v-list>
-                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="univsPerPage = number"></v-list-item>
                         </v-list>
                     </v-menu>
                     <v-spacer></v-spacer>
                     <span class="mr-4
           grey--text">
-                        <v-pagination v-model="page" :length="univlenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                        <v-pagination v-model="univPage" :length="univlenghtCount" :total-visible="6" :items-per-page="univsPerPage"></v-pagination>
                     </span>
                 </div>
 
