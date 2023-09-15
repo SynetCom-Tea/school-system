@@ -22,10 +22,7 @@
               Cette section vous permet de configurer les matieres enseignées dans cet
               établissement
             </li>
-            <li v-if="type == '3'">
-              Configurer également si l'établissement prend en charge le systeme
-              LMD(Licence Master Doctorat) et le régime d'évaluation
-            </li>
+
             <li>
               Le formulaire sera valide si est seulement si tous les champs obligatoires
               marqués par <span style="color: red">*</span> sont renseignés
@@ -91,7 +88,6 @@
                 label="Libelle matiere"
                 :isRequired="true"
                 placeholder="Libelle matiere"
-                required
                 v-model="matiere.libelle"
               ></TextField>
             </v-col>

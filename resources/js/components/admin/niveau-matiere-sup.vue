@@ -25,15 +25,22 @@
                         <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
                             <v-row>
                                 <v-col md="1"></v-col>
-                                <v-col md="3">
-
-                                    <v-autocomplete label="Unité d'enseignement" item-title="libelle" item-value="id" :items="uetabs" v-model="ue.ue" @update:modelValue="verifyUe(form.ues[i])" chips></v-autocomplete>
-                                </v-col>
+                                
                                 <v-col md="2">
 
-                                    <TextField label="credit" :isRequired="true" placeholder="credit" v-model="form.ues[i].credit" required></TextField>
-                                </v-col>
-                                <v-col md="2">
+                        </Autocomplete>
+                    </v-col>
+                    <v-col md="6">
+                        <Autocomplete
+                            itemValue="id"
+                            class="mt-2"
+                            v-model="form.niveau"
+                            :isRequired="true"
+                            :itemTitle="formatNiveauLabel"
+                            @update:modelValue="verify(matiere,i, $event)"
+                            label="Niveaux"
+                            :items="niveaux"
+                        >
 
                                     <TextField label="Volume horaire" :isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></TextField>
                                 </v-col>
@@ -55,9 +62,14 @@
                                         </v-col>
                                         <v-col md="2">
 
-                                            <TextField label="Coeff" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></TextField>
-                                        </v-col>
-                                        <v-col md="2">
+                    </v-col>
+                </v-row>
+                <!-- <v-divider></v-divider> -->
+                <v-card class="mx-auto" max-width="1200">
+                    <v-card-title flat style="color:#7d002c; background-color: white">les Matières</v-card-title>
+                    <v-divider></v-divider>
+                    <br />
+                    <v-card-text>
 
                                             <TextField label="VH" :isRequired="true" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="verifySomme(ue,i)"></TextField>
                                         </v-col>
@@ -85,18 +97,53 @@
                                 </v-btn>
                             </v-col>
                         </v-row>
-                    </v-card>
-                </v-card-text>
+                        <v-row>
+                            <v-col offset-md="11" cols="4">
+                                <Button
+                                    type="button"
+                                    variant="outlined"
+                                    @click="addRow"
+                                    icon
+                                    size="large"
+                                    color="primary"
+                                >
+                                    <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                                </Button>
+                            </v-col>
+
+                        </v-row>
+                    </v-card-text>
+                </v-card>
+            </v-card-text>
+            <br>
+        </v-card>
+        <br>
+            <v-row class="text-center ml-3 mb-3"
+            ><v-col cols="auto">
+                <Button
+                type="submit"
+                title="Enregistrer cette étape"
+                nameButton="Enregistrer"
+                variant="flat"
+                @click="submitForm"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button> </v-col
+            ></v-row>
             </v-card>
             <br>
-            <v-row>
+            <!-- <v-row>
                 <v-col md="5"></v-col>
                 <v-col md="4">
                     <v-btn type="submit" title="enregistrer" color="info">
                         Enregistrer
                     </v-btn>
                 </v-col>
-            </v-row>
+            </v-row> -->
         </v-container>
     </form>
 </template>
@@ -111,6 +158,8 @@
         mdiInformation
     },
     data: () => ({
+        alertFirst: true,
+        alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -120,27 +169,16 @@
         form: useForm({
             filiere: null,
             niveau: null,
-            ues: [],
+            matieres: [],
             etablissement_section_id: null
         }),
     }),
     methods: {
-        verifySomme(ue,i){
-            const somme = ue.matieres.reduce((accumulator, currentItem) => {
-                return accumulator + parseFloat(currentItem.volume_horaire);
-            }, 0);
-            if(somme > ue.volume_horaire){
-                this.removeRow(ue,ue.matieres[i])
-                this.$swal("La somme des volumes horaires ne doivent pas dépasser "+ue.volume_horaire+"!")
-            }      // this.somme =  this.somme + parseFloat(nbre || 0);
-            console.log('somme',somme,'ue',ue.volume_horaire)
-        },
-        onSelectChange(itemToRemove){
-            const indexToRemove = this.uetabs.indexOf(itemToRemove);
-            if (indexToRemove !== -1) {
-                // Si l'élément existe dans le tableau, supprimez-le
-                this.uetabs.splice(indexToRemove, 1);
-            }
+        onclickAlertButton(type) {
+        if (type == "second") {
+            this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
         },
         formatNiveauLabel(item) {
             if(item){
@@ -210,28 +248,15 @@
         goBack() {
             router.get(route('etablissements.index'))
         },
-        addRowUe() {
-            this.form.ues.push({
-                ue_id: null,
-                credit: 0,
-                volume_horaire: 0,
-                matieres: [],
-                before: null,
-                after: null
-            });
-            let ue = this.form.ues[this.form.ues.length - 1]
-            this.addRow(ue)
-        },
-        addRow(ue) {
-            ue.matieres.push({
-                matiere_id: null,
+        addRow() {
+            this.form.matieres.push({
                 coefficient: 0,
                 volume_horaire: 0,
                 after: null
             })
         },
-        removeRowUe(id) {
-            this.form.ues = this.form.ues.filter((el) => el !== id)
+        removeRow(matiere) {
+            this.form.matieres = this.form.matieres.filter((el) => el !== matiere)
         },
         removeRow(ue,matiere) {
             ue.matieres = ue.matieres.filter((el) => el !== matiere)
@@ -246,9 +271,9 @@
         },
         async verify(ue,index,matiere) {
             // console.log('ue',ue,'index',index,'matiere',matiere)
-            const array = ue.matieres.filter(el => el.matiere !== null && el.matiere == matiere)
+            const array = this.form.matieres.filter(el => el.matiere !== null && el.matiere == matiere.matiere)
             if (array.length > 1) {
-                this.removeRow(ue,ue.matieres[index])
+                this.removeRow(matiere)
                 this.$swal("L'élément existe déjà !")
                 // this.$alert.error("L'élément existe déjà !");
             }
@@ -273,6 +298,7 @@
         this.uetabs = this.ues
         this.addRowUe()
         // this.addRowInit()
+        this.addRow()
         this.section = this.getSection(this.type)
     },
   }

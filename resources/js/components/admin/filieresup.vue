@@ -1,14 +1,43 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
         <v-container fluid>
-        <v-card-text>
-            <v-row>
-                <v-alert type="info">
+            <v-card variant="outlined" style="border: 2px solid #7d002c">
+            <v-card-title style="color: white; background-color: #7d002c"
+            >FILIERES</v-card-title
+            >
+            <v-divider></v-divider>
+            <br />
+            <div style="margin: 10px">
+                <v-alert
+                    v-model="alertFirst"
+                    border="start"
+                    variant="tonal"
+                    closable
+                    close-label="Close Alert"
+                    color="primary"
+                    type="info"
+                    title="Note"
+                >
                     <li>Cette section vous permet de configurer les filières de cet établissement</li>
                     <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
                 </v-alert>
-            </v-row>
-            <br><br>
+
+                <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+                    <Button
+                    style="height: 30px"
+                    title="Plier la note"
+                    @click="onclickAlertButton('first')"
+                    variant="outlined"
+                    color="primary"
+                    nameButton="Relire la note"
+                    >
+                    </Button>
+                </div>
+            </div>
+
+
+            <v-divider></v-divider>
+
             <v-card>
                 <v-card-text>
 
@@ -29,52 +58,80 @@
                         <v-col></v-col>
                     </v-row>
                 </v-card-text>
-            </v-card>
-            <v-divider></v-divider>
-            <v-card v-if="!importation">
-                <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
-
-                <v-card-text>
+                 <v-card-text v-if="!importation" >
 
                     <v-row disabled :key="filiere.id" v-for="(filiere, i) in form.filieres">
-                        <v-col md="5">
+                        <v-col md="4">
 
-                            <TextField label="Code filiere" placeholder="Code filiere" :isRequired="true" @change="verify(filiere)" v-model="filiere.code">
+                            <TextField label="Code filiere" placeholder="Code filiere" class="mt-2" :isRequired="true" @change="verify(filiere)" v-model="filiere.code">
                             </TextField>
                         </v-col>
-                        <v-col md="6">
+                        <v-col md="4">
 
-                            <TextField label="Nom de la filiere" :isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle">
+                            <TextField label="Nom de la filiere" class="mt-2" :isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle">
                             </TextField>
                         </v-col>
-
-                        <v-col md="1">
-                            <v-btn variant="outlined" :disabled="!(form.filieres.length > 1)" icon @click="removeRow(filiere)" fab small color="error">
+                        <v-col md="2" >
+                            <br>
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                :disabled="!(form.filieres.length > 1)"
+                                icon
+                                @click="removeRow(filiere)"
+                                size="large"
+                                small
+                                color="error"
+                            >
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                            </v-btn>
+                            </Button>
+                            <!-- <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
+                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                            </v-btn> -->
                         </v-col>
+
+
                     </v-row>
                     <v-row>
-
-                        <v-col offset-md="11" md="1">
+                        <v-col offset-md="11" cols="4">
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                @click="addRow"
+                                icon
+                                size="large"
+                                color="primary"
+                            >
+                                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                            </Button>
+                            </v-col>
+                        <!-- <v-col offset-md="11" md="1">
                             <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
                                 <v-icon :icon="icons.mdiPlusCircle"></v-icon>
                             </v-btn>
-                        </v-col>
+                        </v-col> -->
                     </v-row>
                 </v-card-text>
             </v-card>
-        </v-card-text>
+            <br>
+            <v-row class="text-center ml-3 mb-3"
+            ><v-col cols="auto">
+                <Button
+                type="submit"
+                title="Enregistrer cette étape"
+                nameButton="Enregistrer"
+                variant="flat"
+                @click="submitForm"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button> </v-col
+            ></v-row>
+        </v-card>
     </v-container>
-        <v-row>
-            <v-col md="5"></v-col>
-            <v-col md="4">
-                <v-btn type="submit" title="enregistrer" color="info">
-                    Enregistrer
-                </v-btn>
-            </v-col>
-        </v-row>
-        <br>
     </form>
 </template>
 <script>
@@ -88,6 +145,8 @@
         mdiInformation
     },
     data: () => ({
+        alertFirst: true,
+        alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -98,6 +157,12 @@
     }),
 
     methods: {
+        onclickAlertButton(type) {
+            if (type == "second") {
+                this.alertSecond = true;
+            }
+            if (type == "first") this.alertFirst = true;
+            },
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;

@@ -2,13 +2,41 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
         <v-container fluid>
-            <v-row>
-                <v-alert type="info">
+            <v-card variant="outlined" style="border: 2px solid #7d002c">
+            <v-card-title style="color: white; background-color: #7d002c"
+            >FILIERES</v-card-title
+            >
+            <v-divider></v-divider>
+            <br />
+            <div style="margin: 10px">
+                <v-alert
+                    v-model="alertFirst"
+                    border="start"
+                    variant="tonal"
+                    closable
+                    close-label="Close Alert"
+                    color="primary"
+                    type="info"
+                    title="Note"
+                >
                     <li>Cette section vous permet de configurer les filieres enseignées dans cet établissement</li>
                     <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
                 </v-alert>
-            </v-row>
-            <br>
+
+                <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+                    <Button
+                    style="height: 30px"
+                    title="Plier la note"
+                    @click="onclickAlertButton('first')"
+                    variant="outlined"
+                    color="primary"
+                    nameButton="Relire la note"
+                    >
+                    </Button>
+                </div>
+            </div>
+            <v-divider></v-divider>
+
             <v-card >
                 <v-card-text>
 
@@ -29,84 +57,146 @@
                         <v-col></v-col>
                     </v-row>
                 </v-card-text>
-            </v-card>
-            <v-divider></v-divider>
-            <v-card v-if="!importation">
-                <v-card-text >
+                <v-card-text v-if="!importation" >
                     <v-row>
-                        <v-col offset-md="3" md="4">
+                        <v-col offset-md="3" md="6">
 
-                            <v-autocomplete label="Faculté" item-title="libelle" item-value="id" :items="facultes" v-model="form.faculte" chips></v-autocomplete>
+                            <Autocomplete
+                            label="Faculté"
+                            class="mt-2"
+                            :items="facultes"
+                            v-model="form.faculte"
+                            chips
+                            closable-chips
+                            >
+                        </Autocomplete>
                         </v-col>
 
                     </v-row>
 
 
                     <!-- <v-divider></v-divider> -->
-
+                    <v-card class="mx-auto" >
+                        <v-card-title flat style="color:#7d002c; background-color: white">Les départements</v-card-title>
+                        <v-divider></v-divider>
+                        <br />
                         <v-card-text disabled :key=" departement.id" v-for="( departement, i) in form. departements">
-                            <v-card class="mx-auto" max-width="1000">
-                            <v-row>
-                                <v-col offset-md="3" md="4">
 
-                                    <TextField  label="Departement"  :isRequired="true" placeholder="Departement" v-model=" departement.departement"></TextField>
+                            <v-row>
+                                <v-col offset-md="3" md="6">
+
+                                    <TextField  label="Departement" class="mt-2"  :isRequired="true" placeholder="Departement" v-model=" departement.departement" required></TextField>
                                 </v-col>
 
-                                <v-col offset-md="4" md="1">
+                                <v-col  md="1">
                                     <br>
-                                    <v-btn variant="outlined" :disabled="!(form. departements.length > 1)" icon @click="removeRowUe( departement)" fab small color="error">
+                                    <Button
+                                        type="button"
+                                        variant="outlined"
+                                        :disabled="!(form.departements.length  > 1)"
+                                        icon
+                                        @click="removeRowUe( departement)"
+                                        size="large"
+                                        small
+                                        color="error"
+                                    >
                                         <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                                    </v-btn>
+                                    </Button>
                                 </v-col>
                             </v-row>
                             <!-- <v-divider></v-divider> -->
+
                                 <v-card-text>
+                                    <v-card class="mx-auto" max-width="800">
+                                        <v-card-title flat style="color:#7d002c; background-color: white">Les filières</v-card-title>
+                                        <v-divider></v-divider>
+                                        <br />
                                     <v-row disabled :key="filiere.id" v-for="(filiere, i) in  departement.filieres">
-                                        <v-col md="3"></v-col>
-                                        <v-col md="2">
-                                            <TextField label="Code filiere"  :isRequired="true" placeholder="Code filiere" v-model="filiere.code" ></TextField>
+                                        <v-col offset-md="1" md="4">
+
+                                            <TextField label="Code filiere" class="mt-2" :isRequired="true" placeholder="Code filiere"   v-model="filiere.code"></TextField>
                                         </v-col>
                                         <v-col md="4">
-                                            <TextField label="Nom de la filiere"  :isRequired="true" placeholder="Nom de la filiere" v-model="filiere.libelle"></TextField>
+
+                                            <TextField label="Nom de la filiere" class="mt-2" :isRequired="true" placeholder="Nom de la filiere"   v-model="filiere.libelle"></TextField>
                                         </v-col>
                                         <v-col md="1">
                                             <br>
-                                            <v-btn variant="outlined" :disabled="!( departement.filieres.length > 1)" icon @click="removeRow( departement,filiere)" fab small color="error">
+                                            <Button
+                                                type="button"
+                                                variant="outlined"
+                                                :disabled="!(departement.filieres.length > 1)"
+                                                icon
+                                                @click="removeRow(departement,filiere)"
+                                                size="large"
+                                                small
+                                                color="error"
+                                            >
                                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                                            </v-btn>
+                                            </Button>
+
                                         </v-col>
                                     </v-row>
                                     <v-row>
-                                        <v-col offset-md="10" md="1">
-                                            <v-btn variant="outlined" icon @click="addRow( departement)" fab small color="info">
-                                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                                            </v-btn>
+                                        <v-col offset-md="10" cols="4">
+                                        <Button
+                                            type="button"
+                                            variant="outlined"
+                                            @click="addRow"
+                                            icon
+                                            size="large"
+                                            color="primary"
+                                        >
+                                            <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                                        </Button>
                                         </v-col>
                                     </v-row>
+                                    <br>
+                                </v-card>
                                 </v-card-text>
-                            </v-card>
-                            <br>
+
                         </v-card-text>
                         <v-row>
-
-                            <v-col offset-md="11" md="1">
-                                <v-btn variant="outlined" icon @click="addRowUe" fab small color="info">
-                                    <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                                </v-btn>
+                            <v-col offset-md="11" cols="4">
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                @click="addRowUe"
+                                icon
+                                size="large"
+                                color="primary"
+                            >
+                                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                            </Button>
                             </v-col>
                         </v-row>
+                        <br>
+                    </v-card>
+
+                    <br>
 
                 </v-card-text>
             </v-card>
             <br>
-            <v-row>
-                <v-col md="5"></v-col>
-                <v-col md="4">
-                    <v-btn type="submit" title="enregistrer" color="info">
-                        Enregistrer
-                    </v-btn>
-                </v-col>
-            </v-row>
+            <v-row class="text-center ml-3 mb-3"
+          ><v-col cols="auto">
+            <Button
+              type="submit"
+              title="Enregistrer cette étape"
+              nameButton="Enregistrer"
+              variant="flat"
+              @click="submitForm"
+              density="comfortable"
+              class="text-center"
+              :isBlock="true"
+              size="large"
+              style="text-transform: none"
+            >
+            </Button> </v-col
+        ></v-row>
+        </v-card>
+            <br>
+
         </v-container>
     </form>
 </template>
@@ -121,6 +211,8 @@
         mdiInformation
     },
     data: () => ({
+        alertFirst: true,
+        alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -134,6 +226,12 @@
     }),
 
     methods: {
+        onclickAlertButton(type) {
+        if (type == "second") {
+            this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
+        },
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;
@@ -153,10 +251,10 @@
         },
         resetForm(check){
             if(check){
-                this.form = []
-                if (this.importation==false){
-                    this.addRow()
-                }
+                this.form.departements = []
+                this.addRowUe()
+                // this.addRow()
+
 
             }
         },
@@ -211,18 +309,18 @@
             console.log()
         },
         addRowUe() {
-            this.form. departements.push({
+            this.form.departements.push({
                 etablissement: this.$page.props.admin_etablissement.etablissement_id,
                 departement: null,
                 filieres: [],
                 before: null,
                 after: null
             });
-            let  departement = this.form. departements[this.form. departements.length - 1]
-            this.addRow( departement)
+            let  departements = this.form. departements[this.form. departements.length - 1]
+            this.addRow(departements)
         },
-        addRow( departement) {
-             departement.filieres.push({
+        addRow(depart) {
+             depart.filieres.push({
                 code: null,
                 libelle: null,
                 before: null,
