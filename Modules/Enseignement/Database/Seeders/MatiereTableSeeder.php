@@ -18,16 +18,16 @@ class MatiereTableSeeder extends Seeder
         Model::unguard();
 
         Matiere::create([
-            'libelle' => 'SVT'
+            'nom' => 'SVT'
         ]);
         Matiere::create([
-            'libelle' => 'HG'
+            'nom' => 'HG'
         ]);
         Matiere::create([
-            'libelle' => 'Mathematique'
+            'nom' => 'Mathematique'
         ]);
         Matiere::create([
-            'libelle' => 'Histoire'
+            'nom' => 'Histoire'
         ]);
 
         // $this->call("OthersTableSeeder");

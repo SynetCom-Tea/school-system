@@ -6,6 +6,9 @@ use Illuminate\Http\Request;
 use Inertia\Middleware;
 use Tightenco\Ziggy\Ziggy;
 
+use App\Models\User;
+use App\Models\Etablissement;
+
 class HandleInertiaRequests extends Middleware
 {
     /**
@@ -34,6 +37,19 @@ class HandleInertiaRequests extends Middleware
             'auth' => [
                 'user' => $request->user(),
             ],
+            'roles' => fn () => auth()->user()
+                ? auth()->user()->getRoleNames()
+                : null,
+            'permissions' => fn () => auth()->user()
+                ? auth()->user()->getAllPermissions()->pluck('name')
+                : null,
+                auth()->user() ? $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
+
+            'sections' => fn () => isset(auth()->user()->etablissement_id)
+            ? Etablissement::where('id', $etablissement->etablissement->id)->with('sections')->get()
+            : null,
+
+            'admin_etablissement' => fn () => isset(auth()->user()->etablissement_id) ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [
                     'location' => $request->url(),

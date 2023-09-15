@@ -17,25 +17,43 @@
                   :errorMessageValue="form.errors.email"
                   hint="Respecter le format email"
                 />
-                <TextField
+                <!-- <TextField
                   label="Mot de passe"
                   v-model="form.password"
                   outlined
                   dense
                   :isRequired="true"
                   autocomplete="false"
-                  type="password"
                   hint="Un mot de passe composé de 8 caractères au min dont une lettre majuscule, caractères spéciaux,un chiffre et minuscules"
-                />
+                  :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
+                  :type="showPassword ? 'text' : 'password'"
+                  :error-messages="form.errors.password && ' Mot de passe incorrect!'"
+                  @click:append="showPassword = !showPassword"
+                /> -->
+
+                <TextField
+                  v-model="form.password"
+                  :type="showPassword ? 'text' : 'password'"
+                  :isRequired="true"
+                  outlined
+                  dense
+                  label="Message"
+                  type="text"
+                  @click:append="togglePassword()"
+                >
+                  <template v-slot:append>
+                    <v-icon :icon="showPassword ? icons.mdiEye : icons.mdiEyeOff" />
+                  </template>
+                </TextField>
               </v-form>
               <Button
                 title="Valider"
                 variant="flat"
                 nameButton="Connexion"
-                :onClickButton="goToLogin"
+                @click="goToLogin"
                 density="comfortable"
                 class="text-center"
-                :isBlock="true"
+                block
                 size="large"
                 style="text-transform: none"
               >
@@ -99,7 +117,7 @@
               color="secondary"
               size="large"
               variant="flat"
-              :onClickButton="goToNextWindow"
+              @click="goToNextWindow"
             >
             </Button>
           </div>
@@ -111,10 +129,17 @@
 
 <script>
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram } from "@mdi/js";
+import {
+  mdiGoogle,
+  mdiFacebook,
+  mdiTwitter,
+  mdiInstagram,
+  mdiEye,
+  mdiEyeOff,
+} from "@mdi/js";
 
 export default {
-  components: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+  components: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram, mdiEye, mdiEyeOff },
   props: {
     goToNextWindow: { type: Function },
     listSocialNetworks: { type: Array },
@@ -122,7 +147,8 @@ export default {
   },
   data: () => ({
     getErrors: "",
-    icons: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram },
+    showPassword: false,
+    icons: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram, mdiEye, mdiEyeOff },
     errors: {},
     form: useForm({
       email: "",
@@ -132,21 +158,25 @@ export default {
 
   computed: {},
   created() {
-      console.log(this.$page.props.flash?.message?.text)
-      if (this.$page.props.flash?.message?.type == 'error') {
-            this.$swal({
-                icon: 'error',
-                title: 'Authentification',
-                text: this.$page.props.flash?.message?.text,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 5000,
-                timerProgressBar: true,
-            });
-        } 
-    },
+    console.log(this.$page.props.flash?.message?.text);
+    if (this.$page.props.flash?.message?.type == "error") {
+      this.$swal({
+        icon: "error",
+        title: "Authentification",
+        text: this.$page.props.flash?.message?.text,
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+      });
+    }
+  },
   methods: {
+    togglePassword() {
+      console.log("show:", this.showPassword);
+      this.showPassword = !this.showPassword;
+    },
     goToSocialNetworksUrl(link) {
       if (link) return window.open(link);
     },

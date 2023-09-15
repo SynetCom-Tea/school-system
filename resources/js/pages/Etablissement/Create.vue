@@ -38,7 +38,11 @@ export default {
             }),
         }
     },
+    created(){
+            console.log('typessssss')
+        },
     methods: {
+        
         goBack() {
             router.get(route('etablissements.index'))
         },

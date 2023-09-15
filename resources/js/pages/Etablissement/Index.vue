@@ -4,39 +4,43 @@ import {
     router,
     useForm
 } from "@inertiajs/vue3";
+
 import {
     mdiPlus,
     mdiSchool,
     mdiPencil,
     mdiEye,
     mdiChevronDown,
-} from '@mdi/js'
+    mdiContentSaveEditOutline,
+    mdiCancel,
+} from '@mdi/js';
 export default {
     layout: AuthenticatedLayout,
-    props: ["ecoles", "instituts", "universités", "types", "sections"],
+    props: ["ecoles", "instituts", "universites", "types", "sections"],
 
     data() {
         return {
-            icon: {
+            icons: {
+                mdiCancel,
                 mdiPlus,
                 mdiSchool,
                 mdiPencil,
                 mdiEye,
-                mdiChevronDown,
+                mdiContentSaveEditOutline,
             },
             tab: null,
-            model: 'Activer',
+            model: "Activer",
             page: 1,
             itemsPerPageArray: [3, 6, 9],
             itemsPerPage: 3,
             form: useForm({
-                type_etablissement_id: '',
+                type_etablissement_id: "",
                 section: [],
             }),
             dialog: false,
             target: {},
             show: false,
-        }
+        };
     },
     methods: {
         goTo() {
@@ -166,36 +170,75 @@ export default {
             this.dialog = false
         },
     },
-    computed: {
-        pageCount() {
-            return Math.ceil(this.instituts.length / this.itemsPerPage)
-        },
-        ecolelenghtCount() {
-            return Math.ceil(this.ecoles.length / this.itemsPerPage)
-        },
-        univlenghtCount() {
-            return Math.ceil(this.universités.length / this.itemsPerPage)
-        },
-        ecoles() {
-            return this.ecoles.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
-        },
-        instituts() {
-            return this.instituts.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
-        },
-        universités() {
-            return this.universités.slice((this.page - 1) * this.itemsPerPage, this.page * this.itemsPerPage)
-        },
+    async submit() {
+        console.log("submit", this.form);
+        const {
+            valid
+        } = await this.$refs.form.validate();
+        if (valid) {
+            this.form.put(route("etablissements.update", this.form.id), {
+                onFinish: () => {
+                    this.close();
+                    this.$swal({
+                        icon: "success",
+                        title: "Modification",
+                        text: "Sections modifiées avec succès!",
+                        toast: true,
+                        position: "top-end",
+                        showConfirmButton: false,
+                        timer: 5000,
+                        timerProgressBar: true,
+                    });
+                },
+            });
+        }
     },
-}
+    close() {
+        this.form.id = "";
+        this.form.type_etablissement_id = "";
+        this.form.section = [];
+        this.dialog = false;
+    },
+},
+computed: {
+    pageCount() {
+        return Math.ceil(this.instituts.length / this.itemsPerPage);
+    },
+    ecolelenghtCount() {
+        return Math.ceil(this.ecoles.length / this.itemsPerPage);
+    },
+    univlenghtCount() {
+        return Math.ceil(this.universites.length / this.itemsPerPage);
+    },
+    getSchools() {
+        return this.ecoles.slice(
+            (this.page - 1) * this.itemsPerPage,
+            this.page * this.itemsPerPage
+        );
+    },
+    getInstituts() {
+        return this.instituts.slice(
+            (this.page - 1) * this.itemsPerPage,
+            this.page * this.itemsPerPage
+        );
+    },
+    getUniversities() {
+        return this.universites.slice(
+            (this.page - 1) * this.itemsPerPage,
+            this.page * this.itemsPerPage
+        );
+    },
+},
+};
 </script>
 <template>
 <v-card>
-    <page-toolbar :icon="icon.mdiSchool">Gestion des Etablissements</page-toolbar>
+    <page-toolbar :icon="icons.mdiSchool">Gestion des Etablissements</page-toolbar>
     <v-dialog v-model="show" max-width="700" v-if="target">
         <v-card>
             <v-toolbar dark color="primary">
-                <v-toolbar-title> Détails de l'établissement <v-icon size="large">
-                    </v-icon>
+                <v-toolbar-title>
+                    Détail de l'établissement <v-icon size="large"> </v-icon>
                 </v-toolbar-title>
             </v-toolbar>
             <v-card-text>
@@ -212,7 +255,7 @@ export default {
                                     <td>{{ target.name }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="font-weight-black">Ville </td>
+                                    <td class="font-weight-black">Ville</td>
                                     <td>{{ target.ville }}</td>
                                 </tr>
                                 <tr>
@@ -233,7 +276,9 @@ export default {
                                 </tr>
                                 <tr>
                                     <td class="font-weight-black">Administrateur:</td>
-                                    <td :key="i" v-for="(t, i) in target.users">{{ t.nom }} {{ t.prenom }}</td>
+                                    <td :key="i" v-for="(t, i) in target.users">
+                                        {{ t.nom }} {{ t.prenom }}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-black">Email Admin:</td>
@@ -250,22 +295,28 @@ export default {
                 </v-card>
             </v-card-text>
             <v-card-actions class="justify-end" id="actions">
-                <v-btn color="danger" variant="text" @click="show = false">
-                    Fermer
-                </v-btn>
+                <v-btn color="danger" variant="text" @click="show = false"> Fermer </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
+    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent max-width="500px">
         <template v-slot:default="{ isActive }">
             <v-card>
-                <v-toolbar dense color="primary" dark width="500px">
-                    <v-toolbar-title width="500px">
-                        <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
-
+                <v-toolbar dense color="primary" dark>
+                    <v-toolbar-title style="
+                font-size: 0.9em;
+                width: auto;
+                word-wrap: break-word;
+                white-space: pre-wrap;
+                word-break: break-word;
+              ">
+                        <p style="width: auto" class="text-wrap">
+                            <v-icon left>{{
+                  form.id ? icons.mdiPencil : icons.mdiPlusCircle
+                }}</v-icon>
+                            {{ dialog_title }}
+                        </p>
                     </v-toolbar-title>
-                    <v-spacer></v-spacer>
-
                 </v-toolbar>
                 <v-card-text>
                     <v-form ref="form">
@@ -279,23 +330,22 @@ export default {
                                 <Select label="Section" :items="sections" variant="outlined" item-value="id" item-title="libelle" v-model="form.section" isMultiple chips v-if="form.type_etablissement_id == 2"></Select>
                             </v-col>
                         </v-row>
-
                     </v-form>
                 </v-card-text>
                 <v-card-actions class="justify-end">
                     <v-spacer></v-spacer>
-                    <v-btn dark small type="button" color="red" @click="close">
-                        <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-                    </v-btn>
-                    <v-btn type="submit" small color="success" @click="submit">
-                        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-                    </v-btn>
+                    <Button dark variant="outlined" small type="button" title="Fermer et quitter" color="red" @click="close" nameButton="Annuler">
+                        <v-icon :icon="icons.mdiCancel" left></v-icon>
+                    </Button>
+                    <Button type="submit" small color="primary" @click="submit" title="Valider la modification" nameButton="Modifier">
+                        <v-icon :icon="icons.mdiContentSaveEditOutline" left></v-icon>
+                    </Button>
                 </v-card-actions>
             </v-card>
         </template>
     </v-dialog>
     <v-card-text>
-        <v-btn variant="outlined" color="primary" :prepend-icon="icon.mdiPlus" @click="goTo()" elevation="4" rounded="lg">
+        <v-btn variant="outlined" color="primary" :prepend-icon="icons.mdiPlus" @click="goTo()" elevation="4" rounded="lg">
             Ajouter
         </v-btn>
     </v-card-text>
@@ -309,142 +359,160 @@ export default {
             <v-window-item value="1">
                 <v-container>
                     <v-row>
-                        <v-col :key="i" v-for="(t, i) in ecoles">
-                            <v-card elevation="6" width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
+                        <v-col :key="i" v-for="(t, i) in getSchools">
+                            <v-card elevation="6" width="300" style="border-color: #004980" variant="outlined" rounded="shaped">
+                                <v-img style="object-fit: fill; width: 300px; height: 200px" :src="'../logos/' + t.logo" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
-                                            <v-btn :icon="icon.mdiEye" @click="showItem(t)"></v-btn>
+                                            <v-icon color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
                                         </template>
 
-                                        <template v-slot:append>
-                                            <v-btn :icon="icon.mdiPencil" @click="editItem(t)"></v-btn>
-                                        </template>
-                                    </v-toolbar>
-                                </v-img>
+                                        </v-container> <div class="d-flex align-center justify-space-around pa-4">
 
-                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
+                                            <span class="grey--text">Items per page</span>
+                                            <v-menu>
+                                                <template v-slot:activator="{ props }">
+                                                    <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
+                                                        {{ itemsPerPage }}
+                                                    </v-btn>
+                                                </template>
+                                                <v-list>
+                                                    <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                                                </v-list>
+                                            </v-menu>
+                                            <v-spacer></v-spacer>
+                                            <span class="mr-4
+          grey--text">
+                                                <v-pagination v-model="page" :length="ecolelenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                                            </span>
+                                            </div>
+            </v-window-item>
+            =======
+            <template v-slot:append>
+                <v-icon color="primary" :icon="icons.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+            </template>
+            </v-toolbar>
+            </v-img>
+
+            <p class="text-h6" style="text-align: center">{{ t.name }}</p>
+            <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
+            <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
+</v-card>
+</v-col>
+</v-row>
+</v-container>
+<div style="align: center">
+    <v-pagination v-model="page" :length="ecolelenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+</div>
+</v-window-item>
+
+<v-window-item value="2">
+    <v-container>
+        <v-row>
+            <v-col :key="i" v-for="(t, i) in getInstituts">
+                <v-card elevation="6" width="300" style="border-color: #004980" variant="outlined" rounded="shaped">
+                    <v-img style="object-fit: fill; width: 300px; height: 200px" :src="'../logos/' + t.logo" class="text-white">
+                        <v-toolbar color="rgba(0, 0, 0, 0)">
+                            <template v-slot:prepend>
+                                <v-icon color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
+                            </template>
+
+                             <P class="text-h6" style="text-align: center;">{{t.name}} </P>
                                 <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
                                 <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-                            </v-card>
-                        </v-col>
-                    </v-row>
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
+    <div class="d-flex align-center justify-space-around pa-4">
 
-                </v-container>
-                <div class="d-flex align-center justify-space-around pa-4">
-
-                    <span class="grey--text">Items per page</span>
-                    <v-menu>
-                        <template v-slot:activator="{ props }">
-                            <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
-                                {{ itemsPerPage }}
-                            </v-btn>
-                        </template>
-                        <v-list>
-                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
-                        </v-list>
-                    </v-menu>
-                    <v-spacer></v-spacer>
-                    <span class="mr-4
+        <span class="grey--text">Items per page</span>
+        <v-menu>
+            <template v-slot:activator="{ props }">
+                <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
+                    {{ itemsPerPage }}
+                </v-btn>
+            </template>
+            <v-list>
+                <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+            </v-list>
+        </v-menu>
+        <v-spacer></v-spacer>
+        <span class="mr-4
           grey--text">
-                        <v-pagination v-model="page" :length="ecolelenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
-                    </span>
-                </div>
-            </v-window-item>
+            <v-pagination v-model="page" :length="pageCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+        </span>
+    </div>
+</v-window-item>
+<template v-slot:append>
+    <v-icon color="primary" :icon="icons.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+</template>
+</v-toolbar>
+</v-img>
+<p class="text-h6" style="text-align: center">{{ t.name }}</p>
+<v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
+<v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
+</v-card>
+</v-col>
+</v-row>
+</v-container>
+<div class="text-center pt-2">
+    <v-pagination v-model="page" :length="pageCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+</div>
+</v-window-item>
 
-            <v-window-item value="2">
-                <v-container>
-                    <v-row>
-                        <v-col :key="i" v-for="(t, i) in instituts">
-                            <v-card elevation="6" width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
-                                    <v-toolbar color="rgba(0, 0, 0, 0)">
-                                        <template v-slot:prepend>
-                                            <v-btn :icon="icon.mdiEye" @click="showItem(t)"></v-btn>
-                                        </template>
+<v-window-item value="3">
+    <v-container>
+        <v-row>
+            <v-col :key="i" v-for="(t, i) in getUniversities">
+                <v-card elevation="6" max-width="300" style="border-color: #004980" variant="outlined" rounded="shaped">
+                    <v-img style="object-fit: fill; width: 300px; height: 200px" :src="'../logos/' + t.logo" class="text-white">
+                        <v-toolbar color="rgba(0, 0, 0, 0)">
+                            <template v-slot:prepend>
+                                <v-icon color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
+                            </template>
 
-                                        <template v-slot:append>
-                                            <v-btn :icon="icon.mdiPencil" @click="editItem(t)"></v-btn>
-                                        </template>
-                                    </v-toolbar>
-                                </v-img>
+                            <template v-slot:append>
+                                <v-icon color="primary" :icon="icons.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+                            </template>
+                        </v-toolbar>
+                    </v-img>
 
-                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
-                                <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
-                                <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                </v-container>
-                <div class="d-flex align-center justify-space-around pa-4">
+                     </v-container> <div class="d-flex align-center justify-space-around pa-4">
 
-                    <span class="grey--text">Items per page</span>
-                    <v-menu>
-                        <template v-slot:activator="{ props }">
-                            <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
-                                {{ itemsPerPage }}
-                            </v-btn>
-                        </template>
-                        <v-list>
-                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
-                        </v-list>
-                    </v-menu>
-                    <v-spacer></v-spacer>
-                    <span class="mr-4
+                        <span class="grey--text">Items per page</span>
+                        <v-menu>
+                            <template v-slot:activator="{ props }">
+                                <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
+                                    {{ itemsPerPage }}
+                                </v-btn>
+                            </template>
+                            <v-list>
+                                <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                            </v-list>
+                        </v-menu>
+                        <v-spacer></v-spacer>
+                        <span class="mr-4
           grey--text">
-                        <v-pagination v-model="page" :length="pageCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
-                    </span>
-                </div>
-            </v-window-item>
+                            <v-pagination v-model="page" :length="univlenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                        </span>
+                        </div>
 
-            <v-window-item value="3">
-                <v-container>
-                    <v-row>
-                        <v-col :key="i" v-for="(t, i) in universités">
-                            <v-card elevation="6" max-width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
-                                    <v-toolbar color="rgba(0, 0, 0, 0)">
-                                        <template v-slot:prepend>
-                                            <v-btn :icon="icon.mdiEye" @click="showItem(t)"></v-btn>
-                                        </template>
-
-                                        <template v-slot:append>
-                                            <v-btn :icon="icon.mdiPencil" @click="editItem(t)"></v-btn>
-                                        </template>
-                                    </v-toolbar>
-                                </v-img>
-
-                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
-                                <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
-                                <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-
-                </v-container>
-                <div class="d-flex align-center justify-space-around pa-4">
-
-                    <span class="grey--text">Items per page</span>
-                    <v-menu>
-                        <template v-slot:activator="{ props }">
-                            <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
-                                {{ itemsPerPage }}
-                            </v-btn>
-                        </template>
-                        <v-list>
-                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
-                        </v-list>
-                    </v-menu>
-                    <v-spacer></v-spacer>
-                    <span class="mr-4
-          grey--text">
-                        <v-pagination v-model="page" :length="univlenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
-                    </span>
-                </div>
-
-            </v-window-item>
-        </v-window>
-    </v-card-text>
+</v-window-item>
+</v-window>
+<p class="text-h6" style="text-align: center">{{ t.name }}</p>
+<v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
+<v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
+</v-card>
+</v-col>
+</v-row>
+</v-container>
+<div style="align: center">
+    <v-pagination v-model="page" :items-per-page="itemsPerPage" :length="univlenghtCount" :total-visible="6"></v-pagination>
+</div>
+</v-window-item>
+</v-window>
+</v-card-text>
 </v-card>
 </template>
 

@@ -13,13 +13,10 @@ return new class extends Migration
     {
         Schema::create('ues', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)->nullable()
-                ->index()
-                ->references('id')->on('cycle_filieres');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
-                ->index()
-                ->references('id')->on('niveaux');
+            $table->string('code')->nullable();
+            $table->string('libelle')->nullable();
+            $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
+                ->index()->references('id')->on('etablissements');
             $table->timestamps();
         });
     }
