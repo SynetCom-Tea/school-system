@@ -12,7 +12,8 @@ import {
     mdiCheckCircle,
     mdiCloseCircle,
     mdiPencil,
-    mdiDelete
+    mdiDelete,
+    mdiContentSaveEditOutline
 } from '@mdi/js'
 
 export default {
@@ -24,7 +25,8 @@ export default {
         mdiPlus,
         mdiCancel,
         mdiCheckCircle,
-        mdiCloseCircle
+        mdiCloseCircle,
+        mdiContentSaveEditOutline
     },
     layout: AuthenticatedLayout,
     props: ["permission_role_users", "roles", "permissions", "permission"],
@@ -45,7 +47,8 @@ export default {
                 mdiClose,
                 mdiPlus,
                 mdiCancel,
-                mdiCheckCircle
+                mdiCheckCircle,
+                mdiContentSaveEditOutline
             },
             headers: [{
                     title: 'Libellé',
@@ -206,18 +209,46 @@ export default {
     <v-card-text>
 
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
-            <template v-slot:activator="{ props }">
-                <div class="custom-add-button">
-                    <v-btn @click="create" x-small variant="outlined" color="green" v-bind="props"> Ajouter
-                    </v-btn>
-                </div>
-            </template>
-            
+            <v-card>
+                <v-toolbar dense style="background-color: #7d002c">
+                    <v-toolbar-title style="color:white">
+                        <v-icon left :icon="icon.mdiPlus"></v-icon> Nouveau Rôle
+                    </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close()"></v-icon>
+                </v-toolbar>
+                <v-card-text>
+                    <v-form>
+                        <v-row v-if="$page.props.auth.user.id == 1">
+                            <Autocomplete label="Role" v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
+                            </Autocomplete>
+                        </v-row>
+                        <v-row v-if="$page.props.auth.user.id !=1">
+                            <Autocomplete label="Role" v-model="form.role_id" @update:modelValue="setPermission(form.role_id)" itemTitle="name" itemValue="id" :items="role_p_u" chips clearable>
+                            </Autocomplete>
+                        </v-row>
+                        <v-row v-if="$page.props.auth.user.id ==1">
+                            <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
+                            </Autocomplete>
+                        </v-row>
+                        <v-row v-if="$page.props.auth.user.id !== 1">
+                            <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permission" multiple chips clearable>
+                            </Autocomplete>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+
+                <v-card-actions class="justify-end">
+                    <v-spacer></v-spacer>
+                    <Button variant="outlined"  class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit"></Button>
+                </v-card-actions>
+            </v-card>
+
         </v-dialog>
         <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
             <template v-slot:default="{ isActive }">
                 <v-card>
-                    <v-toolbar dense style="background-color: #45007d">
+                    <v-toolbar dense style="background-color: #7d002c">
                         <v-toolbar-title>
                             <v-icon left :icon="icon.mdiPencil"></v-icon> Modification de Rôle
                         </v-toolbar-title>
@@ -250,32 +281,10 @@ export default {
                             <v-icon :icon="icon.mdiPencil" left></v-icon> Modifier
                         </v-btn>
                     </v-card-actions>
-                </v-card> 
+                </v-card>
             </template>
         </v-dialog>
-        <Datatable :headers="headers" :items="permission_role_users" :search="searchQuery">
-            <template v-slot:addDialogContent>
-                
-                        <v-form>
-                            <v-row v-if="$page.props.auth.user.id == 1">
-                                <Autocomplete label="Role" v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
-                                </Autocomplete>
-                            </v-row>
-                            <v-row v-if="$page.props.auth.user.id !=1">
-                                <Autocomplete label="Role" v-model="form.role_id" @update:modelValue="setPermission(form.role_id)" itemTitle="name" itemValue="id" :items="role_p_u" chips clearable>
-                                </Autocomplete>
-                            </v-row>
-                            <v-row v-if="$page.props.auth.user.id ==1">
-                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
-                                </Autocomplete>
-                            </v-row>
-                            <v-row v-if="$page.props.auth.user.id !== 1">
-                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permission" multiple chips clearable>
-                                </Autocomplete>
-                            </v-row>
-                        </v-form>
-        
-            </template>
+        <Datatable titleDatatable="Liste des roles" :functionEditItem="editItem" :headers="headers" :items="permission_role_users" :functionOnClickAddButton="create" :search="searchQuery">
             <template v-slot:item.permissions="{item}">
                 <v-chip-group column selected-class="text-purple">
                     <v-chip v-for="tag in item.columns.permissions" :key="tag">
@@ -283,24 +292,7 @@ export default {
                     </v-chip>
                 </v-chip-group>
             </template>
-            <template v-slot:item.actions="{item}">
-                <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
-                </v-icon>
-                <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
-                </v-icon>
-            </template>
         </Datatable>
     </v-card-text>
 </v-card>
 </template>
-
-<style scoped>
-.custom-add-button {
-    display: flex;
-    justify-content: flex-end;
-    margin-bottom: 16px;
-    font-size: 10px;
-    /* Personnalisez la taille de la police */
-    padding: 6px 12px;
-}
-</style>

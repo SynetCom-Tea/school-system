@@ -20,7 +20,7 @@
               class="text-center"
               variant="flat"
               size="large"
-              :onClickButton="goToPreviousWindow"
+              @click="goToPreviousWindow"
               style="text-transform: none"
             >
             </Button>
@@ -37,7 +37,7 @@
               color="secondary"
               size="large"
               :prependIcon="icons.mdiKeyboardBackspace"
-              :onClickButton="goToWelcome"
+              @click="goToWelcome"
               style="text-transform: none"
             >
             </Button>
@@ -91,7 +91,7 @@
                 type="submit"
                 density="comfortable"
                 class="text-center"
-                :isBlock="true"
+                block
                 size="large"
                 style="text-transform: none"
               >

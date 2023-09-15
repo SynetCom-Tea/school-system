@@ -27,7 +27,8 @@ import {
   mdiAccountCogOutline,
   mdiCog,
   mdiSchool,
-  mdiWalletMembership,
+    mdiWalletMembership,
+  mdiChevronLeft,
   mdiAccountSchool,
   mdiInformation,
   mdiCardAccountDetails,
@@ -41,8 +42,52 @@ import {
   mdiReceiptTextCheckOutline,
   mdiCalendar,
 } from "@mdi/js";
-export function listMenus() {
+export function listMenus(page) {
+    // console.log('this.$page.props.roles:', page)
+      let tabs = [];
+    let enfants = [];
+    let MenuAdmin;
+    const sections = [
+      { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
+      { title: "Secondaire", icon: mdiSchool, link: "/enseignement/configuration/2" },
+      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/lmd/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/lmd/4' },
+    ];
+
+    if (page?.roles == "Administrateur") {
+
+      if (page?.sections[0]?.sections) {
+        tabs = page?.sections[0].sections.map(function (el) {
+          return el.libelle;
+        });
+      }
+    }
+
+    if (tabs != []) {
+        sections.forEach((section) => {
+            //   console.log('ele:',section)
+          if (tabs.includes(section.title)) {
+            // console.log('herre22')
+          enfants.push(section);
+        }
+      });
+    }
+MenuAdmin = {
+      icon: mdiCogOutline,
+      title: "Configurations",
+      "icon-alt": mdiChevronLeft,
+      model: false,
+      children: enfants,
+}
+
+
     let singleItems = [
+     {
+            title: "Home",
+            icon: mdiHomeCity,
+            link: "/dashboard",
+            permissions: "manage_system",
+        },
         {
             title: "Profil",
             icon: mdiAccount,
@@ -51,7 +96,7 @@ export function listMenus() {
         },
         {
             icon: mdiSchool,
-            title: "Etablissements",
+            title: "Établissements",
             link: "/etablissements",
             permissions: "manage_system",
         },
@@ -85,6 +130,7 @@ export function listMenus() {
             permissions: "manage_system",
         }, */
     ];
+
     let usersMenu = {
         icon: mdiAccountCogOutline,
         title: "Gestion Utilisateurs",
@@ -156,7 +202,7 @@ export function listMenus() {
             },
             {
                 icon: mdiSchool,
-                title: "Etablissements",
+                title: "Établissements",
                 link: "/organizations",
                 permissions: "manage_system",
             },
@@ -279,5 +325,8 @@ export function listMenus() {
             // },
         ],
     };
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu]
+       if (page?.roles == "Administrateur") {
+           singleItems = singleItems.filter(el => el.title != "Établissements")
+    }
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
 }

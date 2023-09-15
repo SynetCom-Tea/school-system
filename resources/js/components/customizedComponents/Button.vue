@@ -3,13 +3,8 @@ import { ref } from "vue";
 
 export default {
   props: {
-    type: {
-      type: String,
-      default: "text",
-    },
     variant: {
       type: String,
-      default: "text",
       required: false,
     },
     nameButton: {
@@ -50,7 +45,7 @@ export default {
       default: "small",
     },
     style: { type: Object, required: false },
-    onClickButton: { type: Function },
+    // onClickButton: { type: Function },
     class: { type: String, required: false },
     isRequired: { type: Boolean, default: false },
     isBlock: { type: Boolean, default: false },
@@ -63,11 +58,8 @@ export default {
 </script>
 <template>
   <v-btn
-    :type="type"
     :class="class"
-    :rounded="isRounded"
     :style="style"
-    :loading="isLoading"
     :variant="variant"
     :density="density"
     v-bind="$attrs"
@@ -76,8 +68,6 @@ export default {
     :append-icon="appendIcon"
     :color="color"
     :size="sizeButton"
-    @click="onClickButton"
-    :block="isBlock"
   >
     {{ nameButton }}
     <slot />

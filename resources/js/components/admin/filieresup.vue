@@ -17,7 +17,7 @@
                             <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
-                              
+
                             <v-file-input
                                 clearable
                                 required
@@ -33,18 +33,18 @@
             <v-divider></v-divider>
             <v-card v-if="!importation">
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
-                
+
                 <v-card-text>
-                   
+
                     <v-row disabled :key="filiere.id" v-for="(filiere, i) in form.filieres">
                         <v-col md="5">
 
-                            <TextField label="Code filiere" placeholder="Code filiere" isRequired="true" @change="verify(filiere)" v-model="filiere.code">
+                            <TextField label="Code filiere" placeholder="Code filiere" :isRequired="true" @change="verify(filiere)" v-model="filiere.code">
                             </TextField>
                         </v-col>
                         <v-col md="6">
 
-                            <TextField label="Nom de la filiere" isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle">
+                            <TextField label="Nom de la filiere" :isRequired="true" placeholder="Nom de la filiere" required v-model="filiere.libelle">
                             </TextField>
                         </v-col>
 

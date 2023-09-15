@@ -17,13 +17,23 @@ class EtablissementController extends Controller
     /**
      * Display a listing of the resource.
      */
+    //  public function getResouces($model){
+    //     $data=[];
+    //     if($model=='getFourTypeSections'){
+    //         $data=EtablissementSection::whereHas('section_id', function($query){
+    //             $query->where('drsp_id', '<>', null)->where('statut', 1)->where('etat', 1);
+    //         });
+
+    //     }
+    //     return $data;
+    // }
     public function index()
     {
         // dd(TypeEtablissement::all());
         return Inertia::render('Etablissement/Index', [
-            'ecoles' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','2')->get(),
-            'instituts' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','3')->get(),
-            'universités' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','1')->get(),
+            'ecoles' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id', '2')->get(),
+            'instituts' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id', '3')->get(),
+            'universites' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id', '1')->get(),
             'types' => TypeEtablissement::all(),
             'sections' => Section::all()
         ]);
@@ -47,9 +57,11 @@ class EtablissementController extends Controller
     public function store(Request $request)
     {
         $logo = '';
-        $data = ['name' => $request->name,'email' => $request->email,'adresse' => $request->adresse,
-        'telephone' => $request->telephone,'telephone' => $request->telephone,
-        'ville' => $request->ville,'type_etablissement_id' => $request->type_etablissement_id];
+        $data = [
+            'name' => $request->name, 'email' => $request->email, 'adresse' => $request->adresse,
+            'telephone' => $request->telephone, 'telephone' => $request->telephone,
+            'ville' => $request->ville, 'type_etablissement_id' => $request->type_etablissement_id, 'statut' => 1
+        ];
         if ($request->file('logo')) {
 
             $logo = $request->file('logo')[0]->getClientOriginalName();
@@ -57,18 +69,20 @@ class EtablissementController extends Controller
             $data['logo'] = $logo;
         }
         $ets = Etablissement::create($data);
-        if($request->section){
+        if ($request->section) {
             $ets->sections()->attach($request->section);
-        }else{
+        } else {
             $ets->sections()->attach(3);
         }
 
-        $user = ['nom' => $request->nom,'prenom' => $request->prenom,'email' => $request->mail, 
-        'password' => $request->password ?? Hash::make('password'), 'etablissement_id' => $ets->id];
+        $user = [
+            'nom' => $request->nom, 'prenom' => $request->prenom, 'email' => $request->mail,
+            'password' => $request->password ?? Hash::make('password'), 'etablissement_id' => $ets->id
+        ];
         $admin = User::create($user);
         $admin->givePermissionTo('manage_system');
-            Auth::attempt(["email"=>$admin->mail,"password"=>$admin->password]);
-            
+        Auth::attempt(["email" => $admin->mail, "password" => $admin->password]);
+
         return redirect()->route('etablissements.index');
     }
 
@@ -94,14 +108,30 @@ class EtablissementController extends Controller
     public function update(Request $request, string $id)
     {
         $ets = Etablissement::find($id);
-        if($request->type_etablissement_id == 2){
+        if ($request->type_etablissement_id == 2) {
             $ets->sections()->sync($request->section);
-        }else{
+        } else {
             $ets->sections()->sync(3);
         }
-        //$ets->sections()->sync($request->section);
+
         $ets->update($request->all());
-        
+
+        return redirect()->route('etablissements.index');
+    }
+
+    /**
+     * Active or desactive the specified resource in storage.
+     */
+
+    public function activer(Request $request, string $id)
+    {
+        $ets = Etablissement::find($id);
+        if ($ets->statut == 1) {
+            $ets->update(['statut' => 0]);
+        } else {
+            $ets->update(['statut' => 1]);
+        }
+
         return redirect()->route('etablissements.index');
     }
 

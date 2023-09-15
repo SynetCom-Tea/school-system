@@ -30,7 +30,7 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "py-4",
+      default: "ml-2 py-2",
     },
     maxWidthResponsive: {
       type: Number,
@@ -82,7 +82,7 @@ export default {
     },
     onchangeModelValue: { type: Function },
     customFilter: { type: Function },
-    class: { type: String, default: "py-3" },
+    class: { type: String, required: false },
     style: { type: Object, required: false },
     isRequired: { type: Boolean, default: false },
   },

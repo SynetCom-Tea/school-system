@@ -1,136 +1,201 @@
 <template>
-  <form @submit.prevent="submitForm" novalidate>
+  <form novalidate @submit.prevent="submitForm">
     <v-container fluid>
-      <v-card-text>
-        <v-row>
-          <v-alert color="primary">
+      <v-card variant="outlined" style="border: 2px solid #7d002c">
+        <v-card-title style="color: white; background-color: #7d002c"
+          >Matières</v-card-title
+        >
+        <v-divider></v-divider>
+        <br />
+        <div style="margin: 10px">
+          <v-alert
+            v-model="alertFirst"
+            border="start"
+            variant="tonal"
+            closable
+            close-label="Close Alert"
+            color="primary"
+            type="info"
+            title="Note"
+          >
             <li>
               Cette section vous permet de configurer les matieres enseignées dans cet
               établissement
             </li>
             <li v-if="type == '3'">
-              Configurer également si l'établissement prend en charge le systeme
+              Configurer également si l'établissement prend en charge le système
               LMD(Licence Master Doctorat) et le régime d'évaluation
             </li>
             <li>
-              Le formulaire sera valide si est seulement si tous les champs obligatoires
-              marqués par <span style="color: red">*</span> sont renseignés
+              Le formulaire sera valide <strong>si et seulement si </strong>tous les
+              champs obligatoires marqués par <span style="color: red">*</span> sont
+              renseignés
             </li>
           </v-alert>
-        </v-row>
-        <br /><br />
-        <v-card>
-          <v-card-text>
-            <v-row v-if="type == '3'">
-              <v-col>
-                <v-switch
-                  label="Souhaiterez-vous appliquez le système LMD ?"
-                  v-model="form.lmd"
-                  color="primary"
-                  inset
-                ></v-switch>
-              </v-col>
-              <v-col v-if="form.lmd">
-                <v-autocomplete
-                  :items="['Type 1', 'Type 2']"
-                  chips
-                  closable-chips
-                  :required="form.lmd"
-                  color="blue-grey-lighten-2"
-                  v-model="form.type_lmd"
-                  label="Select"
-                ></v-autocomplete>
-              </v-col>
-              <v-col>
-                <v-switch
-                  label="Souhaiterez-vous appliquez le régime d'évaluation ?"
-                  v-model="form.regime_evaluation"
-                  color="indigo"
-                  inset
-                ></v-switch>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col>
-                <v-switch
-                  label="Souhaiterez-vous importez le fichier des matieres ?"
-                  @update:modelValue="resetForm(importation)"
-                  v-model="importation"
-                  color="info"
-                  inset
-                ></v-switch>
-              </v-col>
-              <v-col v-if="importation">
-                <v-file-input
-                  clearable
-                  required
-                  v-model="form.fichier_matiere"
-                  label="File input"
-                  variant="solo-inverted"
-                ></v-file-input>
-              </v-col>
-              <v-col></v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-        <v-divider></v-divider>
-        <v-card v-if="!importation">
-          <v-alert color="primary"
-            ><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert
-          >
-          <v-card-text>
-            <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
-              <v-col md="2"></v-col>
-              <v-col md="2">
-                <TextField
-                  label="Code matiere"
-                  isRequired="true"
-                  placeholder="Code matiere"
-                  r
-                  @change="verify(matiere)"
-                  v-model="matiere.code"
-                ></TextField>
-              </v-col>
-              <v-col md="3">
-                <TextField
-                  label="Libelle matiere"
-                  isRequired="true"
-                  placeholder="Libelle matiere"
-                  required
-                  v-model="matiere.libelle"
-                ></TextField>
-              </v-col>
-              <v-col md="1">
-                <br />
-                <v-btn
-                  variant="outlined"
-                  :disabled="!(form.matieres.length > 1)"
-                  icon
-                  @click="removeRow(matiere)"
-                  fab
-                  small
-                  color="error"
-                >
-                  <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-            <v-row>
-              <v-col offset-md="11" md="1">
-                <v-btn variant="outlined" icon @click="addRow" fab small color="info">
-                  <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                </v-btn>
-              </v-col>
-            </v-row>
-          </v-card-text>
-        </v-card>
-      </v-card-text>
-      <v-row>
-        <v-col md="5"></v-col>
-        <v-col md="4">
-          <v-btn type="submit" title="enregistrer" color="info"> Enregistrer </v-btn>
-        </v-col>
-      </v-row>
+
+          <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+            <Button
+              style="height: 30px"
+              title="Plier la note"
+              @click="onclickAlertButton('first')"
+              variant="outlined"
+              color="primary"
+              nameButton="Relire la note"
+            >
+            </Button>
+          </div>
+        </div>
+
+        <v-card-text style="margin: 10px">
+          <v-row v-if="type == '3'">
+            <v-col>
+              <v-switch
+                label="Souhaiterez-vous appliquez le système LMD ?"
+                v-model="form.lmd"
+                color="red"
+                inset
+              ></v-switch>
+            </v-col>
+            <v-col v-if="form.lmd">
+              <v-autocomplete
+                :items="['Type 1', 'Type 2']"
+                chips
+                closable-chips
+                :required="form.lmd"
+                color="blue-grey-lighten-2"
+                v-model="form.type_lmd"
+                label="Select"
+              ></v-autocomplete>
+            </v-col>
+            <v-col>
+              <v-switch
+                v-model="form.regime_evaluation"
+                color="indigo"
+                inset
+                :label="`Souhaiterez-vous appliquez le régime d'évaluation ?${
+                  !form.regime_evaluation ? 'Non' : 'Oui'
+                }`"
+              ></v-switch>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col>
+              <v-switch
+                @update:modelValue="resetForm(importation)"
+                v-model="importation"
+                color="#004980"
+                inset
+                :label="`${
+                  !importation
+                    ? 'Renseignement des données par champs'
+                    : 'Importatation d\'un fichier pour alimenter les matières'
+                }`"
+              ></v-switch>
+            </v-col>
+            <v-col v-if="importation">
+              <v-file-input
+                clearable
+                required
+                v-model="form.fichier_matiere"
+                label="File input"
+                variant="solo-inverted"
+              ></v-file-input>
+            </v-col>
+            <v-col></v-col>
+          </v-row>
+        </v-card-text>
+
+        <v-card-text v-if="!importation">
+          <v-row :key="matiere.id" v-for="(matiere, i) in form.matieres">
+            <!-- <v-col md="2"></v-col> -->
+            <v-col cols="4">
+              <TextField
+                label="Code matiere"
+                class="mt-2"
+                :isRequired="true"
+                placeholder="Code matiere"
+                @change="verify(matiere)"
+                v-model="matiere.code"
+              ></TextField>
+            </v-col>
+            <v-col cols="4">
+              <TextField
+                class="mt-2"
+                label="Libelle matière"
+                :isRequired="true"
+                placeholder="Libelle matière"
+                required
+                v-model="matiere.libelle"
+              ></TextField>
+            </v-col>
+            <v-col cols="4">
+              <br />
+
+              <v-tooltip v-model="tooltipModel" v-if="form.matieres.length == 1" bottom>
+                <template v-slot:activator="{ props }">
+                  <Button
+                    variant="outlined"
+                    v-bind="props"
+                    icon
+                    size="large"
+                    small
+                    color="error"
+                  >
+                    <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                  </Button>
+                </template>
+                <div style="width: 200px">
+                  Ce bouton reste inactif.Vous ne pouvez supprimer que s'il y'a au moins 2
+                  lignes.
+                </div>
+              </v-tooltip>
+              <Button
+                variant="outlined"
+                v-if="form.matieres.length >= 2"
+                icon
+                @click="removeRow(matiere)"
+                size="large"
+                small
+                title="Supprimer la ligne"
+                color="error"
+              >
+                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+              </Button>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col offset-md="11" cols="4">
+              <Button
+                type="button"
+                variant="outlined"
+                @click="addRow"
+                title="Ajouter une nouvelle ligne"
+                icon
+                size="large"
+                color="primary"
+              >
+                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+              </Button>
+            </v-col>
+          </v-row>
+        </v-card-text>
+        <v-row class="text-center ml-3 mb-3"
+          ><v-col cols="auto">
+            <Button
+              type="submit"
+              title="Enregistrer cette étape"
+              nameButton="Enregistrer"
+              variant="flat"
+              @click="submitForm"
+              density="comfortable"
+              class="text-center"
+              block
+              size="large"
+              style="text-transform: none"
+            >
+            </Button> </v-col
+        ></v-row>
+      </v-card>
     </v-container>
     <br />
   </form>
@@ -138,16 +203,23 @@
 <script>
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+import { XlsxRead, XlsxJson } from "vue3-xlsx/dist/vue3-xlsx.cjs.prod.js";
 export default {
   props: ["type"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
     mdiInformation,
+    XlsxRead,
+    XlsxJson,
   },
   data: () => ({
+    tooltipModel: false,
+    alertFirst: true,
+    alertSecond: true,
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
     step: 1,
+    file: null,
     importation: false,
     section: null,
     form: useForm({
@@ -161,6 +233,12 @@ export default {
   }),
 
   methods: {
+    onclickAlertButton(type) {
+      if (type == "second") {
+        this.alertSecond = true;
+      }
+      if (type == "first") this.alertFirst = true;
+    },
     getSection(type) {
       console.log("type", type);
       if (type == "1") {
@@ -181,7 +259,8 @@ export default {
     },
     submitForm() {
       // Empêche l'envoi du formulaire par défaut
-      event.preventDefault();
+      // console.log("e from submit:", e);
+      // e.preventDefault();
       // Valide le formulaire avant de l'envoyer
       if (this.isValid()) {
         this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
@@ -190,7 +269,7 @@ export default {
         this.$emit("formSubmitted", this.form);
         this.$swal.fire({
           title: "Réussi",
-          text: "Mise à jour réussi avec succes!",
+          text: "Mise à jour réussie avec succès!",
           icon: "success",
           confirmButtonText: "OK",
         });
@@ -241,6 +320,8 @@ export default {
       console.log();
     },
     addRow() {
+      // console.log("e from addrom:", e);
+      // e.preventDefault();
       this.form.matieres.push({
         code: null,
         libelle: null,

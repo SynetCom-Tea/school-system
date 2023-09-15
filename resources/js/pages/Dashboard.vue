@@ -175,48 +175,26 @@ export default {
                 protein: 0,
             },
 
-            icons: {
-                mdiGift,
-                mdiAccount
-            },
-            listGreetings: [{
-                    id: 1,
-                    text: "Wa fonda kayan!",
-                    color: "red"
-                },
-                {
-                    id: 2,
-                    text: "Barka da zouwa!",
-                    color: "blue"
-                },
-                {
-                    id: 3,
-                    text: "Bienvenue!",
-                    color: "gray"
-                },
-                {
-                    id: 1,
-                    text: "Welcome!",
-                    color: "green"
-                },
-                {
-                    id: 1,
-                    text: "Marhaba!",
-                    color: "red"
-                },
-            ],
-        };
-    },
-    mounted() {},
+      icons: { mdiGift, mdiAccount },
+      listGreetings: [
+        { id: 1, text: "Wa fonda kayan!", color: "red" },
+        { id: 2, text: "Barka da zouwa!", color: "blue" },
+        { id: 3, text: "Bienvenue!", color: "gray" },
+        { id: 1, text: "Welcome!", color: "green" },
+        { id: 1, text: "Marhaba!", color: "red" },
+      ],
+    };
+  },
+  mounted() {},
 
-    methods: {
-        onClickBt() {
-            this.isDialog = !this.isDialog;
-        },
-        onCloseModale() {
-            this.isDialog = false;
-        },
-        onChangeTitle(e) {},
+  methods: {
+    onClickBt() {
+      this.isDialog = !this.isDialog;
+    },
+    onCloseModale() {
+      this.isDialog = false;
+    },
+    onChangeTitle(e) {},
 
         editItem(item) {
             console.log("item from editItem:", item);
@@ -253,16 +231,16 @@ export default {
     </div>
     <br /><br /><br /><br /><br /><br />
     <Loader :modelDialog="isDialog">
-        <template v-slot:spinnertype>
-            <VueSpinner size="50" color="white"></VueSpinner>
-        </template>
+      <template v-slot:spinnertype>
+        <VueSpinner size="50" color="white"></VueSpinner
+      ></template>
     </Loader>
     <br /><br />
 
     <br /><br />
     <div>
       <ExampleApplicationDatatable />
-    </div>
+    </div> -->
     <br /><br />
 
     <Button

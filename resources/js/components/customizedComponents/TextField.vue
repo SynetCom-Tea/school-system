@@ -1,5 +1,5 @@
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 export default {
   props: {
@@ -23,6 +23,7 @@ export default {
     maxHeightResponsive: {
       type: Number,
       required: false,
+      // default: 100,
     },
     heightResponsive: {
       type: Number,
@@ -30,11 +31,13 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "py-1",
+
+      default: "py-2",
     },
     maxWidthResponsive: {
       type: Number,
       required: false,
+      // default: 250,
     },
     name: {
       type: String,
@@ -61,6 +64,10 @@ export default {
       type: String,
       required: false,
     },
+    appendIcon: {
+      type: String,
+      required: false,
+    },
     successMessage: {
       type: String,
       required: false,
@@ -82,9 +89,17 @@ export default {
     class: { type: String, required: false },
     isRequired: { type: Boolean, default: false },
   },
-  setup() {},
+  setup(props, ctx) {
+    const parentSlots = computed(() => Object.keys(ctx.slots));
+
+    return { parentSlots };
+  },
   updated() {},
   computed: {
+    scopedSlots() {
+      return this.$slots;
+    },
+
     modelValue: {
       get() {
         return this.vModel;
@@ -104,27 +119,26 @@ export default {
     :max-width="maxWidthResponsive"
   >
     <v-text-field
-      :type="type"
       v-model="modelValue"
       :variant="variant"
       :hint="hint"
+      :type="type"
       :density="density"
       v-bind="$attrs"
       :name="name"
       :placeholder="placeholder"
       :rules="rules"
-      :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="colorValue"
-      @update:modelValue="onchangeModelValue"
-      @change="onchangeField"
       :class="class"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>
       </template>
-      <template #label v-else>
-        {{ label }}
+      <template #label v-else> {{ label }} </template>
+      <!-- Dynamically inherit slots from parent -->
+      <template v-for="slot in parentSlots" #[slot]>
+        <slot :name="slot" />
       </template>
     </v-text-field>
   </v-responsive>

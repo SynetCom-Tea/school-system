@@ -15,19 +15,7 @@ export default {
     FooterIndex,
   },
   computed: {},
-  methods: {
-    //   goToLoginPage() {
-    //     //   return router.visit("/login", {
-    //     //     preserveScroll: true,
-    //     //   });
-    //     this.$router.push("/login");
-    //     // return router.get(route("login"));
-    //   },
-    //   goToWelcomePage() {
-    //     return router.get("/");
-    //     // this.$router.back();
-    //   },
-  },
+  created() {},
+  methods: {},
 };
 </script>
-

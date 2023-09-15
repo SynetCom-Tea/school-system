@@ -103,7 +103,7 @@ export default {
               fab
               variant="flat"
               :prependIcon="icons.mdiClose"
-              :onClickButton="onCloseModale"
+              @click="onCloseModale"
             ></Button>
           </v-toolbar-items>
         </v-toolbar>
@@ -132,7 +132,7 @@ export default {
               variant="text"
               color="red"
               nameButton="Quitter"
-              :onClickButton="onCloseModale"
+              @click="onCloseModale"
               style="float: right; margin: 10px; height: 30px"
             ></Button>
           </div>
