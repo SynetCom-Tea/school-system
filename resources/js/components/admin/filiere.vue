@@ -80,7 +80,7 @@
                         <v-card-title flat style="color:#7d002c; background-color: white">Les départements</v-card-title>
                         <v-divider></v-divider>
                         <br />
-                        <v-card-text disabled :key=" departement.id" v-for="( departement, i) in form. departements">
+                        <v-card-text disabled :key=" departement.id" v-for="( departement, i) in form.departements">
 
                             <v-row>
                                 <v-col offset-md="3" md="6">
@@ -142,7 +142,7 @@
                                         <Button
                                             type="button"
                                             variant="outlined"
-                                            @click="addRow"
+                                            @click="addRow(departement)"
                                             icon
                                             size="large"
                                             color="primary"

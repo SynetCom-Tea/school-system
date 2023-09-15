@@ -41,9 +41,6 @@
                     <v-row>
                         <v-col md="4"></v-col>
                         <v-col md="4">
-<<<<<<< HEAD
-                            <v-autocomplete label="Niveaux" :item-title="formatNiveauLabel" item-value="id" :items="niveaux" v-model="form.niveau" chips></v-autocomplete>
-=======
 
                             <Autocomplete
                             label="Niveaux"
@@ -54,7 +51,6 @@
                             v-model="form.niveau"
                             chips>
                         </Autocomplete>
->>>>>>> 3668a422119eef164f089e6a8ac0944357afc87f
                         </v-col>
                     </v-row>
                     <!-- <v-divider></v-divider> -->
@@ -66,22 +62,16 @@
                             <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
                                 <v-col md="1"></v-col>
                                 <v-col md="4">
-<<<<<<< HEAD
-
-                                    <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="matieres" chips v-model="matiere.matiere" @update:modelValue="verify(matiere,i, $event)">
-                                    </v-autocomplete>
-=======
                                     <Autocomplete
                                     label="Matieres"
                                     class="mt-2"
                                     item-title="libelle"
                                     item-value="id"
-                                    :items="['maths','pc']"
+                                    :items="matieres"
                                     chips
                                     v-model="matiere.matiere"
                                     @update:modelValue="verify(matiere,i, $event)">
                                     </Autocomplete>
->>>>>>> 3668a422119eef164f089e6a8ac0944357afc87f
                                 </v-col>
                                 <v-col md="2">
 
@@ -181,15 +171,12 @@
     }),
 
     methods: {
-<<<<<<< HEAD
-=======
         onclickAlertButton(type) {
             if (type == "second") {
                 this.alertSecond = true;
             }
             if (type == "first") this.alertFirst = true;
             },
->>>>>>> 3668a422119eef164f089e6a8ac0944357afc87f
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;

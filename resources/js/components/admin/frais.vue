@@ -307,14 +307,19 @@
             }
         },
     },
-    mounted() {
+    created(){
         if(this.type == '3'){
-            this.tabsFilieres = this.filieres.filieres
+            this.tabsFilieres = this.filieres ? this.filieres.filieres : []
         }else if(this.type == '4'){
-            this.filieres.departements.forEach(element => {
-                this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
-            });
-        }
+            if (this.filieres.departements && Array.isArray(this.filieres.departements)) {
+                this.filieres.departements.forEach(element => {
+                    this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+                });
+            } 
+        } 
+    },
+    mounted() {
+        // 
         console.log('resultat',this.tabsFilieres)
         
         this.addRow()
