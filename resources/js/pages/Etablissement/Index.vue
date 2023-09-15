@@ -9,6 +9,7 @@ import {
     mdiSchool,
     mdiPencil,
     mdiEye,
+    mdiChevronDown,
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
@@ -20,11 +21,13 @@ export default {
                 mdiPlus,
                 mdiSchool,
                 mdiPencil,
-                mdiEye
+                mdiEye,
+                mdiChevronDown,
             },
             tab: null,
             model: 'Activer',
             page: 1,
+            itemsPerPageArray: [3, 6, 9],
             itemsPerPage: 3,
             form: useForm({
                 type_etablissement_id: '',
@@ -55,28 +58,28 @@ export default {
             this.show = true
         },
         activeItem(item) {
-            if(item.statut == 1){
+            if (item.statut == 1) {
                 this.$swal({
-                    title: 'Désactiver '+item.name+' ?',
+                    title: 'Désactiver ' + item.name + ' ?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Oui!',
                     cancelButtonText: 'Annuler!',
-                    position: 'top-end'
-                    }).then((result) => {
+                    position: 'center'
+                }).then((result) => {
                     if (result.isConfirmed) {
-                        router.post(route('etablissement.activer',item.id), {
-                            
+                        router.post(route('etablissement.activer', item.id), {
+
                             onFinish: () => this.$swal({
                                 icon: 'success',
                                 title: 'Désactivation',
-                                text: item.name+' Désactivé avec succès!',
+                                text: item.name + ' Désactivé avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
                                 timer: 5000,
                                 timerProgressBar: true,
-                                }),
+                            }),
                             onError: () => this.$swal({
                                 icon: 'danger',
                                 title: 'Désactivation',
@@ -86,37 +89,35 @@ export default {
                                 showConfirmButton: false,
                                 timer: 5000,
                                 timerProgressBar: true,
-                                }
-                                ),
-                            
-                        });    
-                    }else {
+                            }),
+
+                        });
+                    } else {
                         router.get(route('etablissements.index'))
                     }
                 });
-            }
-            else if (item.statut == 0){
+            } else if (item.statut == 0) {
                 this.$swal({
-                    title: 'Activer '+item.name+' ?',
+                    title: 'Activer ' + item.name + ' ?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonText: 'Oui!',
                     cancelButtonText: 'Annuler!',
-                    position: 'top-end'
-                    }).then((result) => {
+                    position: 'center'
+                }).then((result) => {
                     if (result.isConfirmed) {
-                        router.post(route('etablissement.activer',item.id), {
-                            
+                        router.post(route('etablissement.activer', item.id), {
+
                             onFinish: () => this.$swal({
                                 icon: 'success',
                                 title: 'Activation',
-                                text: item.name+' Activé avec succès!',
+                                text: item.name + ' Activé avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
                                 timer: 5000,
                                 timerProgressBar: true,
-                                }),
+                            }),
                             onError: () => this.$swal({
                                 icon: 'danger',
                                 title: 'Activation',
@@ -126,15 +127,14 @@ export default {
                                 showConfirmButton: false,
                                 timer: 5000,
                                 timerProgressBar: true,
-                                }
-                                ),
-                            
-                        });   
-                    }else {
+                            }),
+
+                        });
+                    } else {
                         router.get(route('etablissements.index'))
                     }
                 });
-            } 
+            }
         },
         async submit() {
             console.log('submit', this.form)
@@ -331,8 +331,24 @@ export default {
                     </v-row>
 
                 </v-container>
-                <div style="align:center;">
-                    <v-pagination v-model="page" :length="ecolelenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                <div class="d-flex align-center justify-space-around pa-4">
+
+                    <span class="grey--text">Items per page</span>
+                    <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
+                                {{ itemsPerPage }}
+                            </v-btn>
+                        </template>
+                        <v-list>
+                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                        </v-list>
+                    </v-menu>
+                    <v-spacer></v-spacer>
+                    <span class="mr-4
+          grey--text">
+                        <v-pagination v-model="page" :length="ecolelenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                    </span>
                 </div>
             </v-window-item>
 
@@ -360,8 +376,24 @@ export default {
                         </v-col>
                     </v-row>
                 </v-container>
-                <div class="text-center pt-2">
-                    <v-pagination v-model="page" :length="pageCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                <div class="d-flex align-center justify-space-around pa-4">
+
+                    <span class="grey--text">Items per page</span>
+                    <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
+                                {{ itemsPerPage }}
+                            </v-btn>
+                        </template>
+                        <v-list>
+                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                        </v-list>
+                    </v-menu>
+                    <v-spacer></v-spacer>
+                    <span class="mr-4
+          grey--text">
+                        <v-pagination v-model="page" :length="pageCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                    </span>
                 </div>
             </v-window-item>
 
@@ -390,16 +422,34 @@ export default {
                     </v-row>
 
                 </v-container>
-                <div style="align:center;">
-                    <v-pagination v-model="page" :items-per-page="itemsPerPage" :length="univlenghtCount" :total-visible="6"></v-pagination>
+                <div class="d-flex align-center justify-space-around pa-4">
+
+                    <span class="grey--text">Items per page</span>
+                    <v-menu>
+                        <template v-slot:activator="{ props }">
+                            <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
+                                {{ itemsPerPage }}
+                            </v-btn>
+                        </template>
+                        <v-list>
+                            <v-list-item v-for="(number, index) in itemsPerPageArray" :key="index" :title="number" @click="itemsPerPage = number"></v-list-item>
+                        </v-list>
+                    </v-menu>
+                    <v-spacer></v-spacer>
+                    <span class="mr-4
+          grey--text">
+                        <v-pagination v-model="page" :length="univlenghtCount" :total-visible="6" :items-per-page="itemsPerPage"></v-pagination>
+                    </span>
                 </div>
+
             </v-window-item>
         </v-window>
     </v-card-text>
 </v-card>
 </template>
+
 <style scoped>
 .custom-red {
-  color: rgb(168, 12, 12);
+    color: rgb(168, 12, 12);
 }
 </style>
