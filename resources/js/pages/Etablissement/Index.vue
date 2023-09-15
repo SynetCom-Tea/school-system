@@ -16,13 +16,15 @@ import {
 } from '@mdi/js'
 import PageToolbar from '@/components/PageToolbar.vue';
 export default {
-  components: { PageToolbar },
+    components: {
+        PageToolbar
+    },
     layout: AuthenticatedLayout,
     props: ["ecoles", "instituts", "universites", "types", "sections"],
 
     data() {
         return {
-            icons: {
+            icon: {
                 mdiCancel,
                 mdiPlus,
                 mdiSchool,
@@ -312,7 +314,7 @@ export default {
                 </v-card-text>
                 <v-card-actions class="justify-end">
                     <v-spacer></v-spacer>
-                    <Button dark  small type="button" title="Fermer et quitter" color="red" @click="close" nameButton="Annuler">
+                    <Button dark small type="button" title="Fermer et quitter" color="red" @click="close" nameButton="Annuler">
                         <v-icon :icon="icon.mdiCancel" left></v-icon>
                     </Button>
                     <Button type="submit" small color="primary" @click="submit" title="Valider la modification" nameButton="Modifier">
@@ -323,7 +325,7 @@ export default {
         </template>
     </v-dialog>
     <v-card-text>
-        <v-btn variant="outlined" color="primary" :prepend-icon="icons.mdiPlus" @click="goTo()" elevation="4" rounded="lg">
+        <v-btn variant="outlined" color="primary" :prepend-icon="icon.mdiPlus" @click="goTo()" elevation="4" rounded="lg">
             Ajouter
         </v-btn>
     </v-card-text>
@@ -338,8 +340,8 @@ export default {
                 <v-container>
                     <v-row>
                         <v-col :key="i" v-for="(t, i) in getSchools">
-                            <v-card elevation="6" width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img v-if="t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
+                            <v-card elevation="6" width="280" style="border-color: blue;" variant="outlined" rounded="shaped">
+                                <v-img v-if="t.logo" style="object-fit: fill; width:280px; height:150px;" :src="'../logos/' + t.logo" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
                                             <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
@@ -350,8 +352,8 @@ export default {
                                         </template>
                                     </v-toolbar>
                                 </v-img>
-                            
-                                <v-img v-if="!t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/defaultLogo.png'" class="text-white">
+
+                                <v-img v-if="!t.logo" style="object-fit: fill; width:280px; height:150px;" :src="'../logos/defaultLogo.png'" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
                                             <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
@@ -360,8 +362,16 @@ export default {
                                         <template v-slot:append>
                                             <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
                                         </template>
-
-                                        </v-container> <div class="d-flex align-center justify-space-around pa-4">
+                                    </v-toolbar>
+                                </v-img>
+                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
+                                <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
+                                <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+                <div class="d-flex align-center justify-space-around pa-4">
 
                     <span class="grey--text">Items per page</span>
                     <v-menu>
@@ -381,19 +391,13 @@ export default {
                     </span>
                 </div>
             </v-window-item>
-            =======
-            <template v-slot:append>
-                <v-icon color="primary" :icon="icons.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
-            </template>
-            </v-toolbar>
-            </v-img>
 
             <v-window-item value="2">
                 <v-container>
                     <v-row>
                         <v-col :key="i" v-for="(t, i) in getInstituts">
-                            <v-card elevation="6" width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img v-if="t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
+                            <v-card elevation="6" width="280" style="border-color: blue;" variant="outlined" rounded="shaped">
+                                <v-img v-if="t.logo" style="object-fit: fill; width:280px; height:150px;" :src="'../logos/' + t.logo" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
                                             <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
@@ -404,7 +408,7 @@ export default {
                                         </template>
                                     </v-toolbar>
                                 </v-img>
-                                <v-img v-if="!t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/defaultLogo.png'" class="text-white">
+                                <v-img v-if="!t.logo" style="object-fit: fill; width:280px; height:150px;" :src="'../logos/defaultLogo.png'" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
                                             <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
@@ -416,14 +420,14 @@ export default {
                                     </v-toolbar>
                                 </v-img>
 
-                             <P class="text-h6" style="text-align: center;">{{t.name}} </P>
+                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
                                 <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
                                 <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-                </v-card>
-            </v-col>
-        </v-row>
-    </v-container>
-    <div class="d-flex align-center justify-space-around pa-4">
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+                <div class="d-flex align-center justify-space-around pa-4">
 
                     <span class="grey--text">Items per page</span>
                     <v-menu>
@@ -448,8 +452,8 @@ export default {
                 <v-container>
                     <v-row>
                         <v-col :key="i" v-for="(t, i) in getUniversities">
-                            <v-card elevation="6" max-width="300" style="border-color: blue;" variant="outlined" rounded="shaped">
-                                <v-img v-if="t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/' + t.logo" class="text-white">
+                            <v-card elevation="6" max-width="280" style="border-color: blue;" variant="outlined" rounded="shaped">
+                                <v-img v-if="t.logo" style="object-fit: fill; width:280px; height:150px;" :src="'../logos/' + t.logo" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
                                             <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
@@ -460,7 +464,7 @@ export default {
                                         </template>
                                     </v-toolbar>
                                 </v-img>
-                                <v-img v-if="!t.logo" style="object-fit: fill; width:300px; height:200px;" :src="'../logos/defaultLogo.png'" class="text-white">
+                                <v-img v-if="!t.logo" style="object-fit: fill; width:280px; height:150px;" :src="'../logos/defaultLogo.png'" class="text-white">
                                     <v-toolbar color="rgba(0, 0, 0, 0)">
                                         <template v-slot:prepend>
                                             <v-icon color="primary" :icon="icon.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(t)"></v-icon>
@@ -471,14 +475,14 @@ export default {
                                         </template>
                                     </v-toolbar>
                                 </v-img>
-
-                            <template v-slot:append>
-                                <v-icon color="primary" :icon="icons.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
-                            </template>
-                        </v-toolbar>
-                    </v-img>
-
-                     </v-container> <div class="d-flex align-center justify-space-around pa-4">
+                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
+                                <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
+                                <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
+                            </v-card>
+                        </v-col>
+                    </v-row>
+                </v-container>
+                <div class="d-flex align-center justify-space-around pa-4">
 
                     <span class="grey--text">Items per page</span>
                     <v-menu>
@@ -498,21 +502,9 @@ export default {
                     </span>
                 </div>
 
-</v-window-item>
-</v-window>
-<p class="text-h6" style="text-align: center">{{ t.name }}</p>
-<v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
-<v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-</v-card>
-</v-col>
-</v-row>
-</v-container>
-<div style="align: center">
-    <v-pagination v-model="page" :items-per-page="itemsPerPage" :length="univlenghtCount" :total-visible="6"></v-pagination>
-</div>
-</v-window-item>
-</v-window>
-</v-card-text>
+            </v-window-item>
+        </v-window>
+    </v-card-text>
 </v-card>
 </template>
 
