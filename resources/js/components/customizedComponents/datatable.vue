@@ -8,7 +8,9 @@ import {
   mdiMagnify,
   mdiContentSaveEditOutline,
 } from "@mdi/js";
+import TextFieldC from "./TextFieldC.vue";
 import ModalDetailUpdate from "./ModalDetailUpdate.vue";
+// import { provide, reactive, ref } from "vue";
 export default {
   props: {
     headers: {
@@ -19,18 +21,14 @@ export default {
       type: Array,
       required: true,
     },
-    // selectedItemForCRUD: {
-    //   type: String,
-    //   required: false,
-    // },
+
     editedObject: {
       type: Object,
       required: false,
     },
-    // defaultObject: {
-    //   type: Object,
-    //   required: false,
-    // },
+    addDialog: { type: Boolean, default: false },
+    dialogDetailUpdate: { type: Boolean, default: false },
+
     titleDatatable: {
       type: String,
       default: "Titre du datatable",
@@ -49,42 +47,36 @@ export default {
     mdiPlus,
     mdiCancel,
     mdiContentSaveEditOutline,
+    TextFieldC,
   },
-  data: () => ({
-    dialog: false,
-    alert: true,
-    dialogDetailUpdate: false,
-    searchQuery: null,
-    dialogDelete: false,
-    toolbarTitle: { update: "Modification", detail: "Détail" },
-    icons: {
-      mdiAccount,
-      mdiMagnify,
-      mdiDelete,
-      mdiPencil,
-      mdiPlus,
-      mdiCancel,
-      mdiContentSaveEditOutline,
-    },
-    // detailUpdateTitle: "",
-    detailEdit: -1,
-    editedIndex: -1,
-    isEditingModal: null,
-  }),
-  mounted() {
-    // console.log("this.isEditingModal22:", this.isEditingModal);
+
+  data() {
+    return {
+      dialog: false,
+      status: false,
+      alert: true,
+      onDetailUpdate: false,
+      searchQuery: null,
+      dialogDelete: false,
+      toolbarTitle: "Détail",
+      icons: {
+        mdiAccount,
+        mdiMagnify,
+        mdiDelete,
+        mdiPencil,
+        mdiPlus,
+        mdiCancel,
+        mdiContentSaveEditOutline,
+      },
+
+      detailEdit: -1,
+      editedIndex: -1,
+      isEditingModal: null,
+    };
   },
+
+  mounted() {},
   computed: {
-    // getEditemItemFunction() {
-    //   if (this.selectedItemForCRUD) return this.editItem(this.selectedItemForCRUD);
-    // },
-    detailUpdateTitle() {
-      console.log("isEditingModal:", this.isEditingModal);
-
-      //   this.detailUpdateTitle = "Détail";
-
-      // this.detailUpdateTitle = "Modifier une ligne";
-    },
     modelEditedObject: {
       get() {
         return this.editedObject;
@@ -98,7 +90,8 @@ export default {
     },
 
     formTitle() {
-      return this.editedIndex === -1 ? "Ajouter une ligne" : "Modifier une ligne";
+      return "Ajout d'une nouvelle ligne";
+      // return this.editedIndex === -1 ? "Ajouter une ligne" : "Modifier une ligne";
     },
   },
 
@@ -107,7 +100,6 @@ export default {
       val || this.close();
     },
     dialogDelete(val) {
-      console.log("val22:", val);
       val || this.closeDelete();
     },
   },
@@ -117,43 +109,35 @@ export default {
   },
 
   methods: {
-    // detailUpdateTitle(val) {
-    //   console.log("this.isEditingModal:", this.isEditingModal);
-    //   return val ? "Détail" : "Modifier une ligne";
-    // },
     //Fonction en ecoute lorsqu'on clique sur le bouton 'Ajouter'
     onClickAddButton() {
-      if (this.functionOnClickAddButton) {
+      if (this.addDialog) {
+        this.dialog = true;
+      } else {
         return this.functionOnClickAddButton();
       }
-      this.dialog = true;
     },
     initialize() {
       this.items;
     },
     //Fonction en ecoute lorsqu'on clique sur l'icon 'Modifier'
     onEditItem(item) {
-      console.log("isEditingModal:", this.isEditingModal);
-      this.editedIndex = this.items.indexOf(item);
-      this.modelEditedObject = Object.assign({}, item);
-      this.dialogDetailUpdate = true;
       this.functionEditItem(item);
     },
     onClickCancelButtonForEditing() {
-      this.dialogDetailUpdate = false;
+      this.onDetailUpdate = false;
     },
     //Fonction en ecoute lorsqu'on clique sur l'icon 'Supprimer'
     onDeleteItem(item) {
       this.editedIndex = this.items.indexOf(item);
       this.modelEditedObject = Object.assign({}, item);
-      console.log("this.modelEditedObject ffrom delete:", this.modelEditedObject);
+
       this.dialogDelete = true;
-      //this.selectedItemForCRUD = item;
+
       this.functionDeleteItem(item);
     },
 
     deleteItemConfirm() {
-      // this.items.splice(this.editedIndex, 1);
       this.functionOnConfirmDeleting();
       this.closeDelete();
     },
@@ -165,15 +149,6 @@ export default {
     closeDelete() {
       this.dialogDelete = false;
     },
-
-    save() {
-      if (this.editedIndex > -1) {
-        Object.assign(this.items[this.editedIndex], this.modelEditedObject);
-      } else {
-        this.items.push(this.modelEditedObject);
-      }
-      this.close();
-    },
   },
 };
 </script>
@@ -184,6 +159,7 @@ export default {
     :items="items"
     :search="searchQuery"
     :sort-by="[{ key: 'calories', order: 'asc' }]"
+    :pagination.sync="pagination"
     class="style-table"
   >
     <template v-slot:top>
@@ -196,9 +172,12 @@ export default {
             white-space: pre-wrap;
             word-break: break-word;
           "
-          >{{ titleDatatable }}</v-toolbar-title
+          ><p class="text-wrap">
+            {{ titleDatatable }}
+          </p></v-toolbar-title
         >
-        <v-divider class="mx-4 color-white" inset vertical></v-divider>
+
+        <v-divider class="mx-4 color-secondary" inset vertical></v-divider>
         <div style="width: 250px">
           <TextField
             density="compact"
@@ -214,76 +193,56 @@ export default {
         </div>
 
         <v-spacer></v-spacer>
+
         <Button
           variant="flat"
-          class="mb-2"
+          class="add-button-style"
           nameButton="Ajouter"
           title="Ajouter une nouvelle ligne"
-          style="height: 30px; text-transform: none"
           :prependIcon="icons.mdiPlus"
-          :onClickButton="onClickAddButton"
+          @click="onClickAddButton"
         >
         </Button>
-        <ModalDetailUpdate
-          :onClickCancelButton="onClickCancelButtonForEditing"
-          :toolbarTitle="toolbarTitle"
-          :dialogDetailUpdate="dialogDetailUpdate"
-          :isEditing="isEditingModal"
-          :iconValueDetail="icons.mdiPencil"
-          :iconUpdate="icons.mdiAccount"
-        ></ModalDetailUpdate>
-        <v-dialog v-model="dialog" max-width="500px" persistent>
-          <!-- <template v-slot:activator="{ props }">
-            <Button
-              variant="flat"
-              class="mb-2"
-              nameButton="Ajouter"
-              title="Ajouter une nouvelle ligne"
-              style="height: 30px; text-transform: none"
-              :prependIcon="icons.mdiPlus"
-              v-bind="props"
-            >
-            </Button>
-          </template> -->
-          <v-card>
-            <v-card-title style="background-color: #7d002c">
-              <span class="text-h5 text-white">{{ formTitle }}</span>
-            </v-card-title>
 
-            <v-card-text>
+        <slot name="contentDialogUpdateDetail" />
+        <div v-if="addDialog">
+          <v-dialog v-model="dialog" max-width="600px" persistent>
+            <v-card>
+              <v-toolbar flat color="secondary">
+                <v-toolbar-title>
+                  <span
+                    style="
+                      font-size: 1.1em;
+                      width: 450px;
+                      word-wrap: break-word;
+                      white-space: pre-wrap;
+                      word-break: break-word;
+                    "
+                    class="text-white"
+                    >{{ formTitle }}</span
+                  >
+                </v-toolbar-title>
+                <template v-slot:prepend>
+                  <v-btn
+                    outlined
+                    icon="$close"
+                    fab
+                    color="white"
+                    title="Fermer la modale"
+                    @click="dialog = false"
+                  ></v-btn>
+                </template>
+
+                <v-spacer></v-spacer>
+              </v-toolbar>
               <v-container>
-                <v-row>
-                  <slot name="addDialogContent" />
-                </v-row>
+                <slot name="addDialogContent" />
               </v-container>
-            </v-card-text>
-
-            <v-card-actions class="card-actions-style">
-              <Button
-                variant="text"
-                class="mb-2"
-                color="red"
-                nameButton="Annuler"
-                title="Annuler et Fermer la modale"
-                style="height: 30px"
-                :prependIcon="icons.mdiCancel"
-                :onClickButton="close"
-              ></Button>
-
-              <Button
-                variant="text"
-                class="mb-2"
-                nameButton="Enregistrer"
-                title="Valider et Fermer la modale"
-                style="height: 30px"
-                :prependIcon="icons.mdiContentSaveEditOutline"
-                :onClickButton="save"
-              ></Button>
-            </v-card-actions>
-          </v-card>
-          <slot />
-        </v-dialog>
-        <v-dialog v-model="dialogDelete" max-width="500px" persistent>
+            </v-card>
+            <slot />
+          </v-dialog>
+        </div>
+        <v-dialog v-model="dialogDelete" max-width="600px" persistent>
           <v-card>
             <v-card-title style="background-color: #7d002c" class="text-h5 text-white"
               >Confirmation de la suppression</v-card-title
@@ -297,7 +256,7 @@ export default {
                 nameButton="Annuler"
                 title="Annuler et Fermer la modale"
                 style="height: 30px"
-                :onClickButton="closeDelete"
+                @click="closeDelete"
               ></Button>
 
               <Button
@@ -306,7 +265,7 @@ export default {
                 nameButton="Oui"
                 title="Confirmer et Fermer la modale"
                 style="height: 30px"
-                :onClickButton="deleteItemConfirm"
+                @click="deleteItemConfirm"
               ></Button>
 
               <v-spacer></v-spacer>
@@ -353,11 +312,23 @@ export default {
           <v-btn color="primary" @click="alert = true"> Réinitialiser</v-btn>
         </div>
       </div>
-      <!-- <v-btn color="primary" @click="initialize"> Réinitialiser </v-btn> -->
     </template>
   </v-data-table>
 </template>
 <style scoped>
+.add-button-style:hover {
+  background-color: #7d002c;
+  box-shadow: 0px 0px 8px #7d002c;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+.add-button-style {
+  height: 30px;
+  /* background-color: #7d002c; */
+  text-transform: none;
+  box-shadow: 10px 5px 5px #7d002c;
+  /* 0px 0px 5px #7d002c; */
+}
 .search-field {
   border: 1px solid #7d002c;
   border-radius: 4px;

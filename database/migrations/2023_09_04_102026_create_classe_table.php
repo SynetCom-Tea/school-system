@@ -13,10 +13,14 @@ return new class extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle');
-            $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
+            $table->string('code')->nullable();
+            $table->string('libelle')->nullable();
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
+                ->index()
+                ->references('id')->on('etablissement_section');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
             ->index()
-            ->references('id')->on('etablissements');
+            ->references('id')->on('niveauX');
             $table->timestamps();
             $table->softDeletes();
         });

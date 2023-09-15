@@ -17,19 +17,4 @@ class NiveauMatiere extends Model
     {
         return \Modules\Enseignement\Database\factories\NiveauMatiereFactory::new();
     }
-
-    public function niveau(): BelongsTo
-    {
-        return $this->belongsTo(Niveau::class);
-    }
-
-    public function matiere(): BelongsTo
-    {
-        return $this->belongsTo(Matiere::class);
-    }
-
-    public function seances(): HasMany
-    {
-        return $this->hasMany(Seance::class);
-    }
 }

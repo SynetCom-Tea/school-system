@@ -4,6 +4,7 @@ import {
     router,
     useForm
 } from "@inertiajs/vue3";
+
 import {
     mdiPlus,
     mdiSchool,
@@ -21,7 +22,8 @@ export default {
 
     data() {
         return {
-            icon: {
+            icons: {
+                mdiCancel,
                 mdiPlus,
                 mdiSchool,
                 mdiPencil,
@@ -40,13 +42,13 @@ export default {
             institutsPerPage: 3,
             univsPerPage: 3,
             form: useForm({
-                type_etablissement_id: '',
+                type_etablissement_id: "",
                 section: [],
             }),
             dialog: false,
             target: {},
             show: false,
-        }
+        };
     },
     methods: {
         goTo() {
@@ -213,8 +215,8 @@ export default {
     <v-dialog v-model="show" max-width="700" v-if="target">
         <v-card>
             <v-toolbar dark color="primary">
-                <v-toolbar-title> Détails de l'établissement <v-icon size="large">
-                    </v-icon>
+                <v-toolbar-title>
+                    Détail de l'établissement <v-icon size="large"> </v-icon>
                 </v-toolbar-title>
             </v-toolbar>
             <v-card-text>
@@ -231,7 +233,7 @@ export default {
                                     <td>{{ target.name }}</td>
                                 </tr>
                                 <tr>
-                                    <td class="font-weight-black">Ville </td>
+                                    <td class="font-weight-black">Ville</td>
                                     <td>{{ target.ville }}</td>
                                 </tr>
                                 <tr>
@@ -252,7 +254,9 @@ export default {
                                 </tr>
                                 <tr>
                                     <td class="font-weight-black">Administrateur:</td>
-                                    <td :key="i" v-for="(t, i) in target.users">{{ t.nom }} {{ t.prenom }}</td>
+                                    <td :key="i" v-for="(t, i) in target.users">
+                                        {{ t.nom }} {{ t.prenom }}
+                                    </td>
                                 </tr>
                                 <tr>
                                     <td class="font-weight-black">Email Admin:</td>
@@ -269,13 +273,11 @@ export default {
                 </v-card>
             </v-card-text>
             <v-card-actions class="justify-end" id="actions">
-                <v-btn color="danger" variant="text" @click="show = false">
-                    Fermer
-                </v-btn>
+                <v-btn color="danger" variant="text" @click="show = false"> Fermer </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
-    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
+    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent max-width="500px">
         <template v-slot:default="{ isActive }">
             <v-card>
                 <v-toolbar dense color="primary" dark width="500px">
@@ -293,8 +295,6 @@ export default {
                             {{ dialog_title }}
                         </p>
                     </v-toolbar-title>
-                    <v-spacer></v-spacer>
-
                 </v-toolbar>
                 <v-card-text>
                     <v-form ref="form">
@@ -308,7 +308,6 @@ export default {
                                 <Select label="Section" :items="sections" variant="outlined" item-value="id" item-title="libelle" v-model="form.section" isMultiple chips v-if="form.type_etablissement_id == 2"></Select>
                             </v-col>
                         </v-row>
-
                     </v-form>
                 </v-card-text>
                 <v-card-actions class="justify-end">
@@ -324,7 +323,7 @@ export default {
         </template>
     </v-dialog>
     <v-card-text>
-        <v-btn variant="outlined" color="primary" :prepend-icon="icon.mdiPlus" @click="goTo()" elevation="4" rounded="lg">
+        <v-btn variant="outlined" color="primary" :prepend-icon="icons.mdiPlus" @click="goTo()" elevation="4" rounded="lg">
             Ajouter
         </v-btn>
     </v-card-text>
@@ -361,18 +360,8 @@ export default {
                                         <template v-slot:append>
                                             <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
                                         </template>
-                                    </v-toolbar>
-                                </v-img>
 
-                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
-                                <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
-                                <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-
-                </v-container>
-                <div class="d-flex align-center justify-space-around pa-4">
+                                        </v-container> <div class="d-flex align-center justify-space-around pa-4">
 
                     <span class="grey--text">Items per page</span>
                     <v-menu>
@@ -392,6 +381,12 @@ export default {
                     </span>
                 </div>
             </v-window-item>
+            =======
+            <template v-slot:append>
+                <v-icon color="primary" :icon="icons.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+            </template>
+            </v-toolbar>
+            </v-img>
 
             <v-window-item value="2">
                 <v-container>
@@ -421,14 +416,14 @@ export default {
                                     </v-toolbar>
                                 </v-img>
 
-                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
+                             <P class="text-h6" style="text-align: center;">{{t.name}} </P>
                                 <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
                                 <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-                            </v-card>
-                        </v-col>
-                    </v-row>
-                </v-container>
-                <div class="d-flex align-center justify-space-around pa-4">
+                </v-card>
+            </v-col>
+        </v-row>
+    </v-container>
+    <div class="d-flex align-center justify-space-around pa-4">
 
                     <span class="grey--text">Items per page</span>
                     <v-menu>
@@ -477,15 +472,13 @@ export default {
                                     </v-toolbar>
                                 </v-img>
 
-                                <P class="text-h6" style="text-align: center;">{{t.name}} </P>
-                                <v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
-                                <v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
-                            </v-card>
-                        </v-col>
-                    </v-row>
+                            <template v-slot:append>
+                                <v-icon color="primary" :icon="icons.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+                            </template>
+                        </v-toolbar>
+                    </v-img>
 
-                </v-container>
-                <div class="d-flex align-center justify-space-around pa-4">
+                     </v-container> <div class="d-flex align-center justify-space-around pa-4">
 
                     <span class="grey--text">Items per page</span>
                     <v-menu>
@@ -505,9 +498,21 @@ export default {
                     </span>
                 </div>
 
-            </v-window-item>
-        </v-window>
-    </v-card-text>
+</v-window-item>
+</v-window>
+<p class="text-h6" style="text-align: center">{{ t.name }}</p>
+<v-switch v-if="t.statut == 1" color="primary" :model-value="true" label="Désactiver" @click="activeItem(t)"></v-switch>
+<v-switch v-if="t.statut == 0" color="primary" class="custom-red" :model-value="false" label="Activer" @click="activeItem(t)"></v-switch>
+</v-card>
+</v-col>
+</v-row>
+</v-container>
+<div style="align: center">
+    <v-pagination v-model="page" :items-per-page="itemsPerPage" :length="univlenghtCount" :total-visible="6"></v-pagination>
+</div>
+</v-window-item>
+</v-window>
+</v-card-text>
 </v-card>
 </template>
 

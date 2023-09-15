@@ -15,6 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('code')->nullable();
             $table->string('libelle')->nullable();
+            $table->foreignIdFor(\App\Models\Section::class)->nullable()
+                ->index()
+                ->references('id')->on('sections');
             $table->timestamps();
         });
     }

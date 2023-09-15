@@ -13,26 +13,39 @@ return new class extends Migration
     {
         Schema::create('matieres', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->nullable();
             $table->string('nom')->nullable();
-            $table->foreignIdFor(\Modules\Enseignement\Entities\Ue::class)->nullable()
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
-                ->references('id')->on('ues');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)->nullable()
-                ->index()
-                ->references('id')->on('cycle_filieres');
+                ->references('id')->on('etablissement_section');
             $table->timestamps();
+        });
+
+        Schema::create('filiere_matiere_ues_', function (Blueprint $table) {
+            $table->id();
+            $table->string('volume_horaire')->nullable();
+            $table->string('coefficient')->nullable();
+            $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)
+                ->nullable()->index()
+                ->references('id')->on('cycle_filieres');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)
+                ->nullable()->index()
+                ->references('id')->on('matieres');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Ue::class)
+                ->nullable()->index()
+                ->references('id')->on('ues');
         });
 
         Schema::create('niveau_matieres', function (Blueprint $table) {
             $table->id();
             $table->string('volume_horaire')->nullable();
-            $table->string('cefficient')->nullable();
+            $table->string('coefficient')->nullable();
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
                 ->references('id')->on('niveaux');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)
+            $table->foreignIdFor(\Modules\Enseignement\Entities\FiliereMatiereUe::class)
                 ->index()
-                ->references('id')->on('matieres');
+                ->references('id')->on('filiere_matiere_ues_');
         });
     }
 

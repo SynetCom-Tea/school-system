@@ -2,6 +2,7 @@
 
 namespace Modules\GestionNote\Http\Controllers;
 
+use App\Models\Section;
 use Modules\GestionNote\Entities\Periode;
 use Modules\GestionNote\Entities\TypeEvaluation;
 use Modules\GestionNote\Entities\Evaluation;
@@ -10,12 +11,9 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 
 use Inertia\Inertia;
-use Modules\GestionNote\Entities\Enseignant;
-use Modules\GestionNote\Entities\EnseignementAnnee;
-use Modules\GestionNote\Entities\Matiere;
-use Modules\GestionNote\Entities\Niveau;
-use Modules\GestionNote\Entities\NiveauMatiere;
-use Modules\GestionNote\Entities\Section;
+use Modules\Enseignement\Entities\Enseignant;
+use Modules\Enseignement\Entities\EnseignementAnnee;
+use Modules\Enseignement\Entities\NiveauMatiere;
 
 class EvaluationController extends Controller
 {

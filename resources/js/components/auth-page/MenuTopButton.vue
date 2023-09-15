@@ -79,7 +79,7 @@ export default {
   },
   computed: {
     getListMenus() {
-      let list = this.listMenus();
+      let list = this.listMenus(this.$page.props);
       let flattened;
       let flattened2 = [];
 
