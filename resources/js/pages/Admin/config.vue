@@ -25,7 +25,7 @@
 
         <template v-slot:item.2>
 
-            <v-card :title="currentTitle" flat>
+            <v-card  flat>
                 <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
             </v-card>
         </template>
@@ -75,21 +75,21 @@
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
                 <v-card-text v-if="type=='3'&& lmd == null">
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
             </v-card>
         </template>
-       
+
         <template v-slot:item.6 >
-            <v-card :title="currentTitle" flat>
+            <v-card >
                 <v-card-text v-if="type=='4' && lmd != null">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
                 <v-card-text v-if="type=='4' && lmd == null">
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
                 <v-card-text v-if="type=='3'">
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sup-ue-form @formSubmitted="getNiveauMatiereUeSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
             </v-card>
         </template>
@@ -97,7 +97,7 @@
         <template v-slot:item.7>
             <v-card :title="currentTitle" flat>
                 <v-card-text>
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
+                    <niveau-matiere-sup-ue-form @formSubmitted="getNiveauMatiereUeSupForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
                 </v-card-text>
             </v-card>
         </template>
@@ -111,6 +111,7 @@
   <script>
     import MatiereForm from '@/components/admin/matiere.vue';
     import NiveauMatiereSupForm from '@/components/admin/niveau-matiere-sup.vue';
+    import NiveauMatiereUeSupForm from '@/components/admin/niveau-matiere-sup-ue.vue';
     import NiveauMatiereForm from '@/components/admin/niveau-matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
     import filiereForm from '@/components/admin/filiere.vue';
@@ -135,6 +136,7 @@
     ueForm,
     fraisForm,
     NiveauMatiereSupForm,
+    NiveauMatiereUeSupForm,
     NiveauMatiereForm,
     Loader,
     // Datatable,
@@ -159,6 +161,7 @@
         formMatiere: {},
         formClasse: {},
         formNiveauMatiereSup: {},
+        NiveauMatiereUeSupForm:{},
         formNiveauMatiere: {},
         formFaculte: {},
         formFiliere:{},
@@ -189,11 +192,18 @@
           console.log('Données du formulaire de la classe :', this.formClasse);
         },
         getNiveauMatiereSupForm(donnees){
-          this.formNiveauSupMatiere = donnees
+          this.formNiveauMatiereSup = donnees
           this.suivant = true
           console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSup);
 
         },
+        getNiveauMatiereUeSupForm(donnees){
+          this.formNiveauMatiereUeSup = donnees
+          this.suivant = true
+          console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereUeSup);
+
+        },
+
         getNiveauMatiereForm(donnees){
           this.formNiveauMatiere = donnees
           this.suivant = true
@@ -253,14 +263,14 @@
                 }else{
                     this.items = ['MATIERES','SALLES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
                 }
-                
+
             }else if(this.type == '4'){
                 if(this.lmd!=null){
                     this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
                 }else{
                     this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
                 }
-               
+
             }
             return this.items
         },
@@ -291,21 +301,21 @@
                 }else{
                     if(this.lmd!=null){
                         return 'UNITE D\'ENSEIGNEMENT';
-                       
+
                     }else{
                         return 'AFFECTATION DE MATIERES AUX NIVEAUX'
                     }
-                    
-                    
+
+
                     }
           case 6:if (this.type === '4') {
                     if(this.lmd!=null){
                         return 'UNITE D\'ENSEIGNEMENT';
-                       
+
                     }else{
                         return 'AFFECTATION DE MATIERES AUX NIVEAUX'
                     }
-                    
+
                 }else{ return 'AFFECTATION DE MATIERES AUX NIVEAUX'}
           case 7: return 'AFFECTATION DE MATIERES AUX NIVEAUX'
         }

@@ -22,10 +22,7 @@
               Cette section vous permet de configurer les matieres enseignées dans cet
               établissement
             </li>
-            <li v-if="type == '3'">
-              Configurer également si l'établissement prend en charge le systeme
-              LMD(Licence Master Doctorat) et le régime d'évaluation
-            </li>
+
             <li>
               Le formulaire sera valide si est seulement si tous les champs obligatoires
               marqués par <span style="color: red">*</span> sont renseignés
@@ -46,37 +43,7 @@
         </div>
 
         <v-card-text style="margin: 10px">
-          <v-row v-if="type == '3'">
-            <v-col>
-              <v-switch
-                label="Souhaiterez-vous appliquez le système LMD ?"
-                v-model="form.lmd"
-                color="red"
-                inset
-              ></v-switch>
-            </v-col>
-            <v-col v-if="form.lmd">
-              <v-autocomplete
-                :items="['Type 1', 'Type 2']"
-                chips
-                closable-chips
-                :required="form.lmd"
-                color="blue-grey-lighten-2"
-                v-model="form.type_lmd"
-                label="Select"
-              ></v-autocomplete>
-            </v-col>
-            <v-col>
-              <v-switch
-                v-model="form.regime_evaluation"
-                color="indigo"
-                inset
-                :label="`Souhaiterez-vous appliquez le régime d'évaluation ?${
-                  !form.regime_evaluation ? 'Non' : 'Oui'
-                }`"
-              ></v-switch>
-            </v-col>
-          </v-row>
+         
           <v-row>
             <v-col>
               <v-switch
@@ -123,7 +90,6 @@
                 label="Libelle matiere"
                 :isRequired="true"
                 placeholder="Libelle matiere"
-                required
                 v-model="matiere.libelle"
               ></TextField>
             </v-col>
