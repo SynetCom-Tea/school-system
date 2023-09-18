@@ -223,10 +223,10 @@ export default {
       e.preventDefault();
       this.form.post(route("login"), {
         onSuccess: (e) => {
-          // console.log("e from success:", e);
+          console.log("e from success:", e);
         },
         onError: (e) => {
-          // console.log("e from  onError:", e);
+          console.log("e from  onError:", e);
           if (e.email == "These credentials do not match our records.") {
             this.errors.text = "Identifiant ou mot de passe incorrect";
           }

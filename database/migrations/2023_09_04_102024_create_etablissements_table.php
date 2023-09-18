@@ -13,14 +13,17 @@ return new class extends Migration
     {
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
-            $table->string('name')->nullable();
-            $table->string('email')->nullable();
-            $table->string('adresse')->nullable();
-            $table->json('telephone')->nullable();
-            $table->string('ville')->nullable();
+            $table->string('name');
+            $table->string('email');
+            $table->string('adresse');
+            $table->json('telephone');
+            $table->string('ville');
+            $table->boolean('statut');
             $table->string('logo')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
                 ->references('id')->on('type_etablissements');
+            $table->foreignIdFor(\App\Models\SystemeLmd::class)->nullable()->index()
+                ->references('id')->on('systeme_lmds');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -28,17 +31,12 @@ return new class extends Migration
         Schema::create('etablissement_sections', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
-            $table->integer('regime_evaluation')->nullable();
             $table->foreignIdFor(\App\Models\Etablissement::class)
                 ->index()
                 ->references('id')->on('etablissements');
             $table->foreignIdFor(\App\Models\Section::class)
                 ->index()
                 ->references('id')->on('sections');
-            $table->foreignIdFor(\App\Models\SystemeLmd::class)->nullable()->index()
-                ->references('id')->on('systeme_lmds');
-            $table->integer('configuration')->nullable();
-            $table->timestamps();
         });
     }
 
