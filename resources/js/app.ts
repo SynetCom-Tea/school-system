@@ -42,8 +42,6 @@ import Select from '../js/components/customizedComponents/Select.vue'
 import ModalDetailUpdate from '../js/components/customizedComponents/ModalDetailUpdate.vue'
 import Toolbar from '../js/components/customizedComponents/Toolbar.vue'
 import Datatable from "../js/components/customizedComponents/Datatable.vue"
-import Dialog from "../js/components/customizedComponents/Dialog.vue"
-
 // import VeeValidate, { Validator } from "vee-validate";
 // import fr from "vee-validate/dist/locale/";
 
