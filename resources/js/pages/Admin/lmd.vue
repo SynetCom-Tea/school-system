@@ -6,8 +6,42 @@
       :toolbarTitle="Title"
     ></Toolbar>
     <br>
-    <v-card class="mx-auto" max-width="1000">
-        <v-card-title>{{ Title }}</v-card-title>
+    <v-card class="mx-auto" variant="outlined" style="border: 2px solid #7d002c">
+        <v-card-title style="color: white; background-color: #7d002c"
+          >{{ Title }}</v-card-title>
+        <v-divider></v-divider>
+        <br />
+        <div style="margin: 10px">
+          <v-alert
+            v-model="alertFirst"
+            border="start"
+            variant="tonal"
+            closable
+            close-label="Close Alert"
+            color="primary"
+            type="info"
+            title="Note"
+          >
+            <li>Cette section vous permet d'attribuer les matieres aux <span v-if="type == '3' || type == '4'">filieres</span><span v-else>niveaux</span></li>
+            <li >Configurer également si l'établissement prend en charge le systeme LMD(Licence Master Doctorat) et le régime d'évaluation </li>
+            <!-- <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li> -->
+          </v-alert>
+
+          <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+            <Button
+              style="height: 30px"
+              type="button"
+              title="Plier la note"
+              @click="onclickAlertButton('first')"
+              variant="outlined"
+              color="primary"
+              nameButton="Relire la note"
+            >
+            </Button>
+          </div>
+        </div>
+        <v-divider></v-divider>
+    <!-- <v-card class="mx-auto" max-width="1000"> -->
         <v-form v-model="valid">
             <v-card-text>
                 <v-row>
@@ -31,7 +65,7 @@
                         closable-chips
                         required
                         color="blue-grey-lighten-2"
-                        
+
                         label="Select"
                     ></v-autocomplete>
                 </v-col>
@@ -61,7 +95,7 @@
     </AuthenticatedLayout>
   </template>
   <script>
-    
+
     import { router,useForm} from '@inertiajs/vue3';
     import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
     import Toolbar from "@/components/customizedComponents/Toolbar.vue";
@@ -71,7 +105,7 @@
   export default {
     props:['type','lmds'],
     components: {
-   
+
     Loader,
     // Datatable,
     Toolbar,
@@ -87,6 +121,8 @@
     mdiGift,
   },
     data: () => ({
+        alertFirst: true,
+        alertSecond: true,
         icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         valid: false,
         check: false,
@@ -99,6 +135,12 @@
     }),
 
     methods: {
+        onclickAlertButton(type) {
+        if (type == "second") {
+            this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
+        },
         test(){
             if(this.form.lmd == true && this.form.type_lmd !== null){
                 this.check = false
@@ -124,20 +166,20 @@
                         timerProgressBar: true,
                     });
                 },
-            });          
+            });
         },
-      
+
         goBack() {
             router.get(route('dashboard'))
         },
     },
 
     mounted() {
-     
+
       // console.log('Admin etablissement',this.$page.props.admin_etablissement.etablissement_id)
     },
     computed: {
-       
+
       Title () {
         switch (this.type) {
           case '1': return 'SECTION PRIMAIRE'

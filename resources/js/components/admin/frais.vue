@@ -96,7 +96,7 @@
                                 class="mt-2"
                                 v-model="frais.filiere"
                                 item-value="id"
-                                item-title="libelle"
+                                item-title="code"
                                 chips
                                 closable-chips
                                 color="blue-grey-lighten-2"
@@ -316,13 +316,13 @@
                 this.filieres.departements.forEach(element => {
                     this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
                 });
-            } 
-        } 
+            }
+        }
     },
     mounted() {
-        // 
+        //
         console.log('resultat',this.tabsFilieres)
-        
+
         this.addRow()
     },
   }

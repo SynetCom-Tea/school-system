@@ -1,93 +1,227 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
         <v-container fluid>
-            <v-row>
-                <v-alert type="info">
-                    <li>Cette section vous permet d'attribuer les matieres aux <span v-if="type == '3' || type == '4'">filieres</span><span v-else>niveaux</span></li>
-                    <li v-if="type=='3'">Configurer également si l'établissement prend en charge le systeme LMD(Licence Master Doctorat) et le régime d'évaluation </li>
-                    <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
-                </v-alert>
-            </v-row>
-            <br>
+            <v-card  variant="outlined" style="border: 2px solid #7d002c">
+        <v-card-title style="color: white; background-color: #7d002c"
+          >AFFECTATION DE MATIERES AUX NIVEAUX</v-card-title>
+        <v-divider></v-divider>
+        <br />
+        <div style="margin: 10px">
+          <v-alert
+            v-model="alertFirst"
+            border="start"
+            variant="tonal"
+            closable
+            close-label="Close Alert"
+            color="primary"
+            type="info"
+            title="Note"
+          >
+            <li>Cette section vous permet d'attribuer les matieres aux <span v-if="type == '3' || type == '4'">filieres</span><span v-else>niveaux</span></li>
+            <li v-if="type=='3'">Configurer également si l'établissement prend en charge le systeme LMD(Licence Master Doctorat) et le régime d'évaluation </li>
+            <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
+
+          </v-alert>
+
+          <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+            <Button
+              style="height: 30px"
+              type="button"
+              title="Plier la note"
+              @click="onclickAlertButton('first')"
+              variant="outlined"
+              color="primary"
+              nameButton="Relire la note"
+            >
+            </Button>
+          </div>
+        </div>
+        <v-divider></v-divider>
             <v-card>
                 <v-card-text>
                     <v-row>
                         <v-col md="2"></v-col>
                         <v-col md="4">
-                            <v-autocomplete label="Filieres" item-title="libelle" item-value="id" :items="tabsFilieres" v-model="form.filiere" chips></v-autocomplete>
+                            <Autocomplete
+                            label="Filieres"
+                            item-title="libelle"
+                            item-value="id"
+                            :items="tabsFilieres"
+                            v-model="form.filiere"
+                            chips>
+                        </Autocomplete>
                         </v-col>
                         <v-col md="4">
-                            <v-autocomplete label="Niveaux" :item-title="formatNiveauLabel" item-value="id" :items="niveaux" v-model="form.niveau" chips></v-autocomplete>
+                            <Autocomplete
+                            label="Niveaux"
+                            :item-title="formatNiveauLabel"
+                            item-value="id"
+                            :items="niveaux"
+                            v-model="form.niveau"
+                            chips>
+                        </Autocomplete>
                         </v-col>
                     </v-row>
                     <!-- <v-divider></v-divider> -->
                     <v-card class="mx-auto" max-width="1200">
+                        <v-card-title flat style="color:#7d002c; background-color: white">Unité d'enseingment</v-card-title>
                         <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
                             <v-row>
                                 <v-col md="1"></v-col>
                                 <v-col md="3">
 
-                                    <v-autocomplete label="Unité d'enseignement" item-title="libelle" item-value="id" :items="uetabs" v-model="ue.ue" @update:modelValue="verifyUe(form.ues[i])" chips></v-autocomplete>
+                                    <Autocomplete
+                                    label="Unité d'enseignement"
+                                    class="mt-2"
+                                    item-title="libelle"
+                                    item-value="id"
+                                    :items="uetabs"
+                                    v-model="ue.ue"
+                                    @update:modelValue="verifyUe(form.ues[i])"
+                                    chips>
+                                </Autocomplete>
                                 </v-col>
                                 <v-col md="2">
 
-                                    <TextField label="credit" :isRequired="true" placeholder="credit" v-model="form.ues[i].credit" required></TextField>
+                                    <TextField label="credit" class="mt-2" :isRequired="true" placeholder="credit" v-model="form.ues[i].credit" required></TextField>
                                 </v-col>
                                 <v-col md="2">
 
-                                    <TextField label="Volume horaire" :isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></TextField>
+                                    <TextField label="Volume horaire"  class="mt-2" :isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></TextField>
                                 </v-col>
                                 <v-col md="1">
                                     <br>
-                                    <v-btn variant="outlined" :disabled="form.ues ? !(form.ues.length > 1) : true" icon @click="removeRowUe(form.ues[i])" fab small color="error">
+                                    <Button
+                                        type="button"
+                                        variant="outlined"
+                                        :disabled="form.ues ? !(form.ues.length > 1) : true"
+                                        icon
+                                        @click="removeRowUe(form.ues[i])"
+                                        size="large"
+                                        small
+                                        color="error"
+                                    >
                                         <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                                    </v-btn>
+                                    </Button>
+                                    <!-- <v-btn variant="outlined" :disabled="form.ues ? !(form.ues.length > 1) : true" icon @click="removeRowUe(form.ues[i])" fab small color="error">
+                                        <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                                    </v-btn> -->
                                 </v-col>
                             </v-row>
                             <!-- <v-divider></v-divider> -->
                             <v-card class="mx-auto" max-width="800">
+                                <v-card-title flat style="color:#7d002c; background-color: white">les Matières</v-card-title>
                                 <v-card-text>
                                     <v-row disabled :key="matiere.id" v-for="(matiere, i) in ue.matieres">
                                         <v-col md="1"></v-col>
                                         <v-col md="4">
-                                            <v-autocomplete label="Matieres" item-title="libelle" item-value="id" :items="matieres" chips v-model="ue.matieres[i].matiere" @update:modelValue="verify(ue,i, $event)">
-                                            </v-autocomplete>
+                                            <Autocomplete
+                                            label="Matieres"
+                                            class="mt-2"
+                                            item-title="libelle"
+                                            item-value="id"
+                                            :items="matieres"
+                                            chips v-model="ue.matieres[i].matiere"
+                                            @update:modelValue="verify(ue,i, $event)">
+                                            </Autocomplete>
                                         </v-col>
                                         <v-col md="2">
 
-                                            <TextField label="Coeff" placeholder="Coeff" required v-model="ue.matieres[i].coefficient"></TextField>
+                                            <TextField label="Coeff" class="mt-2" placeholder="Coeff" :isRequired="true" v-model="ue.matieres[i].coefficient"></TextField>
                                         </v-col>
                                         <v-col md="2">
 
-                                            <TextField label="VH" :isRequired="true" placeholder="VH" required v-model="ue.matieres[i].volume_horaire" @blur="verifySomme(ue,i)"></TextField>
+                                            <TextField label="VH"  class="mt-2" :isRequired="true" placeholder="VH"  v-model="ue.matieres[i].volume_horaire" @blur="verifySomme(ue,i)"></TextField>
                                         </v-col>
                                         <v-col md="1">
                                             <br>
-                                            <v-btn variant="outlined" :disabled="ue.matieres ? !(ue.matieres.length > 1) : true" icon @click="removeRow(ue,ue.matieres[i])" fab small color="error">
+                                            <Button
+                                                type="button"
+                                                variant="outlined"
+                                                :disabled="ue.matieres ? !(ue.matieres.length > 1) : true"
+                                                icon
+                                                @click="removeRow(ue,ue.matieres[i])"
+                                                size="large"
+                                                small
+                                                color="error"
+                                            >
                                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                                            </v-btn>
+                                            </Button>
+                                            <!-- <v-btn variant="outlined" :disabled="ue.matieres ? !(ue.matieres.length > 1) : true" icon @click="removeRow(ue,ue.matieres[i])" fab small color="error">
+                                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                                            </v-btn> -->
                                         </v-col>
                                     </v-row>
                                     <v-row>
+                                        <v-col offset-md="11" cols="4">
+                                            <Button
+                                                type="button"
+                                                variant="outlined"
+                                                @click="addRow(ue)"
+                                                icon
+                                                size="large"
+                                                color="primary"
+                                            >
+                                                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                                            </Button>
+                                        </v-col>
+
+                                    </v-row>
+                                    <!-- <v-row>
+
                                         <v-col offset-md="11" md="1">
                                             <v-btn variant="outlined" icon @click="addRow(ue)" fab small color="info">
                                                 <v-icon :icon="icons.mdiPlusCircle"></v-icon>
                                             </v-btn>
                                         </v-col>
-                                    </v-row>
+                                    </v-row> -->
                                 </v-card-text>
                             </v-card>
                         </v-card-text>
                         <v-row>
+                            <v-col offset-md="11" cols="4">
+                                <Button
+                                    type="button"
+                                    variant="outlined"
+                                    @click="addRowUe"
+                                    icon
+                                    size="large"
+                                    color="primary"
+                                >
+                                    <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                                </Button>
+                            </v-col>
+
+                        </v-row>
+                        <!-- <v-row>
                             <v-col offset-md="11" md="1">
                                 <v-btn variant="outlined" :disabled="uetabs ? (uetabs.length == 0) : true" icon @click="addRowUe" fab small color="info">
                                     <v-icon :icon="icons.mdiPlusCircle"></v-icon>
                                 </v-btn>
                             </v-col>
-                        </v-row>
+                        </v-row> -->
                     </v-card>
                 </v-card-text>
+                <br>
             </v-card>
+            <br>
+            <v-row class="text-center ml-3 mb-3"
+            ><v-col cols="auto">
+                <Button
+                type="submit"
+                title="Enregistrer cette étape"
+                nameButton="Enregistrer"
+                variant="flat"
+                @click="submitForm"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button> </v-col
+            ></v-row>
+        </v-card>
             <br>
             <v-row>
                 <v-col md="5"></v-col>
@@ -111,6 +245,8 @@
         mdiInformation
     },
     data: () => ({
+        alertFirst: true,
+        alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -125,6 +261,12 @@
         }),
     }),
     methods: {
+        onclickAlertButton(type) {
+        if (type == "second") {
+            this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
+        },
         verifySomme(ue,i){
             const somme = ue.matieres.reduce((accumulator, currentItem) => {
                 return accumulator + parseFloat(currentItem.volume_horaire);
@@ -262,12 +404,12 @@
                 this.filieres.departements.forEach(element => {
                     this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
                 });
-            } 
-        } 
+            }
+        }
     },
     mounted() {
-       
-        
+
+
         console.log('resultat',this.tabsFilieres)
         console.log('ues',this.ues)
         this.uetabs = this.ues
