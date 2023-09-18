@@ -91,7 +91,7 @@
                 type="submit"
                 density="comfortable"
                 class="text-center"
-                :isBlock="true"
+                block
                 size="large"
                 style="text-transform: none"
               >

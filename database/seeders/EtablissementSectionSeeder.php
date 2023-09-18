@@ -204,6 +204,7 @@ class EtablissementSectionSeeder extends Seeder
                 'section_id' => 4,
             ),
         ));
+
     }
     // public function run(): void
     // {

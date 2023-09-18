@@ -31,9 +31,9 @@ class EtablissementController extends Controller
     {
         // dd(TypeEtablissement::all());
         return Inertia::render('Etablissement/Index', [
-            'ecoles' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id', '2')->get(),
-            'instituts' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id', '3')->get(),
-            'universités' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id', '1')->get(),
+            'ecoles' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','2')->get(),
+            'instituts' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','3')->get(),
+            'universites' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','1')->get(),
             'types' => TypeEtablissement::all(),
             'sections' => Section::all()
         ]);

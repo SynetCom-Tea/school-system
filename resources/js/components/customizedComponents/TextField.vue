@@ -63,6 +63,10 @@ export default {
       type: String,
       required: false,
     },
+    appendIcon: {
+      type: String,
+      required: false,
+    },
     successMessage: {
       type: String,
       required: false,
@@ -106,7 +110,6 @@ export default {
     :max-width="maxWidthResponsive"
   >
     <v-text-field
-      :type="type"
       v-model="modelValue"
       :variant="variant"
       :hint="hint"
@@ -115,18 +118,19 @@ export default {
       :name="name"
       :placeholder="placeholder"
       :rules="rules"
-      :prepend-inner-icon="icon"
       :base-color="baseColorValue"
       :color="colorValue"
       @change="onchangeField"
       :class="class"
+      :append-icon="appendIcon"
     >
       <template #label v-if="isRequired">
-        <span id="required-field">{{ label }}</span>
+        <span id="required-field">{{ label }} <slot /></span>
       </template>
       <template #label v-else>
         {{ label }}
       </template>
+      <slot />
     </v-text-field>
   </v-responsive>
 </template>

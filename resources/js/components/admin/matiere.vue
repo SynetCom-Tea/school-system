@@ -1,5 +1,5 @@
 <template>
-  <form novalidate>
+  <form novalidate @submit.prevent="submitForm">
     <v-container fluid>
       <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
@@ -22,10 +22,10 @@
               Cette section vous permet de configurer les matieres enseignées dans cet
               établissement
             </li>
-
             <li>
-              Le formulaire sera valide si est seulement si tous les champs obligatoires
-              marqués par <span style="color: red">*</span> sont renseignés
+              Le formulaire sera valide <strong>si et seulement si </strong>tous les
+              champs obligatoires marqués par <span style="color: red">*</span> sont
+              renseignés
             </li>
           </v-alert>
 
@@ -64,11 +64,11 @@
                 label="File input"
                 variant="solo-inverted"
               ></v-file-input>
-              
+
             </v-col>
-            <v-col v-if="importation"><v-btn 
-                class="ma-2" 
-                outlined 
+            <v-col v-if="importation"><v-btn
+                class="ma-2"
+                outlined
                 type="button"
                 color="primary"
                 href="../models/echantillons/fiche_echantillonage.ods"
@@ -94,7 +94,7 @@
             <v-col cols="4">
               <TextField
                 class="mt-2"
-                label="Libelle matiere"
+                label="Libelle matière"
                 :isRequired="true"
                 placeholder="Libelle matiere"
                 v-model="matiere.libelle"
@@ -102,14 +102,34 @@
             </v-col>
             <v-col cols="4">
               <br />
+
+              <v-tooltip v-model="tooltipModel" v-if="form.matieres.length == 1" bottom>
+                <template v-slot:activator="{ props }">
+                  <Button
+                    variant="outlined"
+                    v-bind="props"
+                    icon
+                    size="large"
+                    small
+                    color="error"
+                  >
+                    <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                  </Button>
+                </template>
+                <div style="width: 200px">
+                  Ce bouton reste inactif.Vous ne pouvez supprimer que s'il y'a au moins 2
+                  lignes.
+                </div>
+              </v-tooltip>
               <Button
                 type="button"
                 variant="outlined"
-                :disabled="!(form.matieres.length > 1)"
+                v-if="form.matieres.length >= 2"
                 icon
                 @click="removeRow(matiere)"
                 size="large"
                 small
+                title="Supprimer la ligne"
                 color="error"
               >
                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
@@ -122,6 +142,7 @@
                 type="button"
                 variant="outlined"
                 @click="addRow"
+                title="Ajouter une nouvelle ligne"
                 icon
                 size="large"
                 color="primary"
@@ -141,7 +162,7 @@
               @click="submitForm"
               density="comfortable"
               class="text-center"
-              :isBlock="true"
+              block
               size="large"
               style="text-transform: none"
             >
@@ -163,9 +184,10 @@ export default {
     mdiCloseCircle,
     mdiInformation,
     XlsxRead,
-    XlsxJson
+    XlsxJson,
   },
   data: () => ({
+    tooltipModel: false,
     alertFirst: true,
     alertSecond: true,
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
@@ -208,10 +230,10 @@ export default {
         this.addRow();
       }
     },
-    submitForm(e) {
+    submitForm() {
       // Empêche l'envoi du formulaire par défaut
-      console.log("e from submit:", e);
-      e.preventDefault();
+      // console.log("e from submit:", e);
+      // e.preventDefault();
       // Valide le formulaire avant de l'envoyer
       if (this.isValid()) {
         this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
@@ -220,7 +242,7 @@ export default {
         this.$emit("formSubmitted", this.form);
         this.$swal.fire({
           title: "Réussi",
-          text: "Mise à jour réussi avec succes!",
+          text: "Mise à jour réussie avec succès!",
           icon: "success",
           confirmButtonText: "OK",
         });

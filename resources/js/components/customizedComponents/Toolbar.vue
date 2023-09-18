@@ -105,8 +105,6 @@ export default {
         <v-spacer></v-spacer>
         <div style="width: 200px">
           <Autocomplete
-            v-model="modelItem"
-            :items="items"
             :append-inner-icon="icons.mdiMicrophone"
             auto-select-first
             style="margin-top: 20px"

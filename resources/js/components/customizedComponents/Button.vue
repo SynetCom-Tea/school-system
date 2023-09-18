@@ -3,10 +3,6 @@ import { ref } from "vue";
 
 export default {
   props: {
-    type: {
-      type: String,
-      default: "text",
-    },
     variant: {
       type: String,
       required: false,
@@ -62,11 +58,8 @@ export default {
 </script>
 <template>
   <v-btn
-    :type="type"
     :class="class"
-    :rounded="isRounded"
     :style="style"
-    :loading="isLoading"
     :variant="variant"
     :density="density"
     v-bind="$attrs"
@@ -75,7 +68,6 @@ export default {
     :append-icon="appendIcon"
     :color="color"
     :size="sizeButton"
-    :block="isBlock"
   >
     {{ nameButton }}
     <slot />
