@@ -111,7 +111,7 @@
                             </v-list-item>
                         </v-list-group>
 
-                        <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles == 'Note'">
+                        <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles == 'Enseignant'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>

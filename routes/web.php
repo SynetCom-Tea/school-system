@@ -61,7 +61,9 @@ Route::get('/dashboard', function () {
 //     Route::post('/note/enregistrer', [NoteController::class, 'store'])->name('note.save');
 // });
 Route::middleware('auth')->group(function () {
+    // Route::group(['middleware' => ['role:Super-administrateur','role:manage_system']], function () {
     Route::resource('users', UserController::class);
+    // });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

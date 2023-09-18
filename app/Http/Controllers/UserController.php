@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -74,7 +75,7 @@ class UserController extends Controller
             'apprenant_id'=>$request->apprenant_id
         ]);
         if ($request->section) { 
-            $user->etablissement_section_id = EtablissementSection::where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->section)->get()[0]->id;
+            $user->etablissement_section_id = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->section)->get()[0]->id;
         }
         foreach($request->roles as $role) {            
             $permissions = PermissionRole::where('role_id',$role)->where('user_id',Auth::user()->id)->get();
@@ -82,6 +83,7 @@ class UserController extends Controller
         foreach ($permissions as $permission) {
             $permis[] = $permission->permission_id;
         }
+        $user->syncRoles($request->roles);
         $user->syncPermissions($permis);
         if($request->etablissement_id){
             $etablissement = Etablissement::find($request->etablissement_id);

@@ -37,13 +37,7 @@ export default {
             search: '',
             dialog: false,
             dialogDelete: false,
-            headers: [{
-                    title: 'Id',
-                    align: 'start',
-                    key: 'id',
-                    sortable: false,
-                    key: "id",
-                },
+            headers: [
                 {
                     title: "Nom",
                     align: "center",
@@ -53,16 +47,6 @@ export default {
                     title: "Prénom",
                     align: "center",
                     key: "prenom"
-                },
-                {
-                    title: "Sexe",
-                    align: "center",
-                    key: "sex"
-                },
-                {
-                    title: "Téléphone",
-                    align: "center",
-                    key: "telephone"
                 },
                 {
                     title: "Email",

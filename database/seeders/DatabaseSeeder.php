@@ -21,10 +21,12 @@ class DatabaseSeeder extends Seeder
             EtablissementsTableSeeder::class,
             EtablissementSectionSeeder::class,
             ClasseSeeder::class,
-            AnneeScolaireSeeder::class,
-            RoleSeeder::class,
             ClasseAnneeSeeder::class,
             ApprenantSeeder::class,
+            EnseignantSeeder::class,
+            AnneeScolaireSeeder::class,
+            RoleSeeder::class,
+            
             // SalleSeeder::class,
 
             // EnseignementDatabaseSeeder::class,

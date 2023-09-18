@@ -105,9 +105,9 @@ export default {
                 <v-col v-if="$page.props.auth.user.id !=1">
                     <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" multiple chips clearable v-model="form.roles">
                     </Autocomplete>
-                    <Autocomplete label="Enseignement" v-if="form.roles==2" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="apprenants" chips clearable>
+                    <Autocomplete label="Enseignant" v-if="form.roles==3" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="enseignants" chips clearable>
                     </Autocomplete>
-                    <Autocomplete label="Apprenants" v-if="form.roles==3" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="enseignants" chips clearable>
+                    <Autocomplete label="Apprenants" v-if="form.roles==4" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="apprenants" chips clearable>
                     </Autocomplete>
                 </v-col>
             </v-row>
