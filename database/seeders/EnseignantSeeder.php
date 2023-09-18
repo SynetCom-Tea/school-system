@@ -2,66 +2,67 @@
 
 namespace Database\Seeders;
 
-use App\Models\Apprenant;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Enseignement\Entities\Enseignant;
 
-class ApprenantSeeder extends Seeder
+
+class EnseignantSeeder extends Seeder
 {
     /**
      * Run the database seeds.
      */
     public function run(): void
     {
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/093',
             'nom' => 'Sani Abou',
             'prenom' => 'Mahamadou',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/094',
             'nom' => 'Djafar Alambouzou',
             'prenom' => 'Madougou',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/095',
             'nom' => 'Karim Tankari',
             'prenom' => 'Alfari',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/043',
             'nom' => 'Sani Chipkaou',
             'prenom' => 'Kadidja',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/013',
             'nom' => 'Wahab Dan Takoussa',
             'prenom' => 'Rouwaida',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/099',
             'nom' => 'Garba Labizé',
             'prenom' => 'Bello',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/063',
             'nom' => 'Djibo Dan Malam',
             'prenom' => 'Mayaki',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/066',
             'nom' => 'Nourou Hainikoy',
             'prenom' => 'Bouchira',
             'etablissement_id'=>3,
         ]);
-        Apprenant::create([
+        Enseignant::create([
             'matricule' => 'Mat/055',
             'nom' => 'Nafiou Bonkaney',
             'prenom' => 'Wazir',

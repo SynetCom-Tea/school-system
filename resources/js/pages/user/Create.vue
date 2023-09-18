@@ -19,9 +19,11 @@ export default {
         mdiCheckCircle
     },
     layout: AuthenticatedLayout,
-    props: ['roles', 'sections', 'etablissements'],
+    props: ['roles', 'sections', 'etablissements', 'apprenants', 'enseignants','etablissement_sections'],
     data() {
         return {
+            role_p_a: null,
+            role_p_u: null,
             icon: {
                 mdiAccountPlusOutline,
                 mdiEmailOutline,
@@ -33,7 +35,10 @@ export default {
                 prenom: '',
                 roles: [],
                 etablissement_id: null,
-                sections: []
+                sections: [],
+                apprenant_id: null,
+                enseignant_id: null,
+                section : null
             }),
         }
     },
@@ -60,8 +65,21 @@ export default {
                 },
             });
         },
+        setInfoForEnseignant() {
+            this.form.nom = this.enseignants.filter(el => el.id == this.form.enseignant_id)[0].nom
+            this.form.prenom = this.enseignants.filter(el => el.id == this.form.enseignant_id)[0].prenom
+            console.log(this.$page.props.sections)
+        },
+        setInfoForApprenant() {
+            this.form.nom = this.apprenants.filter(el => el.id == this.form.apprenant_id)[0].nom
+            this.form.prenom = this.apprenants.filter(el => el.id == this.form.apprenant_id)[0].prenom
+        },
 
     },
+    created() {
+        this.role_p_u = this.roles.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
+        this.role_p_a = this.roles.filter(el => el.name == 'Administrateur')
+    }
 }
 </script>
 <template>
@@ -73,14 +91,24 @@ export default {
                 <v-col md="6">
                     <TextField name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true"></TextField>
                     <TextField name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom"></TextField>
-                    <v-autocomplete label="Roles" item-title="name"  item-value="id" :items="roles" variant="solo-filled" multiple chips clearable v-model="form.roles">
-                    </v-autocomplete>
+                    <Autocomplete v-if="$page.props.auth.user.id == 1" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="sections" multiple chips clearable v-model="form.sections">
+                    </Autocomplete>
+                    <Autocomplete v-if="$page.props.auth.user.id !== 1 && form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="etablissement_sections" chips clearable v-model="form.section">
+                    </Autocomplete>
                 </v-col>
-                <v-col md="6">
-                    <v-autocomplete label="Etablissement" isRequired="true" item-title="name" item-value="id" variant="solo-filled" :items="etablissements" v-model="form.etablissement_id">
-                    </v-autocomplete>
-                    <v-autocomplete label="Section" item-title="libelle" item-value="id" variant="solo-filled" :items="sections" multiple chips clearable v-model="form.sections">
-                    </v-autocomplete>
+                <v-col md="6" v-if="$page.props.auth.user.id == 1">
+                    <Autocomplete label="Roles" :isRequired="true" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" multiple chips clearable v-model="form.roles">
+                    </Autocomplete>
+                    <Autocomplete label="Etablissement" :isRequired="true" item-title="name" item-value="id" variant="solo-filled" :items="etablissements" v-model="form.etablissement_id">
+                    </Autocomplete>
+                </v-col>
+                <v-col v-if="$page.props.auth.user.id !=1">
+                    <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" multiple chips clearable v-model="form.roles">
+                    </Autocomplete>
+                    <Autocomplete label="Enseignement" v-if="form.roles==2" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="apprenants" chips clearable>
+                    </Autocomplete>
+                    <Autocomplete label="Apprenants" v-if="form.roles==3" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="enseignants" chips clearable>
+                    </Autocomplete>
                 </v-col>
             </v-row>
             <v-card-actions>

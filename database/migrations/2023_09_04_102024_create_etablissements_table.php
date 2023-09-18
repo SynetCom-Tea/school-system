@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('etablissement_section', function (Blueprint $table) {
+        Schema::create('etablissement_sections', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
             $table->integer('regime_evaluation')->nullable();

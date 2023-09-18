@@ -124,14 +124,11 @@ export default {
 <v-card>
     <page-toolbar :icon="icon.mdiAccountGroup">Gestion des utilisateurs</page-toolbar>
     <v-card-text>
-        <btn @click="goTo()">
-            <v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter
-        </btn>
-        <v-data-table :headers="headers" :items="users">
+        <Datatable :headers="headers" :items="users" :functionOnClickAddButton="goTo">
 
             <template v-slot:item.actions="{item}">
             </template>
-        </v-data-table>
+        </Datatable>
     </v-card-text>
 </v-card>
 </template>

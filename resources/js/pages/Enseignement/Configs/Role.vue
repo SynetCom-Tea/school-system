@@ -121,14 +121,15 @@ export default {
                 })
             }
             this.dialogEdit = true
-            this.form.name = item.role.name
+            this.form.role_id = item.role.id
             this.form.permissions = item.permissions.map(el => el.permission)
         },
 
         update() {
-            this.form.put(route('roles.update', this.role.item), {
+            // console.log(this.form.role_id)
+            this.form.put(route('roles.update', this.form.role_id), {
                 onFinish: () => {
-                    this.form.reset()
+                    this.form = {}
                     this.dialogEdit = false
 
                     this.$swal({
@@ -180,12 +181,13 @@ export default {
         },
         close() {
             this.dialog = false
+            this.form = {}
         },
         closeEdit() {
             this.dialogEdit = false
+            this.form = {}
         },
         setPermission(e) {
-            // console.log('message',e)
             this.$inertia.replace(this.$page.url, {
                 data: {
                     role: e,
@@ -197,8 +199,6 @@ export default {
     mounted() {
         this.role_p_u = this.roles.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
         this.role_p_a = this.roles.filter(el => el.name !== 'Super-administrateur')
-        // console.log('roles',this.roles)
-        // this.permission_roles =  this.permission_role_users
     }
 }
 </script>
@@ -220,27 +220,33 @@ export default {
                 <v-card-text>
                     <v-form>
                         <v-row v-if="$page.props.auth.user.id == 1">
-                            <Autocomplete label="Role" v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
-                            </Autocomplete>
+                            <v-col md="12">
+                                <Autocomplete label="Role" v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
+                                </Autocomplete>
+                            </v-col>
+                            <v-col md="12">
+                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
+                                </Autocomplete>
+                            </v-col>
+
                         </v-row>
                         <v-row v-if="$page.props.auth.user.id !=1">
-                            <Autocomplete label="Role" v-model="form.role_id" @update:modelValue="setPermission(form.role_id)" itemTitle="name" itemValue="id" :items="role_p_u" chips clearable>
-                            </Autocomplete>
-                        </v-row>
-                        <v-row v-if="$page.props.auth.user.id ==1">
-                            <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
-                            </Autocomplete>
-                        </v-row>
-                        <v-row v-if="$page.props.auth.user.id !== 1">
-                            <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permission" multiple chips clearable>
-                            </Autocomplete>
+                            <v-col md="12">
+                                <Autocomplete label="Role" v-model="form.role_id" @update:modelValue="setPermission(form.role_id)" itemTitle="name" itemValue="id" :items="role_p_u" chips clearable>
+                                </Autocomplete>
+                            </v-col>
+                            <v-col md="12">
+                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permission" multiple chips clearable>
+                                </Autocomplete>
+                            </v-col>
+
                         </v-row>
                     </v-form>
                 </v-card-text>
 
                 <v-card-actions class="justify-end">
                     <v-spacer></v-spacer>
-                    <Button variant="outlined"  class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit"></Button>
+                    <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit"></Button>
                 </v-card-actions>
             </v-card>
 
@@ -249,48 +255,56 @@ export default {
             <template v-slot:default="{ isActive }">
                 <v-card>
                     <v-toolbar dense style="background-color: #7d002c">
-                        <v-toolbar-title>
-                            <v-icon left :icon="icon.mdiPencil"></v-icon> Modification de Rôle
-                        </v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <v-btn :icon="icon.mdiCloseCircle" title="Annuler" color="red" @click="closeEdit()"></v-btn>
+                        <v-toolbar-title style="color:white">
+                        <v-icon left :icon="icon.mdiPencil"></v-icon> Modification de Rôle
+                    </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="closeEdit()"></v-icon>
                     </v-toolbar>
                     <v-card-text>
                         <v-form>
                             <v-row v-if="$page.props.auth.user.id == 1">
-                                <Autocomplete label="Role" disabled v-model="form.name" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
-                                </Autocomplete>
+                                <v-col md="12">
+                                    <Autocomplete label="Role" disabled v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
+                                    </Autocomplete>
+                                </v-col>
+                                <v-col md="12">
+                                    <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
+                                    </Autocomplete>
+                                </v-col>
                             </v-row>
                             <v-row v-if="$page.props.auth.user.id !=1">
-                                <Autocomplete label="Role" disabled v-model="form.name" itemTitle="name" itemValue="id" :items="role_p_u" chips clearable>
-                                </Autocomplete>
-                            </v-row>
-                            <v-row v-if="$page.props.auth.user.id ==1">
-                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
-                                </Autocomplete>
-                            </v-row>
-                            <v-row v-if="$page.props.auth.user.id !== 1">
-                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permission" multiple chips clearable>
-                                </Autocomplete>
+                                <v-col md="12">
+                                    <Autocomplete label="Role" disabled v-model="form.role_id" itemTitle="name" itemValue="id" :items="role_p_u" chips clearable>
+                                    </Autocomplete>
+                                </v-col>
+                                <v-col md="12">
+                                    <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permission" multiple chips clearable>
+                                    </Autocomplete>
+                                </v-col>
                             </v-row>
                         </v-form>
                     </v-card-text>
                     <v-card-actions class="justify-end">
                         <v-spacer></v-spacer>
-                        <v-btn small color="success" variant="outlined" @click="update">
-                            <v-icon :icon="icon.mdiPencil" left></v-icon> Modifier
-                        </v-btn>
+                        <Button variant="outlined" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modal²e" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
                     </v-card-actions>
                 </v-card>
             </template>
         </v-dialog>
-        <Datatable titleDatatable="Liste des roles" :functionEditItem="editItem" :headers="headers" :items="permission_role_users" :functionOnClickAddButton="create" :search="searchQuery">
+        <Datatable titleDatatable="Liste des roles" :headers="headers" :items="permission_role_users" :functionOnClickAddButton="create" >
             <template v-slot:item.permissions="{item}">
                 <v-chip-group column selected-class="text-purple">
                     <v-chip v-for="tag in item.columns.permissions" :key="tag">
                         {{ tag.permission.description }}
                     </v-chip>
                 </v-chip-group>
+            </template>
+            <template v-slot:item.actions="{item}">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icon.mdiPencil" color="orange">
+                </v-icon>
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icon.mdiDelete" color="red">
+                </v-icon>
             </template>
         </Datatable>
     </v-card-text>

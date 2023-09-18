@@ -23,7 +23,7 @@ return new class extends Migration
                 ->references('id')->on('etablissements');
             $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
-                ->references('id')->on('etablissement_section');
+                ->references('id')->on('etablissement_sections');
             $table->foreignIdFor(\App\Models\User::class)->nullable()
                 ->index()
                 ->references('id')->on('users');

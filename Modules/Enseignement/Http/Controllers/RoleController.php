@@ -96,14 +96,21 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        foreach($request->permissions as $permssion){
-            $permssion_roles = PermissionRole::
-                PermissionRole::update([
+        $permission_roles = PermissionRole::where('user_id',Auth::user()->id)->where('role_id',$id)->get();
+        
+        foreach($permission_roles as $permission_role){
+            // dd($permission_role->id);
+            $permission_role_users = PermissionRole::find($permission_role->id);
+            // dump($permission_role_users->id);
+            foreach ($request->permissions as $permission) {
+                $permission_role_users->updateOrCreate([
                     'user_id' => Auth::user()->id,
-                    'role_id'=>$role->id,
-                    'permission_id' => $permssion
+                    'role_id'=>$request->role,
+                    'permission_id' => $permission
                 ]);
             }
+                
+        } // die();
     }
     /**
      * Remove the specified resource from storage.
