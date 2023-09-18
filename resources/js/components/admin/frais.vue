@@ -91,16 +91,17 @@
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
                         <v-col md="4" v-if="type == '3' || type == '4'" >
 
-                            <v-autocomplete
+                            <Autocomplete
                                 :items="tabsFilieres"
+                                class="mt-2"
                                 v-model="frais.filiere"
                                 item-value="id"
-                                item-title="libelle"
+                                item-title="code"
                                 chips
                                 closable-chips
                                 color="blue-grey-lighten-2"
                                 label="filiere"
-                            ></v-autocomplete>
+                            ></Autocomplete>
                         </v-col>
                         <v-col md="4" >
 
@@ -315,13 +316,13 @@
                 this.filieres.departements.forEach(element => {
                     this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
                 });
-            } 
-        } 
+            }
+        }
     },
     mounted() {
-        // 
+        //
         console.log('resultat',this.tabsFilieres)
-        
+
         this.addRow()
     },
   }
