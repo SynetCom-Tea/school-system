@@ -39,33 +39,8 @@
         <v-card>
             <v-card-text style="margin: 10px">
 
-                <v-row>
-                <v-col>
-                    <v-switch
-                    @update:modelValue="resetForm(importation)"
-                    v-model="importation"
-                    color="#004980"
-                    inset
-                    :label="`${
-                        !importation
-                        ? 'Renseignement des données par champs'
-                        : 'Importatation d\'un fichier qui permet d\'attribuer les matieres aux filieres et niveaux'
-                    }`"
-                    ></v-switch>
-                </v-col>
-                <v-col v-if="importation">
-                    <v-file-input
-                    clearable
-                    required
-                    v-model="form.fichier_matiere"
-                    label="File input"
-                    variant="solo-inverted"
-                    ></v-file-input>
-                </v-col>
-                <v-col></v-col>
-                </v-row>
             </v-card-text>
-            <v-card-text v-if="!importation">
+            <v-card-text>
                 <v-row>
                     <!-- <v-col md="1"></v-col> -->
                     <v-col md="6">

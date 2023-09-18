@@ -81,7 +81,15 @@
                                 variant="solo-inverted"
                             ></v-file-input>
                         </v-col>
-                        <v-col></v-col>
+                        <v-col v-if="importation"><v-btn 
+                            class="ma-2" 
+                            outlined 
+                            type="button"
+                            color="primary"
+                            href="../models/echantillons/fiche_echantillonage.ods"
+                            download>
+                                Télécharger le Model
+                        </v-btn></v-col>
                     </v-row>
                 </v-card-text>
             </v-card>
@@ -263,7 +271,7 @@
                 fichier = true
             }else if(!this.importation && !this.form.frais.find((el) => {
 
-                    return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
+                    return el.niveau == null || el.niveau == '' || el.libelle == null || el.libelle == '';
 
 
                 }))

@@ -43,7 +43,6 @@
                     <v-switch label="Souhaiterez-vous importez le fichier des unités des enseignements ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
                 </v-col>
                 <v-col v-if="importation">
-                    <span style="color: red; font-size: x-large;">*</span>
                     <v-file-input
                         clearable
                         required
@@ -52,7 +51,15 @@
                         variant="solo-inverted"
                     ></v-file-input>
                 </v-col>
-                <v-col></v-col>
+                <v-col v-if="importation"><v-btn 
+                    class="ma-2" 
+                    outlined 
+                    type="button"
+                    color="primary"
+                    href="../models/echantillons/fiche_echantillonage.ods"
+                    download>
+                        Télécharger le Model
+                </v-btn></v-col>
             </v-row>
         </v-card-text>
 
@@ -116,14 +123,14 @@
     </v-card>
 
     </v-container>
-        <v-row>
+        <!-- <v-row>
             <v-col md="5"></v-col>
             <v-col md="4">
                 <v-btn type="submit" title="enregistrer" color="info">
                     Enregistrer
                 </v-btn>
             </v-col>
-        </v-row>
+        </v-row> -->
         <br>
     </form>
 </template>

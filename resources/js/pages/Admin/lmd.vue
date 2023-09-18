@@ -8,7 +8,7 @@
     <br>
     <v-card class="mx-auto" variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
-          >{{ Title }}</v-card-title>
+          >Configuration du système LMD</v-card-title>
         <v-divider></v-divider>
         <br />
         <div style="margin: 10px">
@@ -22,8 +22,7 @@
             type="info"
             title="Note"
           >
-            <li>Cette section vous permet d'attribuer les matieres aux <span v-if="type == '3' || type == '4'">filieres</span><span v-else>niveaux</span></li>
-            <li >Configurer également si l'établissement prend en charge le systeme LMD(Licence Master Doctorat) et le régime d'évaluation </li>
+            <li>Cette section vous permet de configurer si votre établissement utilise le système LMD ou pas, si OUI choisir le type du système</li>
             <!-- <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li> -->
           </v-alert>
 
@@ -55,7 +54,7 @@
                     ></v-switch>
                 </v-col>
                 <v-col v-if="form.lmd">
-                    <v-autocomplete
+                    <Autocomplete
                         :items="lmds"
                         item-title="libelle"
                         item-value="id"
@@ -67,7 +66,7 @@
                         color="blue-grey-lighten-2"
 
                         label="Select"
-                    ></v-autocomplete>
+                    ></Autocomplete>
                 </v-col>
                 <v-col>
                     <v-switch

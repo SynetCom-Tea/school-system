@@ -193,6 +193,7 @@
                             </v-col>
 
                         </v-row>
+                        <br>
                         <!-- <v-row>
                             <v-col offset-md="11" md="1">
                                 <v-btn variant="outlined" :disabled="uetabs ? (uetabs.length == 0) : true" icon @click="addRowUe" fab small color="info">
@@ -223,14 +224,14 @@
             ></v-row>
         </v-card>
             <br>
-            <v-row>
+            <!-- <v-row>
                 <v-col md="5"></v-col>
                 <v-col md="4">
                     <v-btn type="submit" title="enregistrer" color="info">
                         Enregistrer
                     </v-btn>
                 </v-col>
-            </v-row>
+            </v-row> -->
         </v-container>
     </form>
 </template>

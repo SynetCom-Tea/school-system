@@ -40,22 +40,7 @@
             <v-card >
                 <v-card-text>
 
-                    <v-row>
-                        <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des filieres ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset> </v-switch>
-                        </v-col>
-                        <v-col v-if="importation">
-
-                            <v-file-input
-                                clearable
-                                required
-                                v-model="form.fichier_filiere"
-                                label="Charger le fichier des filiére"
-                                variant="solo-inverted"
-                            ></v-file-input>
-                        </v-col>
-                        <v-col></v-col>
-                    </v-row>
+                   
                 </v-card-text>
                 <v-card-text v-if="!importation" >
                     <v-row>
@@ -66,6 +51,8 @@
                             class="mt-2"
                             :items="facultes"
                             v-model="form.faculte"
+                            itemValue="id"
+                            itemTitle="libelle"
                             chips
                             closable-chips
                             >

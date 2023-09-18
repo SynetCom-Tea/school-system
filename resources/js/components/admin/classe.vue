@@ -63,7 +63,15 @@
                                 variant="solo-inverted"
                             ></v-file-input>
                         </v-col>
-                        <v-col></v-col>
+                        <v-col v-if="importation"><v-btn 
+                            class="ma-2" 
+                            outlined 
+                            type="button"
+                            color="primary"
+                            href="../models/echantillons/fiche_echantillonage.ods"
+                            download>
+                                Télécharger le Model
+                        </v-btn></v-col>
                     </v-row>
 
                 </v-card-text>
@@ -87,7 +95,7 @@
                         <v-col cols="4">
                         <TextField label="Libelle salle" class="mt-2" :isRequired="true" placeholder="Libelle salle" required v-model="classe.libelle"></TextField>
                         </v-col>
-                        <v-col cols="2">
+                        <v-col cols="1">
                             <br />
                             <Button
                                 type="button"

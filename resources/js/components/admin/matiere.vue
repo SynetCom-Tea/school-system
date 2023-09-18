@@ -64,8 +64,17 @@
                 label="File input"
                 variant="solo-inverted"
               ></v-file-input>
+              
             </v-col>
-            <v-col></v-col>
+            <v-col v-if="importation"><v-btn 
+                class="ma-2" 
+                outlined 
+                type="button"
+                color="primary"
+                href="../models/echantillons/fiche_echantillonage.ods"
+                download>
+                    Télécharger le Model
+              </v-btn></v-col>
           </v-row>
         </v-card-text>
 
