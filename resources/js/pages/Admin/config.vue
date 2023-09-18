@@ -31,7 +31,7 @@
         </template>
 
         <template v-slot:item.3>
-            <v-card :title="currentTitle" flat>
+            <v-card  flat>
                 <!-- Tabs de la Filiere pour toute les sections -->
                 <v-card-text v-if="type == '3'">
                     <filieresup-form @formSubmitted="getFiliereForm" :type="type"  />
@@ -53,7 +53,7 @@
         </template>
 
         <template v-slot:item.4>
-            <v-card :title="currentTitle" flat>
+            <v-card  flat>
                 <v-card-text v-if="type == '3'">
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"  />
                 </v-card-text>
@@ -67,7 +67,7 @@
         </template>
 
         <template v-slot:item.5>
-            <v-card :title="currentTitle" flat>
+            <v-card  flat>
                 <v-card-text v-if="type=='4'">
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" />
                 </v-card-text>
@@ -95,7 +95,7 @@
         </template>
 
         <template v-slot:item.7>
-            <v-card :title="currentTitle" flat>
+            <v-card  flat>
                 <v-card-text>
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
                 </v-card-text>
