@@ -89,10 +89,11 @@
             <v-card v-if="!importation">
                  <v-card-text>
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
-                        <v-col md="4" v-if="type == '3' || type == '4'" >
+                        <v-col md="3" v-if="type == '3' || type == '4'" >
 
-                            <v-autocomplete
+                            <Autocomplete
                                 :items="tabsFilieres"
+                                class="mt-2"
                                 v-model="frais.filiere"
                                 item-value="id"
                                 item-title="libelle"
@@ -100,9 +101,9 @@
                                 closable-chips
                                 color="blue-grey-lighten-2"
                                 label="filiere"
-                            ></v-autocomplete>
+                            ></Autocomplete>
                         </v-col>
-                        <v-col md="4" >
+                        <v-col md="3" >
 
                             <Autocomplete
                                 :items="niveaux"
@@ -116,19 +117,19 @@
                                 label="Niveaux"
                             ></Autocomplete>
                         </v-col>
-                        <v-col md="4">
+                        <!-- <v-col md="4">
 
                             <TextField label="Code frais" class="mt-2"  :isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
-                        </v-col>
-                        <v-col md="4">
+                        </v-col> -->
+                        <v-col md="3">
 
                             <TextField label="Libelle frais" class="mt-2"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField>
                         </v-col>
-                        <v-col md="4">
+                        <v-col md="2">
 
                             <TextField label="Montant frais" class="mt-2"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant"></TextField>
                         </v-col>
-                        <v-col md="2" >
+                        <v-col md="1" >
                             <br>
                             <Button
                                 type="button"

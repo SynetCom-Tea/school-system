@@ -73,13 +73,11 @@
                             itemValue="id"
                             class="mt-2"
                             v-model="form.filiere"
+                            itemTitle="code"
                             :isRequired="true"
-                            :itemTitle="libelle"
-                            @update:modelValue="verify(matiere,i, $event)"
                             label="Filieres"
-                            :items="['IG','MIEL']"
+                            :items="tabsFilieres"
                         >
-
                         </Autocomplete>
                     </v-col>
                     <v-col md="6">
@@ -89,11 +87,9 @@
                             v-model="form.niveau"
                             :isRequired="true"
                             :itemTitle="formatNiveauLabel"
-                            @update:modelValue="verify(matiere,i, $event)"
                             label="Niveaux"
                             :items="niveaux"
-                        >
-
+                        > 
                         </Autocomplete>
 
 
@@ -119,7 +115,7 @@
                                     itemTitle="libelle"
                                     @update:modelValue="verify(matiere,i, $event)"
                                     label="Matieres"
-                                    :items="['maths','pc']"
+                                    :items="matieres"
                                 >
 
                                 </Autocomplete>
@@ -205,7 +201,7 @@
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
-    props:['type','niveaux'],
+    props:['type','niveaux','filieres','matieres'],
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
@@ -219,6 +215,7 @@
         importation: false,
         section: null,
         uetabs: [],
+        tabsFilieres: [],
         form: useForm({
             filiere: null,
             niveau: null,
@@ -323,7 +320,17 @@
             }
         },
     },
-    created(){},
+    created(){
+        if(this.type == '3'){
+            this.tabsFilieres = this.filieres ? this.filieres.filieres : []
+        }else if(this.type == '4'){
+            if (this.filieres.departements && Array.isArray(this.filieres.departements)) {
+                this.filieres.departements.forEach(element => {
+                    this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+                });
+            } 
+        } 
+    },
     mounted() {
         // this.addRowInit()
         this.addRow()

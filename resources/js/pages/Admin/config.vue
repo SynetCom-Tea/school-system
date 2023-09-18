@@ -80,7 +80,7 @@
             </v-card>
         </template>
 
-        <template v-slot:item.6 >
+        <template v-slot:item.6>
             <v-card >
                 <v-card-text v-if="type=='4' && lmd != null">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
