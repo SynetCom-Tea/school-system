@@ -123,6 +123,7 @@ export default {
       @change="onchangeField"
       :class="class"
       :append-icon="appendIcon"
+      :type="type"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }} <slot /></span>

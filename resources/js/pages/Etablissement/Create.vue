@@ -192,7 +192,7 @@ export default {
                                     :rules="[
                                         (v) => !!v || 'Ce champ est requis!',
                                         (v) =>
-                                        /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
+                                        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
                                         'Adresse Email invalide!',
                                     ]"
                                 ></TextField>
@@ -246,7 +246,7 @@ export default {
                         :rules="[
                             (v) => !!v || 'Ce champ est requis!',
                             (v) =>
-                            /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
+                            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
                             'Adresse Email invalide!',
                         ]"
                         ></text-field>
