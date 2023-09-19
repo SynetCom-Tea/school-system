@@ -28,7 +28,12 @@ const validateAccountDeactivation = [v => !!v || 'Please confirm account desacti
 
 const save = () => {
     //console.log(form);
-      form.patch(route("profile.update"));
+      form.patch(route("profile.update"), {
+        preverseScroll: true,
+        onSuccess: () => {
+          //toast.success("Votre compte a été mis à jour avec succes");
+        },
+      });
     };
 
 </script>
@@ -41,7 +46,7 @@ const save = () => {
 
         <v-card-text>
           <!-- ðŸ‘‰ Form -->
-          <form class="mt-6" @submit.prevent="form">
+          <form class="mt-6">
             <v-row>
               <!-- ðŸ‘‰ First Name -->
               <v-col
@@ -81,9 +86,10 @@ const save = () => {
                 md="6"
               >
                 <text-field
-                        label="E-mail"
+                        label="Identifiant"
                         v-model="form.email"
                         isRequired
+                        disabled
                         :rules="[
                             (v) => !!v || 'Ce champ est requis!',
                             (v) =>
@@ -103,11 +109,11 @@ const save = () => {
                 class="py-3"
                     
                 >
-                <v-btn color="primary" @click="save"> <v-icon
+                <v-btn color="primary" @click="save"> <VIcon
                   :icon="mdiContentSave"
                   class="d-sm-none"
                   :disabled="form.processing"
-                ></v-icon>Enregistrer</v-btn>
+                />Enregistrer</v-btn>
 
                 <v-btn style="margin-left: 10px;"
               @click="form.reset()"

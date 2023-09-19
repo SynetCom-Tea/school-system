@@ -260,7 +260,7 @@ export default {
       <v-btn dark small type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </v-btn>
-      <v-btn small color="success" @click="submit">
+      <v-btn small color="primary" @click="submit">
         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
       </v-btn>
     </v-card-actions>
