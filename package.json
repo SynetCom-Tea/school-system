@@ -47,6 +47,7 @@
         "vue-loader": "^17.0.1",
         "vue-router": "^4.2.4",
         "vue-sweetalert2": "^5.0.5",
+        "vue-toastification": "^1.7.14",
         "vue3-marquee": "^4.0.0",
         "vue3-spinners": "^1.2.2",
         "vue3-xlsx": "^1.1.2",
