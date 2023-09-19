@@ -206,6 +206,14 @@ export default {
   }),
 
   methods: {
+    onChange(event) {
+      this.file = event.target.files ? event.target.files[0] : null;
+      let workbook = XLSX.readFile(this.file);
+      console.log('workbook1');
+      console.log(workbook);
+      console.log('SheetNames');
+      console.log(workbook.SheetNames);
+    },
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
