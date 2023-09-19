@@ -52,10 +52,7 @@
                             <v-list-item-title class="text-wrap" v-text="link.title"></v-list-item-title>
                         </v-list-item>
                         <!-- <v-list-group :value="getListMenus[1].title"> -->
-                        <v-list-group v-if="
-                    $page.props?.roles[0] &&
-                    $page.props?.roles[0] != 'Super-administrateur'
-                  " :value="getListMenus[4].title">
+                        <v-list-group v-if="$page.props?.roles[0] && $page.props?.roles[0].name == 'Administrateur'" :value="getListMenus[4].title">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -69,11 +66,11 @@
                                 <template v-slot:prepend>
                                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                                 </template>
-
+<!-- 24031996 -->
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
-                        <v-list-group :value="getListMenus[1]?.title">
+                        <v-list-group :value="getListMenus[1]?.title" v-if="$page.props?.roles[0] && ($page.props?.roles ==  'Super-administrateur' || $page.props?.roles ==  'Administrateur')" >
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -92,7 +89,7 @@
                             </v-list-item>
                         </v-list-group>
 
-                        <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles == 'Administrateur'">
+                        <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles[0].name == 'Administrateur'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -111,7 +108,7 @@
                             </v-list-item>
                         </v-list-group>
 
-                        <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles == 'Enseignant'">
+                        <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles[0].name == 'Enseignant'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -330,6 +327,9 @@ export default {
             this.rail = !this.rail;
         },
     },
+    mounted(){
+        console.log(this.$page.props.roles)
+    }
 };
 // <v-list density="compact" v-model:opened="open">
 </script>

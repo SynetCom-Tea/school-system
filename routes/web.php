@@ -61,9 +61,9 @@ Route::get('/dashboard', function () {
 //     Route::post('/note/enregistrer', [NoteController::class, 'store'])->name('note.save');
 // });
 Route::middleware('auth')->group(function () {
-    // Route::group(['middleware' => ['role:Super-administrateur','role:manage_system']], function () {
+    Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
     Route::resource('users', UserController::class);
-    // });
+    });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -79,5 +79,6 @@ Route::resource('niveaux', NiveauController::class);
 Route::resource('etablissements', EtablissementController::class);
 Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->name('etablissement.activer');
 Route::resource('inscriptions', InscriptionController::class);
+Route::get('/NotFoud', [UserController::class,'NotFoud'])->name('NotFoud');
 
 require __DIR__ . '/auth.php';

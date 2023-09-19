@@ -109,9 +109,6 @@ export default {
     <page-toolbar :icon="icon.mdiAccountGroup">Gestion des utilisateurs</page-toolbar>
     <v-card-text>
         <Datatable :headers="headers" :items="users" :functionOnClickAddButton="goTo">
-
-            <template v-slot:item.actions="{item}">
-            </template>
         </Datatable>
     </v-card-text>
 </v-card>

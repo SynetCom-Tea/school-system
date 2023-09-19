@@ -86,19 +86,19 @@ MenuAdmin = {
             title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
-            permissions: "manage_system",
+            roles: "manage_system",
         },
         {
             title: "Profil",
             icon: mdiAccount,
             link: "/profile",
-            permissions: "manage_school",
+            roles: "manage_school",
         },
         {
             icon: mdiSchool,
             title: "Établissements",
             link: "/etablissements",
-            permissions: "manage_system",
+            roles: "manage_system",
         },
         /* {
             title: "Home",

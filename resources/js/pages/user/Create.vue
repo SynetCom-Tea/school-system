@@ -22,7 +22,6 @@ export default {
     props: ['roles', 'sections', 'etablissements', 'apprenants', 'enseignants','etablissement_sections'],
     data() {
         return {
-            role_p_a: null,
             role_p_u: null,
             icon: {
                 mdiAccountPlusOutline,
@@ -78,7 +77,6 @@ export default {
     },
     created() {
         this.role_p_u = this.roles.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
-        this.role_p_a = this.roles.filter(el => el.name == 'Administrateur')
     }
 }
 </script>
@@ -91,15 +89,7 @@ export default {
                 <v-col md="6">
                     <TextField name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true"></TextField>
                     <TextField name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom"></TextField>
-                    <Autocomplete v-if="$page.props.auth.user.id == 1" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="sections" multiple chips clearable v-model="form.sections">
-                    </Autocomplete>
                     <Autocomplete v-if="$page.props.auth.user.id !== 1 && form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="etablissement_sections" chips clearable v-model="form.section">
-                    </Autocomplete>
-                </v-col>
-                <v-col md="6" v-if="$page.props.auth.user.id == 1">
-                    <Autocomplete label="Roles" :isRequired="true" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" multiple chips clearable v-model="form.roles">
-                    </Autocomplete>
-                    <Autocomplete label="Etablissement" :isRequired="true" item-title="name" item-value="id" variant="solo-filled" :items="etablissements" v-model="form.etablissement_id">
                     </Autocomplete>
                 </v-col>
                 <v-col v-if="$page.props.auth.user.id !=1">

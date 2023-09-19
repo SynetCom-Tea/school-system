@@ -196,7 +196,7 @@ export default {
 
             <v-spacer></v-spacer>
 
-            <Button variant="flat" class="add-button-style" nameButton="Ajouter" title="Ajouter une nouvelle ligne" :prependIcon="icons.mdiPlus" @click="onClickAddButton">
+            <Button  variant="flat" class="add-button-style" nameButton="Ajouter" title="Ajouter une nouvelle ligne" :prependIcon="icons.mdiPlus" @click="onClickAddButton">
             </Button>
             <!-- <ModalDetailUpdate
           :onClickCancelButton="onClickCancelButtonForEditing"
