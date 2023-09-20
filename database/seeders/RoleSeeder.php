@@ -16,9 +16,8 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $superadmin = User::create([
-            'nom' => 'Tondi',
-            'prenom' => 'Bouli',
+        
+        $super_admin = User::create([
             'email' => 'super-admin@gmail.com',
             'password' => Hash::make('password')
         ]);
@@ -35,7 +34,7 @@ class RoleSeeder extends Seeder
         $super_admin = Role::firstOrcreate(['name' => 'Super-administrateur']);
         $super_admin->givePermissionTo(Permission::where('name','manage_school')->get());
         // $super_admin->givePermissionTo(Permission::where('name', '<>', 'etudiant')->get());
-        $superadmin->assignRole($super_admin);
+        $super_admin->assignRole($super_admin);
 
         // Admin
         $administrateur = Role::firstOrcreate(['name' => 'Administrateur']);

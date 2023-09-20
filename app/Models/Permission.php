@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
+
 
 class Permission extends \Spatie\Permission\Models\Permission
 {
@@ -23,5 +25,9 @@ class Permission extends \Spatie\Permission\Models\Permission
     {
 
         return 'web';
+    }
+    public function permission_roles(): HasMany
+    {
+        return $this->HasMany(PermissionRole::class);
     }
 }

@@ -147,17 +147,32 @@ MenuAdmin = {
             {
                 icon: mdiSquareMedium,
                 title: "Rôles",
-                link: "/roles",
+                link: "/enseignement/roles",
                 permissions: "manage_system",
             },
             {
                 icon: mdiSquareMedium,
                 title: "Permissions",
-                link: "/permissions",
+                link: "/enseignement/permissions",
                 permissions: "manage_system",
             },
         ],
     };
+    let enseignements = {
+        icon: mdiAccountCogOutline,
+        title: "Gestions d'Enseignements",
+        "icon-alt": mdiChevronDown,
+        permissions: "manage_system",
+        model: false,
+        children: [
+            {
+                icon: mdiSquareMedium,
+                title: "Fillières",
+                link: "/enseignement/fillieres",
+                permissions: "manage_system",
+            },
+        ],
+    }; 
     // Gestion de Notes
     let configsMenu = {
         icon: mdiCog,

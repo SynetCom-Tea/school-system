@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('libelle')->nullable();
             $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
-                ->references('id')->on('etablissement_section');
+                ->references('id')->on('etablissement_sections');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
             ->index()
             ->references('id')->on('niveauX');

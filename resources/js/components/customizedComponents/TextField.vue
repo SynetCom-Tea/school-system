@@ -1,5 +1,5 @@
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 export default {
   props: {
@@ -31,6 +31,7 @@ export default {
     },
     classResponsive: {
       type: String,
+
       default: "py-2",
     },
     maxWidthResponsive: {
@@ -88,9 +89,17 @@ export default {
     class: { type: String, required: false },
     isRequired: { type: Boolean, default: false },
   },
-  setup() {},
+  setup(props, ctx) {
+    const parentSlots = computed(() => Object.keys(ctx.slots));
+
+    return { parentSlots };
+  },
   updated() {},
   computed: {
+    scopedSlots() {
+      return this.$slots;
+    },
+
     modelValue: {
       get() {
         return this.vModel;
@@ -113,6 +122,7 @@ export default {
       v-model="modelValue"
       :variant="variant"
       :hint="hint"
+      :type="type"
       :density="density"
       v-bind="$attrs"
       :name="name"
@@ -120,18 +130,17 @@ export default {
       :rules="rules"
       :base-color="baseColorValue"
       :color="colorValue"
-      @change="onchangeField"
       :class="class"
       :append-icon="appendIcon"
-      :type="type"
     >
       <template #label v-if="isRequired">
-        <span id="required-field">{{ label }} <slot /></span>
+        <span id="required-field">{{ label }}</span>
       </template>
-      <template #label v-else>
-        {{ label }}
+      <template #label v-else> {{ label }} </template>
+      <!-- Dynamically inherit slots from parent -->
+      <template v-for="slot in parentSlots" #[slot]>
+        <slot :name="slot" />
       </template>
-      <slot />
     </v-text-field>
   </v-responsive>
 </template>

@@ -13,9 +13,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('email')->nullable();
             $table->string('nom')->nullable();
             $table->string('prenom')->nullable();
-            $table->string('email');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
@@ -23,7 +23,7 @@ return new class extends Migration
                 ->references('id')->on('etablissements');
             $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
-                ->references('id')->on('etablissement_section');
+                ->references('id')->on('etablissement_sections');
             $table->foreignIdFor(\App\Models\User::class)->nullable()
                 ->index()
                 ->references('id')->on('users');
@@ -52,6 +52,21 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Annee::class)
                 ->index()
                 ->references('id')->on('annees');
+        });
+
+        Schema::create('Permission_roles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\User::class)->nullable()
+                ->index()
+                ->references('id')->on('users');
+            $table->foreignIdFor(\App\Models\Permission::class)->nullable()
+                ->index()
+                ->references('id')->on('permissions');
+            $table->foreignIdFor(\App\Models\Role::class)->nullable()
+                ->index()
+                ->references('id')->on('roles');
+            $table->timestamps();
+            $table->softDeletes();
         });
     }
 
