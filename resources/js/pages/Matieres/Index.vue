@@ -26,7 +26,7 @@
             mdiGoogleClassroom,
         },
         layout: AuthenticatedLayout,
-        props: ["niveaux"],
+        props: ["matieres"],
         data() {
             return {
                 icon: {
@@ -50,7 +50,7 @@
                     { title: 'Libelé', align: 'center', key: 'libele' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                dialog_title: 'Création Niveau',
+                dialog_title: 'Création Matière',
                 dialog: false,
                 
                 form: useForm({
@@ -68,11 +68,11 @@
         methods:{
             create() {
                 this.dialog = true;
-                this.dialog_title = 'Création Niveau'
+                this.dialog_title = 'Création Matière'
             },
             editItem(item){
                 //console.log('edit',item) 
-                this.dialog_title = 'Modifier le niveau' 
+                this.dialog_title = 'Modifier la matière' 
                 this.form.id = item.id
                 this.form.code = item.code
                 this.form.libele = item.libele
@@ -91,7 +91,7 @@
                     }).then((result) => {
                     if (result.isConfirmed) {
                         
-                       this.form.delete(route('niveaux.destroy', item.id), {
+                       this.form.delete(route('matieres.destroy', item.id), {
                         onFinish: () => {
                             if(this.$page.props.flash?.message?.type == 'error'){
                                 this.$swal({
@@ -124,7 +124,7 @@
             async submit() {
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
-                    this.form.post(route('niveaux.store'), {
+                    this.form.post(route('matieres.store'), {
                         onFinish: () => {
                             //console.log(this.form)
                             this.close()
@@ -132,7 +132,7 @@
                             this.$swal({
                                 icon: 'success',
                                 title: 'Enregistrement',
-                                text: 'Niveau créé avec succès!',
+                                text: 'Matière créée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -146,13 +146,13 @@
                     
                      const {id,code,libele} = this.form
                     
-                    this.form.put(route('niveaux.update', this.form.id), {
+                    this.form.put(route('matieres.update', this.form.id), {
                         onFinish: () => {
                            this.close()
                             this.$swal({
                                 icon: 'success',
                                 title: 'Modification',
-                                text: 'Niveau modifié avec succès!',
+                                text: 'Matière modifiée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -175,7 +175,7 @@
 </script>
 <template>
     <v-card>
-        <page-toolbar :icon="icon.mdiGoogleClassroom">Gestion des niveaux</page-toolbar>
+        <page-toolbar :icon="icon.mdiGoogleClassroom">Gestion des matières</page-toolbar>
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:default="{ isActive }">
                             <v-card>
