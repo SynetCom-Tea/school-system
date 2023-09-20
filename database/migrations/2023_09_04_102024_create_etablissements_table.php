@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email');
             $table->string('adresse');
-            $table->json('telephone');
+            $table->string('telephone');
             $table->string('ville');
             $table->boolean('statut');
             $table->string('logo')->nullable();

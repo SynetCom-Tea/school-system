@@ -22,10 +22,6 @@
               Cette section vous permet de configurer les matieres enseignées dans cet
               établissement
             </li>
-            <li v-if="type == '3'">
-              Configurer également si l'établissement prend en charge le système
-              LMD(Licence Master Doctorat) et le régime d'évaluation
-            </li>
             <li>
               Le formulaire sera valide <strong>si et seulement si </strong>tous les
               champs obligatoires marqués par <span style="color: red">*</span> sont
@@ -47,41 +43,9 @@
         </div>
 
         <v-card-text style="margin: 10px">
-          <v-row v-if="type == '3'">
-            <v-col>
-              <v-switch
-                label="Souhaiterez-vous appliquez le système LMD ?"
-                v-model="form.lmd"
-                color="red"
-                inset
-              ></v-switch>
-            </v-col>
-            <v-col v-if="form.lmd">
-              <v-autocomplete
-                :items="['Type 1', 'Type 2']"
-                chips
-                closable-chips
-                :required="form.lmd"
-                color="blue-grey-lighten-2"
-                v-model="form.type_lmd"
-                label="Select"
-              ></v-autocomplete>
-            </v-col>
-            <v-col>
-              <v-switch
-                v-model="form.regime_evaluation"
-                color="indigo"
-                inset
-                :label="`Souhaiterez-vous appliquez le régime d'évaluation ?${
-                  !form.regime_evaluation ? 'Non' : 'Oui'
-                }`"
-              ></v-switch>
-            </v-col>
-          </v-row>
           <v-row>
             <v-col>
               <v-switch
-                @update:modelValue="resetForm(importation)"
                 v-model="importation"
                 color="#004980"
                 inset
@@ -100,8 +64,17 @@
                 label="File input"
                 variant="solo-inverted"
               ></v-file-input>
+
             </v-col>
-            <v-col></v-col>
+            <v-col v-if="importation"><v-btn
+                class="ma-2"
+                outlined
+                type="button"
+                color="primary"
+                href="../models/echantillons/fiche_echantillonage.ods"
+                download>
+                    Télécharger le Model
+              </v-btn></v-col>
           </v-row>
         </v-card-text>
 
@@ -123,8 +96,7 @@
                 class="mt-2"
                 label="Libelle matière"
                 :isRequired="true"
-                placeholder="Libelle matière"
-                required
+                placeholder="Libelle matiere"
                 v-model="matiere.libelle"
               ></TextField>
             </v-col>
@@ -150,6 +122,7 @@
                 </div>
               </v-tooltip>
               <Button
+                type="button"
                 variant="outlined"
                 v-if="form.matieres.length >= 2"
                 icon
@@ -233,6 +206,14 @@ export default {
   }),
 
   methods: {
+    onChange(event) {
+      this.file = event.target.files ? event.target.files[0] : null;
+      let workbook = XLSX.readFile(this.file);
+      console.log('workbook1');
+      console.log(workbook);
+      console.log('SheetNames');
+      console.log(workbook.SheetNames);
+    },
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
