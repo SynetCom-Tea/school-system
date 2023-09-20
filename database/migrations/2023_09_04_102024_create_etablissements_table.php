@@ -28,7 +28,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        Schema::create('etablissement_sections', function (Blueprint $table) {
+        Schema::create('etablissement_section', function (Blueprint $table) {
             $table->id();
             $table->string('code')->nullable();
             $table->foreignIdFor(\App\Models\Etablissement::class)

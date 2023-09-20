@@ -11,10 +11,7 @@ class EtablissementSectionSeeder extends Seeder
      * Run the database seeds.
      */
 
-    //     J'ai eu du mal avec le type Json de téléphone. j'ai donc modifier le type en string après la migration. Voir la requete ci-dessous:
 
-    //     ALTER TABLE etablissements
-    // modify telephone varchar(255) default null
 
     public function run(): void
     {
@@ -204,7 +201,6 @@ class EtablissementSectionSeeder extends Seeder
                 'section_id' => 4,
             ),
         ));
-
     }
     // public function run(): void
     // {
