@@ -5,29 +5,33 @@
       :icon="icons.mdiSchool"
       :toolbarTitle="Title"
     ></Toolbar>
-    <!-- <br> -->
+    <br>
 
     <!-- Application de stepper -->
-    <Wizard
-    class="form-wizard-vue"
-          squared-tabs
-          card-background
-          navigable-tabs
-          scrollable-tabs
-          :nextButton="nextButtonOptions"
-          :backButton="backButtonOptions"
-          :custom-tabs="getItems"
-          :beforeChange="onTabBeforeChange"
-          @change="onChangeCurrentTab"
-          @complete:wizard="wizardCompleted"
-        >
-          <div v-if="currentTabIndex === 0"> <v-card  flat>
+
+    <v-stepper
+        prev-text="Retour"
+        next-text="Suivant"
+        v-model="step"
+        editable
+        :items="getItems"
+        alt-labels
+    >
+        <template v-slot:item.1>
+            <v-card  flat>
                 <matiere-form @formSubmitted="getMatiereForm" :type="type" />
-            </v-card></div>
-          <div v-if="currentTabIndex === 1"> <v-card  flat>
+            </v-card>
+        </template>
+
+        <template v-slot:item.2>
+
+            <v-card  flat>
                 <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
-            </v-card></div>
-          <div v-if="currentTabIndex === 2">  <v-card  flat>
+            </v-card>
+        </template>
+
+        <template v-slot:item.3>
+            <v-card  flat>
                 <!-- Tabs de la Filiere pour toute les sections -->
                 <v-card-text v-if="type == '3'">
                     <filieresup-form @formSubmitted="getFiliereForm" :type="type"  />
@@ -45,8 +49,11 @@
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"/>
                 </v-card-text>
                 <!-- Tabs de la Frais pour toute les sections -->
-            </v-card></div>
-          <div v-if="currentTabIndex === 3"> <v-card  flat>
+            </v-card>
+        </template>
+
+        <template v-slot:item.4>
+            <v-card  flat>
                 <v-card-text v-if="type == '3'">
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"  />
                 </v-card-text>
@@ -56,9 +63,11 @@
                 <v-card-text v-else>
                     <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres"/>
                 </v-card-text>
-            </v-card></div>
-            <div v-if="currentTabIndex === 4">
-                <v-card  flat>
+            </v-card>
+        </template>
+
+        <template v-slot:item.5>
+            <v-card  flat>
                 <v-card-text v-if="type=='4'">
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" />
                 </v-card-text>
@@ -69,9 +78,10 @@
                     <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
                 </v-card-text>
             </v-card>
-            </div>
-            <div v-if="currentTabIndex === 5">
-                <v-card >
+        </template>
+
+        <template v-slot:item.6>
+            <v-card >
                 <v-card-text v-if="type=='4' && lmd != null">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
@@ -82,22 +92,23 @@
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
                 </v-card-text>
             </v-card>
-            </div>
-            <div v-if="currentTabIndex === 6">
-                <v-card  flat>
+        </template>
+
+        <template v-slot:item.7>
+            <v-card  flat>
                 <v-card-text>
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
                 </v-card-text>
             </v-card>
-            </div>
-        </Wizard>
+        </template>
+
+    </v-stepper>
+
     <!-- Application de stepper -->
 
     </AuthenticatedLayout>
   </template>
   <script>
-    import 'form-wizard-vue3/dist/form-wizard-vue3.css';
-    import Wizard from 'form-wizard-vue3';
     import MatiereForm from '@/components/admin/matiere.vue';
     import NiveauMatiereSansUeForm from '@/components/admin/niveau-matiere-sans-ue.vue';
     import NiveauMatiereSupForm from '@/components/admin/niveau-matiere-sup.vue';
@@ -117,7 +128,6 @@
   export default {
     props:['type','niveaux','lmd'],
     components: {
-    Wizard,
     MatiereForm,
     ClasseForm,
     faculteForm,
@@ -145,7 +155,6 @@
     data: () => ({
         icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
-        currentTabIndex: 0,
         items: [],
         suivant : false,
         pause: null,
@@ -167,20 +176,6 @@
         // test(i){
         //     console.log('step',i)
         // },
-        onChangeCurrentTab(index, oldIndex) {
-        console.log('index',index);
-        console.log('oldIndex', oldIndex);
-        this.currentTabIndex = index;
-      },
-      onTabBeforeChange() {
-        if (this.currentTabIndex === 0) {
-          console.log('First Tab');
-        }
-        console.log('All Tabs');
-      },
-      wizardCompleted() {
-        console.log('Wizard Completed');
-      },
         btnsuivant(){
           this.suivant = false
         },
@@ -259,73 +254,21 @@
       // console.log('Admin etablissement',this.$page.props.admin_etablissement.etablissement_id)
     },
     computed: {
-        backButtonOptions() {
-        return this.currentTabIndex>=1
-          ? {
-              text: 'Retour',
-              icon: 'check',
-              hideIcon: true, // default false but selected for sample
-              hideText: false, // default false but selected for sample
-              disabled: false,
-            }
-          : { disabled:true  };
-      },
-      nextButtonOptions() {
-        return this.currentTabIndex>=0
-          ? {
-              text: 'Suivant',
-              icon: 'check',
-              hideIcon: true, // default false but selected for sample
-              hideText: false, // default false but selected for sample
-              disabled: false,
-            }
-          : { disabled:true  };
-      },
         getItems(){
             if(this.type == '1' || this.type == '2'){
-                this.items = [
-                {title:'MATIERES'},
-                {title:'SALLES'},{title:'FRAIS'},
-                {title: 'AFFECTATION DE MATIERES AUX NIVEAUX'}
-            ]
+                this.items = ['MATIERES','SALLES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
             }else if(this.type == '3'){
                 if(this.lmd!=null){
-                    this.items = [
-                    {title:'MATIERES'},
-                    {title:'SALLES'},
-                    {title:'FILIERES'},
-                    {title:'FRAIS'},
-                    {title: 'UNITE D\'ENSEIGNEMENT'},
-                    {title: 'AFFECTATION DE MATIERES AUX NIVEAUX'}]
+                    this.items = ['MATIERES','SALLES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
                 }else{
-                    this.items =
-                    [
-                    {title:'MATIERES'},
-                    {title:'SALLES'},
-                    {title:'FILIERES'},
-                    {title:  'FRAIS'},
-                    {title: 'AFFECTATION DE MATIERES AUX NIVEAUX'}]
+                    this.items = ['MATIERES','SALLES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
                 }
 
             }else if(this.type == '4'){
                 if(this.lmd!=null){
-                    this.items = [
-                    {title: 'MATIERES'}
-                    ,{title:'SALLES'},
-                    {title:'FACULTES'},
-                    {title:'FILIERES'},
-                    {title:'FRAIS'},
-                    {title:'UNITE D\'ENSEIGNEMENT'},
-                    {title:'AFFECTATION DE MATIERES AUX NIVEAUX'}
-                ]
+                    this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
                 }else{
-                    this.items = [
-                    {title:'MATIERES'},
-                    {title:'SALLES'},
-                    {title:'FACULTES'},
-                    {title:'FILIERES'},
-                    {title:'FRAIS'},
-                    {title:'AFFECTATION DE MATIERES AUX NIVEAUX'}]
+                    this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
                 }
 
             }
@@ -380,12 +323,3 @@
     },
   }
 </script>
-<style scoped>
-.form-wizard-vue .fw-body-list .fw-list-progress-active {
-    background: #004980;
-}
-
-#fw-1695140104041 > ul > li:nth-child(1) > div.fw-list-progress.fw-list-progress-active{
-    background: red;
-}
-</style>

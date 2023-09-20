@@ -1,75 +1,136 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
         <v-container fluid>
+            <v-card variant="outlined" style="border: 2px solid #7d002c">
+        <v-card-title style="color: white; background-color: #7d002c"
+          >UNITE D'ENSEIGNEMENT</v-card-title
+        >
+        <v-divider></v-divider>
+        <br />
+        <div style="margin: 10px">
+          <v-alert
+            v-model="alertFirst"
+            border="start"
+            variant="tonal"
+            closable
+            close-label="Close Alert"
+            color="primary"
+            type="info"
+            title="Note"
+          >
+            <li>Cette section vous permet de configurer les unités des enseignements de cet établissement</li>
+            <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
+          </v-alert>
+
+          <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+            <Button
+              style="height: 30px"
+              title="Plier la note"
+              @click="onclickAlertButton('first')"
+              variant="outlined"
+              color="primary"
+              nameButton="Relire la note"
+            >
+            </Button>
+          </div>
+        </div>
+        <v-divider></v-divider>
+    <v-card>
         <v-card-text>
+
             <v-row>
-                <v-alert type="info">
-                    <li>Cette section vous permet de configurer les unités des enseignements de cet établissement</li>
-                    <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
-                </v-alert>
+                <v-col>
+                    <v-switch label="Souhaiterez-vous importez le fichier des unités des enseignements ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                </v-col>
+                <v-col v-if="importation">
+                    <v-file-input
+                        clearable
+                        required
+                        v-model="form.fichier_ue"
+                        label="Charger le fichier des UES"
+                        variant="solo-inverted"
+                    ></v-file-input>
+                </v-col>
+                <v-col v-if="importation"><v-btn 
+                    class="ma-2" 
+                    outlined 
+                    type="button"
+                    color="primary"
+                    href="../models/echantillons/fiche_echantillonage.ods"
+                    download>
+                        Télécharger le Model
+                </v-btn></v-col>
             </v-row>
-            <br><br>
-            <v-card>
-                <v-card-text>
-
-                    <v-row>
-                        <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des unités des enseignements ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
-                        </v-col>
-                        <v-col v-if="importation">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <v-file-input
-                                clearable
-                                required
-                                v-model="form.fichier_ue"
-                                label="Charger le fichier des UES"
-                                variant="solo-inverted"
-                            ></v-file-input>
-                        </v-col>
-                        <v-col></v-col>
-                    </v-row>
-                </v-card-text>
-            </v-card>
-            <v-divider></v-divider>
-            <v-card v-if="!importation">
-                <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
-                <v-card-text>
-                    <v-row disabled :key="ue.id" v-for="(ue, i) in form.ues">
-                        <v-col md="2">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <TextField label="Code UE"  isRequired="true" placeholder="Code UE" required @change="verify(ue)" v-model="ue.code"></TextField>
-                        </v-col>
-                        <v-col md="3">
-                            <span style="color: red; font-size: x-large;">*</span>
-                            <TextField label="Nom de l'UE"  isRequired="true" placeholder="Nom de l'UE" required v-model="ue.libelle"></TextField>
-                        </v-col>
-                        <v-col md="1">
-                            <br>
-                            <v-btn variant="outlined" :disabled="!(form.ues.length > 1)" icon @click="removeRow(ue)" fab small color="error">
-                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-
-                        <v-col offset-md="11" md="1">
-                            <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
-                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-card-text>
-            </v-card>
         </v-card-text>
+
+        <v-card-text v-if="!importation">
+            <v-row disabled :key="ue.id" v-for="(ue, i) in form.ues">
+                <v-col md="4">
+                    <TextField label="Code UE"  class="mt-2" :isRequired="true" placeholder="Code UE" @change="verify(ue)" v-model="ue.code"></TextField>
+                </v-col>
+                <v-col md="4">
+                    <TextField label="Nom de l'UE" class="mt-2"  :isRequired="true" placeholder="Nom de l'UE" v-model="ue.libelle"></TextField>
+                </v-col>
+                <v-col md="1">
+                    <br>
+                    <Button
+                    type="button"
+                    variant="outlined"
+                    :disabled="!(form.ues.length > 1)"
+                    icon
+                    @click="removeRow(ue)"
+                    size="large"
+                    small
+                    color="error"
+                >
+                    <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+              </Button>
+                </v-col>
+            </v-row>
+            <v-row>
+            <v-col offset-md="11" cols="4">
+              <Button
+                type="button"
+                variant="outlined"
+                @click="addRow"
+                icon
+                size="large"
+                color="primary"
+              >
+                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+              </Button>
+            </v-col>
+          </v-row>
+        </v-card-text>
+    </v-card>
+    <br>
+        <v-row class="text-center ml-3 mb-3"
+          ><v-col cols="auto">
+            <Button
+              type="submit"
+              title="Enregistrer cette étape"
+              nameButton="Enregistrer"
+              variant="flat"
+              @click="submitForm"
+              density="comfortable"
+              class="text-center"
+              :isBlock="true"
+              size="large"
+              style="text-transform: none"
+            >
+            </Button> </v-col
+        ></v-row>
+    </v-card>
+
     </v-container>
-        <v-row>
+        <!-- <v-row>
             <v-col md="5"></v-col>
             <v-col md="4">
                 <v-btn type="submit" title="enregistrer" color="info">
                     Enregistrer
                 </v-btn>
             </v-col>
-        </v-row>
+        </v-row> -->
         <br>
     </form>
 </template>
@@ -84,6 +145,8 @@
         mdiInformation
     },
     data: () => ({
+        alertFirst: true,
+        alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -94,6 +157,12 @@
     }),
 
     methods: {
+        onclickAlertButton(type) {
+        if (type == "second") {
+            this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
+        },
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;

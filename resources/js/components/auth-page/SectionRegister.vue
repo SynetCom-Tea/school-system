@@ -20,7 +20,7 @@
               class="text-center"
               variant="flat"
               size="large"
-              :onClickButton="goToPreviousWindow"
+              @click="goToPreviousWindow"
               style="text-transform: none"
             >
             </Button>
@@ -37,7 +37,7 @@
               color="secondary"
               size="large"
               :prependIcon="icons.mdiKeyboardBackspace"
-              :onClickButton="goToWelcome"
+              @click="goToWelcome"
               style="text-transform: none"
             >
             </Button>
@@ -82,21 +82,20 @@
                   autocomplete="false"
                   type="password"
                 />
-                 <!-- :onClickButton="goToRegister()" -->
-                <Button
-                  title="Valider"
-                  variant="flat"
-                  nameButton="S'enregistrer"
-
-                  density="comfortable"
-                  class="text-center"
-                  :isBlock="true"
-                  size="large"
-                  style="text-transform: none"
-                >
-                </Button>
+                <!-- :onClickButton="goToRegister()" -->
               </v-form>
-
+              <Button
+                title="Valider"
+                variant="flat"
+                nameButton="S'enregistrer"
+                type="submit"
+                density="comfortable"
+                class="text-center"
+                block
+                size="large"
+                style="text-transform: none"
+              >
+              </Button>
               <v-row>
                 <v-col cols="12" sm="7">
                   <v-checkbox

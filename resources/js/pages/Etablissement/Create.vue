@@ -95,7 +95,10 @@ export default {
                         item-value="id"
                         item-title="name"
                         v-model="form.type_etablissement_id"
-                    ></Select>
+                        isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        >
+                    </Select>
                     </v-col>
                     <v-col cols="6" md="6">
                     <Select
@@ -116,7 +119,8 @@ export default {
                             label="Nom"
                             placeholder="Nom Etablissement"
                             v-model="form.name"
-                            
+                            isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></TextField>
                         </v-col>
                         <v-col cols="4" md="4">
@@ -126,6 +130,8 @@ export default {
                             :items="villes"
                             variant="outlined"
                             v-model="form.ville"
+                            isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></Select>
                         </v-col>
                         <v-col cols="4" md="4">
@@ -173,6 +179,8 @@ export default {
                                     label="Adresse"
                                     placeholder="Adresse"
                                     v-model="form.adresse"
+                                    isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                                 ></TextField>
                             </v-col>
                             <v-col cols="4" md="4">
@@ -194,6 +202,8 @@ export default {
                                 label="Téléphone"
                                 placeholder="Téléphone"
                                 v-model="form.telephone"
+                                isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                                 ></text-field>
                             </v-col>
                             </v-row>

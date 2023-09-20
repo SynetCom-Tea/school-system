@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('systeme_lmds', function (Blueprint $table) {
             $table->id();
             $table->string('libelle');
+            $table->string('description');
             $table->softDeletes();
             $table->timestamps();
         });

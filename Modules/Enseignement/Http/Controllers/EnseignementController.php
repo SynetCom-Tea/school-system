@@ -11,7 +11,7 @@ use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\Matiere;
 use App\Models\Etablissement;
 use App\Models\Section;
-
+use App\Models\SystemeLmd;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 
@@ -32,13 +32,52 @@ class EnseignementController extends Controller
     {
         // dd(Auth::user());
         
-        $pivotId = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first()->id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first();
+        $id = $table->id;
+        $lmd = $table->systeme_lmd_id;
         // dd($eta_section_id);
         return Inertia::render('Admin/config',[
             'type' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
-            'matieres' => Matiere::where('etablissement_section_id',$pivotId)->get()
+            'matieres' => Matiere::where('etablissement_section_id',$id)->get(),
+            'lmd' => $lmd
         ]);
+    }
+
+    public function lmd($type)
+    {   
+        return Inertia::render('Admin/lmd',[
+            'type' => $type,
+            'lmds' => SystemeLmd::all()
+        ]);
+    }
+
+    public function storelmd(Request $request)
+    {   
+        $eva = null;
+        $ligne = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->first();
+        // dd($ligne);
+        if ($ligne) {
+            if ($request->regime_evaluation === true) {
+                $eva = 1;
+            }else{
+                $eva = 0;
+            }
+            if($request->lmd){
+                DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->update([
+                    'systeme_lmd_id' => $request->type_lmd,
+                    'regime_evaluation'=>$eva
+                ]);
+            }else{
+                DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->update([
+                    'systeme_lmd_id' => $request->type_lmd,
+                    'regime_evaluation'=>$eva
+                ]);
+            }
+            
+        } 
+        return redirect()->route('admin.config',$request->type);
+       
     }
 
     /**
