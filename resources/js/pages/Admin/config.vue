@@ -5,7 +5,7 @@
       :icon="icons.mdiSchool"
       :toolbarTitle="Title"
     ></Toolbar>
-    <br>
+    <!-- <br> -->
 
     <!-- Application de stepper -->
     <Wizard
@@ -91,15 +91,6 @@
             </v-card>
             </div>
         </Wizard>
-
-      
-
-      
-
-
-
- 
-
     <!-- Application de stepper -->
 
     </AuthenticatedLayout>
@@ -307,7 +298,7 @@
                     {title: 'UNITE D\'ENSEIGNEMENT'},
                     {title: 'AFFECTATION DE MATIERES AUX NIVEAUX'}]
                 }else{
-                    this.items = 
+                    this.items =
                     [
                     {title:'MATIERES'},
                     {title:'SALLES'},
