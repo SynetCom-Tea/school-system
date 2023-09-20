@@ -17,10 +17,10 @@ return new class extends Migration
             $table->string('libelle')->nullable();
             $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
-                ->references('id')->on('etablissement_sections');
+                ->references('id')->on('etablissement_section');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
-            ->index()
-            ->references('id')->on('niveauX');
+                ->index()
+                ->references('id')->on('niveauX');
             $table->timestamps();
             $table->softDeletes();
         });
