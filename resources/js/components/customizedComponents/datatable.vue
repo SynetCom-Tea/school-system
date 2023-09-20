@@ -347,7 +347,9 @@ export default {
         </v-alert>
 
         <div v-if="!alert" class="text-center">
-          <v-btn color="primary" @click="alert = true"> Réinitialiser</v-btn>
+          <v-btn color="primary" @click="alert = true" style="text-transform: none">
+            Réinitialiser</v-btn
+          >
         </div>
       </div>
     </template>
