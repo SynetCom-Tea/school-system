@@ -24,12 +24,9 @@ class EtablissementsTableSeeder extends Seeder
                 'adresse' => 'Plateau',
                 'telephone' => '\"20142564A\"',
                 'ville' => 'Niamey',
-                'statut' => 1,
                 'logo' => 'boDema.png',
                 'type_etablissement_id' => 1,
                 'deleted_at' => NULL,
-                'created_at' => '2023-09-06 11:11:35',
-                'updated_at' => '2023-09-06 11:11:35',
             ),
 
             1 =>
@@ -40,12 +37,10 @@ class EtablissementsTableSeeder extends Seeder
                 'adresse' => 'Plateau',
                 'telephone' => '\"20142564A\"',
                 'ville' => 'Niamey',
-                'statut' => 0,
                 'logo' => 'iai-logo.jpg',
                 'type_etablissement_id' => 3,
                 'deleted_at' => NULL,
-                'created_at' => '2023-09-06 11:11:35',
-                'updated_at' => '2023-09-06 11:11:35',
+                
             ),
             2 =>
 
@@ -56,12 +51,11 @@ class EtablissementsTableSeeder extends Seeder
                 'adresse' =>  'Harobanda',
                 'telephone' => '\"96451232\"',
                 'ville' => 'Niamey',
-                'statut' => 1,
+                
                 'logo' => 'uam-logo.jpg',
                 'type_etablissement_id' => 1,
                 'deleted_at' => NULL,
-                'created_at' => '2023-09-07 13:17:12',
-                'updated_at' => '2023-09-07 13:17:12',
+                
             ),
             3 =>
 
@@ -72,12 +66,11 @@ class EtablissementsTableSeeder extends Seeder
                 'adresse' => 'Francophonie',
                 'telephone' => '\"21047862\"',
                 'ville' => 'Niamey',
-                'statut' => 0,
+                
                 'logo' => 'iat-logo.png',
                 'type_etablissement_id' => 3,
                 'deleted_at' => NULL,
-                'created_at' => '2023-09-07 13:33:37',
-                'updated_at' => '2023-09-07 13:33:37',
+                
             ),
             4 =>
 
@@ -88,12 +81,10 @@ class EtablissementsTableSeeder extends Seeder
                 'adresse' => 'Yantala',
                 'telephone' => '\"21045478\"',
                 'ville' => 'Tahoua',
-                'statut' => 1,
                 'logo' => 'log.png',
                 'type_etablissement_id' => 3,
                 'deleted_at' => NULL,
-                'created_at' => '2023-09-07 13:43:21',
-                'updated_at' => '2023-09-07 13:43:21',
+                
             ),
             5 =>
 
@@ -104,14 +95,12 @@ class EtablissementsTableSeeder extends Seeder
                 'adresse' => 'Maradi',
                 'telephone' => '\"20145698\"',
                 'ville' => 'Maradi',
-                'statut' => 1,
                 'logo' => 'uddm.jpg',
                 'type_etablissement_id' => 1,
                 'deleted_at' => NULL,
-                'created_at' => '2023-09-08 08:49:59',
-                'updated_at' => '2023-09-08 08:49:59',
+               
             ),
-            6 =>
+        //     6 =>
 
             array(
                 'id' => 7,

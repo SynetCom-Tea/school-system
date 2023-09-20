@@ -29,6 +29,16 @@ use Modules\Scolarite\Http\Controllers\InscriptionController;
 | contains the "web" middleware group. Now create something great!
 |
 */
+// AbdoulAZIZ
+// Route::prefix('enseignement')->group(function () {
+//     Route::get('/', 'EnseignementController@index');
+//     Route::resource('ues', UEController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+//     Route::resource('fillieres', FilliereController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
+//     Route::resource('etablissements', EtablissementController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
+//     Route::resource('cycles', CycleController::class)->only(['index', 'create', 'destroy', 'store', 'update']);
+//     Route::resource('permissions', PermissionController::class);
+//     Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
+// });
 
 Route::get('/', function () {
     return Inertia::render('welcome/Index', [
@@ -51,7 +61,9 @@ Route::get('/dashboard', function () {
 //     Route::post('/note/enregistrer', [NoteController::class, 'store'])->name('note.save');
 // });
 Route::middleware('auth')->group(function () {
+    Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
     Route::resource('users', UserController::class);
+    });
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
@@ -67,5 +79,6 @@ Route::resource('niveaux', NiveauController::class);
 Route::resource('etablissements', EtablissementController::class);
 Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->name('etablissement.activer');
 Route::resource('inscriptions', InscriptionController::class);
+Route::get('/NotFoud', [UserController::class,'NotFoud'])->name('NotFoud');
 
 require __DIR__ . '/auth.php';

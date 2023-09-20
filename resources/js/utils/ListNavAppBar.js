@@ -86,19 +86,19 @@ MenuAdmin = {
             title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
-            permissions: "manage_system",
+            roles: "manage_system",
         },
         {
             title: "Profil",
             icon: mdiAccount,
             link: "/profile",
-            permissions: "manage_school",
+            roles: "manage_school",
         },
         {
             icon: mdiSchool,
             title: "Établissements",
             link: "/etablissements",
-            permissions: "manage_system",
+            roles: "manage_system",
         },
         /* {
             title: "Home",
@@ -147,17 +147,32 @@ MenuAdmin = {
             {
                 icon: mdiSquareMedium,
                 title: "Rôles",
-                link: "/roles",
+                link: "/enseignement/roles",
                 permissions: "manage_system",
             },
             {
                 icon: mdiSquareMedium,
                 title: "Permissions",
-                link: "/permissions",
+                link: "/enseignement/permissions",
                 permissions: "manage_system",
             },
         ],
     };
+    let enseignements = {
+        icon: mdiAccountCogOutline,
+        title: "Gestions d'Enseignements",
+        "icon-alt": mdiChevronDown,
+        permissions: "manage_system",
+        model: false,
+        children: [
+            {
+                icon: mdiSquareMedium,
+                title: "Fillières",
+                link: "/enseignement/fillieres",
+                permissions: "manage_system",
+            },
+        ],
+    }; 
     // Gestion de Notes
     let configsMenu = {
         icon: mdiCog,

@@ -22,6 +22,8 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
                 ->references('id')->on('type_etablissements');
+                $table->foreignIdFor(\App\Models\SystemeLmd::class)->nullable()->index()
+                ->references('id')->on('systeme_lmds');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -36,8 +38,6 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Section::class)
                 ->index()
                 ->references('id')->on('sections');
-            $table->foreignIdFor(\App\Models\SystemeLmd::class)->nullable()->index()
-                ->references('id')->on('systeme_lmds');
             $table->integer('configuration')->nullable();
             $table->timestamps();
         });
