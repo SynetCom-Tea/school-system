@@ -109,8 +109,6 @@ export default {
             auto-select-first
             style="margin-top: 20px"
             density="comfortable"
-            itemTitle="name"
-            itemValue="abbr"
             placeholder="Rechercher"
             :prepend-inner-icon="icons.mdiMagnify"
             rounded
