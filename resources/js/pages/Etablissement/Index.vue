@@ -373,7 +373,7 @@ export default {
                 </v-container>
                 <div class="d-flex align-center justify-space-around pa-4">
 
-                    <span class="grey--text">Items per page</span>
+                    <span class="grey--text">Eléments par page</span>
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
@@ -429,7 +429,7 @@ export default {
                 </v-container>
                 <div class="d-flex align-center justify-space-around pa-4">
 
-                    <span class="grey--text">Items per page</span>
+                    <span class="grey--text">Eléments par page</span>
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">
@@ -484,7 +484,7 @@ export default {
                 </v-container>
                 <div class="d-flex align-center justify-space-around pa-4">
 
-                    <span class="grey--text">Items per page</span>
+                    <span class="grey--text">Eléments par page</span>
                     <v-menu>
                         <template v-slot:activator="{ props }">
                             <v-btn variant="text" color="primary" class="ml-2" :append-icon="icon.mdiChevronDown" v-bind="props">

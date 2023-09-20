@@ -26,18 +26,38 @@ export default {
       type: Object,
       required: false,
     },
-    addDialog: { type: Boolean, default: false },
-    dialogDetailUpdate: { type: Boolean, default: false },
-
+    addDialog: {
+      type: Boolean,
+      default: false,
+    },
+    dialogDetailUpdate: {
+      type: Boolean,
+      default: false,
+    },
+    displayAddButton: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     titleDatatable: {
       type: String,
       default: "Titre du datatable",
       required: false,
     },
-    functionEditItem: { type: Function },
-    functionDeleteItem: { type: Function },
-    functionOnClickAddButton: { type: Function, required: false },
-    functionOnConfirmDeleting: { type: Function, required: false },
+    functionEditItem: {
+      type: Function,
+    },
+    functionDeleteItem: {
+      type: Function,
+    },
+    functionOnClickAddButton: {
+      type: Function,
+      required: false,
+    },
+    functionOnConfirmDeleting: {
+      type: Function,
+      required: false,
+    },
   },
   components: {
     ModalDetailUpdate,
@@ -52,6 +72,7 @@ export default {
 
   data() {
     return {
+      pagination: null,
       dialog: false,
       status: false,
       alert: true,
@@ -77,6 +98,9 @@ export default {
 
   mounted() {},
   computed: {
+    scopedSlots() {
+      return this.$slots;
+    },
     modelEditedObject: {
       get() {
         return this.editedObject;
@@ -172,10 +196,11 @@ export default {
             white-space: pre-wrap;
             word-break: break-word;
           "
-          ><p class="text-wrap">
-            {{ titleDatatable }}
-          </p></v-toolbar-title
         >
+          <p class="text-wrap">
+            {{ titleDatatable }}
+          </p>
+        </v-toolbar-title>
 
         <v-divider class="mx-4 color-secondary" inset vertical></v-divider>
         <div style="width: 250px">
@@ -199,50 +224,63 @@ export default {
           class="add-button-style"
           nameButton="Ajouter"
           title="Ajouter une nouvelle ligne"
+          v-if="displayAddButton"
           :prependIcon="icons.mdiPlus"
           @click="onClickAddButton"
         >
         </Button>
+        <!-- <ModalDetailUpdate
+          :onClickCancelButton="onClickCancelButtonForEditing"
+          :toolbarTitle="toolbarTitle"
+          :dialogDetailUpdate="dialogDetailUpdate"
+          :isEditing="isEditingModal"
+          :iconValueDetail="icons.mdiPencil"
+          :iconUpdate="icons.mdiAccount"
+        ></ModalDetailUpdate> -->
+        <v-dialog v-model="dialog" max-width="900px" persistent>
+          <!-- <template v-slot:activator="{ props }">
+            <Button
+              variant="flat"
+              class="mb-2"
+              nameButton="Ajouter"
+              title="Ajouter une nouvelle ligne"
+              style="height: 30px; text-transform: none"
+              :prependIcon="icons.mdiPlus"
+              v-bind="props"
+            >
+            </Button>
+          </template> -->
+          <v-card>
+            <v-card-title style="background-color: #7d002c">
+              <span class="text-h5 text-white">{{ formTitle }}</span>
+            </v-card-title>
 
-        <slot name="contentDialogUpdateDetail" />
-        <div v-if="addDialog">
-          <v-dialog v-model="dialog" max-width="600px" persistent>
-            <v-card>
-              <v-toolbar flat color="secondary">
-                <v-toolbar-title>
-                  <span
-                    style="
-                      font-size: 1.1em;
-                      width: 450px;
-                      word-wrap: break-word;
-                      white-space: pre-wrap;
-                      word-break: break-word;
-                    "
-                    class="text-white"
-                    >{{ formTitle }}</span
-                  >
-                </v-toolbar-title>
-                <template v-slot:prepend>
-                  <v-btn
-                    outlined
-                    icon="$close"
-                    fab
-                    color="white"
-                    title="Fermer la modale"
-                    @click="dialog = false"
-                  ></v-btn>
-                </template>
-
-                <v-spacer></v-spacer>
-              </v-toolbar>
-              <v-container>
-                <slot name="addDialogContent" />
-              </v-container>
-            </v-card>
-            <slot />
-          </v-dialog>
-        </div>
-        <v-dialog v-model="dialogDelete" max-width="600px" persistent>
+            <slot name="addDialogContent" />
+            <v-card-actions class="card-actions-style">
+              <Button
+                variant="text"
+                class="mb-2"
+                color="red"
+                nameButton="Annuler"
+                title="Annuler et Fermer la modale"
+                style="height: 30px"
+                :prependIcon="icons.mdiCancel"
+                :onClickButton="close"
+              ></Button>
+              <Button
+                variant="text"
+                class="mb-2"
+                nameButton="Enregistrer"
+                title="Valider et Fermer la modale"
+                style="height: 30px"
+                :prependIcon="icons.mdiContentSaveEditOutline"
+                :onClickButton="save"
+              ></Button>
+            </v-card-actions>
+          </v-card>
+          <slot />
+        </v-dialog>
+        <v-dialog v-model="dialogDelete" max-width="500px" persistent>
           <v-card>
             <v-card-title style="background-color: #7d002c" class="text-h5 text-white"
               >Confirmation de la suppression</v-card-title
@@ -256,7 +294,7 @@ export default {
                 nameButton="Annuler"
                 title="Annuler et Fermer la modale"
                 style="height: 30px"
-                @click="closeDelete"
+                :onClickButton="closeDelete"
               ></Button>
 
               <Button
@@ -265,7 +303,7 @@ export default {
                 nameButton="Oui"
                 title="Confirmer et Fermer la modale"
                 style="height: 30px"
-                @click="deleteItemConfirm"
+                :onClickButton="deleteItemConfirm"
               ></Button>
 
               <v-spacer></v-spacer>
@@ -309,12 +347,25 @@ export default {
         </v-alert>
 
         <div v-if="!alert" class="text-center">
-          <v-btn color="primary" @click="alert = true"> Réinitialiser</v-btn>
+          <v-btn
+            color="primary"
+            @click="alert = true"
+            style="text-decoration: none; text-transform: none"
+          >
+            Réinitialiser</v-btn
+          >
         </div>
       </div>
     </template>
+    <template v-for="(index, name) in $slots" v-slot:[name]>
+      <slot :name="name"></slot>
+    </template>
+    <template v-for="(index, name) of $slots" v-slot:[name]="data">
+      <slot :name="name" v-bind="data"></slot>
+    </template>
   </v-data-table>
 </template>
+
 <style scoped>
 .add-button-style:hover {
   background-color: #7d002c;
@@ -322,6 +373,7 @@ export default {
   transform: scale(1.05);
   cursor: pointer;
 }
+
 .add-button-style {
   height: 30px;
   /* background-color: #7d002c; */
@@ -329,10 +381,12 @@ export default {
   box-shadow: 10px 5px 5px #7d002c;
   /* 0px 0px 5px #7d002c; */
 }
+
 .search-field {
   border: 1px solid #7d002c;
   border-radius: 4px;
 }
+
 .style-table {
   border: 2px solid #7d002c;
   padding: 10px;
@@ -344,6 +398,7 @@ export default {
   margin-left: 10px;
   width: 98%;
 }
+
 .card-actions-style {
   display: flex;
   justify-content: flex-end;

@@ -27,15 +27,31 @@ class ProfileController extends Controller
     /**
      * Update the user's profile information.
      */
-    public function update(ProfileUpdateRequest $request): RedirectResponse
+    public function update(Request $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        /*$request->user()->fill($request->validated());
 
-        if ($request->user()->isDirty('email')) {
+         if ($request->user()->isDirty('email')) {
             $request->user()->email_verified_at = null;
-        }
+        } */
+        $user = $request->user();
+        $user->nom = $request->nom;
+        $user->prenom = $request->prenom;
+        $user->email = $request->email;
+        $user->update();
+        //$request->user()->save();
 
-        $request->user()->save();
+        return Redirect::route('profile.edit');
+    }
+
+     /**
+     * Update the user's profile password.
+     */
+    public function passwordChange(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $user->password = $request->new_password;
+        $user->update();
 
         return Redirect::route('profile.edit');
     }

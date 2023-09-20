@@ -58,175 +58,174 @@
               </v-list-item>
             </v-slide-x-transition>
           </div>
-          <div class="sidebar-links">
-            <small>Menu</small>
-            <hr class="divider" />
-            <div class="links">
-              <v-list density="compact">
+        </div>
+        <div class="sidebar-links">
+          <small>Menu</small>
+          <hr class="divider" />
+          <div class="links">
+            <v-list density="compact">
+              <v-list-item
+                class="list-case"
+                v-for="link in getListMenus[0]"
+                :key="link.title"
+                @click="page(link.link)"
+              >
+                <template v-slot:prepend>
+                  <v-icon :title="link.title" :icon="link.icon"></v-icon>
+                </template>
+                <v-list-item-title
+                  class="text-wrap"
+                  v-text="link.title"
+                ></v-list-item-title>
+              </v-list-item>
+              <!-- <v-list-group :value="getListMenus[1].title"> -->
+              <v-list-group
+                v-if="
+                  $page.props?.roles[0] && $page.props?.roles[0] != 'Super-administrateur'
+                "
+                :value="getListMenus[4].title"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon
+                        :title="getListMenus[4].title"
+                        :icon="getListMenus[4].icon"
+                      ></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="getListMenus[4].title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
+
                 <v-list-item
-                  class="list-case"
-                  v-for="link in getListMenus[0]"
-                  :key="link.title"
-                  @click="page(link.link)"
+                  class="sub-list-group"
+                  v-for="(item, i) in getListMenus[4].children"
+                  :key="i"
+                  @click="page(item.link)"
                 >
                   <template v-slot:prepend>
-                    <v-icon :title="link.title" :icon="link.icon"></v-icon>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
                   </template>
+
                   <v-list-item-title
                     class="text-wrap"
-                    v-text="link.title"
+                    v-text="item.title"
                   ></v-list-item-title>
                 </v-list-item>
-                <!-- <v-list-group :value="getListMenus[1].title"> -->
-                <v-list-group
-                  v-if="
-                    $page.props?.roles[0] &&
-                    $page.props?.roles[0] != 'Super-administrateur'
-                  "
-                  :value="getListMenus[4].title"
+              </v-list-group>
+              <v-list-group :value="getListMenus[1]?.title">
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon
+                        :title="getListMenus[1]?.title"
+                        :icon="getListMenus[1]?.icon"
+                      ></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="getListMenus[1]?.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
+
+                <v-list-item
+                  class="sub-list-group"
+                  v-for="(item, i) in getListMenus[1]?.children"
+                  :key="i"
+                  @click="page(item.link)"
                 >
-                  <template v-slot:activator="{ props }">
-                    <v-list-item class="group-title" v-bind="props">
-                      <template v-slot:prepend>
-                        <v-icon
-                          :title="getListMenus[4].title"
-                          :icon="getListMenus[4].icon"
-                        ></v-icon>
-                      </template>
-                      <v-list-item-title
-                        class="text-wrap"
-                        v-text="getListMenus[4].title"
-                      ></v-list-item-title>
-                    </v-list-item>
-                  </template>
-
-                  <v-list-item
-                    class="sub-list-group"
-                    v-for="(item, i) in getListMenus[4].children"
-                    :key="i"
-                    @click="page(item.link)"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                    </template>
-
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="item.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </v-list-group>
-                <v-list-group :value="getListMenus[1]?.title">
-                  <template v-slot:activator="{ props }">
-                    <v-list-item class="group-title" v-bind="props">
-                      <template v-slot:prepend>
-                        <v-icon
-                          :title="getListMenus[1]?.title"
-                          :icon="getListMenus[1]?.icon"
-                        ></v-icon>
-                      </template>
-                      <v-list-item-title
-                        class="text-wrap"
-                        v-text="getListMenus[1]?.title"
-                      ></v-list-item-title>
-                    </v-list-item>
-                  </template>
-
-                  <v-list-item
-                    class="sub-list-group"
-                    v-for="(item, i) in getListMenus[1]?.children"
-                    :key="i"
-                    @click="page(item.link)"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                    </template>
-
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="item.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </v-list-group>
-
-                <v-list-group
-                  :value="MenuAdmin.title"
-                  v-if="$page.props.roles == 'Administrateur'"
-                >
-                  <template v-slot:activator="{ props }">
-                    <v-list-item class="group-title" v-bind="props">
-                      <template v-slot:prepend>
-                        <v-icon :title="MenuAdmin.title" :icon="MenuAdmin.icon"></v-icon>
-                      </template>
-                      <v-list-item-title
-                        class="text-wrap"
-                        v-text="MenuAdmin.title"
-                      ></v-list-item-title>
-                    </v-list-item>
-                  </template>
-
-                  <v-list-item
-                    class="sub-list-group"
-                    v-for="(item, i) in MenuAdmin.children"
-                    :key="i"
-                    @click="page(item.link)"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                    </template>
-
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="item.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </v-list-group>
-
-                <v-list-group
-                  :value="getListMenus[2].title"
-                  v-if="$page.props.roles == 'Note'"
-                >
-                  <template v-slot:activator="{ props }">
-                    <v-list-item class="group-title" v-bind="props">
-                      <template v-slot:prepend>
-                        <v-icon
-                          :title="getListMenus[2].title"
-                          :icon="getListMenus[2].icon"
-                        ></v-icon>
-                      </template>
-                      <v-list-item-title
-                        class="text-wrap"
-                        v-text="getListMenus[2].title"
-                      ></v-list-item-title>
-                    </v-list-item>
-                  </template>
-
-                  <v-list-item
-                    class="sub-list-group"
-                    v-for="(item, i) in getListMenus[2].children"
-                    :key="i"
-                    @click="page(item.link)"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                    </template>
-
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="item.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </v-list-group>
-
-                <!-- Déconnexion doit etre le dernier menu -->
-                <v-list-item class="list-case" @click="logout" key="logout">
                   <template v-slot:prepend>
-                    <v-icon title="logout" :icon="icons.mdiLogout"></v-icon>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
                   </template>
-                  <v-list-item-title class="text-wrap">Déconnexion</v-list-item-title>
+
+                  <v-list-item-title
+                    class="text-wrap"
+                    v-text="item.title"
+                  ></v-list-item-title>
                 </v-list-item>
-              </v-list>
-            </div>
+              </v-list-group>
+
+              <v-list-group
+                :value="MenuAdmin.title"
+                v-if="$page.props.roles[0] == 'Administrateur'"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon :title="MenuAdmin.title" :icon="MenuAdmin.icon"></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="MenuAdmin.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
+
+                <v-list-item
+                  class="sub-list-group"
+                  v-for="(item, i) in MenuAdmin.children"
+                  :key="i"
+                  @click="page(item.link)"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  </template>
+
+                  <v-list-item-title
+                    class="text-wrap"
+                    v-text="item.title"
+                  ></v-list-item-title>
+                </v-list-item>
+              </v-list-group>
+
+              <v-list-group
+                :value="getListMenus[2].title"
+                v-if="$page.props.roles == 'Note'"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon
+                        :title="getListMenus[2].title"
+                        :icon="getListMenus[2].icon"
+                      ></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="getListMenus[2].title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
+
+                <v-list-item
+                  class="sub-list-group"
+                  v-for="(item, i) in getListMenus[2].children"
+                  :key="i"
+                  @click="page(item.link)"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  </template>
+
+                  <v-list-item-title
+                    class="text-wrap"
+                    v-text="item.title"
+                  ></v-list-item-title>
+                </v-list-item>
+              </v-list-group>
+
+              <!-- Déconnexion doit etre le dernier menu -->
+              <v-list-item class="list-case" @click="logout" key="logout">
+                <template v-slot:prepend>
+                  <v-icon title="logout" :icon="icons.mdiLogout"></v-icon>
+                </template>
+                <v-list-item-title class="text-wrap">Déconnexion</v-list-item-title>
+              </v-list-item>
+            </v-list>
           </div>
         </div>
       </div>
@@ -265,7 +264,6 @@ export default {
   data: () => {
     return {
       MenuAdmin: [],
-
       open: ["getListMenus[1]"],
       drawer: true,
       menuCompact: {
@@ -273,6 +271,7 @@ export default {
       },
       icons: {
         mdiChevronLeft,
+        mdiCogOutline,
         mdiLogout,
         mdiMenu,
         mdiAccount,
@@ -354,21 +353,23 @@ export default {
       return item;
     },
     getUserProfile() {
-      let fullName;
+      let fullName, firstname, lastname;
       let organization;
       let user = this.$page.props.auth ? this.$page.props.auth.user : null;
 
       let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
-      fullName = user?.nom + " " + user?.prenom;
+      let vRoles = this.$page.props.roles.length > 1 ? "Profil" : roles;
+      firstname = user.nom ?? "Nom";
+      lastname = user.prenom ?? "Preom";
+      fullName = firstname + " " + lastname;
       let item = {
         name: fullName,
-        typeUser: roles,
+        typeUser: vRoles,
         photo: {
           file: "team.png",
           title: "photo de l'établissement",
         },
       };
-
       return item;
     },
     getListMenus() {

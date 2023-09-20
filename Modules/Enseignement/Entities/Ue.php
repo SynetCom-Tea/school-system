@@ -9,10 +9,5 @@ class Ue extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
-    
-    protected static function newFactory()
-    {
-        return \Modules\Enseignement\Database\factories\UeFactory::new();
-    }
+    protected $fillable = ['libelle','filliere_id'];
 }

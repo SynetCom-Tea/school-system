@@ -19,8 +19,8 @@ return new class extends Migration
                 ->index()
                 ->references('id')->on('etablissement_section');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
-            ->index()
-            ->references('id')->on('niveauX');
+                ->index()
+                ->references('id')->on('niveauX');
             $table->timestamps();
             $table->softDeletes();
         });

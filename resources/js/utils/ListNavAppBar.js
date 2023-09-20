@@ -147,13 +147,28 @@ MenuAdmin = {
             {
                 icon: mdiSquareMedium,
                 title: "Rôles",
-                link: "/roles",
+                link: "/enseignement/roles",
                 permissions: "manage_system",
             },
             {
                 icon: mdiSquareMedium,
                 title: "Permissions",
-                link: "/permissions",
+                link: "/enseignement/permissions",
+                permissions: "manage_system",
+            },
+        ],
+    };
+    let enseignements = {
+        icon: mdiAccountCogOutline,
+        title: "Gestions d'Enseignements",
+        "icon-alt": mdiChevronDown,
+        permissions: "manage_system",
+        model: false,
+        children: [
+            {
+                icon: mdiSquareMedium,
+                title: "Fillières",
+                link: "/enseignement/fillieres",
                 permissions: "manage_system",
             },
         ],
@@ -310,7 +325,9 @@ MenuAdmin = {
             // },
         ],
     };
-       if (page?.roles == "Administrateur") {
+    if (page?.roles != "Super-administrateur") {
+        console.log('hrer')
+
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
     return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]

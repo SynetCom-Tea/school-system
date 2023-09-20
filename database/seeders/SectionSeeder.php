@@ -3,6 +3,7 @@
 namespace Database\Seeders;
 
 use App\Models\Section;
+use App\Models\Role;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -24,6 +25,31 @@ class SectionSeeder extends Seeder
         ]);
         Section::create([
             'libelle' => 'Universitaire'
+        ]);
+
+        Role::create([
+            'name' => 'Administrateur',
+            'guard_name'=>'web',
+        ]);
+        Role::create([
+            'name' => 'Enseignant',
+            'guard_name'=>'web',
+        ]);
+        Role::create([
+            'name' => 'Apprenant',
+            'guard_name'=>'web',
+        ]);
+        Role::create([
+            'name' => 'Proviseur',
+            'guard_name'=>'web',
+        ]);
+        Role::create([
+            'name' => 'APT',
+            'guard_name'=>'web',
+        ]);
+        Role::create([
+            'name' => 'Surveillant',
+            'guard_name'=>'web',
         ]);
     }
 }

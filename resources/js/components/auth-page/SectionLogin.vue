@@ -14,37 +14,38 @@
                   v-model="form.email"
                   dense
                   class="mt-5"
-                  :errorMessageValue="form.errors.email"
-                  hint="Respecter le format email"
+                  :error-messages="form.errors.email && 'Email invalide!!'"
+                  hint="Respecter le format email,le mail est obligatoire"
+                  :prepend-inner-icon="icons.mdiEmailOutline"
                 />
-                <!-- <TextField
-                  label="Mot de passe"
-                  v-model="form.password"
-                  outlined
+                <div
+                  class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between"
+                >
+                  Mot de passe
+
+                  <a
+                    style="cursor: pointer"
+                    class="text-caption text-decoration-none text-primary"
+                    target="_blank"
+                    @click="forgottenPassword"
+                  >
+                    Mot de passe oublié?</a
+                  >
+                </div>
+
+                <TextField
                   dense
+                  v-model="form.password"
+                  :append-inner-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
+                  :type="showPassword == true ? 'text' : 'password'"
+                  :prepend-inner-icon="icons.mdiLockOutline"
+                  :error-messages="form.errors.password && 'Mot de passe invalide!!'"
                   :isRequired="true"
                   autocomplete="false"
                   hint="Un mot de passe composé de 8 caractères au min dont une lettre majuscule, caractères spéciaux,un chiffre et minuscules"
-                  :append-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
-                  :type="showPassword ? 'text' : 'password'"
-                  :error-messages="form.errors.password && ' Mot de passe incorrect!'"
-                  @click:append="showPassword = !showPassword"
-                /> -->
-
-                <TextField
-                  v-model="form.password"
-                  :type="showPassword ? 'text' : 'password'"
-                  :isRequired="true"
-                  outlined
-                  dense
-                  label="Message"
-                  type="text"
-                  @click:append="togglePassword()"
-                >
-                  <template v-slot:append>
-                    <v-icon :icon="showPassword ? icons.mdiEye : icons.mdiEyeOff" />
-                  </template>
-                </TextField>
+                  label="Mot de passe"
+                  @click:append-inner="togglePassword"
+                ></TextField>
               </v-form>
               <Button
                 title="Valider"
@@ -59,18 +60,14 @@
               >
               </Button>
               <v-row>
-                <div class="mt-3" style="font-size: 2px">
-                  <v-checkbox label="Se rappeler de moi" color="primary"> </v-checkbox>
-                </div>
-                <v-col cols="12" md="5">
-                  <div
-                    class="mt-3"
-                    style="font-size: 10px; cursor: pointer; color: #7d002c"
+                <v-col style="font-size: 2px">
+                  <v-checkbox
+                    label="Se rappeler de moi"
+                    v-model="form.remember_me"
+                    @change="onChangeRememberMe(form.remember_me)"
                     color="primary"
-                    @click="forgottenPassword()"
                   >
-                    Mot de passe oublié
-                  </div>
+                  </v-checkbox>
                 </v-col>
               </v-row>
 
@@ -136,29 +133,65 @@ import {
   mdiInstagram,
   mdiEye,
   mdiEyeOff,
+  mdiCloseCircle,
+  mdiMicrophone,
+  mdiMapMarker,
+  mdiMapMarkerOff,
+  mdiLockOutline,
+  mdiEmailOutline,
 } from "@mdi/js";
 
 export default {
-  components: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram, mdiEye, mdiEyeOff },
+  components: {
+    mdiLockOutline,
+    mdiGoogle,
+    mdiFacebook,
+    mdiTwitter,
+    mdiInstagram,
+    mdiEye,
+    mdiEyeOff,
+    mdiEmailOutline,
+    mdiCloseCircle,
+
+    mdiMicrophone,
+    mdiMapMarker,
+    mdiMapMarkerOff,
+  },
   props: {
     goToNextWindow: { type: Function },
     listSocialNetworks: { type: Array },
     // goToLogin: { type: Function },
   },
   data: () => ({
+    message: "Hey!",
+    marker: true,
+    iconIndex: 0,
     getErrors: "",
     showPassword: false,
-    icons: { mdiGoogle, mdiFacebook, mdiTwitter, mdiInstagram, mdiEye, mdiEyeOff },
+    icons: {
+      mdiGoogle,
+      mdiLockOutline,
+      mdiFacebook,
+      mdiTwitter,
+      mdiInstagram,
+      mdiEye,
+      mdiEyeOff,
+      mdiCloseCircle,
+      mdiMicrophone,
+      mdiMapMarker,
+      mdiMapMarkerOff,
+      mdiEmailOutline,
+    },
     errors: {},
     form: useForm({
       email: "",
       password: "",
+      remember_me: false,
     }),
   }),
 
   computed: {},
   created() {
-    console.log(this.$page.props.flash?.message?.text);
     if (this.$page.props.flash?.message?.type == "error") {
       this.$swal({
         icon: "error",
@@ -173,21 +206,32 @@ export default {
     }
   },
   methods: {
+    onChangeRememberMe(remember) {
+      console.log("remember:", remember);
+    },
     togglePassword() {
-      console.log("show:", this.showPassword);
       this.showPassword = !this.showPassword;
     },
     goToSocialNetworksUrl(link) {
       if (link) return window.open(link);
     },
 
-    forgottenPassword() {},
+    forgottenPassword() {
+      router.get(route("password.request"));
+    },
     goToLogin(e) {
       e.preventDefault();
       this.form.post(route("login"), {
+        onSuccess: (e) => {
+          console.log("e from success:", e);
+        },
         onError: (e) => {
+          console.log("e from  onError:", e);
           if (e.email == "These credentials do not match our records.") {
             this.errors.text = "Identifiant ou mot de passe incorrect";
+          }
+          if (e.email == "The email field is required.") {
+            this.errors.text = "Mot de passe est obligatoire";
           }
         },
       });

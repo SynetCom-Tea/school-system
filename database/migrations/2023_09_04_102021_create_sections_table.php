@@ -17,6 +17,16 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+
+        Schema::create('role_sections', function (Blueprint $table) {
+            $table->foreignIdFor(\App\Models\section::class)
+                ->index()
+                ->references('id')->on('sections');
+            $table->foreignIdFor(\App\Models\Role::class)
+                ->index()
+                ->references('id')->on('roles');
+        });
+        
     }
 
     /**

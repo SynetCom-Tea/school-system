@@ -14,14 +14,15 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PermissionSeeder::class,
+
             TypeEtablissementSeeder::class,
             SectionSeeder::class,
             NiveauTableSeeder::class,
             EtablissementsTableSeeder::class,
-            RoleSeeder::class,
             EtablissementSectionSeeder::class,
             ClasseSeeder::class,
             AnneeScolaireSeeder::class,
+            RoleSeeder::class,
             ClasseAnneeSeeder::class,
             ApprenantSeeder::class,
             // SalleSeeder::class,

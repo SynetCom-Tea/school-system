@@ -120,7 +120,9 @@ export default {
     };
   },
 
-  mounted() {},
+  mounted() {
+    console.log("props:", this.$page.props);
+  },
   computed: {},
 
   methods: {
