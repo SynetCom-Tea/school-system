@@ -120,7 +120,9 @@ export default {
     };
   },
 
-  mounted() {},
+  mounted() {
+    console.log("props:", this.$page.props);
+  },
   computed: {},
 
   methods: {
@@ -160,6 +162,7 @@ export default {
  -->
   <div>
     <Datatable
+      :displayAddButton="false"
       :addDialog="true"
       :dialogDetailUpdate="dialogDetailUpdate"
       titleDatatable="Liste des items"
