@@ -64,17 +64,19 @@
                 label="File input"
                 variant="solo-inverted"
               ></v-file-input>
-
             </v-col>
-            <v-col v-if="importation"><v-btn
+            <v-col v-if="importation"
+              ><v-btn
                 class="ma-2"
                 outlined
                 type="button"
                 color="primary"
                 href="../models/echantillons/fiche_echantillonage.ods"
-                download>
-                    Télécharger le Model
-              </v-btn></v-col>
+                download
+              >
+                Télécharger le Model
+              </v-btn></v-col
+            >
           </v-row>
         </v-card-text>
 
@@ -84,7 +86,6 @@
             <v-col cols="4">
               <TextField
                 label="Code matiere"
-                class="mt-2"
                 :isRequired="true"
                 placeholder="Code matiere"
                 @change="verify(matiere)"
@@ -93,7 +94,6 @@
             </v-col>
             <v-col cols="4">
               <TextField
-                class="mt-2"
                 label="Libelle matière"
                 :isRequired="true"
                 placeholder="Libelle matiere"
@@ -209,9 +209,9 @@ export default {
     onChange(event) {
       this.file = event.target.files ? event.target.files[0] : null;
       let workbook = XLSX.readFile(this.file);
-      console.log('workbook1');
+      console.log("workbook1");
       console.log(workbook);
-      console.log('SheetNames');
+      console.log("SheetNames");
       console.log(workbook.SheetNames);
     },
     onclickAlertButton(type) {

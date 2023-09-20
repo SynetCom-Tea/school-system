@@ -246,8 +246,8 @@ export default {
                   <Autocomplete
                     v-model="form.permissions"
                     label="Permission"
-                    itemTitle="description"
-                    itemValue="id"
+                    item-title="description"
+                    item-value="id"
                     :items="permissions"
                     variant="solo-filled"
                     multiple
@@ -263,8 +263,8 @@ export default {
                     label="Role"
                     v-model="form.role_id"
                     @update:modelValue="setPermission(form.role_id)"
-                    itemTitle="name"
-                    itemValue="id"
+                    item-title="name"
+                    item-value="id"
                     :items="role_p_u"
                     chips
                     clearable
@@ -275,8 +275,8 @@ export default {
                   <Autocomplete
                     v-model="form.permissions"
                     label="Permission"
-                    itemTitle="description"
-                    itemValue="id"
+                    item-title="description"
+                    item-value="id"
                     :items="permission"
                     multiple
                     chips
@@ -345,8 +345,8 @@ export default {
                     <Autocomplete
                       v-model="form.permissions"
                       label="Permission"
-                      itemTitle="description"
-                      itemValue="id"
+                      item-title="description"
+                      item-value="id"
                       :items="permissions"
                       variant="solo-filled"
                       multiple
@@ -362,8 +362,8 @@ export default {
                       label="Role"
                       disabled
                       v-model="form.role_id"
-                      itemTitle="name"
-                      itemValue="id"
+                      item-title="name"
+                      item-value="id"
                       :items="role_p_u"
                       chips
                       clearable
@@ -374,8 +374,8 @@ export default {
                     <Autocomplete
                       v-model="form.permissions"
                       label="Permission"
-                      itemTitle="description"
-                      itemValue="id"
+                      item-title="description"
+                      item-value="id"
                       :items="permission"
                       multiple
                       chips
