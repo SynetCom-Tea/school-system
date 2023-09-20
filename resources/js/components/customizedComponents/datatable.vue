@@ -58,6 +58,11 @@ export default {
       type: Function,
       required: false,
     },
+    functionOnSaveAdding: {
+      type: Function,
+      required: false,
+    },
+    maxWidthAddDialog: { type: String, default: "700px", required: false },
   },
   components: {
     ModalDetailUpdate,
@@ -146,6 +151,7 @@ export default {
     },
     //Fonction en ecoute lorsqu'on clique sur l'icon 'Modifier'
     onEditItem(item) {
+      console.log("datatable:", item);
       this.functionEditItem(item);
     },
     onClickCancelButtonForEditing() {
@@ -160,6 +166,10 @@ export default {
 
       this.functionDeleteItem(item);
     },
+    save() {
+      this.dialog = false;
+      this.functionOnSaveAdding();
+    },
 
     deleteItemConfirm() {
       this.functionOnConfirmDeleting();
@@ -171,6 +181,7 @@ export default {
     },
 
     closeDelete() {
+      console.log("delete");
       this.dialogDelete = false;
     },
   },
@@ -229,27 +240,8 @@ export default {
           @click="onClickAddButton"
         >
         </Button>
-        <!-- <ModalDetailUpdate
-          :onClickCancelButton="onClickCancelButtonForEditing"
-          :toolbarTitle="toolbarTitle"
-          :dialogDetailUpdate="dialogDetailUpdate"
-          :isEditing="isEditingModal"
-          :iconValueDetail="icons.mdiPencil"
-          :iconUpdate="icons.mdiAccount"
-        ></ModalDetailUpdate> -->
-        <v-dialog v-model="dialog" max-width="900px" persistent>
-          <!-- <template v-slot:activator="{ props }">
-            <Button
-              variant="flat"
-              class="mb-2"
-              nameButton="Ajouter"
-              title="Ajouter une nouvelle ligne"
-              style="height: 30px; text-transform: none"
-              :prependIcon="icons.mdiPlus"
-              v-bind="props"
-            >
-            </Button>
-          </template> -->
+
+        <v-dialog v-model="dialog" :max-width="maxWidthAddDialog" persistent>
           <v-card>
             <v-card-title style="background-color: #7d002c">
               <span class="text-h5 text-white">{{ formTitle }}</span>
@@ -265,7 +257,7 @@ export default {
                 title="Annuler et Fermer la modale"
                 style="height: 30px"
                 :prependIcon="icons.mdiCancel"
-                :onClickButton="close"
+                @click="close"
               ></Button>
               <Button
                 variant="text"
@@ -274,7 +266,7 @@ export default {
                 title="Valider et Fermer la modale"
                 style="height: 30px"
                 :prependIcon="icons.mdiContentSaveEditOutline"
-                :onClickButton="save"
+                @click="save"
               ></Button>
             </v-card-actions>
           </v-card>
@@ -294,7 +286,7 @@ export default {
                 nameButton="Annuler"
                 title="Annuler et Fermer la modale"
                 style="height: 30px"
-                :onClickButton="closeDelete"
+                @click="closeDelete"
               ></Button>
 
               <Button
@@ -303,7 +295,7 @@ export default {
                 nameButton="Oui"
                 title="Confirmer et Fermer la modale"
                 style="height: 30px"
-                :onClickButton="deleteItemConfirm"
+                @click="deleteItemConfirm"
               ></Button>
 
               <v-spacer></v-spacer>
