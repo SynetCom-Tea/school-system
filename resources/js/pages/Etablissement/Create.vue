@@ -95,7 +95,10 @@ export default {
                         item-value="id"
                         item-title="name"
                         v-model="form.type_etablissement_id"
-                    ></Select>
+                        isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        >
+                    </Select>
                     </v-col>
                     <v-col cols="6" md="6">
                     <Select
@@ -116,7 +119,8 @@ export default {
                             label="Nom"
                             placeholder="Nom Etablissement"
                             v-model="form.name"
-                            
+                            isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></TextField>
                         </v-col>
                         <v-col cols="4" md="4">
@@ -126,6 +130,8 @@ export default {
                             :items="villes"
                             variant="outlined"
                             v-model="form.ville"
+                            isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></Select>
                         </v-col>
                         <v-col cols="4" md="4">
@@ -173,6 +179,8 @@ export default {
                                     label="Adresse"
                                     placeholder="Adresse"
                                     v-model="form.adresse"
+                                    isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                                 ></TextField>
                             </v-col>
                             <v-col cols="4" md="4">
@@ -184,7 +192,7 @@ export default {
                                     :rules="[
                                         (v) => !!v || 'Ce champ est requis!',
                                         (v) =>
-                                        /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
+                                        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
                                         'Adresse Email invalide!',
                                     ]"
                                 ></TextField>
@@ -194,6 +202,8 @@ export default {
                                 label="Téléphone"
                                 placeholder="Téléphone"
                                 v-model="form.telephone"
+                                isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
                                 ></text-field>
                             </v-col>
                             </v-row>
@@ -236,7 +246,7 @@ export default {
                         :rules="[
                             (v) => !!v || 'Ce champ est requis!',
                             (v) =>
-                            /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
+                            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
                             'Adresse Email invalide!',
                         ]"
                         ></text-field>
@@ -250,7 +260,7 @@ export default {
       <v-btn dark small type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </v-btn>
-      <v-btn small color="success" @click="submit">
+      <v-btn small color="primary" @click="submit">
         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
       </v-btn>
     </v-card-actions>
