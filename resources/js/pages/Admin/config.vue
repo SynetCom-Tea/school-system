@@ -9,6 +9,7 @@
 
     <!-- Application de stepper -->
     <Wizard
+    class="form-wizard-vue"
           squared-tabs
           card-background
           navigable-tabs
@@ -389,6 +390,10 @@
   }
 </script>
 <style scoped>
+.form-wizard-vue .fw-body-list .fw-list-progress-active {
+    background: #004980;
+}
+
 #fw-1695140104041 > ul > li:nth-child(1) > div.fw-list-progress.fw-list-progress-active{
     background: red;
 }
