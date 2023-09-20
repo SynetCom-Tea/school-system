@@ -6,119 +6,111 @@
       :toolbarTitle="Title"
     ></Toolbar>
     <br>
-    <v-card
+
+    <!-- Application de stepper -->
+
+    <v-stepper
+        prev-text="Retour"
+        next-text="Suivant"
+        v-model="step"
+        editable
+        :items="getItems"
+        alt-labels
     >
-      <v-card-title class="text-h6 font-weight-regular justify-space-between">
-        <v-icon
-          color="primary"
-          size="35"
-          :icon="icons.mdiSchool"
-        ></v-icon>
-        &nbsp;
-        <span>{{ currentTitle }}</span>&nbsp;
-      </v-card-title>
+        <template v-slot:item.1>
+            <v-card  flat>
+                <matiere-form @formSubmitted="getMatiereForm" :type="type" />
+            </v-card>
+        </template>
 
-      <v-window v-model="step">
-        <!-- Tabs de la Matieres pour toute les sections -->
-        <v-window-item :value="1">
-          <matiere-form @formSubmitted="getMatiereForm" :type="type" />
-        </v-window-item>
-        <!-- Tabs de la Matieres pour toute les sections -->
+        <template v-slot:item.2>
 
-        <!-- Tabs de la Classes pour toute les sections -->
-        <v-window-item :value="2">
-          <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
-        </v-window-item>
-        <!-- Tabs de la Classes pour toute les sections -->
+            <v-card  flat>
+                <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
+            </v-card>
+        </template>
 
+        <template v-slot:item.3>
+            <v-card  flat>
+                <!-- Tabs de la Filiere pour toute les sections -->
+                <v-card-text v-if="type == '3'">
+                    <filieresup-form @formSubmitted="getFiliereForm" :type="type"  />
+                </v-card-text>
+                <!-- Tabs de la Filiere pour toute les sections -->
 
-        <v-window-item :value="3">
-          <!-- Tabs de la Filiere pour toute les sections -->
-          <v-card-text v-if="type == '3'">
-            <filieresup-form @formSubmitted="getFiliereForm" :type="type"  />
-          </v-card-text>
-          <!-- Tabs de la Filiere pour toute les sections -->
+                <!-- Tabs de la Faculté pour toute les sections -->
+                <v-card-text v-else-if ="type == '4'">
+                    <faculte-form @formSubmitted="getFaculteForm" :type="type"  />
+                </v-card-text>
+                <!-- Tabs de la Faculté pour toute les sections -->
 
-           <!-- Tabs de la Faculté pour toute les sections -->
-           <v-card-text v-else-if ="type == '4'">
-            <faculte-form @formSubmitted="getFaculteForm" :type="type"  />
-          </v-card-text>
-          <!-- Tabs de la Faculté pour toute les sections -->
+                <!-- Tabs de la Frais pour toute les sections -->
+                <v-card-text v-else>
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"/>
+                </v-card-text>
+                <!-- Tabs de la Frais pour toute les sections -->
+            </v-card>
+        </template>
 
-          <!-- Tabs de la Frais pour toute les sections -->
-          <v-card-text v-else>
-            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
-          </v-card-text>
-          <!-- Tabs de la Frais pour toute les sections -->
-        </v-window-item>
+        <template v-slot:item.4>
+            <v-card  flat>
+                <v-card-text v-if="type == '3'">
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"  />
+                </v-card-text>
+                <v-card-text v-else-if ="type == '4'">
+                    <filiere-form @formSubmitted="getFiliereForm" :type="type" :facultes="formFaculte.facultes"  />
+                </v-card-text>
+                <v-card-text v-else>
+                    <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres"/>
+                </v-card-text>
+            </v-card>
+        </template>
 
+        <template v-slot:item.5>
+            <v-card  flat>
+                <v-card-text v-if="type=='4'">
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" />
+                </v-card-text>
+                <v-card-text v-if="type=='3' && lmd != null">
+                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
+                </v-card-text>
+                <v-card-text v-if="type=='3'&& lmd == null">
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
+                </v-card-text>
+            </v-card>
+        </template>
 
+        <template v-slot:item.6>
+            <v-card >
+                <v-card-text v-if="type=='4' && lmd != null">
+                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
+                </v-card-text>
+                <v-card-text v-if="type=='4' && lmd == null">
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
+                </v-card-text>
+                <v-card-text v-if="type=='3'">
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
+                </v-card-text>
+            </v-card>
+        </template>
 
-        <v-window-item :value="4">
-          <v-card-text v-if="type == '3'">
-            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux"  />
-          </v-card-text>
-          <v-card-text v-else-if ="type == '4'">
-            <filiere-form @formSubmitted="getFiliereForm" :type="type"  />
-          </v-card-text>
-          <v-card-text v-else>
-            <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
-          </v-card-text>
-        </v-window-item>
+        <template v-slot:item.7>
+            <v-card  flat>
+                <v-card-text>
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
+                </v-card-text>
+            </v-card>
+        </template>
 
-        <v-window-item :value="5" >
-            <v-card-text v-if="type=='4'">
-            <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" />
-          </v-card-text>
-          <v-card-text v-if="type=='3'">
-            <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
-          </v-card-text>
-        </v-window-item>
+    </v-stepper>
 
-        <v-window-item :value="6" >
-          <v-card-text v-if="type=='4'">
-            <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
-          </v-card-text>
-          <v-card-text v-if="type=='3'">
-            <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
-          </v-card-text>
-        </v-window-item>
+    <!-- Application de stepper -->
 
-        <v-window-item :value="7">
-          <v-card-text>
-            <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="matieres"/>
-          </v-card-text>
-        </v-window-item>
-      </v-window>
-
-      <v-divider></v-divider>
-
-      <v-card-actions>
-        <v-btn
-          v-if="step > 1"
-          variant="flat"
-          color="info"
-          @click="step--"
-        >
-        Retour
-          <!-- <v-icon :icon="icons.mdiCloseCircle"></v-icon> -->
-        </v-btn>
-        <v-spacer></v-spacer>
-        <v-btn
-          v-if="step < pause"
-          color="info"
-          variant="flat"
-          @click="step++,btnsuivant()"
-            :disabled="!suivant"
-        >
-          Suivant
-        </v-btn>
-      </v-card-actions>
-    </v-card>
     </AuthenticatedLayout>
   </template>
   <script>
     import MatiereForm from '@/components/admin/matiere.vue';
+    import NiveauMatiereSansUeForm from '@/components/admin/niveau-matiere-sans-ue.vue';
     import NiveauMatiereSupForm from '@/components/admin/niveau-matiere-sup.vue';
     import NiveauMatiereForm from '@/components/admin/niveau-matiere.vue';
     import ClasseForm from '@/components/admin/classe.vue';
@@ -134,7 +126,7 @@
     import Loader from "@/components/customizedComponents/Loader.vue";
     import { mdiAccount, mdiSchool, mdiHomeOutline, mdiInformation, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
-    props:['type','niveaux','matieres'],
+    props:['type','niveaux','lmd'],
     components: {
     MatiereForm,
     ClasseForm,
@@ -143,7 +135,8 @@
     filiereForm,
     ueForm,
     fraisForm,
-    NiveauMatiereSupForm,
+    NiveauMatiereSansUeForm,
+    NiveauMatiereSupForm ,
     NiveauMatiereForm,
     Loader,
     // Datatable,
@@ -162,11 +155,13 @@
     data: () => ({
         icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
         step: 1,
+        items: [],
         suivant : false,
         pause: null,
         formMatiere: {},
         formClasse: {},
-        formNiveauMatiereSup: {},
+        formNiveauMatiereSansUe: {},
+        NiveauMatiereSupForm :{},
         formNiveauMatiere: {},
         formFaculte: {},
         formFiliere:{},
@@ -178,6 +173,9 @@
     }),
 
     methods: {
+        // test(i){
+        //     console.log('step',i)
+        // },
         btnsuivant(){
           this.suivant = false
         },
@@ -193,12 +191,19 @@
           // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la classe :', this.formClasse);
         },
-        getNiveauMatiereSupForm(donnees){
-          this.formNiveauSupMatiere = donnees
+        getNiveauMatiereSansUeForm(donnees){
+          this.formNiveauMatiereSansUe = donnees
+          this.suivant = true
+          console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSansUe);
+
+        },
+        getNiveauMatiereSupForm (donnees){
+          this.formNiveauMatiereSup = donnees
           this.suivant = true
           console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSup);
 
         },
+
         getNiveauMatiereForm(donnees){
           this.formNiveauMatiere = donnees
           this.suivant = true
@@ -237,6 +242,7 @@
             console.log()
         },
     },
+
     mounted() {
       if(this.type == '3'){
         this.pause = 6
@@ -248,6 +254,26 @@
       // console.log('Admin etablissement',this.$page.props.admin_etablissement.etablissement_id)
     },
     computed: {
+        getItems(){
+            if(this.type == '1' || this.type == '2'){
+                this.items = ['MATIERES','SALLES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
+            }else if(this.type == '3'){
+                if(this.lmd!=null){
+                    this.items = ['MATIERES','SALLES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }else{
+                    this.items = ['MATIERES','SALLES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }
+
+            }else if(this.type == '4'){
+                if(this.lmd!=null){
+                    this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','UNITE D\'ENSEIGNEMENT','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }else{
+                    this.items = ['MATIERES','SALLES','FACULTES','FILIERES','FRAIS','AFFECTATION DE MATIERES AUX NIVEAUX']
+                }
+
+            }
+            return this.items
+        },
       Title () {
         switch (this.type) {
           case '1': return 'SECTION PRIMAIRE'
@@ -261,22 +287,37 @@
           case 1: return 'MATIERES'
           case 2: return 'SALLES'
           case 3:if (this.type === '3') {
-                    return 'Filiere';
+                    return 'FILIERES';
                 }else if (this.type === '4') {
-                    return 'Faculté';
-                }else{return 'Frais';}
+                    return 'FACULTES';
+                }else{return 'FRAIS';}
           case 4:if (this.type === '3') {
-                    return 'Frais';
+                    return 'FRAIS';
                 }else if (this.type === '4') {
-                            return 'Filiere';
-                }else{return 'Affectation des matieres par niveau';}
+                            return 'FILIERES';
+                }else{return 'AFFECTATION DE MATIERES AUX NIVEAUX';}
           case 5:if (this.type === '4') {
-                    return 'Frais';
-                }else{ return 'Unités d\enseignements'}
+                    return 'FRAIS';
+                }else{
+                    if(this.lmd!=null){
+                        return 'UNITE D\'ENSEIGNEMENT';
+
+                    }else{
+                        return 'AFFECTATION DE MATIERES AUX NIVEAUX'
+                    }
+
+
+                    }
           case 6:if (this.type === '4') {
-                    return 'Unités d\enseignements';
-                }else{ return 'Affectation des matieres par niveau'}
-          case 7: return 'Affectation de la matiere par niveau'
+                    if(this.lmd!=null){
+                        return 'UNITE D\'ENSEIGNEMENT';
+
+                    }else{
+                        return 'AFFECTATION DE MATIERES AUX NIVEAUX'
+                    }
+
+                }else{ return 'AFFECTATION DE MATIERES AUX NIVEAUX'}
+          case 7: return 'AFFECTATION DE MATIERES AUX NIVEAUX'
         }
       },
     },
