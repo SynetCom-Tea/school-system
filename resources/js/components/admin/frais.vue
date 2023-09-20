@@ -1,14 +1,42 @@
 <template>
     <form @submit.prevent="submitForm" novalidate>
         <v-container fluid>
-        <v-card-text>
-            <v-row>
-                <v-alert type="info">
+            <v-card variant="outlined" style="border: 2px solid #7d002c">
+            <v-card-title style="color: white; background-color: #7d002c"
+            >FRAIS</v-card-title
+            >
+            <v-divider></v-divider>
+            <br />
+            <div style="margin: 10px">
+                <v-alert
+                    v-model="alertFirst"
+                    border="start"
+                    variant="tonal"
+                    closable
+                    close-label="Close Alert"
+                    color="primary"
+                    type="info"
+                    title="Note"
+                >
                     <li>Cette section vous permet de configurer les frais de cet établissement</li>
                     <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
                 </v-alert>
-            </v-row>
-            <br><br>
+
+                <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+                    <Button
+                    style="height: 30px"
+                    title="Plier la note"
+                    @click="onclickAlertButton('first')"
+                    variant="outlined"
+                    color="primary"
+                    nameButton="Relire la note"
+                    >
+                    </Button>
+                </div>
+            </div>
+
+
+            <v-divider></v-divider>
             <v-card>
                 <v-card-text>
                     <!-- <v-row  v-if="type == '3'">
@@ -33,7 +61,15 @@
                     </v-row> -->
                     <v-row>
                         <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des frais ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                            <v-switch
+                            :label="`${
+                                !importation
+                                    ? 'Renseignement des données par champs'
+                                    : 'Importatation d\'un fichier pour alimenter les frais de scolarité et autres'
+                                }`"
+                             @update:modelValue="resetForm(importation)"
+                              v-model="importation"
+                              color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
 
@@ -45,31 +81,41 @@
                                 variant="solo-inverted"
                             ></v-file-input>
                         </v-col>
-                        <v-col></v-col>
+                        <v-col v-if="importation"><v-btn 
+                            class="ma-2" 
+                            outlined 
+                            type="button"
+                            color="primary"
+                            href="../models/echantillons/fiche_echantillonage.ods"
+                            download>
+                                Télécharger le Model
+                        </v-btn></v-col>
                     </v-row>
                 </v-card-text>
             </v-card>
             <v-divider></v-divider>
             <v-card v-if="!importation">
-                <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
-                <v-card-text>
+                 <v-card-text>
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
-                        <v-col md="4" v-if="type == '3' || type == '4'" >
+                        <v-col md="3" v-if="type == '3' || type == '4'" >
 
-                            <v-autocomplete
-                                :items="['IG','MIEL']"
+                            <Autocomplete
+                                :items="tabsFilieres"
+                                class="mt-2"
                                 v-model="frais.filiere"
                                 item-value="id"
+                                item-title="code"
                                 chips
                                 closable-chips
                                 color="blue-grey-lighten-2"
                                 label="filiere"
-                            ></v-autocomplete>
+                            ></Autocomplete>
                         </v-col>
-                        <v-col md="4" >
+                        <v-col md="3" >
 
-                            <v-autocomplete
+                            <Autocomplete
                                 :items="niveaux"
+                                class="mt-2"
                                 v-model="frais.niveau"
                                 :item-title="formatNiveauLabel"
                                 item-value="id"
@@ -77,47 +123,78 @@
                                 closable-chips
                                 color="blue-grey-lighten-2"
                                 label="Niveaux"
-                            ></v-autocomplete>
+                            ></Autocomplete>
                         </v-col>
-                        <v-col md="4">
+                        <!-- <v-col md="4">
 
-                            <TextField label="Code frais"  :isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
-                        </v-col>
-                        <v-col md="4">
+                            <TextField label="Code frais" class="mt-2"  :isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
+                        </v-col> -->
+                        <v-col md="3">
 
-                            <TextField label="Libelle frais"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField>
+                            <TextField label="Libelle frais" class="mt-2"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField>
                         </v-col>
-                        <v-col md="4">
+                        <v-col md="2">
 
-                            <TextField label="Montant frais"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant"></TextField>
+                            <TextField label="Montant frais" class="mt-2"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant"></TextField>
                         </v-col>
-                        <v-col md="4" v-if="type == '1' || type == '2'"></v-col>
-                        <v-col md="1" offset-md="3">
+                        <v-col md="1" >
                             <br>
-                            <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                :disabled="!(form.frais.length > 1)"
+                                icon
+                                @click="removeRow(frais)"
+                                size="large"
+                                small
+                                color="error"
+                            >
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                            </v-btn>
+                            </Button>
+                            <!-- <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
+                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                            </v-btn> -->
                         </v-col>
                     </v-row>
                     <v-row>
-                        <v-col offset-md="11" md="1">
+                        <v-col offset-md="11" cols="4">
+                            <Button
+                                type="button"
+                                variant="outlined"
+                                @click="addRow"
+                                icon
+                                size="large"
+                                color="primary"
+                            >
+                                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                            </Button>
+                            </v-col>
+                        <!-- <v-col offset-md="11" md="1">
                             <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
                                 <v-icon :icon="icons.mdiPlusCircle"></v-icon>
                             </v-btn>
-                        </v-col>
+                        </v-col> -->
                     </v-row>
                 </v-card-text>
             </v-card>
-        </v-card-text>
-        <v-row>
-            <v-col md="5"></v-col>
-            <v-col md="4">
-                <v-btn type="submit" title="enregistrer" color="info">
-                    Enregistrer
-                </v-btn>
-            </v-col>
-        </v-row>
-        <br>
+            <br>
+            <v-row class="text-center ml-3 mb-3"
+            ><v-col cols="auto">
+                <Button
+                type="submit"
+                title="Enregistrer cette étape"
+                nameButton="Enregistrer"
+                variant="flat"
+                @click="submitForm"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button> </v-col
+            ></v-row>
+    </v-card>
     </v-container>
     </form>
 </template>
@@ -125,16 +202,19 @@
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
-    props:['type','niveaux'],
+    props:['type','niveaux','filieres'],
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
         mdiInformation
     },
     data: () => ({
+        alertFirst: true,
+        alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
+        tabsFilieres: [],
         form: useForm({
             fichier_frais: null,
             frais: [],
@@ -142,6 +222,12 @@
     }),
 
     methods: {
+        onclickAlertButton(type) {
+            if (type == "second") {
+                this.alertSecond = true;
+            }
+            if (type == "first") this.alertFirst = true;
+            },
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;
@@ -185,7 +271,7 @@
                 fichier = true
             }else if(!this.importation && !this.form.frais.find((el) => {
 
-                    return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
+                    return el.niveau == null || el.niveau == '' || el.libelle == null || el.libelle == '';
 
 
                 }))
@@ -205,7 +291,9 @@
             console.log()
         },
         addRow() {
+
             this.form.frais.push({
+                etablissement:this.$page.props.admin_etablissement.etablissement_id,
                 filiere: null,
                 niveau: null,
                 code: null,
@@ -228,7 +316,21 @@
             }
         },
     },
+    created(){
+        if(this.type == '3'){
+            this.tabsFilieres = this.filieres ? this.filieres.filieres : []
+        }else if(this.type == '4'){
+            if (this.filieres.departements && Array.isArray(this.filieres.departements)) {
+                this.filieres.departements.forEach(element => {
+                    this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+                });
+            }
+        }
+    },
     mounted() {
+        //
+        console.log('resultat',this.tabsFilieres)
+
         this.addRow()
     },
   }
@@ -237,123 +339,3 @@
 
 
 
-<!-- <template>
-    <form @submit.prevent="submitForm">
-        <v-container fluid>
-        <v-card-text>
-
-            <v-row>
-                <v-alert text="Cette section vous permet de configurer" type="info"></v-alert>
-            </v-row>
-
-            <v-row >
-
-                <v-col cols="5">
-                    <v-switch  label="Souhaiterez-vous importez le fichier des frais ?" v-model="importation" color="info" ></v-switch>
-                </v-col>
-                <v-col>
-
-                    <v-file-input v-if="importation"
-                        clearable
-                        label="File input"
-                        variant="solo-inverted"
-                        v-model="form.fichier_frais"
-                    ></v-file-input>
-                </v-col>
-                <v-col></v-col>
-            </v-row>
-            <v-card v-if="!importation">
-                <v-card-title class="text-h6 font-weight-regular justify-space-between">
-                    <span style="color:blue">Renseigner les frais</span>&nbsp;
-                </v-card-title>
-                <v-card-text>
-                    <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
-                        <v-col md="2"></v-col>
-                        <v-col md="2">
-                            <TextField label="Code filiere" placeholder="Code filiere" @change="verify(frais)" v-model="frais.code"></TextField>
-                        </v-col>
-                        <v-col md="3">
-                            <TextField label="Nom de la filiere" placeholder="Nom de la filiere" v-model="frais.name"></TextField>
-                        </v-col>
-                        <v-col md="1">
-                            <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
-                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col offset-md="11" md="1">
-                            <v-btn variant="outlined" icon @click="addRow" fab small color="green">
-                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                            </v-btn>
-                        </v-col>
-                    </v-row>
-                </v-card-text>
-            </v-card>
-        </v-card-text>
-        <v-row>
-            <v-col md="5"></v-col>
-            <v-col md="4">
-                <v-btn type="submit" title="enregistrer" color="green">
-                    Enregistrer
-                </v-btn>
-            </v-col>
-        </v-row>
-    </v-container>
-    </form>
-</template>
-<script>
-    import { router,useForm} from '@inertiajs/vue3';
-    import { mdiCloseCircle, mdiPlusCircle } from "@mdi/js";
-  export default {
-    props:['type'],
-    components: {
-    mdiPlusCircle,
-    mdiCloseCircle,
-
-  },
-    data: () => ({
-        icons: {mdiPlusCircle,mdiCloseCircle},
-        step: 1,
-        importation: false,
-        form: useForm({
-            fichier_frais: null,
-            frais: [],
-        }),
-    }),
-
-    methods: {
-        submitForm() {
-            this.$emit('formSubmitted', this.form);
-        },
-        goBack() {
-            router.get(route('etablissements.index'))
-            console.log()
-        },
-        addRow() {
-            this.form.frais.push({
-                code: null,
-                name: null,
-                etablissement: this.$page.props.admin_etablissement.etablissement_id,
-                before: null,
-                after: null
-            })
-        },
-        removeRow(id) {
-            this.form.frais = this.form.frais.filter((el) => el !== id)
-        },
-        async verify(element) {
-            const array = this.form.frais.filter(el => el.code !== null && el.code == element.code)
-
-            if (array.length > 1) {
-                this.removeRow(element)
-                this.$swal("L'élément existe déjà !")
-                // this.$alert.error("L'élément existe déjà !");
-            }
-        },
-    },
-    mounted() {
-        this.addRow()
-    },
-  }
-</script> -->
