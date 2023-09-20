@@ -172,7 +172,7 @@ MenuAdmin = {
                 permissions: "manage_system",
             },
         ],
-    }; 
+    };
     // Gestion de Notes
     let configsMenu = {
         icon: mdiCog,
@@ -325,7 +325,9 @@ MenuAdmin = {
             // },
         ],
     };
-       if (page?.roles == "Administrateur") {
+    if (page?.roles != "Super-administrateur") {
+        console.log('hrer')
+
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
     return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
