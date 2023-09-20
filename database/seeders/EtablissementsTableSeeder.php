@@ -31,7 +31,7 @@ class EtablissementsTableSeeder extends Seeder
                 'statut' => 1,
                 'logo' => 'boDema.png',
                 'type_etablissement_id' => 1,
-                'systeme_lmd_id' => NULL,
+
             ),
 
             // 1 =>
