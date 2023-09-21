@@ -58,9 +58,8 @@
                 clearable
                 required
                 v-model="form.fichier_matiere"
-                label="File input"
+                label="Charger le fichier des Matières"
                 variant="solo-inverted"
-                @change="convertToJson"
               ></v-file-input>
 
             </v-col>
@@ -193,7 +192,7 @@ export default {
     file: null,
     headers: [],
     data: [],
-    contentType: ['nom','prenom','tel','age'],
+    contentType: ['code','nom'],
     importation: false,
     section: null,
     form: useForm({
@@ -271,24 +270,45 @@ export default {
             console.log('headers',this.headers,'data',this.data)
 
             if(this.checkEntete(this.headers,this.contentType)){
-              console.log('bravo')
+            //   console.log('bravo')
+
             }else{
-              alert('drapppppppp')
+                this.$swal.fire({
+                                title: "Erreur",
+                                text:
+                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                                icon: "warning",
+                                confirmButtonText: "OK",
+                            });
+            //   alert('drapppppppp')
             }
-            const missingDataIndex = this.donneesManquantes(this.data);
+
+             // Exclure la première ligne (en-têtes)
+             const missingDataIndex = this.donneesManquantes(this.data);
 
             if (typeof missingDataIndex === "number") {
-              console.log("L'indice de la ligne manquante est:", missingDataIndex);
+                this.$swal.fire({
+                    title: 'Valider',
+                    text: "Votre fichier est valide!",
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            // console.log("L'indice de la ligne manquante est:", missingDataIndex);
             } else {
-              console.log(
-                "Données manquantes à l'indice [",
-                missingDataIndex.rowIndex,
-                ",",
-                missingDataIndex.columnIndex,
-                "]"
-              );
+                const ligne=missingDataIndex.rowIndex+2;
+                const colonne=missingDataIndex.columnIndex+1;
+                this.$swal.fire({
+                        title: "Erreur",
+                        text:
+                        "Données manquantes à la ligne "+ligne+
+                        " et colonne "+ colonne + " Veuillez corriger!",
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                    });
+            console.log(
+
+            );
             }
-             // Exclure la première ligne (en-têtes)
           }
         };
 
@@ -326,7 +346,7 @@ export default {
         }
 
         // Parcours les éléments de la ligne
-        for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+        for (let columnIndex = 0; columnIndex < this.contentType.length; columnIndex++) {
           if (typeof row[columnIndex] === "undefined") {
             return {
               rowIndex,

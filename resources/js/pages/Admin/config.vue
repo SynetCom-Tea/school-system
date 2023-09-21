@@ -8,8 +8,8 @@
     <!-- <br> -->
 
     <!-- Application de stepper -->
-    <form-wizard 
-      color="#094899" 
+    <form-wizard
+      color="#004980"
       back-button-text="Retour"
       next-button-text="Suivant"
       finish-button-text="Enregistrer"
@@ -194,7 +194,7 @@
           this.onLoading(false)
           return true
         }
-      
+
       },
       submit() {
         console.log('submitted',this.formMatiere ? this.formMatiere.matieres.length : 0);

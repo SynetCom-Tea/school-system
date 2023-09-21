@@ -70,6 +70,7 @@
                         <v-col v-if="importation">
 
                             <v-file-input
+                                @change="handleFileUpload"
                                 clearable
                                 required
                                 v-model="form.fichier_frais"
@@ -77,9 +78,9 @@
                                 variant="solo-inverted"
                             ></v-file-input>
                         </v-col>
-                        <v-col v-if="importation"><v-btn 
-                            class="ma-2" 
-                            outlined 
+                        <v-col v-if="importation"><v-btn
+                            class="ma-2"
+                            outlined
                             type="button"
                             color="primary"
                             href="../models/echantillons/fiche_echantillonage.ods"
@@ -214,6 +215,9 @@
     data: () => ({
         alertFirst: true,
         alertSecond: true,
+        headers: [],
+        data: [],
+        contentType: ['nom','prenom','tel','age'],
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -225,6 +229,96 @@
     }),
 
     methods: {
+        handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const data = e.target.result;
+
+          // Utilisation de JavaScript natif pour lire le fichier Excel
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          // Convertir les données de la feuille en tableau
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          // La première ligne est généralement utilisée comme en-têtes de colonne
+          if (sheetData.length > 0) {
+            this.headers = sheetData[0];
+            this.data = sheetData.slice(1);
+
+            console.log('headers',this.headers,'data',this.data)
+
+            if(this.checkEntete(this.headers,this.contentType)){
+              console.log('bravo')
+            }else{
+              alert('drapppppppp')
+            }
+            const missingDataIndex = this.donneesManquantes(this.data);
+
+            if (typeof missingDataIndex === "number") {
+              console.log("L'indice de la ligne manquante est:", missingDataIndex);
+            } else {
+              console.log(
+                "Données manquantes à l'indice [",
+                missingDataIndex.rowIndex,
+                ",",
+                missingDataIndex.columnIndex,
+                "]"
+              );
+            }
+             // Exclure la première ligne (en-têtes)
+          }
+        };
+
+        reader.readAsBinaryString(file);
+
+      }
+    },
+
+
+
+    checkEntete(arr1, arr2) {
+      // Vérifie si les tableaux ont la même longueur
+      if (arr1.length !== arr2.length) {
+        return false;
+      }
+
+      // Compare chaque élément des tableaux
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          return false;
+        }
+      }
+
+      // Si toutes les comparaisons ont réussi, les tableaux sont égaux
+      return true;
+    },
+
+    donneesManquantes(tableau) {
+      for (let rowIndex = 0; rowIndex < tableau.length; rowIndex++) {
+        const row = tableau[rowIndex];
+
+        // Vérifie si la ligne n'existe pas (est undefined)
+        if (typeof row === "undefined") {
+          return rowIndex; // Retourne l'indice de la ligne manquante
+        }
+
+        // Parcours les éléments de la ligne
+        for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+          if (typeof row[columnIndex] === "undefined") {
+            return {
+              rowIndex,
+              columnIndex,
+            }; // Retourne l'indice de la ligne et de la colonne où les données manquent
+          }
+        }
+      }
+
+      return -1; // Retourne -1 si toutes les données sont présentes
+    },
         onclickAlertButton(type) {
             if (type == "second") {
                 this.alertSecond = true;
