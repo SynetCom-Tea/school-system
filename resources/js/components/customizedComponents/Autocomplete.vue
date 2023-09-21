@@ -123,6 +123,7 @@ export default {
     :max-width="maxWidthResponsive"
   >
     <v-autocomplete
+      :items="items"
       :variant="variant"
       :hint="hint"
       :density="density"
@@ -142,9 +143,8 @@ export default {
       <template #label v-else>
         {{ label }}
       </template>
-      <template v-for="slot in parentSlots" #[slot]>
-        <slot :name="slot" />
-      </template>
+
+      <slot />
     </v-autocomplete>
   </v-responsive>
 </template>

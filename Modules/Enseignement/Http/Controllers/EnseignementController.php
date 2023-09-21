@@ -82,11 +82,11 @@ class EnseignementController extends Controller
                     ]);
                 }
             }
-            dd('FIN:');
+
             return redirect()->route('admin.config', $request->type);
         } catch (\Throwable $th) {
             //throw $th;
-            dd('$th:', $th);
+
         }
     }
 
