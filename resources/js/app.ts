@@ -27,12 +27,11 @@ import { VStepper } from 'vuetify/labs/VStepper'
 
 import { createWebHistory, createRouter,createWebHashHistory} from "vue-router";
 import LoginComponent from "./components/auth-page/Login.component.vue";
-import PageToolbar from "../js/Components/PageToolbar.vue"
+
 import TextField from "../js/Components/customizedComponents/TextField.vue"
 import Button from "../js/Components/customizedComponents/Button.vue"
 import DateRangePicker from "../js/Components/customizedComponents/DateRangePicker.vue"
 import Btn from "../js/Components/Btn.vue";
-import TableComponent from "../js/components/customizedComponents/datatable.vue";
 import Dialog from "../js/components/customizedComponents/Dialog.vue";
 import Index from "./pages/welcome/Index.vue";
 import Button from '../js/components/customizedComponents/Button.vue'
@@ -42,31 +41,9 @@ import Select from '../js/components/customizedComponents/Select.vue'
 import ModalDetailUpdate from '../js/components/customizedComponents/ModalDetailUpdate.vue'
 import Toolbar from '../js/components/customizedComponents/Toolbar.vue'
 import Datatable from "../js/components/customizedComponents/Datatable.vue"
-// import VeeValidate, { Validator } from "vee-validate";
-// import fr from "vee-validate/dist/locale/";
 
-// Validator.localize({ fr: fr });
 
-const routes = [{
-        path: '/login',
-        name: 'LoginComponent',
-        component: LoginComponent
-    },
-    {
-        path: '/',
-        name: 'IndexWelcome',
-        component:Index
-    },
-    {
-        path: '/',
-        name: 'stats',
-        component: Index
-    },
-]
-     const indexRouter = createRouter({
-  history: createWebHashHistory(),
-  routes,
-});
+
 
 const options = {
     confirmButtonColor: "#3085d6",
@@ -122,7 +99,6 @@ createInertiaApp({
       return createApp({ render: () => h(App, props) })
         .use(plugin)
         .use(ZiggyVue, Ziggy)
-        .use(indexRouter)
         .use(store)
         .use(vuetify)
         .use(VueGates)
@@ -132,19 +108,15 @@ createInertiaApp({
         .component('Autocomplete', Autocomplete)
         .component('Select', Select)
         .component('ModalDetailUpdate', ModalDetailUpdate)
-          .component('Toolbar',Toolbar )
+        .component('Toolbar',Toolbar )
         .use(VueAxios, axios)
         .component('VueDatePicker', VueDatePicker)
-        .component('page-toolbar', PageToolbar)
         .component('text-field', TextField)
         .component('date-range-picker', DateRangePicker)
         .component('btn', Btn)
         .component('Datatable', Datatable)
         .component('Dialog', Dialog)
         .use(VueSweetalert2, options)
-
-        //  .component('table-component', TableComponent)
-
         .component('dialog-component', Dialog)
         .mount(el);
     },

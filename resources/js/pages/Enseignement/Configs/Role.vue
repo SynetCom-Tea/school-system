@@ -203,7 +203,7 @@ export default {
 
 <template>
   <v-card>
-    <page-toolbar :icon="icon.mdiSecurity"> Gestion des rôles</page-toolbar>
+    <Toolbar :icon="icon.mdiSecurity" toolbarTitle="Gestion des rôles"></Toolbar>
     <v-card-text>
       <v-dialog
         v-model="dialog"

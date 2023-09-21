@@ -96,7 +96,11 @@ export default {
 </script>
 <template>
   <v-card>
-    <page-toolbar :icon="icon.mdiAccountPlusOutline">Nouvel utilisateur</page-toolbar>
+    <Toolbar
+      :icon="icon.mdiAccountPlusOutline"
+      toolbarTitle="Nouvel utilisateur"
+    ></Toolbar>
+
     <v-card-text>
       <v-form>
         <v-row>

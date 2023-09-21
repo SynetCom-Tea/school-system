@@ -102,7 +102,7 @@ export default {
 </script>
 <template>
   <v-card>
-    <page-toolbar :icon="icon.mdiTimetable">Nouveau emploi</page-toolbar>
+    <Toolbar :icon="icon.mdiTimetable" toolbarTitle="Nouveau emploi"></Toolbar>
     <v-card-text>
       <v-form>
         <v-row>

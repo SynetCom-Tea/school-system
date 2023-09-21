@@ -24,7 +24,7 @@ export default {
     mdiLockReset,
   },
   layout: AuthenticatedLayout,
-  props: ["etudiants","tuteurs"],
+  props: ["etudiants", "tuteurs"],
   data() {
     return {
       icon: {
@@ -60,7 +60,6 @@ export default {
         dateNaiss: "",
         tuteur_id: "",
       }),
-      
     };
   },
   methods: {
@@ -68,7 +67,7 @@ export default {
       router.get(route("etudiants.create"));
     },
     editItem(item) {
-      router.get(route('etudiants.edit', item.id))
+      router.get(route("etudiants.edit", item.id));
     },
     deleteItem(item) {
       this.$swal({
@@ -116,22 +115,36 @@ export default {
 };
 </script>
 <template>
-    <v-card>
-        <page-toolbar :icon="icon.mdiAccountSchool">Gestion des étudiants</page-toolbar>
-        <v-card-text>
-            <table-component 
-                :headers="headers"
-                :items="etudiants">
-                <template v-slot:addBtn>
-                    <btn @click="create"><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn>
-                </template>
-                <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="large" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
-                    </v-icon>
-                    <v-icon size="large" color="red" title="Supprimer" class="me-2" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
-                    </v-icon>
-                </template>
-            </table-component>
-        </v-card-text>
-    </v-card>
+  <v-card>
+    <Toolbar :icon="icon.mdiAccountSchool" toolbarTitle="Gestion des étudiants"></Toolbar>
+    <v-card-text>
+      <table-component :headers="headers" :items="etudiants">
+        <template v-slot:addBtn>
+          <btn @click="create"
+            ><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn
+          >
+        </template>
+        <template v-slot:[`item.actions`]="{ item }">
+          <v-icon
+            size="large"
+            color="warning"
+            title="Modifier"
+            class="me-2"
+            @click="editItem(item.raw)"
+            :icon="icon.mdiPencil"
+          >
+          </v-icon>
+          <v-icon
+            size="large"
+            color="red"
+            title="Supprimer"
+            class="me-2"
+            @click="deleteItem(item.raw)"
+            :icon="icon.mdiDelete"
+          >
+          </v-icon>
+        </template>
+      </table-component>
+    </v-card-text>
+  </v-card>
 </template>
