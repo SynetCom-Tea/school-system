@@ -1,5 +1,6 @@
 <script>
 import { ref, computed } from "vue";
+import { ref, computed } from "vue";
 
 export default {
   props: {
@@ -94,8 +95,17 @@ export default {
 
     return { parentSlots };
   },
+  setup(props, ctx) {
+    const parentSlots = computed(() => Object.keys(ctx.slots));
+
+    return { parentSlots };
+  },
   updated() {},
   computed: {
+    scopedSlots() {
+      return this.$slots;
+    },
+
     scopedSlots() {
       return this.$slots;
     },
@@ -123,6 +133,7 @@ export default {
       :variant="variant"
       :hint="hint"
       :type="type"
+      :type="type"
       :density="density"
       v-bind="$attrs"
       :name="name"
@@ -134,7 +145,12 @@ export default {
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>
+        <span id="required-field">{{ label }}</span>
       </template>
+      <template #label v-else> {{ label }} </template>
+      <!-- Dynamically inherit slots from parent -->
+      <template v-for="slot in parentSlots" #[slot]>
+        <slot :name="slot" />
       <template #label v-else> {{ label }} </template>
       <!-- Dynamically inherit slots from parent -->
       <template v-for="slot in parentSlots" #[slot]>

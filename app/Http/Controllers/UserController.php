@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -28,7 +29,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return Inertia::render('User/Index', [
+        return Inertia::render('user/Index', [
             'users' => User::where('user_id', Auth::user()->id)->get()
         ]);
     }
@@ -39,7 +40,7 @@ class UserController extends Controller
     public function create()
     {
         $user = Auth::user();
-        return Inertia::render('User/Create', [
+        return Inertia::render('user/Create', [
             'etablissements' => Etablissement::all(),
             'roles' => Role::all(),
             'sections' => Section::all(),
@@ -74,7 +75,7 @@ class UserController extends Controller
                 'apprenant_id' => $request->apprenant_id
             ]);
             if ($request->section) {
-                $user->etablissement_section_id = EtablissementSection::where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->section)->get()[0]->id;
+                $user->etablissement_section_id = DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->section)->get()[0]->id;
             }
             foreach ($request->roles as $role) {
                 $permissions = PermissionRole::where('role_id', $role)->where('user_id', Auth::user()->id)->get();
@@ -82,6 +83,7 @@ class UserController extends Controller
             foreach ($permissions as $permission) {
                 $permis[] = $permission->permission_id;
             }
+            $user->syncRoles($request->roles);
             $user->syncPermissions($permis);
             if ($request->etablissement_id) {
                 $etablissement = Etablissement::find($request->etablissement_id);
@@ -105,9 +107,9 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function NotFoud(Request $request)
     {
-        //
+        return Inertia::render('Page');
     }
 
     /**

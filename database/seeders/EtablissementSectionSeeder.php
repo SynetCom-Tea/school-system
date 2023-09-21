@@ -30,6 +30,7 @@ class EtablissementSectionSeeder extends Seeder
             array(
                 'id' => 2,
                 'etablissement_id' => 1,
+                'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 2,
                 'systeme_lmd_id' => NULL,
@@ -37,6 +38,7 @@ class EtablissementSectionSeeder extends Seeder
             2 =>
             array(
                 'id' => 3,
+                'etablissement_id' => 1,
                 'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 3,

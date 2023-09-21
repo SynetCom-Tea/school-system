@@ -295,7 +295,7 @@ export default {
                 nameButton="Oui"
                 title="Confirmer et Fermer la modale"
                 style="height: 30px"
-                @click="deleteItemConfirm"
+                :onClickButton="deleteItemConfirm"
               ></Button>
 
               <v-spacer></v-spacer>

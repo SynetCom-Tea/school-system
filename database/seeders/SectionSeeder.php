@@ -28,28 +28,32 @@ class SectionSeeder extends Seeder
         ]);
 
         Role::create([
+            'name' => 'Super-administrateur',
+            'guard_name' => 'web',
+        ]);
+        Role::create([
             'name' => 'Administrateur',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Enseignant',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Apprenant',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Proviseur',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'APT',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Surveillant',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
     }
 }

@@ -11,48 +11,36 @@ use Spatie\Permission\Models\Role;
 
 class RoleSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
-    {
+        /**
+         * Run the database seeds.
+         */
+        public function run(): void
+        {
 
-        $super_admin = User::create([
-            'nom' => 'Tondi',
-            'prenom' => 'Bouli',
-            'email' => 'super-admin@gmail.com',
-            'password' => Hash::make('password')
-        ]);
-        $admin = User::create([
-            'nom' => 'Admin',
-            'prenom' => 'Administrateur',
-            'user_id' => 1,
-            'etablissement_id' => 1,
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('password')
-        ]);
+                $super_admin = User::create([
+                        'nom' => 'Tondi',
+                        'prenom' => 'Bouli',
+                        'email' => 'super-admin@gmail.com',
+                        'password' => Hash::make('password'),
+                        'nom' => 'super',
+                        'prenom' => 'Administrateur',
+                ]);
 
-        // Super admin
-        $role = Role::firstOrcreate(['name' => 'Super-administrateur']);
-        $super_admin->givePermissionTo(Permission::where('name', 'manage_school')->get());
-        // $super_admin->givePermissionTo(Permission::where('name', '<>', 'etudiant')->get());
-        $super_admin->assignRole($role);
+                $roles = Role::firstOrcreate(['name' => 'Super-administrateur']);
+                $super_admin->givePermissionTo(Permission::where('name', 'manage_system')->get());
+                $super_admin->assignRole($roles);
 
-        // Admin
-        $administrateur = Role::firstOrcreate(['name' => 'Administrateur']);
-        $administrateur->givePermissionTo(Permission::where('name', '<>', 'etudiant')->get());
-        $admin->assignRole($administrateur);
+                // Admin
+                $admin = User::create([
+                        'email' => 'admin@gmail.com',
+                        'password' => Hash::make('password'),
+                        'nom' => 'Admin',
+                        'etablissement_id' => 1,
+                        'prenom' => 'Etablissement',
+                ]);
 
-        // $admin->assignRole($super_admin);
-
-        /* $chef = User::create([
-            'nom' => 'Ali',
-            'prenom' => 'Mohamed',
-            'email' => 'admin@gmail.com',
-            'password' => Hash::make('password')
-        ]);
-        $ad_school = Role::create(['name' => 'Administrateur']);
-        $ad_school->givePermissionTo(Permission::where('name','manage_system')->get());
-        $chef->assignRole($ad_school); */
-    }
+                $role_admin = Role::firstOrcreate(['name' => 'Administrateur']);
+                $admin->givePermissionTo(Permission::where('name', 'manage_school')->get());
+                $admin->assignRole($role_admin);
+        }
 }

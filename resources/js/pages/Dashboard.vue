@@ -1,14 +1,27 @@
 <script>
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import {
+    Head
+} from "@inertiajs/vue3";
 
 import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
-import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
-import { Vue3Marquee } from "vue3-marquee";
-import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
+import {
+    mdiAccount,
+    mdiPurse,
+    mdiHomeOutline,
+    mdiPresentation,
+    mdiGift
+} from "@mdi/js";
+import {
+    Vue3Marquee
+} from "vue3-marquee";
+import {
+    VueSpinner,
+    VueSpinnerHourglass
+} from "vue3-spinners";
 import Datatable from "../components/customizedComponents/datatable.vue";
 import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
@@ -185,18 +198,18 @@ export default {
     },
     onChangeTitle(e) {},
 
-    editItem(item) {
-      console.log("item from editItem:", item);
+        editItem(item) {
+            console.log("item from editItem:", item);
+        },
+        deleteItem(item) {
+            console.log("item from deleteItem:", item);
+        },
     },
-    deleteItem(item) {
-      console.log("item from deleteItem:", item);
-    },
-  },
 };
 </script>
 
 <template>
-  <Head title="Dashboard" />
+<Head title="Dashboard" />
 
   <AuthenticatedLayout>
     <Toolbar
@@ -228,6 +241,7 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
+    <Loader :modelDialog="isDialog">
     <Loader :modelDialog="isDialog">
       <template v-slot:spinnertype>
         <VueSpinner size="50" color="white"></VueSpinner
@@ -302,18 +316,39 @@ export default {
 <!--
 
 <style scoped>
+
+<!--
+
+<style scoped>
 .classTest {
+    width: 200px;
+    background-color: red;
     width: 200px;
     background-color: red;
 }
 
+
 .defile {
+    font-family: monospace;
+    font-size: 3em;
+    animation: color-change 1s infinite;
     font-family: monospace;
     font-size: 3em;
     animation: color-change 1s infinite;
 }
 
 @keyframes color-change {
+    0% {
+        color: red;
+    }
+
+    50% {
+        color: blue;
+    }
+
+    100% {
+        color: red;
+    }
     0% {
         color: red;
     }

@@ -104,7 +104,7 @@
         </v-card-text>
     </v-card>
     <br>
-        <v-row class="text-center ml-3 mb-3"
+        <!-- <v-row class="text-center ml-3 mb-3"
           ><v-col cols="auto">
             <Button
               type="submit"
@@ -119,7 +119,7 @@
               style="text-transform: none"
             >
             </Button> </v-col
-        ></v-row>
+        ></v-row> -->
     </v-card>
 
     </v-container>

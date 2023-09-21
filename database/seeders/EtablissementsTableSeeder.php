@@ -28,7 +28,6 @@ class EtablissementsTableSeeder extends Seeder
                 'adresse' => 'Plateau',
                 'telephone' => '\"20142564A\"',
                 'ville' => 'Niamey',
-                'statut' => 1,
                 'logo' => 'boDema.png',
                 'type_etablissement_id' => 1,
 
@@ -130,7 +129,37 @@ class EtablissementsTableSeeder extends Seeder
             //     'updated_at' => '2023-09-08 08:52:42',
             // ),
             // 7 =>
+            // array(
+            //     'id' => 7,
+            //     'name' => 'Université de Dosso',
+            //     'email' => 'udoniger@gmail.com',
+            //     'adresse' => 'Dosso',
+            //     'telephone' => '\"21045621\"',
+            //     'ville' => 'Dosso',
+            //     'statut' => 0,
+            //     'logo' => 'udo.jpg',
+            //     'type_etablissement_id' => 1,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 08:52:42',
+            //     'updated_at' => '2023-09-08 08:52:42',
+            // ),
+            // 7 =>
 
+            // array(
+            //     'id' => 8,
+            //     'name' => 'Université de Tillabéri',
+            //     'email' => 'utiniger@gmail.com',
+            //     'adresse' => 'Tillaberi',
+            //     'telephone' => '\"21254586\"',
+            //     'ville' => 'Tillaberi',
+            //     'statut' => 0,
+            //     'logo' => 'iai-logo.jpg',
+            //     'type_etablissement_id' => 1,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 08:54:32',
+            //     'updated_at' => '2023-09-08 08:54:32',
+            // ),
+            // 8 =>
             // array(
             //     'id' => 8,
             //     'name' => 'Université de Tillabéri',
@@ -162,7 +191,37 @@ class EtablissementsTableSeeder extends Seeder
             //     'updated_at' => '2023-09-08 08:56:07',
             // ),
             // 9 =>
+            // array(
+            //     'id' => 9,
+            //     'name' => 'Université de Tahoua',
+            //     'email' => 'utaniger@gmail.com',
+            //     'adresse' => 'Tahoua',
+            //     'telephone' => '\"21478569\"',
+            //     'ville' => 'Tahoua',
+            //     'statut' => 1,
+            //     'logo' => 'uta.webp',
+            //     'type_etablissement_id' => 1,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 08:56:07',
+            //     'updated_at' => '2023-09-08 08:56:07',
+            // ),
+            // 9 =>
 
+            // array(
+            //     'id' => 10,
+            //     'name' => 'Université d\'Agadez',
+            //     'email' =>  'uazniger@gmail.com',
+            //     'adresse' => 'Arlit',
+            //     'telephone' => '\"21356847\"',
+            //     'ville' => 'Agadez',
+            //     'statut' => 1,
+            //     'logo' => 'uaz).jpg',
+            //     'type_etablissement_id' => 1,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 08:57:42',
+            //     'updated_at' => '2023-09-08 08:57:42',
+            // ),
+            // 10 =>
             // array(
             //     'id' => 10,
             //     'name' => 'Université d\'Agadez',
@@ -194,7 +253,37 @@ class EtablissementsTableSeeder extends Seeder
             //     'updated_at' => '2023-09-08 09:01:06',
             // ),
             // 11 =>
+            // array(
+            //     'id' => 11,
+            //     'name' => 'Université de Zinder',
+            //     'email' => 'uzniger@gmail.com',
+            //     'adresse' => 'Zinder',
+            //     'telephone' => '\"21235846\"',
+            //     'ville' =>  'Zinder',
+            //     'statut' => 1,
+            //     'logo' => 'uz.jpg',
+            //     'type_etablissement_id' => 1,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:01:06',
+            //     'updated_at' => '2023-09-08 09:01:06',
+            // ),
+            // 11 =>
 
+            // array(
+            //     'id' => 12,
+            //     'name' => 'IPSP',
+            //     'email' => 'ipsp@gmail.com',
+            //     'adresse' => 'Niamey 2000',
+            //     'telephone' => '\"21044588\"',
+            //     'ville' => 'Niamey',
+            //     'statut' => 0,
+            //     'logo' => 'ipsp.png',
+            //     'type_etablissement_id' => 3,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:03:01',
+            //     'updated_at' => '2023-09-08 09:03:01',
+            // ),
+            // 12 =>
             // array(
             //     'id' => 12,
             //     'name' => 'IPSP',
@@ -227,8 +316,38 @@ class EtablissementsTableSeeder extends Seeder
             //     'updated_at' => '2023-09-08 09:11:44',
             // ),
             // 13 =>
+            // array(
+            //     'id' => 13,
+            //     'name' => 'IFTIC',
+            //     'email' => 'ifticne@gmail.com',
+            //     'adresse' => 'Plateau',
+            //     'telephone' => '\"21258468\"',
+            //     'ville' => 'Niamey',
+            //     'statut' => 1,
+            //     'logo' => 'iftic.png',
+            //     'type_etablissement_id' => 3,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:11:44',
+            //     'updated_at' => '2023-09-08 09:11:44',
+            // ),
+            // 13 =>
 
 
+            // array(
+            //     'id' => 14,
+            //     'name' =>  'Collège-Lycée Mariama',
+            //     'email' => 'clmariama@gmail.com',
+            //     'adresse' => 'Nouveau Marché',
+            //     'telephone' => '\"20548765\"',
+            //     'ville' => 'Niamey',
+            //     'statut' => 1,
+            //     'logo' => 'mariama.jpg',
+            //     'type_etablissement_id' => 2,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:15:20',
+            //     'updated_at' => '2023-09-08 09:15:20',
+            // ),
+            // 14 =>
             // array(
             //     'id' => 14,
             //     'name' =>  'Collège-Lycée Mariama',
@@ -261,7 +380,37 @@ class EtablissementsTableSeeder extends Seeder
             //     'updated_at' => '2023-09-08 09:17:26',
             // ),
             // 15 =>
+            // array(
+            //     'id' => 15,
+            //     'name' =>  'INIME',
+            //     'email' => 'inime@gmail.com',
+            //     'adresse' => 'Francophonie',
+            //     'telephone' => '\"21035647\"',
+            //     'ville' => 'Niamey',
+            //     'statut' => 1,
+            //     'logo' => 'inime.jpg',
+            //     'type_etablissement_id' => 3,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:17:26',
+            //     'updated_at' => '2023-09-08 09:17:26',
+            // ),
+            // 15 =>
 
+            // array(
+            //     'id' => 16,
+            //     'name' =>  'CSP Lumière',
+            //     'email' => 'lumiere@gmail.com',
+            //     'adresse' =>  'Kalley-Sud',
+            //     'telephone' => '\"96541235\"',
+            //     'ville' => 'Niamey',
+            //     'statut' => 0,
+            //     'logo' =>  'lumiere.jpg',
+            //     'type_etablissement_id' => 2,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:19:59',
+            //     'updated_at' => '2023-09-08 09:19:59',
+            // ),
+            // 16 =>
             // array(
             //     'id' => 16,
             //     'name' =>  'CSP Lumière',
@@ -293,7 +442,36 @@ class EtablissementsTableSeeder extends Seeder
             //     'created_at' => '2023-09-08 09:22:18',
             //     'updated_at' => '2023-09-08 09:22:18',
             // ),
+            // array(
+            //     'id' => 17,
+            //     'name' => 'Lycée d\'Excellence',
+            //     'email' => 'lexni@gmail.com',
+            //     'adresse' => 'Bassora',
+            //     'telephone' => '\"93521436\"',
+            //     'ville' => 'Niamey',
+            //     'statut' => 1,
+            //     'logo' => 'lex.jpg',
+            //     'type_etablissement_id' => 2,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:22:18',
+            //     'updated_at' => '2023-09-08 09:22:18',
+            // ),
 
+            // 17 =>
+            // array(
+            //     'id' => 18,
+            //     'name' => 'La Relève',
+            //     'email' => 'releve@gmail.com',
+            //     'adresse' => 'Koira Kano',
+            //     'telephone' => '\"88521469\"',
+            //     'ville' => 'Niamey',
+            //     'statut' => 1,
+            //     'logo' =>  'releve.jpg',
+            //     'type_etablissement_id' => 2,
+            //     'deleted_at' => NULL,
+            //     'created_at' => '2023-09-08 09:24:31',
+            //     'updated_at' => '2023-09-08 09:24:31',
+            // ),
             // 17 =>
             // array(
             //     'id' => 18,
