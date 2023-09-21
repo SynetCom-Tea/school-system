@@ -36,14 +36,14 @@ export default {
       type: Number,
       required: false,
     },
-    itemTitle: {
-      type: String,
-      required: false,
-    },
-    itemValue: {
-      type: String,
-      required: false,
-    },
+    // itemTitle: {
+    //   type: String,
+    //   required: false,
+    // },
+    // itemValue: {
+    //   type: String,
+    //   required: false,
+    // },
     baseColorValue: {
       type: String,
       default: "primary",

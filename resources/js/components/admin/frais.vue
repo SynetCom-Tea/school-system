@@ -20,7 +20,7 @@
               Cette section vous permet de configurer les frais de cet établissement
             </li>
             <li>
-              Le formulaire sera valide si est seulement si tous les champs obligatoires
+              Le formulaire sera valide si et seulement si tous les champs obligatoires
               marqués par <span style="color: red">*</span> sont renseignés
             </li>
           </v-alert>
@@ -309,7 +309,6 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-      console.log();
     },
     addRow() {
       this.form.frais.push({

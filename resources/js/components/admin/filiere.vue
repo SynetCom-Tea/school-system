@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
-          >FILIERES</v-card-title
+          >FILIÈRES</v-card-title
         >
         <v-divider></v-divider>
         <br />
@@ -23,7 +23,7 @@
               établissement
             </li>
             <li>
-              Le formulaire sera valide si est seulement si tous les champs obligatoires
+              Le formulaire sera valide si et seulement si tous les champs obligatoires
               marqués par <span style="color: red">*</span> sont renseignés
             </li>
           </v-alert>
@@ -312,7 +312,6 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-      console.log();
     },
     addRowUe() {
       this.form.departements.push({

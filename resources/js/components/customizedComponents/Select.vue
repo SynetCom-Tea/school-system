@@ -112,8 +112,6 @@ export default {
       :density="density"
       v-bind="$attrs"
       :custom-filter="customFilter"
-      :item-title="itemTitle"
-      :item-value="itemValue"
       :style="style"
       :placeholder="placeholder"
       :rules="rules"
