@@ -30,7 +30,8 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         Permission::create(['name' => 'enseignant', 'description' => 'Permission Enseignant']);
-        Permission::create(['name' => 'etudiant', 'description' => 'Permission Etudiant']);
+        Permission::create(['name' => 'apprenant', 'description' => 'Permission Apprenant']);
+        Permission::create(['name' => 'tuteur', 'description' => 'Permission Tuteur']);
         Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
         Permission::create(['name' => 'manage_school', 'description' => 'Permission Administrateur']);
         Permission::create(['name' => 'manage_welcome', 'description' => 'Paramètrage du welcome']);
@@ -41,6 +42,5 @@ class PermissionSeeder extends Seeder
             Permission::create(['name' => $k . '.update', 'description' => 'Peut modifier ' . $v]);
             Permission::create(['name' => $k . '.delete', 'description' => 'Peut supprimer ' . $v]);
         }
-        
     }
 }

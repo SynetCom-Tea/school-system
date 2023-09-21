@@ -59,6 +59,7 @@
             </v-col>
             <v-col v-if="form.lmd">
               <Autocomplete
+                class="mt-1"
                 :items="lmds"
                 item-title="libelle"
                 item-value="id"

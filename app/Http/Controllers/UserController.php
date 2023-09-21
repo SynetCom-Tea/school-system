@@ -27,8 +27,25 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function getUsersByCategory($params)
+    {
+        $data = null;
+        $list = [];
+        $authUser =  Auth::user();
+        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        if ($params == "organizationUsers") {
+            if ($nameRole == 'Administrateur') {
+                $list = User::where('etablissement_id', (int)$authUser->etablissement_id)->get();
+            }
+        }
+        return $list ?? [];
+    }
     public function index(Request $request)
     {
+        $tes = Auth::user();
+        dump('connec:', $tes->roles[0]->name);
+        dump('list:', User::where('etablissement_id', (int)$tes->etablissement_id)->get());
+        dd('u:', User::all());
         return Inertia::render('User/Index', [
             'users' => User::where('user_id', Auth::user()->id)->get()
         ]);

@@ -8,8 +8,8 @@
     <!-- <br> -->
 
     <!-- Application de stepper -->
-    <form-wizard
-      color="#094899"
+    <FormWizard
+      color="#004980"
       back-button-text="Retour"
       next-button-text="Suivant"
       finish-button-text="Enregistrer"
@@ -17,19 +17,19 @@
       @on-loading="onLoading"
     >
       <!-- Tabs 1 -->
-      <tab-content title="MATIÈRES" :before-change="beforeChange">
+      <TabContent title="MATIÈRES" :before-change="beforeChange">
         <v-card flat>
           <matiere-form @formSubmitted="getMatiereForm" :type="type" />
         </v-card>
-      </tab-content>
+      </TabContent>
       <!-- Tabs 2 -->
-      <tab-content title="SALLES" :before-change="beforeChange">
+      <TabContent title="SALLES" :before-change="beforeChange">
         <v-card flat>
           <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
         </v-card>
-      </tab-content>
+      </TabContent>
       <!-- Tabs 3 -->
-      <tab-content :title="tabTitle3" :before-change="beforeChange">
+      <TabContent :title="tabTitle3" :before-change="beforeChange">
         <v-card flat>
           <!-- Tabs de la Filiere pour toute les sections -->
           <v-card-text v-if="type == '3'">
@@ -54,9 +54,9 @@
           </v-card-text>
           <!-- Tabs de la Frais pour toute les sections -->
         </v-card>
-      </tab-content>
+      </TabContent>
       <!-- Tabs 4 -->
-      <tab-content :title="tabTitle4" :before-change="beforeChange">
+      <TabContent :title="tabTitle4" :before-change="beforeChange">
         <v-card flat>
           <v-card-text v-if="type == '3'">
             <frais-form
@@ -82,9 +82,9 @@
             />
           </v-card-text>
         </v-card>
-      </tab-content>
+      </TabContent>
       <!-- Tabs 5 -->
-      <tab-content
+      <TabContent
         :title="tabTitle5"
         v-if="type == '3' || type == '4'"
         :before-change="beforeChange"
@@ -111,9 +111,9 @@
             />
           </v-card-text>
         </v-card>
-      </tab-content>
+      </TabContent>
       <!-- Tabs 6 -->
-      <tab-content
+      <TabContent
         :title="tabTitle6 ? tabTitle6 : ''"
         v-if="(type == '3' || type == '4') && lmd != null"
         :before-change="beforeChange"
@@ -133,9 +133,9 @@
             />
           </v-card-text>
         </v-card>
-      </tab-content>
+      </TabContent>
       <!-- Tabs 7 -->
-      <tab-content title="AFFECTATION DE MATIÈRES AUX NIVEAUX" v-if="type == '4'">
+      <TabContent title="AFFECTATION DE MATIÈRES AUX NIVEAUX" v-if="type == '4'">
         <v-card flat>
           <v-card-text v-if="lmd == null">
             <niveau-matiere-sans-ue-form
@@ -157,8 +157,8 @@
             />
           </v-card-text>
         </v-card>
-      </tab-content>
-    </form-wizard>
+      </TabContent>
+    </FormWizard>
     <!-- Application de stepper -->
   </AuthenticatedLayout>
 </template>
@@ -192,7 +192,6 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
-  name: "CallFunctionBeforeTabSwitch",
   props: ["type", "niveaux", "lmd"],
   components: {
     FormWizard,
