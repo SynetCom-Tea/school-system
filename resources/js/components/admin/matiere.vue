@@ -63,6 +63,7 @@
                 v-model="form.fichier_matiere"
                 label="File input"
                 variant="solo-inverted"
+                @change="convertToJson"
               ></v-file-input>
 
             </v-col>
@@ -206,14 +207,35 @@ export default {
   }),
 
   methods: {
-    onChange(event) {
-      this.file = event.target.files ? event.target.files[0] : null;
-      let workbook = XLSX.readFile(this.file);
-      console.log('workbook1');
-      console.log(workbook);
-      console.log('SheetNames');
-      console.log(workbook.SheetNames);
+            async convertToJson() {
+                console.log("conversion",this.form.fichier_matiere);
+            if (this.form.fichier_matiere) {
+                try {
+                const workbook = await XlsxRead.readFile(this.form.fichier_matiere);
+                const sheetName = workbook.SheetNames[0];
+                const sheet = workbook.Sheets[sheetName];
+
+                // Convertir la feuille Excel en JSON
+                const jsonData = XlsxJson.utils.sheet_to_json(sheet, { header: 1 });
+
+                // Extraire les en-têtes des colonnes
+                this.headers = jsonData.shift();
+                // Mettre à jour les données JSON
+                this.jsonData = jsonData;
+                 console.log("fichier",workbook);
+                } catch (error) {
+                console.error("Erreur lors de la conversion en JSON :", error);
+                }
+            }
     },
+    // onChange(event) {
+    //   this.file = event.target.fichier_matiere ? event.target.files[0] : null;
+    //   let workbook = XlsxRead(this.file);
+    //   console.log('workbook1');
+    //   console.log(workbook);
+    //   console.log('SheetNames');
+    //   console.log(workbook.SheetNames);
+    // },
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
