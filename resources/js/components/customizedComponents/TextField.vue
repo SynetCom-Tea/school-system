@@ -1,6 +1,5 @@
 <script>
 import { ref, computed } from "vue";
-import { ref, computed } from "vue";
 
 export default {
   props: {
@@ -133,7 +132,6 @@ export default {
       :variant="variant"
       :hint="hint"
       :type="type"
-      :type="type"
       :density="density"
       v-bind="$attrs"
       :name="name"
@@ -145,13 +143,9 @@ export default {
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>
-        <span id="required-field">{{ label }}</span>
       </template>
       <template #label v-else> {{ label }} </template>
-      <!-- Dynamically inherit slots from parent -->
-      <template v-for="slot in parentSlots" #[slot]>
-        <slot :name="slot" />
-      <template #label v-else> {{ label }} </template>
+
       <!-- Dynamically inherit slots from parent -->
       <template v-for="slot in parentSlots" #[slot]>
         <slot :name="slot" />

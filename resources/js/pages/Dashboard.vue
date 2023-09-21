@@ -1,27 +1,14 @@
 <script>
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import {
-    Head
-} from "@inertiajs/vue3";
+import { Head } from "@inertiajs/vue3";
 
 import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
 import ModalDetailUpdate from "../components/customizedComponents/ModalDetailUpdate.vue";
-import {
-    mdiAccount,
-    mdiPurse,
-    mdiHomeOutline,
-    mdiPresentation,
-    mdiGift
-} from "@mdi/js";
-import {
-    Vue3Marquee
-} from "vue3-marquee";
-import {
-    VueSpinner,
-    VueSpinnerHourglass
-} from "vue3-spinners";
+import { mdiAccount, mdiPurse, mdiHomeOutline, mdiPresentation, mdiGift } from "@mdi/js";
+import { Vue3Marquee } from "vue3-marquee";
+import { VueSpinner, VueSpinnerHourglass } from "vue3-spinners";
 import Datatable from "../components/customizedComponents/datatable.vue";
 import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
@@ -198,18 +185,18 @@ export default {
     },
     onChangeTitle(e) {},
 
-        editItem(item) {
-            console.log("item from editItem:", item);
-        },
-        deleteItem(item) {
-            console.log("item from deleteItem:", item);
-        },
+    editItem(item) {
+      console.log("item from editItem:", item);
     },
+    deleteItem(item) {
+      console.log("item from deleteItem:", item);
+    },
+  },
 };
 </script>
 
 <template>
-<Head title="Dashboard" />
+  <Head title="Dashboard" />
 
   <AuthenticatedLayout>
     <Toolbar
@@ -241,19 +228,10 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-    <Loader :modelDialog="isDialog">
-    <Loader :modelDialog="isDialog">
-      <template v-slot:spinnertype>
-        <VueSpinner size="50" color="white"></VueSpinner
-      ></template>
-    </Loader>
-    <br /><br />
 
-    <br /><br />
     <div>
       <ExampleApplicationDatatable />
     </div>
-    <br /><br />
 
     <Button
       variant="flat"
@@ -266,99 +244,5 @@ export default {
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
     ></Button>
-    <!-- <Dialog
-      :modelDialog="isDialog"
-      :onCloseModale="onCloseModale"
-      :iconHeaderModal="icons.mdiAccount"
-      :widthDialog="300"
-    >
-      <template v-slot:content>
-        <h1>TEST CONTENU</h1>
-      </template>
-      <template #otherButtons>
-        <Button
-          title="Fermer la modale"
-          variant="text"
-          color="primary"
-          nameButton="Enregistrer"
-          :onClickButton="onCloseModale"
-          style="float: right; margin: 10px; height: 30px"
-        ></Button
-      ></template>
-    </Dialog> -->
-    <!-- <TextInput
-    </Dialog>
-    <TextInput
-      type="text"
-      v-model="test"
-      label="Mot de passe"
-      :isRequired="true"
-      classResponsive="py-4"
-      :maxHeightResponsive="100"
-      :maxWidthResponsive="150"
-      :onchangeField="onChangeTitle"
-      :rules="[rules.required, rules.counter]"
-    />
-    <div>{{ test }}</div>
-    <br /><br /><br /><br /><br /><br />
-
-     <div>
-      <ModalDetailUpdate
-        toolbarTitle="Modale"
-        :iconValueDetail="icons.mdiAccount"
-        :iconUpdate="icons.mdiGift"
-      />
-    </div> -->
-    <!-- </div> -->
   </AuthenticatedLayout>
 </template>
-
-<!--
-
-<style scoped>
-
-<!--
-
-<style scoped>
-.classTest {
-    width: 200px;
-    background-color: red;
-    width: 200px;
-    background-color: red;
-}
-
-
-.defile {
-    font-family: monospace;
-    font-size: 3em;
-    animation: color-change 1s infinite;
-    font-family: monospace;
-    font-size: 3em;
-    animation: color-change 1s infinite;
-}
-
-@keyframes color-change {
-    0% {
-        color: red;
-    }
-
-    50% {
-        color: blue;
-    }
-
-    100% {
-        color: red;
-    }
-    0% {
-        color: red;
-    }
-
-    50% {
-        color: blue;
-    }
-
-    100% {
-        color: red;
-    }
-}
-</style> -->

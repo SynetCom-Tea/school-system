@@ -31,54 +31,63 @@ class EnseignementController extends Controller
     public function config($type)
     {
         // dd(Auth::user());
-        
-        $table = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first();
+
+        $table = DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $type)->first();
         $id = $table->id;
         $lmd = $table->systeme_lmd_id;
         // dd($table);
-        return Inertia::render('Admin/config',[
+        return Inertia::render('Admin/config', [
             'type' => $type,
-            'niveaux' => Niveau::where('section_id',$type)->get(),
-            'matieres' => Matiere::where('etablissement_id',Auth::user()->etablissement_id)->get(),
+            'niveaux' => Niveau::where('section_id', $type)->get(),
+            'matieres' => Matiere::where('etablissement_id', Auth::user()->etablissement_id)->get(),
             'lmd' => $lmd
         ]);
     }
 
     public function lmd($type)
-    {   
-        return Inertia::render('Admin/lmd',[
+    {
+        return Inertia::render('Admin/lmd', [
             'type' => $type,
             'lmds' => SystemeLmd::all()
         ]);
     }
 
     public function storelmd(Request $request)
-    {   
-        // dd($request->type_lmd);
-        $eva = null;
-        $ligne = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->first();
-        // dd($ligne);
-        if ($ligne) {
-            if ($request->regime_evaluation == true) {
-                $eva = 1;
-            }else{
-                $eva = 0;
+    {
+        try {
+            //code...
+
+            // dump($request->all());
+            $eva = null;
+            $ligne = DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->type)->first();
+            // dd($ligne);
+            if ($ligne) {
+                if ($request->regime_evaluation == true) {
+                    $eva = 1;
+                } else {
+                    $eva = 0;
+                }
+                if ($request->lmd) {
+                    // dd('eva22:', $eva);
+                    DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->type)->update([
+                        'systeme_lmd_id' => $request->type_lmd,
+                        'regime_evaluation' => $eva
+                    ]);
+                } else {
+                    // dump('user:', Auth::user());
+                    // dd('eva:', $eva);
+                    DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->type)->update([
+                        'systeme_lmd_id' => null,
+                        'regime_evaluation' => $eva
+                    ]);
+                }
             }
-            if($request->lmd){
-                DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->update([
-                    'systeme_lmd_id' => $request->type_lmd,
-                    'regime_evaluation'=>$eva
-                ]);
-            }else{
-                DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->update([
-                    'systeme_lmd_id' => null,
-                    'regime_evaluation'=>$eva
-                ]);
-            }
-            
-        } 
-        return redirect()->route('admin.config',$request->type);
-       
+            dd('FIN:');
+            return redirect()->route('admin.config', $request->type);
+        } catch (\Throwable $th) {
+            //throw $th;
+            dd('$th:', $th);
+        }
     }
 
     /**
