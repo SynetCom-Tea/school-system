@@ -27,54 +27,58 @@ class EtablissementSectionSeeder extends Seeder
                 'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 1,
+                'systeme_lmd_id' => null,
             ),
             1 =>
             array(
                 'id' => 2,
-                'etablissement_id' => 2,
+                'etablissement_id' => 1,
                 'code' => NULL,
-                'section_id' => 3,
+                'section_id' => 2,
+                'systeme_lmd_id' => null,
             ),
             2 =>
 
             array(
                 'id' => 3,
-                'etablissement_id' => 3,
+                'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 3,
+                'systeme_lmd_id' => null,
             ),
             3 =>
 
             array(
                 'id' => 4,
-                'etablissement_id' => 4,
+                'etablissement_id' => 1,
                 'code' => NULL,
-                'section_id' => 3,
+                'section_id' => 4,
+                'systeme_lmd_id' => null,
             ),
-            4 =>
+            // 4 =>
 
-            array(
-                'id' => 5,
-                'etablissement_id' => 4,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
-            5 =>
+            // array(
+            //     'id' => 5,
+            //     'etablissement_id' => 4,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
+            // 5 =>
 
-            array(
-                'id' => 6,
-                'etablissement_id' => 5,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
-            6 =>
+            // array(
+            //     'id' => 6,
+            //     'etablissement_id' => 5,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
+            // 6 =>
 
-            array(
-                'id' => 7,
-                'etablissement_id' => 6,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
+            // array(
+            //     'id' => 7,
+            //     'etablissement_id' => 6,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
             // 7 =>
 
             // array(

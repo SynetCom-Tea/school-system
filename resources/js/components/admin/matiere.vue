@@ -49,11 +49,7 @@
                 v-model="importation"
                 color="#004980"
                 inset
-                :label="`${
-                  !importation
-                    ? 'Renseignement des données par champs'
-                    : 'Importatation d\'un fichier pour alimenter les matières'
-                }`"
+                :label="'Importatation d\'un fichier pour alimenter les matières'"
               ></v-switch>
             </v-col>
             <v-col v-if="importation">
@@ -96,6 +92,7 @@
                 class="mt-2"
                 label="Libelle matière"
                 :isRequired="true"
+                @update:modelValue="submitForm"
                 placeholder="Libelle matiere"
                 v-model="matiere.libelle"
               ></TextField>
@@ -152,7 +149,7 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-row class="text-center ml-3 mb-3"
+        <!-- <v-row class="text-center ml-3 mb-3"
           ><v-col cols="auto">
             <Button
               type="submit"
@@ -167,7 +164,7 @@
               style="text-transform: none"
             >
             </Button> </v-col
-        ></v-row>
+        ></v-row> -->
       </v-card>
     </v-container>
     <br />
@@ -204,7 +201,45 @@ export default {
       etablissement_section_id: null,
     }),
   }),
+  // watch: {
+  //   formData: {
+  //     deep: true,
+  //     handler(newValue) {
+  //       // Émettre un événement pour mettre à jour les données du formulaire dans le composant parent
+  //       this.$emit('updateFormData', newValue);
+  //     },
+  //   },
+  // },
 
+  // watch: {
+  //   form: {
+  //     deep: true,
+  //     handler() {
+  //       if (this.isValid()) {
+  //       this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
+  //         (el) => el.libelle == this.section
+  //       );
+  //       this.$emit("formSubmitted", this.form);
+  //       // this.$swal.fire({
+  //       //   title: "Réussi",
+  //       //   text: "Mise à jour réussie avec succès!",
+  //       //   icon: "success",
+  //       //   confirmButtonText: "OK",
+  //       // });
+  //       // this.$swal("Enregistrement réussi avec succes!")
+  //     } else {
+  //       // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
+  //       this.$swal.fire({
+  //         title: "Erreur",
+  //         text:
+  //           "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
+  //         icon: "warning",
+  //         confirmButtonText: "OK",
+  //       });
+  //     }
+  //     },
+  //   },
+  // },
   methods: {
     onChange(event) {
       this.file = event.target.files ? event.target.files[0] : null;
@@ -239,63 +274,60 @@ export default {
       }
     },
     submitForm() {
-      // Empêche l'envoi du formulaire par défaut
-      // console.log("e from submit:", e);
-      // e.preventDefault();
-      // Valide le formulaire avant de l'envoyer
-      if (this.isValid()) {
+      // if (this.isValid()) {
         this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
           (el) => el.libelle == this.section
         );
         this.$emit("formSubmitted", this.form);
-        this.$swal.fire({
-          title: "Réussi",
-          text: "Mise à jour réussie avec succès!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
+        // this.$swal.fire({
+        //   title: "Réussi",
+        //   text: "Mise à jour réussie avec succès!",
+        //   icon: "success",
+        //   confirmButtonText: "OK",
+        // });
         // this.$swal("Enregistrement réussi avec succes!")
-      } else {
-        // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-        this.$swal.fire({
-          title: "Erreur",
-          text:
-            "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
-      }
+      // } else {
+      //   // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
+      //   this.$swal.fire({
+      //     title: "Erreur",
+      //     text:
+      //       "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
+      //     icon: "warning",
+      //     confirmButtonText: "OK",
+      //   });
+      // }
+    
     },
-    isValid() {
-      let lmd = false;
-      let fichier = false;
-      let valid = false;
-      if (this.form.lmd && this.form.type_lmd != null) {
-        lmd = true;
-      } else if (!this.form.lmd && this.form.type_lmd == null) {
-        lmd = true;
-      }
-      if (this.importation && this.form.fichier_matiere != null) {
-        fichier = true;
-      } else if (
-        !this.importation &&
-        !this.form.matieres.find(
-          (el) =>
-            el.code == null ||
-            el.libelle == null ||
-            el.code.trim() == "" ||
-            el.libelle.trim() == ""
-        )
-      ) {
-        fichier = true;
-      }
-      if (lmd && fichier) {
-        valid = true;
-      } else {
-        valid = false;
-      }
-      return valid;
-    },
+    // isValid() {
+    //   let lmd = false;
+    //   let fichier = false;
+    //   let valid = false;
+    //   if (this.form.lmd && this.form.type_lmd != null) {
+    //     lmd = true;
+    //   } else if (!this.form.lmd && this.form.type_lmd == null) {
+    //     lmd = true;
+    //   }
+    //   if (this.importation && this.form.fichier_matiere != null) {
+    //     fichier = true;
+    //   } else if (
+    //     !this.importation &&
+    //     !this.form.matieres.find(
+    //       (el) =>
+    //         el.code == null ||
+    //         el.libelle == null ||
+    //         el.code.trim() == "" ||
+    //         el.libelle.trim() == ""
+    //     )
+    //   ) {
+    //     fichier = true;
+    //   }
+    //   if (lmd && fichier) {
+    //     valid = true;
+    //   } else {
+    //     valid = false;
+    //   }
+    //   return valid;
+    // },
     goBack() {
       router.get(route("etablissements.index"));
       console.log();
@@ -315,7 +347,7 @@ export default {
     },
     async verify(element) {
       const array = this.form.matieres.filter(
-        (el) => el.code !== null && el.code == element.code
+        (el) => (el.code !== null && el.code == element.code) || (element.code == '' && element.libelle =='')
       );
 
       if (array.length > 1) {

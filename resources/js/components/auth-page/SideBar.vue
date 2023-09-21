@@ -89,7 +89,7 @@
                             </v-list-item>
                         </v-list-group>
 
-                        <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles[0].name == 'Administrateur'">
+                        <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles[0] == 'Administrateur'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -199,13 +199,14 @@ export default {
         };
     },
     created() {
+        console.log("ici", this.$page.props.roles[0]);
         this.getListMenus;
         this.getUserProfile;
         this.getOrganizationProfile;
         listMenus(this.$page.props);
     },
     mounted() {
-        // console.log("ici", this.$page.props);
+        console.log("ici", this.$page.props.roles.name);
         axios.interceptors.response.use(
             function (response) {
                 // console.log("response:", response);

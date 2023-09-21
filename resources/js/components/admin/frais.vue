@@ -62,11 +62,7 @@
                     <v-row>
                         <v-col>
                             <v-switch
-                            :label="`${
-                                !importation
-                                    ? 'Renseignement des données par champs'
-                                    : 'Importatation d\'un fichier pour alimenter les frais de scolarité et autres'
-                                }`"
+                            label="Renseignement des données par champs"
                              @update:modelValue="resetForm(importation)"
                               v-model="importation"
                               color="info" inset></v-switch>
@@ -130,12 +126,19 @@
                             <TextField label="Code frais" class="mt-2"  :isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
                         </v-col> -->
                         <v-col md="3">
-
-                            <TextField label="Libelle frais" class="mt-2"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField>
+                            <Autocomplete
+                                :items="['Frais d\inscription','Frais de formation','Frais de cantine','Frais de transport']"
+                                class="mt-2"
+                                v-model="frais.type_frais"
+                                @update:modelValue="verify(frais)"
+                                color="blue-grey-lighten-2"
+                                label="Frais"
+                            ></Autocomplete>
+                            <!-- <TextField label="Libelle frais" class="mt-2"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField> -->
                         </v-col>
                         <v-col md="2">
 
-                            <TextField label="Montant frais" class="mt-2"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant"></TextField>
+                            <TextField label="Montant frais" class="mt-2"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant" @update:modelValue="submitForm"></TextField>
                         </v-col>
                         <v-col md="1" >
                             <br>
@@ -178,7 +181,7 @@
                 </v-card-text>
             </v-card>
             <br>
-            <v-row class="text-center ml-3 mb-3"
+            <!-- <v-row class="text-center ml-3 mb-3"
             ><v-col cols="auto">
                 <Button
                 type="submit"
@@ -193,7 +196,7 @@
                 style="text-transform: none"
                 >
                 </Button> </v-col
-            ></v-row>
+            ></v-row> -->
     </v-card>
     </v-container>
     </form>
@@ -243,25 +246,25 @@
             // Empêche l'envoi du formulaire par défaut
             event.preventDefault();
             // Valide le formulaire avant de l'envoyer
-            if (this.isValid()) {
+            // if (this.isValid()) {
                 this.$emit('formSubmitted', this.form);
-                this.$swal.fire({
-                    title: 'Réussi',
-                    text: "Mise à jour réussi avec succes!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-                // this.$swal("Enregistrement réussi avec succes!")
-            }else{
-                // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-                this.$swal.fire({
-                    title: 'Erreur',
-                    text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                });
+            //     this.$swal.fire({
+            //         title: 'Réussi',
+            //         text: "Mise à jour réussi avec succes!",
+            //         icon: 'success',
+            //         confirmButtonText: 'OK',
+            //     });
+            //     // this.$swal("Enregistrement réussi avec succes!")
+            // }else{
+            //     // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
+            //     this.$swal.fire({
+            //         title: 'Erreur',
+            //         text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
+            //         icon: 'warning',
+            //         confirmButtonText: 'OK',
+            //     });
 
-            }
+            // }
         },
         isValid() {
             let fichier = false
@@ -307,7 +310,7 @@
             this.form.frais = this.form.frais.filter((el) => el !== id)
         },
         async verify(element) {
-            const array = this.form.frais.filter(el => el.code !== null && el.code == element.code)
+            const array = this.form.frais.filter(el => el.code !== null && el.niveau == element.niveau && el.frais == element.frais)
 
             if (array.length > 1) {
                 this.removeRow(element)

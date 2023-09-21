@@ -98,7 +98,7 @@ MenuAdmin = {
             icon: mdiSchool,
             title: "Établissements",
             link: "/etablissements",
-            roles: "manage_system",
+            permissions : "manage_system",
         },
         /* {
             title: "Home",

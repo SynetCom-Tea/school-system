@@ -43,12 +43,7 @@
                     <v-row>
                         <v-col>
                             <v-switch
-                            :label="`${
-                                !importation
-                                    ? 'Renseignement des données par champs'
-                                    : 'Importatation d\'un fichier pour alimenter les salles de cours'
-                                }`"
-                            label="Souhaiterez-vous importez le fichier des salles ?"
+                            label="Importatation d\'un fichier pour alimenter les salles de cours"
                             @update:modelValue="resetForm(importation)"
                             v-model="importation"
                             color="info" inset></v-switch>
@@ -79,7 +74,7 @@
                     <v-row :key="classe.id" v-for="(classe, i) in form.classes">
                         <v-col cols="3" v-if="type == '1' || type == '2'">
 
-                        <Autocomplete
+                        <v-autocomplete
                             :items="niveaux"
                             v-model="classe.niveau"
                             class="mt-2"
@@ -87,13 +82,13 @@
                             item-value="id"
                             closable-chips
                             label="Niveaux"
-                        ></Autocomplete>
+                        ></v-autocomplete>
                         </v-col>
                         <v-col cols="4">
                         <TextField label="Code salle" class="mt-2"  :isRequired="true" placeholder="Code salle" required @change="verify(classe)" v-model="classe.code"></TextField>
                         </v-col>
                         <v-col cols="4">
-                        <TextField label="Libelle salle" class="mt-2" :isRequired="true" placeholder="Libelle salle" required v-model="classe.libelle"></TextField>
+                        <TextField label="Libelle salle" class="mt-2" :isRequired="true" placeholder="Libelle salle" required v-model="classe.libelle" @update:modelValue="submitForm"></TextField>
                         </v-col>
                         <v-col cols="1">
                             <br />
@@ -135,7 +130,7 @@
 
             </v-card>
             <br>
-            <v-row class="text-center ml-3 mb-3"
+            <!-- <v-row class="text-center ml-3 mb-3"
             ><v-col cols="auto">
                 <Button
                 type="submit"
@@ -150,7 +145,7 @@
                 style="text-transform: none"
                 >
                 </Button> </v-col
-            ></v-row>
+            ></v-row> -->
         </v-card>
         <!-- <v-row>
             <v-col md="5"></v-col>
@@ -205,52 +200,49 @@
             }
         },
         submitForm() {
-            // Empêche l'envoi du formulaire par défaut
-            event.preventDefault();
-            // Valide le formulaire avant de l'envoyer
-            if (this.isValid()) {
+            // if (this.isValid()) {
                 this.$emit('formSubmitted', this.form);
-                this.$swal.fire({
-                    title: 'Réussi',
-                    text: "Mise à jour réussi avec succes!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-                // this.$swal("Enregistrement réussi avec succes!")
-            }else{
-                // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-                this.$swal.fire({
-                    title: 'Erreur',
-                    text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                });
+            //     this.$swal.fire({
+            //         title: 'Réussi',
+            //         text: "Mise à jour réussi avec succes!",
+            //         icon: 'success',
+            //         confirmButtonText: 'OK',
+            //     });
+            //     // this.$swal("Enregistrement réussi avec succes!")
+            // }else{
+            //     // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
+            //     this.$swal.fire({
+            //         title: 'Erreur',
+            //         text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
+            //         icon: 'warning',
+            //         confirmButtonText: 'OK',
+            //     });
 
-            }
+            // }
         },
-        isValid() {
-            let fichier = false
-            let valid = false
+        // isValid() {
+        //     let fichier = false
+        //     let valid = false
 
-            if(this.importation && this.form.fichier_classe != null){
-                fichier = true
-            }else if(!this.importation && !this.form.classes.find((el) => {
-                if(this.type == '1' || this.type == '2'){
-                    return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
-                }else{
-                    return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
-                }}))
-            {
-                fichier = true
-            }
+        //     if(this.importation && this.form.fichier_classe != null){
+        //         fichier = true
+        //     }else if(!this.importation && !this.form.classes.find((el) => {
+        //         if(this.type == '1' || this.type == '2'){
+        //             return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
+        //         }else{
+        //             return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
+        //         }}))
+        //     {
+        //         fichier = true
+        //     }
 
-            if(fichier){
-                valid = true
-            }else{
-                valid = false
-            }
-            return valid
-        },
+        //     if(fichier){
+        //         valid = true
+        //     }else{
+        //         valid = false
+        //     }
+        //     return valid
+        // },
         goBack() {
             router.get(route('etablissements.index'))
             console.log()
