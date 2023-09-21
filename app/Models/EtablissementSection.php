@@ -7,5 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class EtablissementSection extends Model
 {
+    
     use HasFactory;
 }

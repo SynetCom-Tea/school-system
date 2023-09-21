@@ -22,6 +22,7 @@ return new class extends Migration
             $table->string('logo')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
                 ->references('id')->on('type_etablissements');
+               
             $table->softDeletes();
             $table->timestamps();
         });

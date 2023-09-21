@@ -9,6 +9,7 @@
 
 <script>
 import Sidebar from "../components/auth-page/SideBar.vue";
+
 import { router } from "@inertiajs/vue3";
 export default {
   name: "App",

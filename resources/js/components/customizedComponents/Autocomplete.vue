@@ -115,31 +115,31 @@ export default {
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
   >
-    <v-autocomplete
-      :items="items"
-      v-bind="$attrs"
-      :variant="variant"
-      :hint="hint"
-      :density="density"
-      :custom-filter="customFilter"
-      :item-title="itemTitle"
-      :item-value="itemValue"
-      :style="style"
-      :class="class"
-      :placeholder="placeholder"
-      :rules="rules"
-      :prepend-inner-icon="icon"
-      :base-color="baseColorValue"
-      :color="colorValue"
-    >
-      <template #label v-if="isRequired">
-        <span id="required-field">{{ label }}</span>
-      </template>
-      <template #label v-else>
-        {{ label }}
-      </template>
-      <slot />
-    </v-autocomplete>
+  <v-autocomplete
+    :items="items"
+    :variant="variant"
+    :hint="hint"
+    :density="density"
+    v-bind="$attrs"
+    :custom-filter="customFilter"
+    :item-title="itemTitle"
+    :item-value="itemValue"
+    :style="style"
+    :class="class"
+    :placeholder="placeholder"
+    :rules="rules"
+    :prepend-inner-icon="icon"
+    :base-color="baseColorValue"
+    :color="colorValue"
+  >
+    <template #label v-if="isRequired">
+      <span id="required-field">{{ label }}</span>
+    </template>
+    <template #label v-else>
+      {{ label }}
+    </template>
+    <slot />
+  </v-autocomplete>
   </v-responsive>
 </template>
 <style scoped>

@@ -101,16 +101,16 @@ export default {
                     </Select>
                     </v-col>
                     <v-col cols="6" md="6">
-                    <Select
-                        label="Section"
+                    <Autocomplete
+                        label="Sections"
                         :items="sections"
                         variant="outlined"
                         item-value="id"
                         item-title="libelle"
                         v-model="form.section"
-                        isMultiple
+                        multiple
                         v-if="form.type_etablissement_id == 2"
-                    ></Select>
+                    ></Autocomplete>
                     </v-col>
                     </v-row>
                     <v-row>
@@ -192,7 +192,7 @@ export default {
                                     :rules="[
                                         (v) => !!v || 'Ce champ est requis!',
                                         (v) =>
-                                        /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
+                                        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
                                         'Adresse Email invalide!',
                                     ]"
                                 ></TextField>
@@ -246,7 +246,7 @@ export default {
                         :rules="[
                             (v) => !!v || 'Ce champ est requis!',
                             (v) =>
-                            /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
+                            /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
                             'Adresse Email invalide!',
                         ]"
                         ></text-field>
