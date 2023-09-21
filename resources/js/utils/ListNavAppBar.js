@@ -326,8 +326,6 @@ MenuAdmin = {
         ],
     };
     if (page?.roles != "Super-administrateur") {
-        console.log('hrer')
-
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
     return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
