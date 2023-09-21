@@ -122,13 +122,13 @@ MenuAdmin = {
             title: "Evaluation",
             icon: mdiCogOutline,
             link: "/gestionnote/evaluation",
-        },
+        },*/
         {
             title: "Inscription",
             icon: mdiAccountSchool,
-            link: "/inscriptions/create",
+            link: "/inscriptions",
             permissions: "manage_system",
-        }, */
+        },
     ];
 
     let usersMenu = {
