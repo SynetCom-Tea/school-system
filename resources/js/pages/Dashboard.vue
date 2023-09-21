@@ -211,17 +211,16 @@ export default {
             :cols="12 / listGreetings.length"
             v-for="item in listGreetings"
             :key="item.id"
-            style="cursor:' pointer"
+            style="cursor:' pointer; background-color:#7d002c; color:white"
           >
             <v-hover v-slot="{ isHovering, props }" open-delay="200">
-              <v-card
+              <v-card-text
                 :elevation="isHovering ? 4 : 2"
                 :color="isHovering ? 'primary' : 'undefined'"
                 :class="{ 'on-hover': isHovering }"
                 v-bind="props"
-              >
-                <v-card-text class="defile"> </v-card-text>{{ item.text }}
-              </v-card>
+                >{{ item.text }}
+              </v-card-text>
             </v-hover>
           </v-col>
           &nbsp;&nbsp;
