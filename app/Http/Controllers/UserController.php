@@ -29,7 +29,7 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        return Inertia::render('user/Index', [
+        return Inertia::render('User/Index', [
             'users' => User::where('user_id', Auth::user()->id)->get()
         ]);
     }
@@ -40,7 +40,7 @@ class UserController extends Controller
     public function create()
     {
         $user = Auth::user();
-        return Inertia::render('user/Create', [
+        return Inertia::render('User/Create', [
             'etablissements' => Etablissement::all(),
             'roles' => Role::all(),
             'sections' => Section::all(),

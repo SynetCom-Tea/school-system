@@ -166,18 +166,13 @@ import {
   mdiInstagram,
   mdiEye,
   mdiEyeOff,
-  mdiCloseCircle,
-  mdiMicrophone,
 
-  mdiMapMarkerOff,
-  mdiLockOutline,
-  mdiEmailOutline,
-  mdiCloseCircle,
   mdiMicrophone,
-  mdiMapMarker,
-  mdiMapMarkerOff,
+mdiEmailOutline,
+
+
   mdiLockOutline,
-  mdiEmailOutline,
+
 } from "@mdi/js";
 
 export default {
@@ -192,25 +187,9 @@ export default {
     mdiEmailOutline,
     mdiCloseCircle,
 
-    mdiMicrophone,
-    mdiMapMarker,
-    mdiMapMarkerOff,
-  },
-  // components: {
-  //   mdiLockOutline,
-  //   mdiGoogle,
-  //   mdiFacebook,
-  //   mdiTwitter,
-  //   mdiInstagram,
-  //   mdiEye,
-  //   mdiEyeOff,
-  //   mdiEmailOutline,
-  //   mdiCloseCircle,
 
-  //   mdiMicrophone,
-  //   mdiMapMarker,
-  //   mdiMapMarkerOff,
-  // },
+  },
+
   props: {
     goToNextWindow: { type: Function },
     listSocialNetworks: { type: Array },
@@ -234,25 +213,11 @@ export default {
       mdiEye,
       mdiEyeOff,
       mdiCloseCircle,
-      mdiMicrophone,
-      mdiMapMarker,
-      mdiMapMarkerOff,
-      mdiEmailOutline,
+mdiEmailOutline,
+
+
     },
-    // icons: {
-    //   mdiGoogle,
-    //   mdiLockOutline,
-    //   mdiFacebook,
-    //   mdiTwitter,
-    //   mdiInstagram,
-    //   mdiEye,
-    //   mdiEyeOff,
-    //   mdiCloseCircle,
-    //   mdiMicrophone,
-    //   mdiMapMarker,
-    //   mdiMapMarkerOff,
-    //   mdiEmailOutline,
-    // },
+
     errors: {},
     form: useForm({
       email: "",
