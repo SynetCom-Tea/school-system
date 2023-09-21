@@ -18,7 +18,7 @@ class InscriptionController extends Controller
      */
     public function index()
     {
-        return view('scolarite::index');
+        return Inertia::render('Inscription/Index', []);
     }
 
     /**
