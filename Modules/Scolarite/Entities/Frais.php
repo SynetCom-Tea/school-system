@@ -2,6 +2,8 @@
 
 namespace Modules\Scolarite\Entities;
 
+use App\Models\Annee;
+use App\Models\Etablissement;
 use App\Models\EtablissementSection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -14,15 +16,25 @@ class Frais extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['libelle', 'montant', 'niveau_id'];
+    protected $fillable = [
+        'libelle',
+        'montant',
+        'annee_id',
+        'etablissement_id',
+        'niveau_id'
+    ];
 
     /* public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);
     } */
-    public function etablissementSections(): BelongsTo
+    public function annee(): BelongsTo
     {
-        return $this->belongsTo(EtablissementSection::class);
+        return $this->belongsTo(Annee::class);
+    }
+    public function etablissement(): BelongsTo
+    {
+        return $this->belongsTo(Etablissement::class);
     }
     public function niveau(): BelongsTo
     {

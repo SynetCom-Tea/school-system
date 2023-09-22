@@ -42,17 +42,14 @@ class UserController extends Controller
                 })->with('apprenant', 'apprenant.etablissement')->get();
             }
         }
-        $terre = ClasseAnnee::with('anneeScolaire', 'classe')->get();
+        $terre = ClasseAnnee::with('anneeScolaire', 'classe', 'classe.etablissement_section', 'classe.niveaux')->get();
         dump('Test:', $terre);
         dd(' $list22:', $list);
         return $list ?? [];
     }
     public function index(Request $request)
     {
-        $tes = Auth::user();
-        dump('connec:', $tes->roles[0]->name);
-        dump('list:', User::where('etablissement_id', (int)$tes->etablissement_id)->get());
-        dd('u:', User::all());
+
         return Inertia::render('User/Index', [
             'users' => User::where('user_id', Auth::user()->id)->get()
         ]);

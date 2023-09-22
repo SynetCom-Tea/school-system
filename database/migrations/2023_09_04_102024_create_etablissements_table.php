@@ -29,6 +29,7 @@ return new class extends Migration
 
         Schema::create('etablissement_section', function (Blueprint $table) {
             $table->id();
+
             $table->string('code')->nullable();
             $table->integer('regime_evaluation')->nullable();
             $table->foreignIdFor(\App\Models\Etablissement::class)
