@@ -46,7 +46,7 @@
             </v-col>
 
             <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFrais">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
 
@@ -92,7 +92,7 @@
             </v-col>
 
             <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFrais">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
 
@@ -334,6 +334,9 @@ export default {
         },
         getClasses() {
             router.get(route('classes.index', this.type))
+        },
+        getFrais() {
+            router.get(route('frais.index', this.type))
         },
     },
     computed: {
