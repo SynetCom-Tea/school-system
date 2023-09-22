@@ -161,6 +161,7 @@
     </form>
 </template>
 <script>
+    import XLSX from "xlsx/dist/xlsx.extendscript.js";
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
@@ -173,7 +174,8 @@
     data: () => ({
         headers: [],
         data: [],
-        contentType: ['nom','prenom','tel','age'],
+        entete:[],
+        contentType: ['code','nom'],
         alertFirst: true,
         alertSecond: true,
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
@@ -205,28 +207,55 @@
           if (sheetData.length > 0) {
             this.headers = sheetData[0];
             this.data = sheetData.slice(1);
-
+            if (this.type=="3" || this.type=="4" ) {
+                this.entete=this.contentType.slice();
+            } else {
+                this.entete=['niveau'].concat(this.contentType);
+            }
+            console.log('entete', this.entete);
             console.log('headers',this.headers,'data',this.data)
 
-            if(this.checkEntete(this.headers,this.contentType)){
-              console.log('bravo')
-            }else{
-              alert('drapppppppp')
-            }
+            if(this.checkEntete(this.headers,this.entete)){
+            //   console.log('bravo')
             const missingDataIndex = this.donneesManquantes(this.data);
 
             if (typeof missingDataIndex === "number") {
-              console.log("L'indice de la ligne manquante est:", missingDataIndex);
+                this.$swal.fire({
+                    title: 'Valider',
+                    text: "Votre fichier est valide!",
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            // console.log("L'indice de la ligne manquante est:", missingDataIndex);
             } else {
-              console.log(
-                "Données manquantes à l'indice [",
-                missingDataIndex.rowIndex,
-                ",",
-                missingDataIndex.columnIndex,
-                "]"
-              );
+                const ligne=missingDataIndex.rowIndex+2;
+                const colonne=missingDataIndex.columnIndex+1;
+                this.$swal.fire({
+                        title: "Erreur",
+                        text:
+                        "Données manquantes à la ligne "+ligne+
+                        " et colonne "+ colonne + " Veuillez corriger!",
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                    });
+            console.log(
+
+            );
             }
+
+            }else{
+                this.$swal.fire({
+                                title: "Erreur",
+                                text:
+                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                                icon: "warning",
+                                confirmButtonText: "OK",
+                            });
+            //   alert('drapppppppp')
+            }
+
              // Exclure la première ligne (en-têtes)
+
           }
         };
 
@@ -264,7 +293,7 @@
         }
 
         // Parcours les éléments de la ligne
-        for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+        for (let columnIndex = 0; columnIndex < this.entete.length; columnIndex++) {
           if (typeof row[columnIndex] === "undefined") {
             return {
               rowIndex,

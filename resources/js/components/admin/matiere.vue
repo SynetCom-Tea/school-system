@@ -271,20 +271,7 @@ export default {
 
             if(this.checkEntete(this.headers,this.contentType)){
             //   console.log('bravo')
-
-            }else{
-                this.$swal.fire({
-                                title: "Erreur",
-                                text:
-                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
-                                icon: "warning",
-                                confirmButtonText: "OK",
-                            });
-            //   alert('drapppppppp')
-            }
-
-             // Exclure la première ligne (en-têtes)
-             const missingDataIndex = this.donneesManquantes(this.data);
+            const missingDataIndex = this.donneesManquantes(this.data);
 
             if (typeof missingDataIndex === "number") {
                 this.$swal.fire({
@@ -309,6 +296,20 @@ export default {
 
             );
             }
+
+            }else{
+                this.$swal.fire({
+                                title: "Erreur",
+                                text:
+                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                                icon: "warning",
+                                confirmButtonText: "OK",
+                            });
+            //   alert('drapppppppp')
+            }
+
+             // Exclure la première ligne (en-têtes)
+
           }
         };
 
