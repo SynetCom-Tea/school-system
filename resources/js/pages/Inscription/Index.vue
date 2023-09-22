@@ -6,6 +6,24 @@
       toolbarTitle="Inscriptions"
     ></Toolbar>
     <div class="mt-3">
+      <v-container class="bg-surface-variant mb-6">
+        <v-row align="center" no-gutters>
+        <v-col cols="auto">
+  <!-- <Autocomplete
+                  :items="listSection"
+                  class="mt-2"
+                  v-model="section"
+                  item-value="id"
+                  item-title="code"
+                  chips
+                  closable-chips
+                  color="blue-grey-lighten-2"
+                  label="Section"
+                ></Autocomplete> -->
+        </v-col>
+        </v-row>
+        </div>
+    <div class="mt-3">
       <Datatable
         :dialogDetailUpdate="dialogDetailUpdate"
         titleDatatable="Liste des inscrits"
@@ -136,6 +154,26 @@ export default {
     await this.getListUsers();
   },
   methods: {
+  async setFilters() {
+      let axiosResult = [];
+      let items = [];
+      let vItems = [];
+
+      // axiosResult = await axios
+        .get(
+          route("getUsersByCategory", {
+            params: "organizationStudents",
+          })
+        )
+        .then((res) => {
+          console.log("res:", res);
+          if (typeof res.data == "string" || typeof res.data == "undefined") {
+            this.$toast.error("Données non valides!");
+          } else {
+            return res.data;
+          }
+        });
+    },
     async getListUsers() {
       let axiosResult = [];
       let items = [];

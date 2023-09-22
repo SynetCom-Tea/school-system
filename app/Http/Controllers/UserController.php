@@ -35,6 +35,13 @@ class UserController extends Controller
         $list = [];
         $authUser =  Auth::user();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        if ($params == "classe") {
+            if ($nameRole == 'Administrateur') {
+                $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
+                    $query->where('etablissement_id', (int)$authUser->etablissement_id);
+                })->with('apprenant', 'apprenant.etablissement')->get();
+            }
+        }
         if ($params == "organizationStudents") {
             if ($nameRole == 'Administrateur') {
                 $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
@@ -42,9 +49,10 @@ class UserController extends Controller
                 })->with('apprenant', 'apprenant.etablissement')->get();
             }
         }
-        $terre = ClasseAnnee::with('anneeScolaire', 'classe', 'classe.etablissement_section', 'classe.niveaux')->get();
-        dump('Test:', $terre);
-        dd(' $list22:', $list);
+        $terre = ClasseAnnee::with('annee', 'classe', 'classe.niveau')->get();
+        // dump('T:', EtablissementSection::all());
+        // dump('Test:', $terre);
+
         return $list ?? [];
     }
     public function index(Request $request)

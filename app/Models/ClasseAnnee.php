@@ -18,7 +18,7 @@ class ClasseAnnee extends Model
         return $this->belongsTo(Classe::class);
     }
 
-    public function anneeScolaire(): BelongsTo
+    public function annee(): BelongsTo
     {
         return $this->belongsTo(Annee::class);
     }

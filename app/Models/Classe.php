@@ -19,7 +19,7 @@ class Classe extends Model
         'etablissement_section_id',
         'niveau_id'
     ];
-    public function etablissementSection(): BelongsTo
+    public function etablissement_section(): BelongsTo
     {
         return $this->belongsTo(EtablissementSection::class);
     }
