@@ -132,7 +132,31 @@ export default {
       }),
     };
   },
+  async mounted() {
+    await this.getListUsers();
+  },
   methods: {
+    async getListUsers() {
+      let axiosResult = [];
+      let items = [];
+      let vItems = [];
+
+      axiosResult = await axios
+        .get(
+          route("getUsersByCategory", {
+            params: "organizationStudents",
+          })
+        )
+        .then((res) => {
+          console.log("res:", res);
+          if (typeof res.data == "string" || typeof res.data == "undefined") {
+            this.$toast.error("Données non valides!");
+          } else {
+            return res.data;
+          }
+        });
+    },
+
     functionOnClickAddButton() {
       router.get(route("inscriptions.create"));
     },
@@ -179,9 +203,6 @@ export default {
     removeRow(p) {
       this.form.tuteurs = this.form.tuteurs.filter((product) => product !== p);
     },
-  },
-  mounted() {
-    this.addRow();
   },
 };
 </script>

@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Scolarite\Entities\Inscription;
 
 class Apprenant extends Model
 {
@@ -30,6 +31,10 @@ class Apprenant extends Model
     public function apprenantTuteurs(): HasMany
     {
         return $this->hasMany(ApprenantTuteur::class);
+    }
+    public function inscriptions(): HasMany
+    {
+        return $this->hasMany(Inscription::class);
     }
     public function absences(): HasMany
     {

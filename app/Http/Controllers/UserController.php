@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Apprenant;
+use App\Models\ClasseAnnee;
 use Modules\Enseignement\Entities\Enseignant;
 use App\Models\PermissionRole;
 use App\Models\Permission;
@@ -21,6 +22,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Modules\Scolarite\Entities\Inscription;
 
 class UserController extends Controller
 {
@@ -33,11 +35,16 @@ class UserController extends Controller
         $list = [];
         $authUser =  Auth::user();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
-        if ($params == "organizationUsers") {
+        if ($params == "organizationStudents") {
             if ($nameRole == 'Administrateur') {
-                $list = User::where('etablissement_id', (int)$authUser->etablissement_id)->get();
+                $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
+                    $query->where('etablissement_id', (int)$authUser->etablissement_id);
+                })->with('apprenant', 'apprenant.etablissement')->get();
             }
         }
+        $terre = ClasseAnnee::with('anneeScolaire', 'classe')->get();
+        dump('Test:', $terre);
+        dd(' $list22:', $list);
         return $list ?? [];
     }
     public function index(Request $request)
