@@ -7,45 +7,45 @@
     ></Toolbar>
     <!-- <br> -->
 
+    <div>
     <!-- Application de stepper -->
     <form-wizard 
       color="#094899" 
       back-button-text="Retour"
       next-button-text="Suivant"
       finish-button-text="Enregistrer"
-      @on-complete="submit"
-      @on-loading="onLoading"
+      @on-complete="sendForm" @on-loading="handleLoading" @on-error="handleError" @on-change="handleChange" @on-validate="validateTabSwitch"
     >
       <!-- Tabs 1 -->
       <tab-content title="MATIERES" :before-change="beforeChange">
-        <v-card  flat>
-                <matiere-form @formSubmitted="getMatiereForm" :type="type" />
+        <v-card  flat v-show="!loadingWizard">
+                <matiere-form @formSubmitted="getMatiereForm" :type="type" @matiereFormValid="matiereFormValid" />
             </v-card>
       </tab-content>
       <!-- Tabs 2 -->
       <tab-content title="SALLES" :before-change="beforeChange">
-        <v-card  flat>
-                <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
+        <v-card  flat v-show="!loadingWizard">
+                <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" @classeFormValid="classeFormValid" />
             </v-card>
       </tab-content>
       <!-- Tabs 3 -->
       <tab-content :title="tabTitle3" :before-change="beforeChange">
         <v-card  flat>
                 <!-- Tabs de la Filiere pour toute les sections -->
-                <v-card-text v-if="type == '3'">
+                <v-card-text v-show="type == '3' && !loadingWizard">
                     <filieresup-form @formSubmitted="getFiliereForm" :type="type"  />
                 </v-card-text>
                 <!-- Tabs de la Filiere pour toute les sections -->
 
                 <!-- Tabs de la Faculté pour toute les sections -->
-                <v-card-text v-else-if ="type == '4'">
+                <v-card-text v-show ="type == '4' && !loadingWizard">
                     <faculte-form @formSubmitted="getFaculteForm" :type="type"  />
                 </v-card-text>
                 <!-- Tabs de la Faculté pour toute les sections -->
 
                 <!-- Tabs de la Frais pour toute les sections -->
-                <v-card-text v-else>
-                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"/>
+                <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" @fraisFormValid="fraisFormValid"/>
                 </v-card-text>
                 <!-- Tabs de la Frais pour toute les sections -->
             </v-card>
@@ -53,56 +53,57 @@
       <!-- Tabs 4 -->
       <tab-content :title="tabTitle4" :before-change="beforeChange">
         <v-card  flat>
-                <v-card-text v-if="type == '3'">
+                <v-card-text v-show="type == '3' && !loadingWizard">
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"  />
                 </v-card-text>
-                <v-card-text v-else-if ="type == '4'">
+                <v-card-text v-show ="type == '4' && !loadingWizard">
                     <filiere-form @formSubmitted="getFiliereForm" :type="type" :facultes="formFaculte.facultes"  />
                 </v-card-text>
-                <v-card-text v-else>
-                    <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres"/>
+                <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
+                    <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatiereFormValid="niveauMatiereFormValid"/>
                 </v-card-text>
             </v-card>
       </tab-content>
       <!-- Tabs 5 -->
       <tab-content :title="tabTitle5"  v-if="type=='3' || type=='4'" :before-change="beforeChange">
         <v-card  flat>
-                <v-card-text v-if="type=='4'">
+                <v-card-text v-show="type=='4' && !loadingWizard">
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" />
                 </v-card-text>
-                <v-card-text v-if="type=='3' && lmd != null">
+                <v-card-text v-show="type=='3' && lmd != null && !loadingWizard">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
-                <v-card-text v-if="type=='3'&& lmd == null">
+                <v-card-text v-show="type=='3'&& lmd == null && !loadingWizard">
                     <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
                 </v-card-text>
             </v-card>
       </tab-content>
       <!-- Tabs 6 -->
-      <tab-content :title="tabTitle6 ? tabTitle6 : ''" v-if="(type=='3' || type=='4') && lmd != null" :before-change="beforeChange">
+      <tab-content :title="tabTitle6" v-if="(type=='3' || type=='4') && lmd != null" :before-change="beforeChange">
         <v-card >
-                <v-card-text v-if="type=='4'">
+                <v-card-text v-show="type=='4' && !loadingWizard">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
                 </v-card-text>
-                <v-card-text v-if="type=='3'">
+                <v-card-text v-show="type=='3' && !loadingWizard">
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
                 </v-card-text>
             </v-card>
       </tab-content>
       <!-- Tabs 7 -->
-      <tab-content title="AFFECTATION DE MATIERES AUX NIVEAUX" v-if="type=='4'">
+      <tab-content title="AFFECTATION DE MATIERES AUX NIVEAUX" v-if="type=='4'" :before-change="beforeChange">
         <v-card  flat>
-                <v-card-text v-if="lmd == null">
+                <v-card-text v-show="lmd == null && !loadingWizard">
                     <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
                 </v-card-text>
-                <v-card-text v-if="lmd != null" >
+                <v-card-text v-show="lmd != null && !loadingWizard" >
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
                 </v-card-text>
             </v-card>
       </tab-content>
+      <div class="loader" v-if="loadingWizard"></div>
     </form-wizard>
     <!-- Application de stepper -->
-
+  </div>
     </AuthenticatedLayout>
   </template>
   <script>
@@ -125,7 +126,6 @@
     import Loader from "@/components/customizedComponents/Loader.vue";
     import { mdiAccount, mdiSchool, mdiHomeOutline, mdiInformation, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
   export default {
-    name: "CallFunctionBeforeTabSwitch",
     props:['type','niveaux','lmd'],
     components: {
       FormWizard,
@@ -161,7 +161,9 @@
         tabTitle4: null,
         tabTitle5: null,
         tabTitle6: null,
+        formValid: false,
         currentTabIndex: 0,
+        loadingWizard: false,
         items: [],
         suivant : false,
         pause: null,
@@ -182,81 +184,122 @@
       this.onChange()
     },
     methods: {
-      onLoading(){
+      // Envoi formulaire vers le backend
 
+      sendForm() {
+        // 1er cas
+          if(type == '1' || type == '2'){
+
+          }else if(type == '3' && lmd == null){
+
+          }else if(type == '3' && lmd != null){
+
+          }else if(type == '4' && lmd == null){
+
+          }else if(type == '4' && lmd != null){
+
+          }
+        // 2e cas
+
+          if(type == '1' || type == '2'){
+
+          }else if(type == '3'){
+            if(lmd == null){
+
+            }else{
+
+            }
+          }else if(type == '4'){
+            if(lmd == null){
+
+            }else{
+
+            }
+          }
+        },
+
+        // fin envoi
+      matiereFormValid(v){
+        this.formValid = v
       },
-      async beforeChange(){
-        const v = 1
-        if(v == 0){
-          this.onLoading(true)
-          return false
-        }else{
-          this.onLoading(false)
-          return true
+      classeFormValid(v){
+        this.formValid = v
+      },
+      fraisFormValid(v){
+        this.formValid = v
+      },
+      niveauMatiereFormValid(v){
+        this.formValid = v
+      },
+      async beforeChange() 
+      {
+        const isValid = await this.validateTabSwitch(); // Utilisation d'async/await
+        if (isValid) {
+          return true; // La validation réussit, permet le passage à l'onglet suivant
+        } else {
+          this.$swal.fire({
+            title: "Echec de passage à l'étape suivante",
+            text: "Merci de vérifier votre formulaire!",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+          return false; 
         }
-      
       },
-      submit() {
-        console.log('submitted',this.formMatiere ? this.formMatiere.matieres.length : 0);
-
+      async validateTabSwitch(validationResult,activeTabIndex) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const isValid = this.formValid; // Remplacez par votre propre logique de validation
+            resolve(isValid);
+          }, 500); // Délai de 2 secondes pour simuler une opération asynchrone
+        });
       },
-        btnsuivant(){
-          this.suivant = false
+        handleLoading(loading) {
+          this.loadingWizard = loading
+        },
+        handleValidate(validationResult,activeTabIndex) {
+        },
+        handleChange(prevIndex, nextIndex) {
         },
         getMatiereForm(donnees) {
           this.formMatiere = donnees
-          this.suivant = true
-          // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la matiere :', this.formMatiere);
         },
         getClasseForm(donnees) {
           this.formClasse = donnees
-          this.suivant = true
-          // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la classe :', this.formClasse);
         },
         getNiveauMatiereSansUeForm(donnees){
           this.formNiveauMatiereSansUe = donnees
-          this.suivant = true
           console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSansUe);
 
         },
         getNiveauMatiereSupForm (donnees){
           this.formNiveauMatiereSup = donnees
-          this.suivant = true
           console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSup);
 
         },
 
         getNiveauMatiereForm(donnees){
           this.formNiveauMatiere = donnees
-          this.suivant = true
           console.log('Données du formulaire niveau matiere :', this.formNiveauMatiere);
 
         },
         getFiliereForm(donnees) {
           this.formFiliere = donnees
-          this.suivant = true
-          // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de la filiere :', this.formFiliere);
         },
 
         getUEForm(donnees) {
           this.formUE = donnees
-          this.suivant = true
-          // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de l\'unité d\'enseignement :', this.formUE);
         },
         getFraisForm(donnees) {
           this.formFrais = donnees
-          this.suivant = true
-          // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de frais :', this.formFrais);
         },
         getFaculteForm(donnees) {
           this.formFaculte = donnees
-          this.suivant = true
-          // Traitez les données du formulaire soumises par l'événement
           console.log('Données du formulaire de faculté :', this.formFaculte);
         },
 
@@ -337,4 +380,48 @@
 #fw-1695140104041 > ul > li:nth-child(1) > div.fw-list-progress.fw-list-progress-active{
     background: red;
 }
+
+/* This is a css loader. It's not related to vue-form-wizard */
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+.loader {
+  margin: 60px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-left: 1.1em solid #3c80e7;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
 </style>

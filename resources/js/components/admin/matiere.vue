@@ -84,7 +84,7 @@
                 class="mt-2"
                 :isRequired="true"
                 placeholder="Code matiere"
-                @change="verify(matiere)"
+                @update:modelValue="submitForm(matiere)"
                 v-model="matiere.code"
               ></TextField>
             </v-col>
@@ -93,7 +93,7 @@
                 class="mt-2"
                 label="Libelle matière"
                 :isRequired="true"
-                @update:modelValue="submitForm"
+                @update:modelValue="submitForm(matiere)"
                 placeholder="Libelle matiere"
                 v-model="matiere.libelle"
               ></TextField>
@@ -325,28 +325,21 @@ export default {
         }
 
         // Parcours les éléments de la ligne
-        for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+        for (let columnIndex = 0; columnIndex < this.contentType.length; columnIndex++) {
           if (typeof row[columnIndex] === "undefined") {
             return {
               rowIndex,
               columnIndex,
             }; // Retourne l'indice de la ligne et de la colonne où les données manquent
           }
+          // console.log('ligne',rowIndex,'colonne',columnIndex)
+          
         }
       }
 
       return -1; // Retourne -1 si toutes les données sont présentes
     },
 
-    //
-    onChange(event) {
-      this.file = event.target.files ? event.target.files[0] : null;
-      let workbook = XLSX.readFile(this.file);
-      console.log('workbook1');
-      console.log(workbook);
-      console.log('SheetNames');
-      console.log(workbook.SheetNames);
-    },
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
@@ -371,61 +364,30 @@ export default {
         this.addRow();
       }
     },
-    submitForm() {
-      // if (this.isValid()) {
+    async submitForm(element) {
+      // console.log('hhhhh',element)
+        await this.verify(element)
+        await this.isValid()
         this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
           (el) => el.libelle == this.section
         );
         this.$emit("formSubmitted", this.form);
-        // this.$swal.fire({
-        //   title: "Réussi",
-        //   text: "Mise à jour réussie avec succès!",
-        //   icon: "success",
-        //   confirmButtonText: "OK",
-        // });
-        // this.$swal("Enregistrement réussi avec succes!")
-      // } else {
-      //   // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-      //   this.$swal.fire({
-      //     title: "Erreur",
-      //     text:
-      //       "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
-      //     icon: "warning",
-      //     confirmButtonText: "OK",
-      //   });
-      // }
-    
+        this.$emit("matiereFormValid", this.isValid());
     },
-    // isValid() {
-    //   let lmd = false;
-    //   let fichier = false;
-    //   let valid = false;
-    //   if (this.form.lmd && this.form.type_lmd != null) {
-    //     lmd = true;
-    //   } else if (!this.form.lmd && this.form.type_lmd == null) {
-    //     lmd = true;
-    //   }
-    //   if (this.importation && this.form.fichier_matiere != null) {
-    //     fichier = true;
-    //   } else if (
-    //     !this.importation &&
-    //     !this.form.matieres.find(
-    //       (el) =>
-    //         el.code == null ||
-    //         el.libelle == null ||
-    //         el.code.trim() == "" ||
-    //         el.libelle.trim() == ""
-    //     )
-    //   ) {
-    //     fichier = true;
-    //   }
-    //   if (lmd && fichier) {
-    //     valid = true;
-    //   } else {
-    //     valid = false;
-    //   }
-    //   return valid;
-    // },
+    async isValid() {
+      let fichier = false;
+      let valid = false;
+      if (this.importation && this.form.fichier_matiere != null) {
+        fichier = true;
+      } else if (!this.importation && !this.form.matieres.find((el) =>el.code == null || el.libelle == null || el.code.trim() == "" || el.libelle.trim() == "")) {
+        fichier = true;
+      } if (fichier) {
+        valid = true;
+      } else {
+        valid = false;
+      }
+      return valid;
+    },
     goBack() {
       router.get(route("etablissements.index"));
       console.log();

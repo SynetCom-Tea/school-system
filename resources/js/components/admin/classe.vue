@@ -77,6 +77,7 @@
                         <v-autocomplete
                             :items="niveaux"
                             v-model="classe.niveau"
+                            @update:modelValue="submitForm(classe)"
                             class="mt-2"
                             :item-title="formatNiveauLabel"
                             item-value="id"
@@ -85,10 +86,10 @@
                         ></v-autocomplete>
                         </v-col>
                         <v-col cols="4">
-                        <TextField label="Code salle" class="mt-2"  :isRequired="true" placeholder="Code salle" required @change="verify(classe)" v-model="classe.code"></TextField>
+                        <TextField label="Code salle" class="mt-2"  :isRequired="true" placeholder="Code salle" required @update:modelValue="submitForm(classe)" v-model="classe.code"></TextField>
                         </v-col>
                         <v-col cols="4">
-                        <TextField label="Libelle salle" class="mt-2" :isRequired="true" placeholder="Libelle salle" required v-model="classe.libelle" @update:modelValue="submitForm"></TextField>
+                        <TextField label="Libelle salle" class="mt-2" :isRequired="true" placeholder="Libelle salle" required v-model="classe.libelle" @update:modelValue="submitForm(classe)"></TextField>
                         </v-col>
                         <v-col cols="1">
                             <br />
@@ -120,41 +121,12 @@
                                 <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
                             </Button>
                             </v-col>
-                        <!-- <v-col offset-md="11" md="1">
-                            <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
-                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                            </v-btn>
-                        </v-col> -->
                     </v-row>
                 </v-card-text>
 
             </v-card>
             <br>
-            <!-- <v-row class="text-center ml-3 mb-3"
-            ><v-col cols="auto">
-                <Button
-                type="submit"
-                title="Enregistrer cette étape"
-                nameButton="Enregistrer"
-                variant="flat"
-                @click="submitForm"
-                density="comfortable"
-                class="text-center"
-                :isBlock="true"
-                size="large"
-                style="text-transform: none"
-                >
-                </Button> </v-col
-            ></v-row> -->
         </v-card>
-        <!-- <v-row>
-            <v-col md="5"></v-col>
-            <v-col md="4">
-                <v-btn type="submit" title="enregistrer" color="info">
-                    Enregistrer
-                </v-btn>
-            </v-col>
-        </v-row> -->
         </v-container>
         <br>
     </form>
@@ -199,50 +171,34 @@
                 this.addRow()
             }
         },
-        submitForm() {
-            // if (this.isValid()) {
-                this.$emit('formSubmitted', this.form);
-            //     this.$swal.fire({
-            //         title: 'Réussi',
-            //         text: "Mise à jour réussi avec succes!",
-            //         icon: 'success',
-            //         confirmButtonText: 'OK',
-            //     });
-            //     // this.$swal("Enregistrement réussi avec succes!")
-            // }else{
-            //     // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-            //     this.$swal.fire({
-            //         title: 'Erreur',
-            //         text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-            //         icon: 'warning',
-            //         confirmButtonText: 'OK',
-            //     });
-
-            // }
+        async submitForm(element) {
+            await this.verify(element)
+            await this.isValid()
+            this.$emit('formSubmitted', this.form);
+            this.$emit("classeFormValid", this.isValid());
         },
-        // isValid() {
-        //     let fichier = false
-        //     let valid = false
+        async isValid() {
+            let fichier = false
+            let valid = false
+            if(this.importation && this.form.fichier_classe != null){
+                fichier = true
+            }else if(!this.importation && !this.form.classes.find((el) => {
+                if(this.type == '1' || this.type == '2'){
+                    return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
+                }else{
+                    return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
+                }}))
+            {
+                fichier = true
+            }
 
-        //     if(this.importation && this.form.fichier_classe != null){
-        //         fichier = true
-        //     }else if(!this.importation && !this.form.classes.find((el) => {
-        //         if(this.type == '1' || this.type == '2'){
-        //             return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
-        //         }else{
-        //             return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
-        //         }}))
-        //     {
-        //         fichier = true
-        //     }
-
-        //     if(fichier){
-        //         valid = true
-        //     }else{
-        //         valid = false
-        //     }
-        //     return valid
-        // },
+            if(fichier){
+                valid = true
+            }else{
+                valid = false
+            }
+            return valid
+        },
         goBack() {
             router.get(route('etablissements.index'))
             console.log()
@@ -261,11 +217,9 @@
         },
         async verify(element) {
             const array = this.form.classes.filter(el => el.code !== null && el.code == element.code)
-
             if (array.length > 1) {
                 this.removeRow(element)
                 this.$swal("L'élément existe déjà !")
-                // this.$alert.error("L'élément existe déjà !");
             }
         },
     },

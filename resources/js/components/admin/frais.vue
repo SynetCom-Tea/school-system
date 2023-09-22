@@ -99,6 +99,7 @@
                                 :items="tabsFilieres"
                                 class="mt-2"
                                 v-model="frais.filiere"
+                                @update:modelValue="submitForm(frais)"
                                 item-value="id"
                                 item-title="code"
                                 chips
@@ -113,6 +114,7 @@
                                 :items="niveaux"
                                 class="mt-2"
                                 v-model="frais.niveau"
+                                @update:modelValue="submitForm(frais)"
                                 :item-title="formatNiveauLabel"
                                 item-value="id"
                                 chips
@@ -130,7 +132,7 @@
                                 :items="['Frais d\inscription','Frais de formation','Frais de cantine','Frais de transport']"
                                 class="mt-2"
                                 v-model="frais.type_frais"
-                                @update:modelValue="verify(frais)"
+                                @update:modelValue="submitForm(frais)"
                                 color="blue-grey-lighten-2"
                                 label="Frais"
                             ></Autocomplete>
@@ -138,7 +140,7 @@
                         </v-col>
                         <v-col md="2">
 
-                            <TextField label="Montant frais" class="mt-2"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant" @update:modelValue="submitForm"></TextField>
+                            <TextField label="Montant frais" class="mt-2"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant" @update:modelValue="submitForm(frais)"></TextField>
                         </v-col>
                         <v-col md="1" >
                             <br>
@@ -242,46 +244,27 @@
                 this.addRow()
             }
         },
-        submitForm() {
-            // Empêche l'envoi du formulaire par défaut
-            event.preventDefault();
-            // Valide le formulaire avant de l'envoyer
-            // if (this.isValid()) {
-                this.$emit('formSubmitted', this.form);
-            //     this.$swal.fire({
-            //         title: 'Réussi',
-            //         text: "Mise à jour réussi avec succes!",
-            //         icon: 'success',
-            //         confirmButtonText: 'OK',
-            //     });
-            //     // this.$swal("Enregistrement réussi avec succes!")
-            // }else{
-            //     // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-            //     this.$swal.fire({
-            //         title: 'Erreur',
-            //         text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-            //         icon: 'warning',
-            //         confirmButtonText: 'OK',
-            //     });
-
-            // }
+        async submitForm(element) {
+            await this.verify(element)
+            await this.isValid()
+            this.$emit('formSubmitted', this.form);
+            this.$emit("fraisFormValid", this.isValid());
         },
-        isValid() {
+        async isValid() {
             let fichier = false
             let valid = false
-
             if(this.importation && this.form.fichier_frais != null){
                 fichier = true
             }else if(!this.importation && !this.form.frais.find((el) => {
-
-                    return el.niveau == null || el.niveau == '' || el.libelle == null || el.libelle == '';
-
-
-                }))
+                if(this.type == '1' || this.type == '2'){
+                    return el.niveau == null || el.niveau == '' || el.type_frais == '' || el.type_frais == null || el.montant == null || el.montant.trim() == '';
+                }else{
+                    return el.filiere == null || el.filiere == '' || el.niveau == null || el.niveau == '' || el.type_frais == null || el.type_frais == '' || el.montant == null || el.montant.trim() == '';
+                }
+            }))
             {
                 fichier = true
             }
-
             if(fichier){
                 valid = true
             }else{
@@ -299,8 +282,7 @@
                 etablissement:this.$page.props.admin_etablissement.etablissement_id,
                 filiere: null,
                 niveau: null,
-                code: null,
-                libelle: null,
+                type_frais: null,
                 montant: null,
                 before: null,
                 after: null
@@ -310,12 +292,15 @@
             this.form.frais = this.form.frais.filter((el) => el !== id)
         },
         async verify(element) {
-            const array = this.form.frais.filter(el => el.code !== null && el.niveau == element.niveau && el.frais == element.frais)
-
+            let array = []
+            if(this.type == '1' || this.type == '2'){
+                array = this.form.frais.filter(el => el.code !== null && el.niveau == element.niveau && el.type_frais == element.type_frais)
+            }else{
+                array = this.form.frais.filter(el => el.code !== null && el.filiere == element.filiere && el.niveau == element.niveau && el.type_frais == element.type_frais)
+            }
             if (array.length > 1) {
                 this.removeRow(element)
                 this.$swal("L'élément existe déjà !")
-                // this.$alert.error("L'élément existe déjà !");
             }
         },
     },
@@ -331,9 +316,6 @@
         }
     },
     mounted() {
-        //
-        console.log('resultat',this.tabsFilieres)
-
         this.addRow()
     },
   }
