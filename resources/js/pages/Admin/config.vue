@@ -39,7 +39,7 @@
 
                 <!-- Tabs de la Faculté pour toute les sections -->
                 <v-card-text v-show ="type == '4' && !loadingWizard">
-                    <faculte-form @formSubmitted="getFaculteForm" :type="type"  />
+                    <faculte-form @formSubmitted="getFaculteForm" :type="type" @faculteFormValid="faculteFormValid" />
                 </v-card-text>
                 <!-- Tabs de la Faculté pour toute les sections -->
 
@@ -71,7 +71,7 @@
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" />
                 </v-card-text>
                 <v-card-text v-show="type=='3' && lmd != null && !loadingWizard">
-                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
+                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" @ueFormValid="ueFormValid" />
                 </v-card-text>
                 <v-card-text v-show="type=='3'&& lmd == null && !loadingWizard">
                     <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
@@ -82,7 +82,7 @@
       <tab-content :title="tabTitle6" v-if="(type=='3' || type=='4') && lmd != null" :before-change="beforeChange">
         <v-card >
                 <v-card-text v-show="type=='4' && !loadingWizard">
-                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
+                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" @ueFormValid="ueFormValid" />
                 </v-card-text>
                 <v-card-text v-show="type=='3' && !loadingWizard">
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
@@ -234,7 +234,13 @@
       filiereSupFormValid(v){
         this.formValid = v
       },
-      async beforeChange() 
+      faculteFormValid(v){
+        this.formValid = v
+      },
+      ueFormValid(v){
+        this.formValid = v
+      },
+      async beforeChange()
       {
         const isValid = await this.validateTabSwitch(); // Utilisation d'async/await
         if (isValid) {
@@ -246,7 +252,7 @@
             icon: "warning",
             confirmButtonText: "OK",
           });
-          return false; 
+          return false;
         }
       },
       async validateTabSwitch(validationResult,activeTabIndex) {
