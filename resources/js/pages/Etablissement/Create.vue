@@ -108,7 +108,8 @@ export default {
                         item-value="id"
                         item-title="libelle"
                         v-model="form.section"
-                        isMultiple
+                        multiple
+                        ships
                         v-if="form.type_etablissement_id == 2"
                     ></Select>
                     </v-col>

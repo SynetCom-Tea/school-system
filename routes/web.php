@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SalleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EtablissementController;
+use App\Http\Controllers\MatiereController;
 
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
@@ -70,12 +71,15 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('etudiants', EtudiantsController::class);
 Route::resource('annees', AnneeController::class);
-Route::resource('classes', ClasseController::class);
+Route::resource('classes', ClasseController::class)->only(['create', 'update', 'destroy']);
+Route::get('classes/{type}', [ClasseController::class, 'index'])->name('classes.index');
+Route::post('classes/{type}', [ClasseController::class, 'store'])->name('classes.store');
 Route::resource('promotions', AnneeClasseController::class);
 Route::resource('tuteurs', TuteurController::class);
 Route::resource('niveaux', NiveauController::class);
 Route::resource('etablissements', EtablissementController::class);
 Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->name('etablissement.activer');
 Route::resource('inscriptions', InscriptionController::class);
+Route::resource('matieres', MatiereController::class);
 
 require __DIR__ . '/auth.php';

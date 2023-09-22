@@ -15,7 +15,6 @@
        mdiSchool,
        mdiCancel,
        mdiCloseCircle,
-       mdiBookOpenVariant,
        mdiContentSave
     } from '@mdi/js'
     export default {
@@ -32,11 +31,10 @@
             mdiSchool,
             mdiCancel,
             mdiCloseCircle,
-            mdiBookOpenVariant,
             mdiContentSave
         },
         layout: AuthenticatedLayout,
-        props: ["matieres"],
+        props: ["classes","section_id", "niveaux"],
         data() {
             return {
                 icons: {
@@ -52,7 +50,6 @@
                     mdiSchool,
                     mdiCancel,
                     mdiCloseCircle,
-                    mdiBookOpenVariant,
                     mdiContentSave
                 },
                 headers: [
@@ -62,15 +59,16 @@
                         sortable: false,
                         key: 'code',
                     },
-                    { title: 'Libelé', align: 'center', key: 'nom' },
+                    { title: 'Libelé', align: 'center', key: 'libelle' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                dialog_title: 'Création Matière',
+                dialog_title: 'Création Classe',
                 dialog: false,
                 
                 form: useForm({
                     code: '',
-                    nom: '',
+                    libelle: '',
+                    niveau_id: '',
                 }),
                 rules: [
                         value => {
@@ -83,14 +81,15 @@
         methods:{
             create() {
                 this.dialog = true;
-                this.dialog_title = 'Création Matière'
+                this.dialog_title = 'Création Classe'
             },
             editItem(item){
                 //console.log('edit',item) 
-                this.dialog_title = 'Modifier la matière' 
+                this.dialog_title = 'Modifier la classe' 
                 this.form.id = item.id
+                this.form.niveau_id = item.niveau_id
                 this.form.code = item.code
-                this.form.nom = item.nom
+                this.form.libelle = item.libelle
                 this.dialog = true
             },
             deleteItem(item){
@@ -106,7 +105,7 @@
                     }).then((result) => {
                     if (result.isConfirmed) {
                         
-                       this.form.delete(route('matieres.destroy', item.id), {
+                       this.form.delete(route('classes.destroy', item.id), {
                         onFinish: () => {
                             if(this.$page.props.flash?.message?.type == 'error'){
                                 this.$swal({
@@ -139,7 +138,7 @@
             async submit() {
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
-                    this.form.post(route('matieres.store'), {
+                    this.form.post(route('classes.store',this.section_id), {
                         onFinish: () => {
                             //console.log(this.form)
                             this.close()
@@ -149,7 +148,7 @@
                                 iconColor: '#004980',
                                 color: '#004980',
                                 title: 'Enregistrement',
-                                text: 'Matière créée avec succès!',
+                                text: 'Classe créée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -161,15 +160,15 @@
                     
                 }else if(this.form.id && valid) {
                     
-                     const {id,code,nom} = this.form
+                     const {id,code,libelle,niveau_id} = this.form
                     
-                    this.form.put(route('matieres.update', this.form.id), {
+                    this.form.put(route('classes.update', this.form.id), {
                         onFinish: () => {
                            this.close()
                             this.$swal({
                                 icon: 'success',
                                 title: 'Modification',
-                                text: 'Matière modifiée avec succès!',
+                                text: 'Classe modifiée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -183,8 +182,9 @@
             },
             close() {
                 this.form.id = ""
+                this.form.niveau_id = ""
                 this.form.code = ""
-                this.form.nom = ""
+                this.form.libelle = ""
                 this.dialog = false
             }
         }
@@ -194,8 +194,8 @@
     <v-card>
     <Toolbar
       styleToolbar="background-color: white;"
-      :icon="icons.mdiBookOpenVariant"
-      toolbarTitle="Gestion des matières"
+      :icon="icons.mdiGoogleClassroom"
+      toolbarTitle="Gestion des classes"
     ></Toolbar>
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:default="{ isActive }">
@@ -211,13 +211,28 @@
                                     <v-form ref="form">
                                         <v-row>
                                             <v-col cols="12" md="12">
+                                                <Select
+                                                    label="Niveau"
+                                                    :items="niveaux"
+                                                    variant="outlined"
+                                                    item-value="id"
+                                                    item-title="libelle"
+                                                    v-model="form.niveau_id"
+                                                    isRequired
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    >
+                                                </Select>
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="12" md="12">
                                                 <text-field label="Code" placeholder="Code" v-model="form.code" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Libelé" placeholder="Libelé" v-model="form.nom" isRequired :rules="rules"></text-field>
+                                                <text-field label="Libelé" placeholder="Libelé" v-model="form.libelle" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>
@@ -233,7 +248,7 @@
                                 
                     </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des matières" :headers="headers" :items="matieres" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des classes" :headers="headers" :items="classes" :functionOnClickAddButton="create" >
             
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
