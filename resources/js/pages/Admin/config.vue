@@ -57,7 +57,7 @@
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"  />
                 </v-card-text>
                 <v-card-text v-show ="type == '4' && !loadingWizard">
-                    <filiere-form @formSubmitted="getFiliereForm" :type="type" :facultes="formFaculte.facultes"  />
+                    <filiere-form @formSubmitted="getFiliereForm" :type="type" :facultes="formFaculte.facultes" />
                 </v-card-text>
                 <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
                     <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatiereFormValid="niveauMatiereFormValid"/>

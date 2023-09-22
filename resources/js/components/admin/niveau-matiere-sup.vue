@@ -48,6 +48,7 @@
                             item-value="id"
                             :items="tabsFilieres"
                             v-model="form.filiere"
+                            @update:modelValue="submitForm(null,null,null)"
                             chips>
                         </Autocomplete>
                         </v-col>
@@ -58,6 +59,7 @@
                             item-value="id"
                             :items="niveaux"
                             v-model="form.niveau"
+                            @update:modelValue="submitForm(null,null,null)"
                             chips>
                         </Autocomplete>
                         </v-col>
@@ -77,17 +79,17 @@
                                     item-value="id"
                                     :items="uetabs"
                                     v-model="ue.ue"
-                                    @update:modelValue="verifyUe(form.ues[i])"
+                                    @update:modelValue="submitForm(form.ues[i],null,null)"
                                     chips>
                                 </Autocomplete>
                                 </v-col>
                                 <v-col md="2">
 
-                                    <TextField label="credit" class="mt-2" :isRequired="true" placeholder="credit" v-model="form.ues[i].credit" required></TextField>
+                                    <TextField label="credit" class="mt-2" :isRequired="true" placeholder="credit" v-model="form.ues[i].credit" @update:modelValue="submitForm(form.ues[i],null,null)" required></TextField>
                                 </v-col>
                                 <v-col md="2">
 
-                                    <TextField label="Volume horaire"  class="mt-2" :isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" required></TextField>
+                                    <TextField label="Volume horaire"  class="mt-2" :isRequired="true" placeholder="Volume horaire" v-model="form.ues[i].volume_horaire" @update:modelValue="submitForm(form.ues[i],null,null)" required></TextField>
                                 </v-col>
                                 <v-col md="1">
                                     <br>
@@ -122,16 +124,16 @@
                                             item-value="id"
                                             :items="matieres"
                                             chips v-model="ue.matieres[i].matiere"
-                                            @update:modelValue="verify(ue,i, $event)">
+                                            @update:modelValue="submitForm(form.ues[i],i,matiere)">
                                             </Autocomplete>
                                         </v-col>
                                         <v-col md="2">
 
-                                            <TextField label="Coeff" class="mt-2" placeholder="Coeff" :isRequired="true" v-model="ue.matieres[i].coefficient"></TextField>
+                                            <TextField label="Coeff" class="mt-2" placeholder="Coeff" :isRequired="true" v-model="ue.matieres[i].coefficient" @update:modelValue="submitForm(form.ues[i],i,matiere)"></TextField>
                                         </v-col>
                                         <v-col md="2">
 
-                                            <TextField label="VH"  class="mt-2" :isRequired="true" placeholder="VH"  v-model="ue.matieres[i].volume_horaire" @blur="verifySomme(ue,i)"></TextField>
+                                            <TextField label="VH"  class="mt-2" :isRequired="true" placeholder="VH"  v-model="ue.matieres[i].volume_horaire" @update:modelValue="submitForm(form.ues[i],i,matiere)"></TextField>
                                         </v-col>
                                         <v-col md="1">
                                             <br>
@@ -167,14 +169,6 @@
                                         </v-col>
 
                                     </v-row>
-                                    <!-- <v-row>
-
-                                        <v-col offset-md="11" md="1">
-                                            <v-btn variant="outlined" icon @click="addRow(ue)" fab small color="info">
-                                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                                            </v-btn>
-                                        </v-col>
-                                    </v-row> -->
                                 </v-card-text>
                             </v-card>
                         </v-card-text>
@@ -194,44 +188,13 @@
 
                         </v-row>
                         <br>
-                        <!-- <v-row>
-                            <v-col offset-md="11" md="1">
-                                <v-btn variant="outlined" :disabled="uetabs ? (uetabs.length == 0) : true" icon @click="addRowUe" fab small color="info">
-                                    <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                                </v-btn>
-                            </v-col>
-                        </v-row> -->
                     </v-card>
                 </v-card-text>
                 <br>
             </v-card>
             <br>
-            <!-- <v-row class="text-center ml-3 mb-3"
-            ><v-col cols="auto">
-                <Button
-                type="submit"
-                title="Enregistrer cette étape"
-                nameButton="Enregistrer"
-                variant="flat"
-                @click="submitForm"
-                density="comfortable"
-                class="text-center"
-                :isBlock="true"
-                size="large"
-                style="text-transform: none"
-                >
-                </Button> </v-col
-            ></v-row> -->
         </v-card>
             <br>
-            <!-- <v-row>
-                <v-col md="5"></v-col>
-                <v-col md="4">
-                    <v-btn type="submit" title="enregistrer" color="info">
-                        Enregistrer
-                    </v-btn>
-                </v-col>
-            </v-row> -->
         </v-container>
     </form>
 </template>
@@ -268,7 +231,7 @@
         }
         if (type == "first") this.alertFirst = true;
         },
-        verifySomme(ue,i){
+        async verifySomme(ue,i){
             const somme = ue.matieres.reduce((accumulator, currentItem) => {
                 return accumulator + parseFloat(currentItem.volume_horaire);
             }, 0);
@@ -305,31 +268,17 @@
                 this.addRow()
             }
         },
-        submitForm() {
-            // Empêche l'envoi du formulaire par défaut
-            event.preventDefault();
-            // Valide le formulaire avant de l'envoyer
-            if (this.isValid()) {
-                // this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section.libelle == this.section)
-                this.$emit('formSubmitted', this.form);
-                this.$swal.fire({
-                    title: 'Réussi',
-                    text: "Mise à jour réussi avec succes!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-                // this.$swal("Enregistrement réussi avec succes!")
-            }else{
-                // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-                this.$swal.fire({
-                    title: 'Erreur',
-                    text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                });
-            }
+        async submitForm(element,index,matiere) {
+            await this.verify(element,index,matiere)
+            await this.verifyUe(element)
+            await this.verifySomme(element,index)
+            await this.isValid()
+            console.log('isValid',this.isValid())
+            this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section == this.section)
+            this.$emit('formSubmitted', this.form);
+            this.$emit("niveauMatiereSupFormValid", this.isValid());  
         },
-        isValid() {
+        async isValid() {
             // let lmd = false
             // let fichier = false
             // let valid = false
@@ -380,20 +329,23 @@
             ue.matieres = ue.matieres.filter((el) => el !== matiere)
         },
         async verifyUe(element) {
-            const array = this.form.ues.filter(el => el.ue !== null && el.ue == element.ue)
-            if (array.length > 1) {
-                this.removeRowUe(element)
-                this.$swal("L'élément existe déjà !")
-                // this.$alert.error("L'élément existe déjà !");
+            if(element){
+                const array = this.form.ues.filter(el => el.ue !== null && el.ue == element.ue)
+                if (array.length > 1) {
+                    this.removeRowUe(element)
+                    this.$swal("L'élément existe déjà !")
+                    // this.$alert.error("L'élément existe déjà !");
+                }
             }
         },
         async verify(ue,index,matiere) {
-            // console.log('ue',ue,'index',index,'matiere',matiere)
-            const array = ue.matieres.filter(el => el.matiere !== null && el.matiere == matiere)
-            if (array.length > 1) {
-                this.removeRow(ue,ue.matieres[index])
-                this.$swal("L'élément existe déjà !")
-                // this.$alert.error("L'élément existe déjà !");
+            if(matiere){
+                const array = ue.matieres.filter(el => el.matiere !== null && el.matiere == matiere)
+                if (array.length > 1) {
+                    this.removeRow(ue,ue.matieres[index])
+                    this.$swal("L'élément existe déjà !")
+                    // this.$alert.error("L'élément existe déjà !");
+                }
             }
         },
     },
