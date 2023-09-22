@@ -15,7 +15,7 @@ declare module 'vue' {
     VData: typeof import('vuetify/lib')['VData']
     VDataTab: typeof import('vuetify/lib')['VDataTab']
     VDataTable: typeof import('vuetify/labs/VDataTable')['VDataTable']
-    VStepper: typeof import('vuetify/labs/VStepper')['VStepper']
+    VStepper: typeof import('vuetify/lib')['VStepper']
     VStepperHeader: typeof import('vuetify/lib')['VStepperHeader']
     VStepperItem: typeof import('vuetify/lib')['VStepperItem']
     VUtocomplete: typeof import('vuetify/lib')['VUtocomplete']

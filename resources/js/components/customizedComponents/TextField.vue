@@ -32,7 +32,7 @@ export default {
     classResponsive: {
       type: String,
 
-      default: "py-2",
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,
@@ -94,8 +94,17 @@ export default {
 
     return { parentSlots };
   },
+  setup(props, ctx) {
+    const parentSlots = computed(() => Object.keys(ctx.slots));
+
+    return { parentSlots };
+  },
   updated() {},
   computed: {
+    scopedSlots() {
+      return this.$slots;
+    },
+
     scopedSlots() {
       return this.$slots;
     },
@@ -137,6 +146,7 @@ export default {
         <span id="required-field">{{ label }}</span>
       </template>
       <template #label v-else> {{ label }} </template>
+
       <!-- Dynamically inherit slots from parent -->
       <template v-for="slot in parentSlots" #[slot]>
         <slot :name="slot" />

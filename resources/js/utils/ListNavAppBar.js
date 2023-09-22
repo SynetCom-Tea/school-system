@@ -125,19 +125,19 @@ MenuGestion = {
             title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
-            permissions: "manage_system",
+            roles: "manage_system",
         },
         {
             title: "Profil",
             icon: mdiAccount,
             link: "/profile",
-            permissions: "manage_school",
+            roles: "manage_school",
         },
         {
             icon: mdiSchool,
             title: "Établissements",
             link: "/etablissements",
-            permissions: "manage_system",
+            permissions : "manage_system",
         },
         /* {
             title: "Home",
@@ -161,13 +161,13 @@ MenuGestion = {
             title: "Evaluation",
             icon: mdiCogOutline,
             link: "/gestionnote/evaluation",
-        },
+        },*/
         {
             title: "Inscription",
             icon: mdiAccountSchool,
-            link: "/inscriptions/create",
+            link: "/inscriptions",
             permissions: "manage_system",
-        }, */
+        },
     ];
 
     let usersMenu = {
@@ -365,8 +365,6 @@ MenuGestion = {
         ],
     };
     if (page?.roles != "Super-administrateur") {
-        // console.log('hrer')
-
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
     return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin,MenuGestion]

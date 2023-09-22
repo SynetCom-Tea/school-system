@@ -43,7 +43,6 @@ export default {
         dateNaiss: "",
         tuteur_id: "",
       }),
-     
     };
   },
   methods: {
@@ -54,7 +53,7 @@ export default {
     async submit() {
       const { valid } = await this.$refs.form.validate();
       if (valid) {
-         this.form.put(route("etudiants.update", this.form.id), {
+        this.form.put(route("etudiants.update", this.form.id), {
           onFinish: () => {
             this.close();
             this.$swal({
@@ -68,7 +67,7 @@ export default {
               timerProgressBar: true,
             });
           },
-        }); 
+        });
       }
     },
     close() {
@@ -83,29 +82,24 @@ export default {
       this.form.tuteur_id = "";
     },
   },
-  mounted() {
-    
-  },
+  mounted() {},
   created() {
-    const etudiant = this.etudiant
+    const etudiant = this.etudiant;
     this.form.id = etudiant.id;
-      this.form.nom = etudiant.nom;
-      this.form.prenom = etudiant.prenom;
-      this.form.matricule = etudiant.matricule;
-      this.form.tel = etudiant.tel;
-      this.form.mail = etudiant.mail;
-      this.form.sexe = etudiant.sexe;
-      this.form.dateNaiss = etudiant.dateNaiss;
-      this.form.tuteur_id = etudiant.tuteur_id;
-    
+    this.form.nom = etudiant.nom;
+    this.form.prenom = etudiant.prenom;
+    this.form.matricule = etudiant.matricule;
+    this.form.tel = etudiant.tel;
+    this.form.mail = etudiant.mail;
+    this.form.sexe = etudiant.sexe;
+    this.form.dateNaiss = etudiant.dateNaiss;
+    this.form.tuteur_id = etudiant.tuteur_id;
   },
 };
 </script>
 <template>
   <v-card>
-    <page-toolbar :icon="icon.mdiAccountSchool"
-      >Modifier Etudiant</page-toolbar
-    >
+    <Toolbar :icon="icon.mdiAccountSchool" toolbarTitle="Modifier Etudiant"></Toolbar>
     <v-card-text>
       <v-form ref="form">
         <v-row>
@@ -147,48 +141,47 @@ export default {
               :rules="[
                 (v) => !!v || 'Ce champ est requis!',
                 (v) =>
-                  /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) ||
-                  'Adresse Email invalide!',
+                  /^[a-z.-]+@[a-z.-]+\.[a-z]+$/i.test(v) || 'Adresse Email invalide!',
               ]"
             ></text-field>
           </v-col>
           <v-col cols="4" md="4">
             <text-field
-                    label="Téléphone"
-                    placeholder="Téléphone"
-                    v-model="form.tel"
-                    isRequired
-                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  ></text-field>
+              label="Téléphone"
+              placeholder="Téléphone"
+              v-model="form.tel"
+              isRequired
+              :rules="[(v) => !!v || 'Ce champ est requis!']"
+            ></text-field>
           </v-col>
           <v-col cols="4" md="4">
             <text-field
-                    type="date"
-                    label="DateNaissance"
-                    placeholder="DateNaissance"
-                    v-model="form.dateNaiss"
-                    isRequired
-                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  ></text-field>
+              type="date"
+              label="DateNaissance"
+              placeholder="DateNaissance"
+              v-model="form.dateNaiss"
+              isRequired
+              :rules="[(v) => !!v || 'Ce champ est requis!']"
+            ></text-field>
           </v-col>
         </v-row>
         <v-row>
-        <v-col cols="6" md="6">
-          <v-select
-            label="Tuteur"
-            :items="tuteurs"
-            variant="outlined"
-            item-value="id"
-            item-title="nom1"
-            v-model="form.tuteur_id"
-          ></v-select>
-        </v-col>
-        <v-col cols="6" md="6">
-          <v-radio-group label="Genre" inline v-model="form.sexe">
-            <v-radio label="Masculin" value="Masculin"></v-radio>
-            <v-radio label="Féminin" value="Féminin"></v-radio>
-          </v-radio-group>
-        </v-col>
+          <v-col cols="6" md="6">
+            <v-select
+              label="Tuteur"
+              :items="tuteurs"
+              variant="outlined"
+              item-value="id"
+              item-title="nom1"
+              v-model="form.tuteur_id"
+            ></v-select>
+          </v-col>
+          <v-col cols="6" md="6">
+            <v-radio-group label="Genre" inline v-model="form.sexe">
+              <v-radio label="Masculin" value="Masculin"></v-radio>
+              <v-radio label="Féminin" value="Féminin"></v-radio>
+            </v-radio-group>
+          </v-col>
         </v-row>
       </v-form>
     </v-card-text>

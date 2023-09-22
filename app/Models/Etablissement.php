@@ -15,7 +15,7 @@ class Etablissement extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'email', 'adresse','type_etablissement_id', 'telephone', 'ville', 'logo', 'statut'];
+    protected $fillable = ['name', 'email', 'adresse','type_etablissement_id','systeme_lmd_id', 'telephone', 'ville', 'logo'];
 
     public function type_etablissement(): BelongsTo
     {

@@ -20,14 +20,32 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
+    public function getUsersByCategory($params)
+    {
+        $data = null;
+        $list = [];
+        $authUser =  Auth::user();
+        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        if ($params == "organizationUsers") {
+            if ($nameRole == 'Administrateur') {
+                $list = User::where('etablissement_id', (int)$authUser->etablissement_id)->get();
+            }
+        }
+        return $list ?? [];
+    }
     public function index(Request $request)
     {
+        $tes = Auth::user();
+        dump('connec:', $tes->roles[0]->name);
+        dump('list:', User::where('etablissement_id', (int)$tes->etablissement_id)->get());
+        dd('u:', User::all());
         return Inertia::render('User/Index', [
             'users' => User::where('user_id', Auth::user()->id)->get()
         ]);
@@ -74,7 +92,7 @@ class UserController extends Controller
                 'apprenant_id' => $request->apprenant_id
             ]);
             if ($request->section) {
-                $user->etablissement_section_id = EtablissementSection::where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->section)->get()[0]->id;
+                $user->etablissement_section_id = DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->section)->get()[0]->id;
             }
             foreach ($request->roles as $role) {
                 $permissions = PermissionRole::where('role_id', $role)->where('user_id', Auth::user()->id)->get();
@@ -82,6 +100,7 @@ class UserController extends Controller
             foreach ($permissions as $permission) {
                 $permis[] = $permission->permission_id;
             }
+            $user->syncRoles($request->roles);
             $user->syncPermissions($permis);
             if ($request->etablissement_id) {
                 $etablissement = Etablissement::find($request->etablissement_id);
@@ -105,9 +124,9 @@ class UserController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function NotFoud(Request $request)
     {
-        //
+        return Inertia::render('Page');
     }
 
     /**

@@ -30,7 +30,7 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "ml-2 py-2",
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,
@@ -112,8 +112,6 @@ export default {
       :density="density"
       v-bind="$attrs"
       :custom-filter="customFilter"
-      :item-title="itemTitle"
-      :item-value="itemValue"
       :style="style"
       :placeholder="placeholder"
       :rules="rules"

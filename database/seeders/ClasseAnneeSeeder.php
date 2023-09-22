@@ -15,18 +15,33 @@ class ClasseAnneeSeeder extends Seeder
     {
         ClasseAnnee::create([
 
-            'classe_id' => 1,
-            'annee_id' => 1,
-        ]);
-
-        ClasseAnnee::create([
-            'classe_id' => 2,
-            'annee_id' => 1,
-        ]);
-
-        ClasseAnnee::create([
             'classe_id' => 3,
-            'annee_id' => 1,
+            'annee_id' => 2,
+        ]);
+
+        ClasseAnnee::create([
+            'classe_id' => 9,
+            'annee_id' => 2,
+        ]);
+
+        ClasseAnnee::create([
+            'classe_id' => 12,
+            'annee_id' => 2,
+        ]);
+        ClasseAnnee::create([
+
+            'classe_id' => 16,
+            'annee_id' => 2,
+        ]);
+
+        ClasseAnnee::create([
+            'classe_id' => 17,
+            'annee_id' => 2,
+        ]);
+
+        ClasseAnnee::create([
+            'classe_id' => 25,
+            'annee_id' => 2,
         ]);
     }
 }

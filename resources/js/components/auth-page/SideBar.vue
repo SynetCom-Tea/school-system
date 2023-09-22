@@ -1,27 +1,22 @@
 <template>
-  <div style="height: 100%">
+<div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
-      <div class="app-bar-content">
-        <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
-        <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
-        <div class="d-flex align-center ml-auto" id="profile-bar">
-          <v-list-item
-            @click="goToProfilePage()"
-            lines="two"
-            :title="getUserProfile.name"
-            :subtitle="getUserProfile.typeUser"
-          >
-            <template v-slot:prepend>
-              <v-icon size="22" :icon="icons.mdiAccount"></v-icon>
-            </template>
-          </v-list-item>
+        <div class="app-bar-content">
+            <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
+            <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
+            <div class="d-flex align-center ml-auto" id="profile-bar">
+                <v-list-item @click="goToProfilePage()" lines="two" :title="getUserProfile.name" :subtitle="getUserProfile.typeUser">
+                    <template v-slot:prepend>
+                        <v-icon size="22" :icon="icons.mdiAccount"></v-icon>
+                    </template>
+                </v-list-item>
+            </div>
+            &nbsp; &nbsp;
+            <div class="d-flex">
+                <SiteWebButton />
+                <MenuTopButton />
+            </div>
         </div>
-        &nbsp; &nbsp;
-        <div class="d-flex">
-          <SiteWebButton />
-          <MenuTopButton />
-        </div>
-      </div>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -263,36 +258,44 @@
         </div>
       </div>
     </v-navigation-drawer>
-  </div>
+</div>
 </template>
 
 <script>
-import { router } from "@inertiajs/vue3";
 import {
-  mdiChevronLeft,
-  mdiAccount,
-  mdiSchool,
-  mdiCogOutline,
-  mdiLogout,
-  mdiMenu,
-} from "@mdi/js";
-import { listMenus } from "../../utils/ListNavAppBar.js";
-import { Vue3Marquee } from "vue3-marquee";
-import { getTypeEtablissementById } from "../../utils/commonFunctions.js";
-import SiteWebButton from "./SiteWebButton.vue";
-import MenuTopButton from "./MenuTopButton.vue";
-export default {
-  name: "Sidebar",
-  components: {
-    mdiAccount,
+    router
+} from "@inertiajs/vue3";
+import {
     mdiChevronLeft,
+    mdiAccount,
+    mdiSchool,
     mdiCogOutline,
     mdiLogout,
     mdiMenu,
-    mdiSchool,
-    MenuTopButton,
-    SiteWebButton,
-  },
+} from "@mdi/js";
+import {
+    listMenus
+} from "../../utils/ListNavAppBar.js";
+import {
+    Vue3Marquee
+} from "vue3-marquee";
+import {
+    getTypeEtablissementById
+} from "../../utils/commonFunctions.js";
+import SiteWebButton from "./SiteWebButton.vue";
+import MenuTopButton from "./MenuTopButton.vue";
+export default {
+    name: "Sidebar",
+    components: {
+        mdiAccount,
+        mdiChevronLeft,
+        mdiCogOutline,
+        mdiLogout,
+        mdiMenu,
+        mdiSchool,
+        MenuTopButton,
+        SiteWebButton,
+    },
 
   data: () => {
     return {
@@ -312,53 +315,54 @@ export default {
       },
       username: "",
 
-      rail: true,
-    };
-  },
-  created() {
-    this.getListMenus;
-    this.getUserProfile;
-    this.getOrganizationProfile;
-    listMenus(this.$page.props);
-  },
-  mounted() {
-    // console.log("ici", this.$page.props);
-    axios.interceptors.response.use(
-      function (response) {
-        // console.log("response:", response);
-        return response;
-      },
-      function (error) {
-        // console.log("error:", error);
-        if (error.response?.status === 403) {
-          alert(
-            "Session expirée. Vous serez redirigé(e) vers la page d'authentification!!"
-          );
-          window.location.href = "/login";
-        }
-        return Promise.reject(error);
-      }
-    );
-    this.$gates.setRoles(this.$page.props.roles);
-    this.$gates.setPermissions(this.$page.props.permissions);
-    // console.log("console sections", this.$page.props.sections);
-  },
-  computed: {
-    getOrganizationProfile() {
-      let fullName;
-      let organization;
-      let user = this.$page.props.auth ? this.$page.props.auth.user : null;
-      let sections, allSections;
-      if (this.$page.props && this.$page.props.admin_etablissement) {
-        organization = this.$page.props.admin_etablissement.etablissement;
-        if (this.$page.props?.sections[0] && this.$page.props?.sections[0].sections) {
-          sections = this.$page.props.sections[0].sections;
-        }
-      }
+            rail: true,
+        };
+    },
+    created() {
+        console.log("ici", this.$page.props.roles[0]);
+        this.getListMenus;
+        this.getUserProfile;
+        this.getOrganizationProfile;
+        listMenus(this.$page.props);
+    },
+    mounted() {
+        console.log("ici", this.$page.props.roles.name);
+        axios.interceptors.response.use(
+            function (response) {
+                // console.log("response:", response);
+                return response;
+            },
+            function (error) {
+                // console.log("error:", error);
+                if (error.response ?.status === 403) {
+                    alert(
+                        "Session expirée. Vous serez redirigé(e) vers la page d'authentification!!"
+                    );
+                    window.location.href = "/login";
+                }
+                return Promise.reject(error);
+            }
+        );
+        this.$gates.setRoles(this.$page.props.roles);
+        this.$gates.setPermissions(this.$page.props.permissions);
+        // console.log("console sections", this.$page.props.sections);
+    },
+    computed: {
+        getOrganizationProfile() {
+            let fullName;
+            let organization;
+            let user = this.$page.props.auth ? this.$page.props.auth.user : null;
+            let sections, allSections;
+            if (this.$page.props && this.$page.props.admin_etablissement) {
+                organization = this.$page.props.admin_etablissement.etablissement;
+                if (this.$page.props ?.sections[0] && this.$page.props ?.sections[0].sections) {
+                    sections = this.$page.props.sections[0].sections;
+                }
+            }
 
-      if (sections && sections.length == 4) {
-        allSections = "Toutes les Sections";
-      }
+            if (sections && sections.length == 4) {
+                allSections = "Toutes les Sections";
+            }
 
       if (this.$page.props.admin_etablissement == null) {
         organization = {
@@ -369,18 +373,18 @@ export default {
       let roles = this.$page.props?.roles ? this.$page.props?.roles[0] : null;
       let organizationName = allSections? allSections: getTypeEtablissementById(organization.type_etablissement_id);
 
-      fullName = user?.nom + " " + user?.prenom;
-      let item = {
-        typeUser: roles,
-        organization: {
-          name: organization.name,
-          type: organizationName ?? organization.type,
-        },
-        photo: {
-          file: organization.logo ?? "team.png",
-          title: "photo de l'établissement",
-        },
-      };
+            fullName = user ?.nom + " " + user ?.prenom;
+            let item = {
+                typeUser: roles,
+                organization: {
+                    name: organization.name,
+                    type: organizationName ?? organization.type,
+                },
+                photo: {
+                    file: organization.logo ?? "team.png",
+                    title: "photo de l'établissement",
+                },
+            };
 
       return item;
     },
@@ -435,14 +439,17 @@ export default {
       let btnToggleIcon = document.getElementById("btn-toggle-icon");
       this.menuCompact.hidden = !this.menuCompact.hidden;
 
-      if (this.menuCompact.hidden) {
-        return (btnToggleIcon.style.transform = "rotateY(0deg)");
-      } else {
-        return (btnToggleIcon.style.transform = "rotateY(180deg)");
-      }
-      this.rail = !this.rail;
+            if (this.menuCompact.hidden) {
+                return (btnToggleIcon.style.transform = "rotateY(0deg)");
+            } else {
+                return (btnToggleIcon.style.transform = "rotateY(180deg)");
+            }
+            this.rail = !this.rail;
+        },
     },
-  },
+    mounted(){
+        console.log(this.$page.props.roles)
+    }
 };
 // <v-list density="compact" v-model:opened="open">
 </script>

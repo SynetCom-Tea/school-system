@@ -1,5 +1,5 @@
 <script>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 
 export default {
   props: {
@@ -30,20 +30,20 @@ export default {
     },
     classResponsive: {
       type: String,
-      default: "ml-2 py-2",
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,
       required: false,
     },
-    itemTitle: {
-      type: String,
-      required: false,
-    },
-    itemValue: {
-      type: String,
-      required: false,
-    },
+    // itemTitle: {
+    //   type: String,
+    //   required: false,
+    // },
+    // itemValue: {
+    //   type: String,
+    //   required: false,
+    // },
     baseColorValue: {
       type: String,
       default: "primary",
@@ -86,9 +86,16 @@ export default {
     style: { type: Object, required: false },
     isRequired: { type: Boolean, default: false },
   },
-  setup() {},
+  setup(props, ctx) {
+    const parentSlots = computed(() => Object.keys(ctx.slots));
+
+    return { parentSlots };
+  },
   updated() {},
   computed: {
+    scopedSlots() {
+      return this.$slots;
+    },
     modelValue: {
       get() {
         return this.vModel;
@@ -115,31 +122,30 @@ export default {
     :max-height="maxHeightResponsive"
     :max-width="maxWidthResponsive"
   >
-  <v-autocomplete
-    :items="items"
-    :variant="variant"
-    :hint="hint"
-    :density="density"
-    v-bind="$attrs"
-    :custom-filter="customFilter"
-    :item-title="itemTitle"
-    :item-value="itemValue"
-    :style="style"
-    :class="class"
-    :placeholder="placeholder"
-    :rules="rules"
-    :prepend-inner-icon="icon"
-    :base-color="baseColorValue"
-    :color="colorValue"
-  >
-    <template #label v-if="isRequired">
-      <span id="required-field">{{ label }}</span>
-    </template>
-    <template #label v-else>
-      {{ label }}
-    </template>
-    <slot />
-  </v-autocomplete>
+    <v-autocomplete
+      :items="items"
+      :variant="variant"
+      :hint="hint"
+      :density="density"
+      v-bind="$attrs"
+      :custom-filter="customFilter"
+      :style="style"
+      :class="class"
+      :placeholder="placeholder"
+      :rules="rules"
+      :prepend-inner-icon="icon"
+      :base-color="baseColorValue"
+      :color="colorValue"
+    >
+      <template #label v-if="isRequired">
+        <span id="required-field">{{ label }}</span>
+      </template>
+      <template #label v-else>
+        {{ label }}
+      </template>
+
+      <slot />
+    </v-autocomplete>
   </v-responsive>
 </template>
 <style scoped>

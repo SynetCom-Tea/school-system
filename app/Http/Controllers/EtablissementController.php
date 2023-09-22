@@ -76,13 +76,13 @@ class EtablissementController extends Controller
         }
 
         $user = [
+            'user_id'=>1,
             'nom' => $request->nom, 'prenom' => $request->prenom, 'email' => $request->mail,
             'password' => $request->password ?? Hash::make('password'), 'etablissement_id' => $ets->id
         ];
         $admin = User::create($user);
         $admin->givePermissionTo('manage_system');
-        Auth::attempt(["email" => $admin->mail, "password" => $admin->password]);
-
+        $admin->syncRoles('Administrateur');
         return redirect()->route('etablissements.index');
     }
 

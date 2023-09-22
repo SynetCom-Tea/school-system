@@ -24,20 +24,25 @@ class EtablissementSectionSeeder extends Seeder
                 'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 1,
+                'systeme_lmd_id' => NULL,
             ),
             1 =>
             array(
                 'id' => 2,
                 'etablissement_id' => 1,
+                'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 2,
+                'systeme_lmd_id' => NULL,
             ),
             2 =>
             array(
                 'id' => 3,
                 'etablissement_id' => 1,
+                'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 3,
+                'systeme_lmd_id' => NULL,
             ),
             3 =>
             array(
@@ -45,6 +50,7 @@ class EtablissementSectionSeeder extends Seeder
                 'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 4,
+                'systeme_lmd_id' => NULL,
             ),
             // 1 =>
             // array(

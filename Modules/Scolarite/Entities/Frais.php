@@ -6,13 +6,14 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Frais extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
 
-    protected $fillable = ['libele','montant','niveau_id'];
-    
+    protected $fillable = ['libelle', 'montant', 'niveau_id'];
+
     /* public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);

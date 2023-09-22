@@ -18,55 +18,55 @@ class EnseignantSeeder extends Seeder
             'matricule' => 'Mat/093',
             'nom' => 'Sani Abou',
             'prenom' => 'Mahamadou',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
         Enseignant::create([
             'matricule' => 'Mat/094',
             'nom' => 'Djafar Alambouzou',
             'prenom' => 'Madougou',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
         Enseignant::create([
             'matricule' => 'Mat/095',
             'nom' => 'Karim Tankari',
             'prenom' => 'Alfari',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1
         ]);
         Enseignant::create([
             'matricule' => 'Mat/043',
             'nom' => 'Sani Chipkaou',
             'prenom' => 'Kadidja',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
         Enseignant::create([
             'matricule' => 'Mat/013',
             'nom' => 'Wahab Dan Takoussa',
             'prenom' => 'Rouwaida',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
         Enseignant::create([
             'matricule' => 'Mat/099',
             'nom' => 'Garba Labizé',
             'prenom' => 'Bello',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
         Enseignant::create([
             'matricule' => 'Mat/063',
             'nom' => 'Djibo Dan Malam',
             'prenom' => 'Mayaki',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
         Enseignant::create([
             'matricule' => 'Mat/066',
             'nom' => 'Nourou Hainikoy',
             'prenom' => 'Bouchira',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
         Enseignant::create([
             'matricule' => 'Mat/055',
             'nom' => 'Nafiou Bonkaney',
             'prenom' => 'Wazir',
-            'etablissement_id'=>3,
+            'etablissement_id' => 1,
         ]);
     }
 }
