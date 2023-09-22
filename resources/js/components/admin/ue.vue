@@ -40,7 +40,7 @@
 
             <v-row>
                 <v-col>
-                    <v-switch label="Souhaiterez-vous importez le fichier des unités des enseignements ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                    <v-switch label="Souhaiterez-vous importez le fichier des unités des enseignements ?"  v-model="importation"  @update:modelValue="submitForm(null)" color="info" inset></v-switch>
                 </v-col>
                 <v-col v-if="importation">
                     <v-file-input
@@ -48,6 +48,7 @@
                         clearable
                         required
                         v-model="form.fichier_ue"
+                        @update:modelValue="submitForm(null)"
                         label="Charger le fichier des UES"
                         variant="solo-inverted"
                     ></v-file-input>
@@ -67,10 +68,10 @@
         <v-card-text v-if="!importation">
             <v-row disabled :key="ue.id" v-for="(ue, i) in form.ues">
                 <v-col md="4">
-                    <TextField label="Code UE"  class="mt-2" :isRequired="true" placeholder="Code UE" @change="verify(ue)" v-model="ue.code"></TextField>
+                    <TextField label="Code UE"  class="mt-2" :isRequired="true" placeholder="Code UE" @change="verify(ue)" v-model="ue.code"  @update:modelValue="submitForm(ue)"></TextField>
                 </v-col>
                 <v-col md="4">
-                    <TextField label="Nom de l'UE" class="mt-2"  :isRequired="true" placeholder="Nom de l'UE" v-model="ue.libelle"></TextField>
+                    <TextField label="Nom de l'UE" class="mt-2"  :isRequired="true" placeholder="Nom de l'UE" v-model="ue.libelle"  @update:modelValue="submitForm(ue)"></TextField>
                 </v-col>
                 <v-col md="1">
                     <br>
@@ -197,6 +198,8 @@
                 });
             // console.log("L'indice de la ligne manquante est:", missingDataIndex);
             } else {
+                this.form.fichier_ue = null
+                this.submitForm(null)
                 const ligne=missingDataIndex.rowIndex+2;
                 const colonne=missingDataIndex.columnIndex+1;
                 this.$swal.fire({
@@ -213,6 +216,8 @@
             }
 
             }else{
+                this.form.fichier_ue = null
+                this.submitForm(null)
                 this.$swal.fire({
                                 title: "Erreur",
                                 text:
@@ -291,34 +296,17 @@
                 this.addRow()
             }
         },
-        submitForm() {
-            // Empêche l'envoi du formulaire par défaut
-            event.preventDefault();
-            // Valide le formulaire avant de l'envoyer
-            if (this.isValid()) {
-                this.$emit('formSubmitted', this.form);
-                this.$swal.fire({
-                    title: 'Réussi',
-                    text: "Mise à jour réussi avec succes!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-                // this.$swal("Enregistrement réussi avec succes!")
-            }else{
-                // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-                this.$swal.fire({
-                    title: 'Erreur',
-                    text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                });
-
-            }
+        async submitForm(element) {
+            await this.verify(element)
+            await this.isValid()
+            console.log('isValid',this.isValid())
+            this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section == this.section)
+            this.$emit('formSubmitted', this.form);
+            this.$emit("ueFormValid", this.isValid());
         },
         isValid() {
             let fichier = false
             let valid = false
-
             if(this.importation && this.form.fichier_ue != null){
                 fichier = true
             }else if(!this.importation && !this.form.ues.find((el) => {
@@ -352,12 +340,13 @@
             this.form.ues = this.form.ues.filter((el) => el !== id)
         },
         async verify(element) {
-            const array = this.form.ues.filter(el => el.code !== null && el.code == element.code)
-
-            if (array.length > 1) {
-                this.removeRow(element)
-                this.$swal("L'élément existe déjà !")
-                // this.$alert.error("L'élément existe déjà !");
+            if (element) {
+                const array = this.form.ues.filter(el => el.code !== null && el.code == element.code)
+                if (array.length > 1) {
+                    this.removeRow(element)
+                    this.$swal("L'élément existe déjà !")
+                    // this.$alert.error("L'élément existe déjà !");
+                }
             }
         },
     },

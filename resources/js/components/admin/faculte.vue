@@ -40,7 +40,7 @@
 
                     <v-row>
                         <v-col>
-                            <v-switch label="Souhaiterez-vous importez le fichier des facultés ?" @update:modelValue="resetForm(importation)" v-model="importation" color="info" inset></v-switch>
+                            <v-switch label="Souhaiterez-vous importez le fichier des facultés ?"  v-model="importation" @update:modelValue="submitForm(null)" color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
 
@@ -49,6 +49,7 @@
                                 clearable
                                 required
                                 v-model="form.fichier_faculte"
+                                @update:modelValue="submitForm(null)"
                                 label="Charger le fichier des facultés"
                                 variant="solo-inverted"
                             ></v-file-input>
@@ -68,11 +69,11 @@
                     <v-row disabled :key="faculte.id" v-for="(faculte, i) in form.facultes">
                         <v-col md="4">
 
-                            <TextField label="Code faculte" class="mt-2"   :isRequired="true" placeholder="Code faculte" required @change="verify(faculte)" v-model="faculte.code"></TextField>
+                            <TextField label="Code faculte" class="mt-2"   :isRequired="true" placeholder="Code faculte" required @change="verify(faculte)" v-model="faculte.code" @update:modelValue="submitForm(faculte)"></TextField>
                         </v-col>
                         <v-col md="4">
 
-                            <TextField label="Nom de la faculte" class="mt-2"   :isRequired="true" placeholder="Nom de la faculte"  v-model="faculte.libelle"></TextField>
+                            <TextField label="Nom de la faculte" class="mt-2"   :isRequired="true" placeholder="Nom de la faculte"  v-model="faculte.libelle" @update:modelValue="submitForm(faculte)"></TextField>
                         </v-col>
                         <v-col md="2" >
                             <br>
@@ -199,6 +200,8 @@
                 });
             // console.log("L'indice de la ligne manquante est:", missingDataIndex);
             } else {
+                this.form.fichier_faculte = null
+                this.submitForm(null)
                 const ligne=missingDataIndex.rowIndex+2;
                 const colonne=missingDataIndex.columnIndex+1;
                 this.$swal.fire({
@@ -215,13 +218,15 @@
             }
 
             }else{
+                this.form.fichier_faculte = null
+                this.submitForm(null)
                 this.$swal.fire({
-                                title: "Erreur",
-                                text:
-                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
-                                icon: "warning",
-                                confirmButtonText: "OK",
-                            });
+                    title: "Erreur",
+                    text:
+                    "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                });
             //   alert('drapppppppp')
             }
 
@@ -293,29 +298,13 @@
                 this.addRow()
             }
         },
-        submitForm() {
-            // Empêche l'envoi du formulaire par défaut
-            event.preventDefault();
-            // Valide le formulaire avant de l'envoyer
-            if (this.isValid()) {
-                this.$emit('formSubmitted', this.form);
-                this.$swal.fire({
-                    title: 'Réussi',
-                    text: "Mise à jour réussi avec succes!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-                // this.$swal("Enregistrement réussi avec succes!")
-            }else{
-                // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-                this.$swal.fire({
-                    title: 'Erreur',
-                    text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                });
-
-            }
+        async submitForm(element) {
+            await this.verify(element)
+            await this.isValid()
+            console.log('isValid',this.isValid())
+            this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section == this.section)
+            this.$emit('formSubmitted', this.form);
+            this.$emit("faculteFormValid", this.isValid());
         },
         isValid() {
             let fichier = false
@@ -354,6 +343,7 @@
             this.form.facultes = this.form.facultes.filter((el) => el !== id)
         },
         async verify(element) {
+            if(element){
             const array = this.form.facultes.filter(el => el.code !== null && el.code == element.code)
 
             if (array.length > 1) {
@@ -361,6 +351,7 @@
                 this.$swal("L'élément existe déjà !")
                 // this.$alert.error("L'élément existe déjà !");
             }
+        }
         },
     },
     mounted() {
