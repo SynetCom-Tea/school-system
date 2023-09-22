@@ -1,35 +1,8 @@
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { useForm } from "@inertiajs/vue3";
-
-import {
-  mdiAccountSchool,
-  mdiPlus,
-  mdiPencil,
-  mdiDelete,
-  mdiPlusCircle,
-  mdiClipboardEditOutline,
-  mdiOfficeBuilding,
-  mdiMail,
-  mdiGoogleClassroom,
-} from "@mdi/js";
-export default {
-  components: {
-    mdiAccountSchool,
-    mdiPlus,
-    mdiPencil,
-    mdiDelete,
-    mdiPlusCircle,
-    mdiClipboardEditOutline,
-    mdiOfficeBuilding,
-    mdiMail,
-    mdiGoogleClassroom,
-  },
-  layout: AuthenticatedLayout,
-  props: ["niveaux"],
-  data() {
-    return {
-      icon: {
+    import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+    import { useForm } from '@inertiajs/vue3';
+    
+    import {
         mdiAccountSchool,
         mdiPlus,
         mdiPencil,
@@ -149,6 +122,8 @@ export default {
                             }else if(this.$page.props.flash?.message?.type == 'success'){
                                 this.$swal({
                                 icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
                                 title: 'Suppression',
                                 text: this.$page.props.flash?.message?.text,
                                 toast: true,
@@ -162,18 +137,6 @@ export default {
                         });
                     }
                 });
-              } else if (this.$page.props.flash?.message?.type == "success") {
-                this.$swal({
-                  icon: "success",
-                  title: "Suppression",
-                  text: this.$page.props.flash?.message?.text,
-                  toast: true,
-                  position: "top-end",
-                  showConfirmButton: false,
-                  timer: 5000,
-                  timerProgressBar: true,
-                });
-              }
             },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
@@ -207,6 +170,8 @@ export default {
                            this.close()
                             this.$swal({
                                 icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
                                 title: 'Modification',
                                 text: 'Matière modifiée avec succès!',
                                 toast: true,
@@ -227,56 +192,7 @@ export default {
                 this.dialog = false
             }
         }
-      });
-    },
-    async submit() {
-      const { valid } = await this.$refs.form.validate();
-      if (!this.form.id && valid) {
-        this.form.post(route("niveaux.store"), {
-          onFinish: () => {
-            //console.log(this.form)
-            this.close();
-
-            this.$swal({
-              icon: "success",
-              title: "Enregistrement",
-              text: "Niveau créé avec succès!",
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 5000,
-              timerProgressBar: true,
-            });
-          },
-        });
-      } else if (this.form.id && valid) {
-        const { id, code, libele } = this.form;
-
-        this.form.put(route("niveaux.update", this.form.id), {
-          onFinish: () => {
-            this.close();
-            this.$swal({
-              icon: "success",
-              title: "Modification",
-              text: "Niveau modifié avec succès!",
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 5000,
-              timerProgressBar: true,
-            });
-          },
-        });
-      }
-    },
-    close() {
-      this.form.id = "";
-      this.form.code = "";
-      this.form.libele = "";
-      this.dialog = false;
-    },
-  },
-};
+    }
 </script>
 <template>
     <v-card>
@@ -333,4 +249,6 @@ export default {
         </v-card-text>
     </v-card>
 </template>
-<style></style>
+<style>
+
+</style>

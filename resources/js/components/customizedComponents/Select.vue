@@ -107,6 +107,8 @@ export default {
   >
     <v-select
       :items="items"
+      :item-title="itemTitle"
+      :item-value="itemValue"
       :variant="variant"
       :hint="hint"
       :density="density"

@@ -60,7 +60,7 @@
                         title: 'Libelé',
                         align: 'start',
                         sortable: false,
-                        key: 'libele',
+                        key: 'libelle',
                     },
                     { title: 'Montant', align: 'center', key: 'montant' },
                     {title: 'Actions', align: 'center', key: 'actions'},
@@ -69,7 +69,7 @@
                 dialog: false,
                 
                 form: useForm({
-                    libele: '',
+                    libelle: '',
                     montant: '',
                     niveau_id: '',
                 }),
@@ -91,7 +91,7 @@
                 this.dialog_title = 'Modifier le frais' 
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
-                this.form.libele = item.libele
+                this.form.libelle = item.libelle
                 this.form.montant = item.montant
                 this.dialog = true
             },
@@ -186,7 +186,7 @@
             close() {
                 this.form.id = ""
                 this.form.niveau_id = ""
-                this.form.libele = ""
+                this.form.libelle = ""
                 this.form.montant = ""
                 this.dialog = false
             }
@@ -198,7 +198,7 @@
     <Toolbar
       styleToolbar="background-color: white;"
       :icon="icons.mdiCurrencyUsd"
-      toolbarTitle="Gestion des classes"
+      toolbarTitle="Gestion des frais"
     ></Toolbar>
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:default="{ isActive }">
@@ -218,8 +218,8 @@
                                                     label="Niveau"
                                                     :items="niveaux"
                                                     variant="outlined"
-                                                    item-value="id"
-                                                    item-title="libelle"
+                                                    itemValue="id"
+                                                    itemTitle="libelle"
                                                     v-model="form.niveau_id"
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
@@ -229,7 +229,7 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Libelé" placeholder="Libelé" v-model="form.libele" isRequired :rules="rules"></text-field>
+                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.libelLe" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>

@@ -12,7 +12,7 @@ class Frais extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['libelle', 'montant', 'niveau_id'];
+    protected $fillable = ['libelle', 'montant', 'niveau_id', 'annee_id', 'etablissement_id'];
 
     /* public function filiere(): BelongsTo
     {

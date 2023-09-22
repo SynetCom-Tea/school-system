@@ -82,6 +82,7 @@
             create() {
                 this.dialog = true;
                 this.dialog_title = 'Création Classe'
+                console.log(this.niveaux)
             },
             editItem(item){
                 //console.log('edit',item) 
@@ -140,7 +141,6 @@
                 if(!this.form.id && valid) {
                     this.form.post(route('classes.store',this.section_id), {
                         onFinish: () => {
-                            //console.log(this.form)
                             this.close()
                             
                             this.$swal({
@@ -167,6 +167,8 @@
                            this.close()
                             this.$swal({
                                 icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
                                 title: 'Modification',
                                 text: 'Classe modifiée avec succès!',
                                 toast: true,
@@ -215,8 +217,8 @@
                                                     label="Niveau"
                                                     :items="niveaux"
                                                     variant="outlined"
-                                                    item-value="id"
-                                                    item-title="libelle"
+                                                    itemValue="id"
+                                                    itemTitle="libelle"
                                                     v-model="form.niveau_id"
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"

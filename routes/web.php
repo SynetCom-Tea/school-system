@@ -85,5 +85,8 @@ Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->na
 Route::resource('inscriptions', InscriptionController::class);
 Route::resource('matieres', MatiereController::class);
 Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
+Route::resource('frais', FraisController::class)->only(['create', 'update', 'destroy']);
+Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
+Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
 
 require __DIR__ . '/auth.php';
