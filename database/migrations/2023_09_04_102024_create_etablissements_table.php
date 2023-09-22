@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name')->nullable();
             $table->string('email')->nullable();
             $table->string('adresse')->nullable();
-            $table->json('telephone')->nullable();
+            $table->string('telephone')->nullable();
             $table->string('ville')->nullable();
             $table->string('logo')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()

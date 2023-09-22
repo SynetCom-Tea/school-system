@@ -45,14 +45,14 @@
                 <hr class="divider" />
                 <div class="links">
                     <v-list density="compact">
-                        <v-list-item class="list-case" v-for="link in getListMenus[0]" :key="link.title" @click="page(link.link)">
+                        <v-list-item class="list-case" v-for="link in getListMenus[0]" :key="link.title"  @click="page(link.link)" >
                             <template v-slot:prepend>
                                 <v-icon :title="link.title" :icon="link.icon"></v-icon>
                             </template>
                             <v-list-item-title class="text-wrap" v-text="link.title"></v-list-item-title>
                         </v-list-item>
                         <!-- <v-list-group :value="getListMenus[1].title"> -->
-                        <v-list-group v-if="$page.props?.roles[0] && $page.props?.roles[0].name == 'Administrateur'" :value="getListMenus[4].title">
+                        <v-list-group v-if="$page.props?.role[0] && $page.props?.role == 'Administrateur'" :value="getListMenus[4].title">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -66,11 +66,10 @@
                                 <template v-slot:prepend>
                                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                                 </template>
-<!-- 24031996 -->
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
-                        <v-list-group :value="getListMenus[1]?.title" v-if="$page.props?.roles[0] && ($page.props?.roles ==  'Super-administrateur' || $page.props?.roles ==  'Administrateur')" >
+                        <v-list-group :value="getListMenus[1]?.title" v-if="$page.props?.role[0] && ($page.props?.role ==  'Super-administrateur' || $page.props?.role ==  'Administrateur')" >
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -89,7 +88,7 @@
                             </v-list-item>
                         </v-list-group>
 
-                        <v-list-group :value="MenuAdmin.title" v-if="$page.props.roles[0].name == 'Administrateur'">
+                        <v-list-group :value="MenuAdmin.title" v-if="$page.props.role == 'Administrateur'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -108,7 +107,7 @@
                             </v-list-item>
                         </v-list-group>
 
-                        <v-list-group :value="getListMenus[2].title" v-if="$page.props.roles[0].name == 'Enseignant'">
+                        <v-list-group :value="getListMenus[2].title" v-if="$page.props.role == 'Enseignant'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -204,7 +203,7 @@ export default {
         this.getOrganizationProfile;
         listMenus(this.$page.props);
     },
-    mounted() {
+    mounted() { 
         // console.log("ici", this.$page.props);
         axios.interceptors.response.use(
             function (response) {
@@ -222,7 +221,7 @@ export default {
                 return Promise.reject(error);
             }
         );
-        this.$gates.setRoles(this.$page.props.roles);
+        this.$gates.setRoles(this.$page.props.role);
         this.$gates.setPermissions(this.$page.props.permissions);
         // console.log("console sections", this.$page.props.sections);
     },
@@ -249,14 +248,14 @@ export default {
                     type: "Super-Admin",
                 };
             }
-            let roles = this.$page.props ?.roles ? this.$page.props ?.roles[0] : null;
+            let role = this.$page.props ?.role ? this.$page.props ?.role[0] : null;
             let organizationName = allSections ?
                 allSections :
                 getTypeEtablissementById(organization.type_etablissement_id);
 
             fullName = user ?.nom + " " + user ?.prenom;
             let item = {
-                typeUser: roles,
+                typeUser: role,
                 organization: {
                     name: organization.name,
                     type: organizationName ?? organization.type,
@@ -274,8 +273,8 @@ export default {
             let organization;
             let user = this.$page.props.auth ? this.$page.props.auth.user : null;
 
-            let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
-            let vRoles = this.$page.props.roles.length>1?'Profil':roles;
+            let role = this.$page.props.role ? this.$page.props.role[0] : null;
+            let vRoles = this.$page.props.role.length>1?'Profil':role;
             firstname = user.nom??'Nom' ;
            lastname= user.prenom??'Preom';
            fullName = firstname + " " + lastname
@@ -291,7 +290,7 @@ export default {
         },
         getListMenus() {
             let list = listMenus(this.$page.props);
-            let role = this.$page.props.roles ? this.$page.props.roles[0] : null;
+            let role = this.$page.props.role ? this.$page.props.role : null;
             this.MenuAdmin = list[5];
             return list;
         },
@@ -327,11 +326,8 @@ export default {
             this.rail = !this.rail;
         },
     },
-    mounted(){
-        console.log(this.$page.props.roles)
-    }
+   
 };
-// <v-list density="compact" v-model:opened="open">
 </script>
 
 <style scoped src="../../../css/side-bar-style.css"></style>

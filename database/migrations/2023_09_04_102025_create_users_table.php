@@ -21,15 +21,12 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
                 ->index()
                 ->references('id')->on('etablissements');
-            $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
-                ->index()
-                ->references('id')->on('etablissement_section');
-            $table->foreignIdFor(\App\Models\User::class)->nullable()
-                ->index()
-                ->references('id')->on('users');
             $table->foreignIdFor(\App\Models\Apprenant::class)->nullable()
                 ->index()
                 ->references('id')->on('apprenants');
+            $table->foreignIdFor(\App\Models\User::class)->nullable()
+                ->index()
+                ->references('id')->on('users');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Enseignant::class)->nullable()
                 ->index()
                 ->references('id')->on('enseignants');
@@ -65,6 +62,18 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Role::class)->nullable()
                 ->index()
                 ->references('id')->on('roles');
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
+        Schema::create('section_users', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
+                ->index()
+                ->references('id')->on('etablissement_section');
+            $table->foreignIdFor(\App\Models\User::class)->nullable()
+                ->index()
+                ->references('id')->on('users');
             $table->timestamps();
             $table->softDeletes();
         });

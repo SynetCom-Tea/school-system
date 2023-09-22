@@ -1,59 +1,374 @@
 <template>
-    <div class="error-container">
-      <div class="error-content">
-        <div class="error-header">
-          <svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 16 16" fill="currentColor">
-            <path fill-rule="evenodd" d="M8 0a8 8 0 110 16A8 8 0 018 0zm0 1a7 7 0 100 14A7 7 0 008 1zm0 7a1 1 0 00-1 1v4a1 1 0 002 0V9a1 1 0 00-1-1z" clip-rule="evenodd"/>
-          </svg>
+<div class="error">
+    <div class="container-floud">
+        <div class="col-xs-12 ground-color text-center">
+            <div class="container-error-404">
+                <img src="404.png" alt="">
+        
+            </div>
+            <br>
+            <br>
+            <!-- <div class="msg">Oops!<span class="triangle"></span></div> -->
+            <h2 class="h1">Désolé! vous n'avez ce droit</h2>
         </div>
-        <div class="error-message">
-          <h1>404 - Page not fo</h1>
-          <p>The page you were looking for doesn't exist.</p>
-          <!-- <router-link to="/">Go back to the homepage</router-link> -->
-        </div>
-      </div>
     </div>
-  </template>
+</div>
+</template>
   
-  <style scoped>
-  .error-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100vh;
-    background-color: #f6f8fa;
-  }
-  
-  .error-content {
-    text-align: center;
-    padding: 30px;
-    background-color: #fff;
-    border-radius: 4px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .error-header {
-    margin-bottom: 20px;
-    svg {
-      fill: #d73a49;
+<style scoped>
+* {
+    font-family: 'PT Sans Caption', sans-serif, 'arial', 'Times New Roman';
+}
+
+/* Error Page */
+.error .clip .shadow {
+    height: 180px;
+    /*Contrall*/
+}
+
+.error .clip:nth-of-type(2) .shadow {
+    width: 130px;
+    /*Contrall play with javascript*/
+}
+
+.error .clip:nth-of-type(1) .shadow,
+.error .clip:nth-of-type(3) .shadow {
+    width: 250px;
+    /*Contrall*/
+}
+
+.error .digit {
+    width: 150px;
+    /*Contrall*/
+    height: 150px;
+    /*Contrall*/
+    line-height: 150px;
+    /*Contrall*/
+    font-size: 120px;
+    font-weight: bold;
+}
+
+.error h2
+
+/*Contrall*/
+    {
+    font-size: 32px;
+}
+
+.error .msg
+
+/*Contrall*/
+    {
+    top: -130px;
+    left: 30%;
+    width: 100px;
+    height: 80px;
+    /* line-height: 80px; */
+    font-size: 29px;
+}
+
+.error span.triangle
+
+/*Contrall*/
+    {
+    top: 10%;
+    right: 0%;
+    border-left: 20px solid #535353;
+    border-top: 15px solid transparent;
+    border-bottom: 85px solid transparent;
+}
+
+.error .container-error-404 {
+    margin-top: 10%;
+    position: relative;
+    height: 250px;
+    padding-top: 40px;
+}
+
+.error .container-error-404 .clip {
+    display: inline-block;
+    transform: skew(-45deg);
+}
+
+.error .clip .shadow {
+
+    overflow: hidden;
+}
+
+.error .clip:nth-of-type(2) .shadow {
+    overflow: hidden;
+    position: relative;
+    box-shadow: inset 20px 0px 20px -15px rgba(150, 150, 150, 0.8), 20px 0px 20px -15px rgba(150, 150, 150, 0.8);
+}
+
+.error .clip:nth-of-type(3) .shadow:after,
+.error .clip:nth-of-type(1) .shadow:after {
+    content: "";
+    position: absolute;
+    right: -8px;
+    bottom: 0px;
+    z-index: 9999;
+    height: 100%;
+    width: 10px;
+    background: linear-gradient(90deg, transparent, rgba(173, 173, 173, 0.8), transparent);
+    border-radius: 50%;
+}
+
+.error .clip:nth-of-type(3) .shadow:after {
+    left: -8px;
+}
+
+.error .digit {
+    position: relative;
+    top: 8%;
+    color: white;
+    background: #07B3F9;
+    border-radius: 50%;
+    display: inline-block;
+    transform: skew(45deg);
+}
+
+.error .clip:nth-of-type(2) .digit {
+    left: -10%;
+}
+
+.error .clip:nth-of-type(1) .digit {
+    right: -20%;
+}
+
+.error .clip:nth-of-type(3) .digit {
+    left: -20%;
+}
+
+.error h2 {
+    color: #A2A2A2;
+    font-weight: bold;
+    padding-bottom: 20px;
+}
+
+.error .msg {
+    position: relative;
+    z-index: 9999;
+    display: block;
+    background: #535353;
+    color: #A2A2A2;
+    border-radius: 50%;
+    font-style: italic;
+}
+
+.error .triangle {
+    position: absolute;
+    z-index: 999;
+    transform: rotate(45deg);
+    content: "";
+    width: 0;
+    height: 0;
+}
+
+/* Error Page */
+@media(max-width: 767px) {
+
+    /* Error Page */
+    .error .clip .shadow {
+        height: 100px;
+        /*Contrall*/
     }
-  }
-  
-  .error-message {
-    h1 {
-      font-size: 36px;
-      color: #333;
+
+    .error .clip:nth-of-type(2) .shadow {
+        width: 80px;
+        /*Contrall play with javascript*/
     }
-    p {
-      font-size: 18px;
-      color: #6a737d;
+
+    .error .clip:nth-of-type(1) .shadow,
+    .error .clip:nth-of-type(3) .shadow {
+        width: 100px;
+        /*Contrall*/
     }
-    router-link {
-      display: block;
-      margin-top: 20px;
-      color: #0366d6;
-      text-decoration: underline;
+
+    .error .digit {
+        width: 80px;
+        /*Contrall*/
+        height: 80px;
+        /*Contrall*/
+        line-height: 80px;
+        /*Contrall*/
+        font-size: 52px;
     }
-  }
-  </style>
-  
+
+    .error h2
+
+    /*Contrall*/
+        {
+        font-size: 24px;
+    }
+
+    .error .msg
+
+    /*Contrall*/
+        {
+        top: -110px;
+        left: 15%;
+        width: 40px;
+        height: 40px;
+        line-height: 40px;
+        font-size: 18px;
+    }
+
+    .error span.triangle
+
+    /*Contrall*/
+        {
+        top: 70%;
+        right: -3%;
+        border-left: 10px solid #535353;
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+    }
+
+    .error .container-error-404 {
+        height: 150px;
+    }
+
+    /* Error Page */
+}
+
+/*--------------------------------------------Framework --------------------------------*/
+
+.overlay {
+    position: relative;
+    z-index: 20;
+}
+
+/*done*/
+.ground-color {
+    background: white;
+}
+
+/*done*/
+.item-bg-color {
+    background: #EAEAEA
+}
+
+/*done*/
+
+/* Padding Section*/
+.padding-top {
+    padding-top: 10px;
+}
+
+/*done*/
+.padding-bottom {
+    padding-bottom: 10px;
+}
+
+/*done*/
+.padding-vertical {
+    padding-top: 10px;
+    padding-bottom: 10px;
+}
+
+.padding-horizontal {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.padding-all {
+    padding: 10px;
+}
+
+/*done*/
+
+.no-padding-left {
+    padding-left: 0px;
+}
+
+/*done*/
+.no-padding-right {
+    padding-right: 0px;
+}
+
+/*done*/
+.no-vertical-padding {
+    padding-top: 0px;
+    padding-bottom: 0px;
+}
+
+.no-horizontal-padding {
+    padding-left: 0px;
+    padding-right: 0px;
+}
+
+.no-padding {
+    padding: 0px;
+}
+
+/*done*/
+/* Padding Section*/
+
+/* Margin section */
+.margin-top {
+    margin-top: 10px;
+}
+
+/*done*/
+.margin-bottom {
+    margin-bottom: 10px;
+}
+
+/*done*/
+.margin-right {
+    margin-right: 10px;
+}
+
+/*done*/
+.margin-left {
+    margin-left: 10px;
+}
+
+/*done*/
+.margin-horizontal {
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+/*done*/
+.margin-vertical {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+/*done*/
+.margin-all {
+    margin: 10px;
+}
+
+/*done*/
+.no-margin {
+    margin: 0px;
+}
+
+/*done*/
+
+.no-vertical-margin {
+    margin-top: 0px;
+    margin-bottom: 0px;
+}
+
+.no-horizontal-margin {
+    margin-left: 0px;
+    margin-right: 0px;
+}
+
+.inside-col-shrink {
+    margin: 0px 20px;
+}
+
+/*done - For the inside sections that has also Title section*/
+/* Margin section */
+
+hr {
+    margin: 0px;
+    padding: 0px;
+    border-top: 1px dashed #999;
+}
+</style>

@@ -81,8 +81,7 @@ export default {
             // console.log(this.form)
             this.form.post(route('roles.store'), {
                 onFinish: () => {
-                    this.form = {}
-                    this.dialog = false
+                this.close()
                     if (this.$page.props.flashd.messages) {
                         this.$swal({
                             icon: 'error',
@@ -107,7 +106,7 @@ export default {
                             timerProgressBar: true,
                         });
                     }
-
+                    this.form = {}
                 },
             });
         },
@@ -188,6 +187,7 @@ export default {
             this.form = {}
         },
         setPermission(e) {
+            this.form.permissions  = []
             this.$inertia.replace(this.$page.url, {
                 data: {
                     role: e,
@@ -228,7 +228,6 @@ export default {
                                 <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
                                 </Autocomplete>
                             </v-col>
-
                         </v-row>
                         <v-row v-if="$page.props.auth.user.id !=1">
                             <v-col md="12">

@@ -2,25 +2,26 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
-use App\Models\Apprenant;
-use Modules\Enseignement\Entities\Enseignant;
-use App\Models\PermissionRole;
-use App\Models\Permission;
-use App\Models\Etablissement;
 use App\Models\Role;
-use App\Models\Section;
-use App\Models\EtablissementSection;
+use App\Models\User;
 use Inertia\Inertia;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Redirect;
 use Inertia\Response;
-use Illuminate\Support\Facades\Mail;
+use App\Models\Section;
+use App\Models\Apprenant;
+use App\Models\Permission;
+use App\Models\SectionUser;
 use Illuminate\Support\Str;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Http\Request;
+use App\Models\Etablissement;
+use App\Models\PermissionRole;
 use Illuminate\Support\Facades\DB;
+use App\Models\EtablissementSection;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
+use Modules\Enseignement\Entities\Enseignant;
 
 class UserController extends Controller
 {
@@ -58,11 +59,18 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
+       
         $user = Auth::user();
         $permis = [];  
+        $etat = null;
         $nom = str_replace(' ', '', $request->nom);
         $prenom = str_replace(' ', '', $request->prenom);
         $login  = strtolower($nom).'-'. strtolower($prenom) . '@gmail.com';
+        if($request->etablissement_id){
+            $etat = $request->etablissement_id;
+        }else {
+            $etat = Auth::user()->etablissement_id;
+        }
         if($request->nom and $request->prenom){
         $user = User::create([
             'nom' => $request->nom,
@@ -70,21 +78,25 @@ class UserController extends Controller
             'email' => $login,
             'user_id'=>Auth::user()->id,
             'password' => Hash::make($login),
-            'etablissement_id'=>$request->etablissement_id,
+            'etablissement_id'=>$etat,
             'enseignant_id'=>$request->enseignant_id,
             'apprenant_id'=>$request->apprenant_id
-        ]);
-        if ($request->section) { 
-            $user->etablissement_section_id = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->section)->get()[0]->id;
-        }
-        foreach($request->roles as $role) {            
-            $permissions = PermissionRole::where('role_id',$role)->where('user_id',Auth::user()->id)->get();
-        }
+        ]);        
+        $permissions = PermissionRole::where('role_id',$request->roles)->where('user_id',Auth::user()->id)->get();
         foreach ($permissions as $permission) {
             $permis[] = $permission->permission_id;
         }
         $user->syncRoles($request->roles);
         $user->syncPermissions($permis);
+
+        foreach ($request->section as $sec) {
+            $etablissement_sections  = DB::table('etablissement_section')->where('section_id',$sec)->where('etablissement_id',Auth::user()->etablissement_id)->get()[0]; 
+            
+            SectionUser::create([
+                'user_id'=>$user->id,
+                'etablissement_section_id'=>$etablissement_sections->id
+            ]);
+        }
         if($request->etablissement_id){
             $etablissement = Etablissement::find($request->etablissement_id);
             $etablissement->sections()->attach($request->sections);

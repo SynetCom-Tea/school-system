@@ -25,6 +25,6 @@ class CheckRoles
                 }
             }
         }
-        return abort(403, 'Désolé vous n\'avez pas ce droit');
+        return redirect()->route('NotFoud');
     }
 }

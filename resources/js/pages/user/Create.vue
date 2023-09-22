@@ -32,7 +32,7 @@ export default {
             form: useForm({
                 nom: '',
                 prenom: '',
-                roles: [],
+                roles: null,
                 etablissement_id: null,
                 sections: [],
                 apprenant_id: null,
@@ -89,11 +89,11 @@ export default {
                 <v-col md="6">
                     <TextField name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true"></TextField>
                     <TextField name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom"></TextField>
-                    <Autocomplete v-if="$page.props.auth.user.id !== 1 && form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="etablissement_sections" chips clearable v-model="form.section">
+                    <Autocomplete v-if="$page.props.auth.user.id !== 1 && form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="etablissement_sections" multiple chips clearable v-model="form.section">
                     </Autocomplete>
                 </v-col>
                 <v-col v-if="$page.props.auth.user.id !=1">
-                    <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" multiple chips clearable v-model="form.roles">
+                    <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" chips clearable v-model="form.roles">
                     </Autocomplete>
                     <Autocomplete label="Enseignant" v-if="form.roles==3" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="enseignants" chips clearable>
                     </Autocomplete>

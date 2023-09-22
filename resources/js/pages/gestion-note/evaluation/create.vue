@@ -1,8 +1,7 @@
 <script>
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
 import {
-    useForm,
-    router
+    useForm
 } from '@inertiajs/vue3';
 // import Datatable from "@/components/customizedComponents/datatable.vue";
 
@@ -38,7 +37,7 @@ export default {
         mdiContentSaveEditOutline
     },
     layout: AuthenticatedLayout,
-    props: ["evaluations"],
+    props: ["periodes", "typeEvaluations","matieres", "enseigements", "sections", "nivau_matieres", "enseignant","cycle_filieres","ues"],
     data() {
         return {
             icon: {
@@ -56,72 +55,19 @@ export default {
                 mdiContentSaveEditOutline
             },
 
-            headers: [
-
-                {
-                    title: "N°",
-                    align: 'center',
-                    key: 'id'
-                },
-                {
-                    title: 'Matière',
-                    align: 'center',
-                    key: 'enseignement_annee.niveau_matiere.matiere.libelle',
-                },
-                {
-                    title: 'Niveau/Classe',
-                    align: 'center',
-                    key: 'enseignement_annee.niveau_matiere.niveau.libelle'
-                },
-                {
-                    title: 'Enseignant',
-                    align: 'center',
-                    key: 'enseignement_annee.enseignant.nom'
-                },
-                {
-                    title: 'Date Evaluation',
-                    align: 'center',
-                    key: 'date'
-                },
-                {
-                    title: 'Type Evaluation',
-                    align: 'center',
-                    key: 'type_evaluation.libelle'
-                },
-                {
-                    title: 'periodes',
-                    align: 'center',
-                    key: 'periode.libelle'
-                },
-                {
-                    title: 'Pourcentage',
-                    align: 'center',
-                    key: 'pourcentage'
-                },
-                {
-                    title: 'Actions',
-                    align: 'center',
-                    key: 'actions'
-                },
-            ],
-
-            dialog_title: 'Nouveau Evaluation',
-            dialog: false,
-
             form: useForm({
                 date: '',
                 pourcentage: null,
                 type_evaluation_id: null,
                 periode_id: null,
                 enseignement_annee_id: null,
+                cycle_filiere_id:null,
+                ue_id : null
             }),
         }
     },
 
     methods: {
-        create() {
-            router.get(route("evaluation.create"));
-        },
         editItem(item) {
             console.log('edit', item)
             this.dialog_title = 'Modifier Evaluation ' + item.id
@@ -226,16 +172,7 @@ export default {
             }
 
         },
-        close() {
-            this.form.id = ""
-            this.form.date = ""
-            this.form.pourcentage = ""
-            this.form.periode_id = ""
-            this.form.type_evaluation_id = ""
-            this.form.enseignement_annee_id = ""
-            this.dialog = false
-        },
-        setPeriode(e){
+        setPeriode(e) {
             // console.log(e)
             this.form.periode_id = null
             this.$inertia.replace(this.$page.url, {
@@ -260,69 +197,49 @@ export default {
     <v-card>
         <page-toolbar :icon="icon.mdiTools">Gestion des Evaluations</page-toolbar>
         <v-card-text>
-
-            <br>
-            <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
-
-<v-card>
-    <!-- <v-card-title dense color="orange" dark> -->
-    <v-toolbar dense color="secondary" dark >
-        <v-toolbar-title >
-            <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close()"></v-icon>
-    </v-toolbar>
-    <!-- </v-card-title> -->
-    <v-card-text>
-        <v-form ref="form">
-            <v-container>
-                <v-row>
-                    <v-col cols="6" >
-                        <TextField  label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                        </TextField>
-                    </v-col>
-                    <v-col cols="6">
-                        <Autocomplete label="Sections" variant="outlined" item-title="libelle" item-value="id" :items="sections" v-model="form.section_id" @update:modelValue="setPeriode(form.section_id)" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                        </Autocomplete>   
-                    </v-col>
-                    <v-col cols="6">
-                        <Autocomplete v-model="form.periode_id" label="Periodes" itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] "  chips clearable>
-                        </Autocomplete>
-                    </v-col>
-                    <v-col cols="6">
-                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="typeEvaluations" v-model="form.type_evaluation_id" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                        </Autocomplete>
-                    </v-col>
-                    <v-col cols="6">
-                        <Autocomplete label="Matiere/Niveau/Classe" variant="outlined" item-title="code" item-value="id" :items="enseigements" v-model="form.enseignement_annee_id ">
-                        </Autocomplete>
-                    </v-col>
-                    <v-col>
-                    <TextField :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                        </TextField>
-                    </v-col>
-                </v-row>
-            </v-container>
-        </v-form>
-    </v-card-text>
-    <v-card-actions class="justify-end">
-        <v-spacer></v-spacer>
-        <Button  class="mb-2" style="height: 30px"  nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">
-            
-        </Button>
-    </v-card-actions>
-</v-card>
-</v-dialog>
-            <Datatable titleDatatable="Listes des evaluations " :headers="headers" :items="evaluations" :functionOnClickAddButton="create">
-               
-                <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
-                    </v-icon>
-                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
-                    </v-icon>
-                </template>
-            </Datatable>
+                <v-form ref="form">
+                    <v-container>
+                        <v-row>
+                            <v-col cols="6">
+                                <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                </TextField>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete label="Sections" variant="outlined" item-title="libelle" item-value="id" :items="sections" v-model="form.section_id" @update:modelValue="setPeriode(form.section_id)" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete v-model="form.periode_id" label="Periodes" itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="typeEvaluations" v-model="form.type_evaluation_id" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete label="Matieres" variant="outlined" itemTitle="nom" itemValue="id" :items="matieres" v-model="form.matiere_id" :isRequired="true">
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete label="Cycles/Filieres" variant="outlined" itemTitle="code" itemValue="id" :items="cycle_filieres" v-model="form.cycle_filiere_id" :isRequired="true">
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete label="Unités d'enseignement" variant="outlined" itemTitle="libelle" itemValue="id" :items="ues" v-model="form.ue_id" :isRequired="true">
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <TextField :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage"  v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                </TextField>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-form>
+            <v-card-actions class="justify-end">
+                <v-spacer></v-spacer>
+                <Button class="mb-2" style="height: 30px" nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">
+                </Button>
+            </v-card-actions>
         </v-card-text>
     </v-card>
 </AuthenticatedLayout>

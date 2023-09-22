@@ -54,7 +54,7 @@ export function listMenus(page) {
       { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/lmd/4' },
     ];
 
-    if (page?.roles == "Administrateur") {
+    if (page?.role == "Administrateur") {
 
       if (page?.sections[0]?.sections) {
         tabs = page?.sections[0].sections.map(function (el) {
@@ -86,49 +86,25 @@ MenuAdmin = {
             title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
-            roles: "manage_system",
+
         },
         {
             title: "Profil",
             icon: mdiAccount,
             link: "/profile",
-            roles: "manage_school",
         },
         {
             icon: mdiSchool,
             title: "Établissements",
             link: "/etablissements",
-            roles: "manage_system",
-        },
-        /* {
-            title: "Home",
-            icon: mdiHomeCity,
-            link: "/dashboard",
             permissions: "manage_system",
-        },
-        // {
-        //     title: "Test",
-        //     icon: mdiCogOutline,
-        //     link: "/enseignement/test",
-        //     permissions: "manage_system",
-        // },
-        // {
-        //     title: "Attribution de notes",
-        //     icon: mdiReceiptTextCheckOutline,
-        //     link: "/receptions",
-        //     permissions: "manage_system",
-        // },
-        {
-            title: "Evaluation",
-            icon: mdiCogOutline,
-            link: "/gestionnote/evaluation",
         },
         {
             title: "Inscription",
             icon: mdiAccountSchool,
             link: "/inscriptions/create",
             permissions: "manage_system",
-        }, */
+        }, 
     ];
 
     let usersMenu = {
@@ -183,62 +159,44 @@ MenuAdmin = {
         model: false,
         children: [
             {
+                title: "Evaluation",
+                icon: mdiWalletMembership,
+                link: "/gestionnote/evaluation",
+            },
+            {
                 icon: mdiGift,
                 title: "Affichage de notes",
                 link: "/gestionnote/note/affichage",
                 permissions: "manage_system",
             },
-            {
-                icon: mdiWalletMembership,
-                title: "Attribution de notes",
-                link: "/gestionnote/note/attribution",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiAccountSchool,
-                title: "Enseignants",
-                link: "/teachers",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiSchool,
-                title: "Établissements",
-                link: "/organizations",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiCalendar,
-                title: "Années Scolaires",
-                link: "/annees",
-                permissions: "manage_system",
-            },
-
-            {
-                icon: mdiGoogleClassroom,
-                title: "Niveaux",
-                link: "/niveaux",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiGoogleClassroom,
-                title: "Salle de cours",
-                link: "/salles",
-                title: "Attribution de notes",
-                link: "/gestionnote/note/attribution",
-                permissions: "manage_system",
-            },
+            // {
+            //     icon: mdiWalletMembership,
+            //     title: "Attribution de notes",
+            //     link: "/gestionnote/note/attribution",
+            //     permissions: "manage_system",
+            // },
             // {
             //     icon: mdiAccountSchool,
             //     title: "Enseignants",
             //     link: "/teachers",
             //     permissions: "manage_system",
             // },
+           
             // {
-            //     icon: mdiSchool,
-            //     title: "Etablissements",
-            //     link: "/organizations",
+            //     icon: mdiGoogleClassroom,
+            //     title: "Niveaux",
+            //     link: "/niveaux",
             //     permissions: "manage_system",
             // },
+            // {
+            //     icon: mdiGoogleClassroom,
+            //     title: "Salle de cours",
+            //     link: "/salles",
+            //     title: "Attribution de notes",
+            //     link: "/gestionnote/note/attribution",
+            //     permissions: "manage_system",
+            // },
+            
         ],
     };
     // Gestion de Notes
@@ -325,7 +283,7 @@ MenuAdmin = {
             // },
         ],
     };
-       if (page?.roles == "Administrateur") {
+       if (page?.role == "Administrateur") {
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
     return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
