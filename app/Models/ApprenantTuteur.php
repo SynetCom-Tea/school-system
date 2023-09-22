@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Scolarite\Entities\Tuteur;
 
 class ApprenantTuteur extends Model
 {
@@ -15,11 +16,11 @@ class ApprenantTuteur extends Model
     ];
     public function apprenant()
     {
-        return $this->belongsTo('App\Models\Apprenant');
+        return $this->belongsTo(Apprenant::class, 'apprenant_id');
     }
 
     public function tuteur()
     {
-        return $this->belongsTo('App\Models\Tuteur');
+        return $this->belongsTo(Tuteur::class, 'tuteur_id');
     }
 }

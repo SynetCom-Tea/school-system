@@ -90,6 +90,10 @@ class ApprenantSeeder extends Seeder
                 'nom' => 'Djibo Dan Malam',
                 'prenom' => 'Mayaki',
                 'etablissement_id' => 1,
+                'sex' => 'M',
+                'date_naissance' => '18/07/2004',
+                'lieu_naissance' => 'Niamey',
+                'telephone' => '94213488',
             ),
             7 =>
             array(
@@ -98,6 +102,10 @@ class ApprenantSeeder extends Seeder
                 'nom' => 'Nourou Hainikoy',
                 'prenom' => 'Bouchira',
                 'etablissement_id' => 1,
+                'sex' => 'F',
+                'date_naissance' => '18/07/1995',
+                'lieu_naissance' => 'Niamey',
+                'telephone' => '94124388',
             ),
             8 =>
             array(
@@ -106,6 +114,10 @@ class ApprenantSeeder extends Seeder
                 'nom' => 'Nafiou Bonkaney',
                 'prenom' => 'Wazir',
                 'etablissement_id' => 1,
+                'sex' => 'M',
+                'date_naissance' => '18/07/2000',
+                'lieu_naissance' => 'Niamey',
+                'telephone' => '88123498',
             )
         ));
     }

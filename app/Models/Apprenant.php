@@ -20,11 +20,16 @@ class Apprenant extends Model
         'date_naissance',
         'lieu_naissance',
         'telephone',
+        'adresse',
         'etablissement_id',
     ];
     public function etablissement(): BelongsTo
     {
         return $this->belongsTo(Etablissement::class);
+    }
+    public function apprenantTuteurs(): HasMany
+    {
+        return $this->hasMany(ApprenantTuteur::class);
     }
     public function absences(): HasMany
     {

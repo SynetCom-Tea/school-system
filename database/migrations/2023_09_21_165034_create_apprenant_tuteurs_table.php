@@ -13,7 +13,15 @@ return new class extends Migration
     {
         Schema::create('apprenant_tuteurs', function (Blueprint $table) {
             $table->id();
+
+            $table->foreignIdFor(\App\Models\Apprenant::class)
+                ->index()
+                ->references('id')->on('apprenants');
+            $table->foreignIdFor(\Modules\Scolarite\Entities\Tuteur::class)
+                ->index()
+                ->references('id')->on('tuteurs');
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

@@ -15,16 +15,17 @@ return new class extends Migration
     {
         Schema::create('frais', function (Blueprint $table) {
             $table->id();
-            $table->string('libele');
+            $table->string('libelle');
             $table->double('montant');
             /* $table->foreignIdFor(\Modules\Scolarite\Entities\Filiere::class)
                 ->references('id')->on('filieres')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict'); */
-            /* $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->references('id')->on('niveaux')->constrained()
                 ->onUpdate('cascade')
-                ->onDelete('restrict'); */
+                ->onDelete('restrict');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

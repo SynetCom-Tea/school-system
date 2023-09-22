@@ -14,7 +14,11 @@ class AnneeScolaireSeeder extends Seeder
     public function run(): void
     {
         Annee::create([
-            'libelle' => '2022-2023'
+            'libelle' => '2022-2023',
+        ]);
+        Annee::create([
+            'libelle' => '2023-2024',
+
         ]);
     }
 }
