@@ -152,30 +152,10 @@ export default {
     };
   },
   async mounted() {
-  console.log('page:', this.$page.props)
+    console.log("page:", this.$page.props);
     await this.getListUsers();
   },
   methods: {
-  async setFilters() {
-      let axiosResult = [];
-      let items = [];
-      let vItems = [];
-
-      // axiosResult = await axios
-        .get(
-          route("getUsersByCategory", {
-            params: "organizationStudents",
-          })
-        )
-        .then((res) => {
-          console.log("res:", res);
-          if (typeof res.data == "string" || typeof res.data == "undefined") {
-            this.$toast.error("Données non valides!");
-          } else {
-            return res.data;
-          }
-        });
-    },
     async getListUsers() {
       let axiosResult = [];
       let items = [];
