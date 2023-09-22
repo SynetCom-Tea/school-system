@@ -8,8 +8,8 @@
     <div class="mt-3">
       <v-container class="bg-surface-variant mb-6">
         <v-row align="center" no-gutters>
-        <v-col cols="auto">
-  <!-- <Autocomplete
+          <v-col cols="auto">
+            <!-- <Autocomplete
                   :items="listSection"
                   class="mt-2"
                   v-model="section"
@@ -20,9 +20,10 @@
                   color="blue-grey-lighten-2"
                   label="Section"
                 ></Autocomplete> -->
-        </v-col>
+          </v-col>
         </v-row>
-        </div>
+      </v-container>
+    </div>
     <div class="mt-3">
       <Datatable
         :dialogDetailUpdate="dialogDetailUpdate"
@@ -151,6 +152,7 @@ export default {
     };
   },
   async mounted() {
+  console.log('page:', this.$page.props)
     await this.getListUsers();
   },
   methods: {
