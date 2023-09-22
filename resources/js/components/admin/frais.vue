@@ -62,24 +62,26 @@
                     <v-row>
                         <v-col>
                             <v-switch
-                            label="Renseignement des données par champs"
-                             @update:modelValue="resetForm(importation)"
-                              v-model="importation"
-                              color="info" inset></v-switch>
+                                label="Renseignement des données par champs"
+                                v-model="importation"
+                                @update:modelValue="submitForm(null)"
+                                color="info" inset></v-switch>
                         </v-col>
                         <v-col v-if="importation">
 
                             <v-file-input
+                                @change="handleFileUpload"
                                 clearable
                                 required
                                 v-model="form.fichier_frais"
+                                @update:modelValue="submitForm(null)"
                                 label="Charger le fichier de frais"
                                 variant="solo-inverted"
                             ></v-file-input>
                         </v-col>
-                        <v-col v-if="importation"><v-btn 
-                            class="ma-2" 
-                            outlined 
+                        <v-col v-if="importation"><v-btn
+                            class="ma-2"
+                            outlined
                             type="button"
                             color="primary"
                             href="../models/echantillons/fiche_echantillonage.ods"
@@ -204,6 +206,7 @@
     </form>
 </template>
 <script>
+    import XLSX from "xlsx/dist/xlsx.extendscript.js";
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
@@ -216,6 +219,10 @@
     data: () => ({
         alertFirst: true,
         alertSecond: true,
+        headers: [],
+        data: [],
+        entete: [],
+        contentType: ['Niveaux','Libelles','Montant'],
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -227,6 +234,125 @@
     }),
 
     methods: {
+        handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const data = e.target.result;
+
+          // Utilisation de JavaScript natif pour lire le fichier Excel
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          // Convertir les données de la feuille en tableau
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          // La première ligne est généralement utilisée comme en-têtes de colonne
+          if (sheetData.length > 0) {
+            this.headers = sheetData[0];
+            this.data = sheetData.slice(1);
+            if (this.type =="1" || this.type =="2" ) {
+                this.entete=this.contentType.slice();
+            } else {
+                this.entete=['Filieres'].concat(this.contentType);
+            }
+            console.log('entete', this.entete);
+            console.log('headers',this.headers,'data',this.data)
+
+            if(this.checkEntete(this.headers,this.entete)){
+            //   console.log('bravo')
+            const missingDataIndex = this.donneesManquantes(this.data);
+
+            if (typeof missingDataIndex === "number") {
+                this.$swal.fire({
+                    title: 'Valider',
+                    text: "Votre fichier est valide!",
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            // console.log("L'indice de la ligne manquante est:", missingDataIndex);
+            } else {
+                this.form.fichier_frais = null
+                this.submitForm(null)
+                const ligne=missingDataIndex.rowIndex+2;
+                const colonne=missingDataIndex.columnIndex+1;
+                this.$swal.fire({
+                        title: "Erreur",
+                        text:
+                        "Données manquantes à la ligne "+ligne+
+                        " et colonne "+ colonne + " Veuillez corriger!",
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                    });
+           
+            }
+
+            }else{
+                this.form.fichier_frais = null
+                this.submitForm(null)
+                this.$swal.fire({
+                                title: "Erreur",
+                                text:
+                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                                icon: "warning",
+                                confirmButtonText: "OK",
+                            });
+            //   alert('drapppppppp')
+            }
+
+             // Exclure la première ligne (en-têtes)
+
+          }
+        };
+
+        reader.readAsBinaryString(file);
+
+      }
+    },
+
+
+
+    checkEntete(arr1, arr2) {
+      // Vérifie si les tableaux ont la même longueur
+      if (arr1.length !== arr2.length) {
+        return false;
+      }
+
+      // Compare chaque élément des tableaux
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          return false;
+        }
+      }
+
+      // Si toutes les comparaisons ont réussi, les tableaux sont égaux
+      return true;
+    },
+
+    donneesManquantes(tableau) {
+      for (let rowIndex = 0; rowIndex < tableau.length; rowIndex++) {
+        const row = tableau[rowIndex];
+
+        // Vérifie si la ligne n'existe pas (est undefined)
+        if (typeof row === "undefined") {
+          return rowIndex; // Retourne l'indice de la ligne manquante
+        }
+
+        // Parcours les éléments de la ligne
+        for (let columnIndex = 0; columnIndex < row.length; columnIndex++) {
+          if (typeof row[columnIndex] === "undefined") {
+            return {
+              rowIndex,
+              columnIndex,
+            }; // Retourne l'indice de la ligne et de la colonne où les données manquent
+          }
+        }
+      }
+
+      return -1; // Retourne -1 si toutes les données sont présentes
+    },
         onclickAlertButton(type) {
             if (type == "second") {
                 this.alertSecond = true;
@@ -292,15 +418,17 @@
             this.form.frais = this.form.frais.filter((el) => el !== id)
         },
         async verify(element) {
-            let array = []
-            if(this.type == '1' || this.type == '2'){
-                array = this.form.frais.filter(el => el.code !== null && el.niveau == element.niveau && el.type_frais == element.type_frais)
-            }else{
-                array = this.form.frais.filter(el => el.code !== null && el.filiere == element.filiere && el.niveau == element.niveau && el.type_frais == element.type_frais)
-            }
-            if (array.length > 1) {
-                this.removeRow(element)
-                this.$swal("L'élément existe déjà !")
+            if(element){
+                let array = []
+                if(this.type == '1' || this.type == '2'){
+                    array = this.form.frais.filter(el => el.code !== null && el.niveau == element.niveau && el.type_frais == element.type_frais)
+                }else{
+                    array = this.form.frais.filter(el => el.code !== null && el.filiere == element.filiere && el.niveau == element.niveau && el.type_frais == element.type_frais)
+                }
+                if (array.length > 1) {
+                    this.removeRow(element)
+                    this.$swal("L'élément existe déjà !")
+                }
             }
         },
     },

@@ -9,8 +9,8 @@
 
     <div>
     <!-- Application de stepper -->
-    <form-wizard 
-      color="#094899" 
+    <form-wizard
+      color="#004980"
       back-button-text="Retour"
       next-button-text="Suivant"
       finish-button-text="Enregistrer"
@@ -33,7 +33,7 @@
         <v-card  flat>
                 <!-- Tabs de la Filiere pour toute les sections -->
                 <v-card-text v-show="type == '3' && !loadingWizard">
-                    <filieresup-form @formSubmitted="getFiliereForm" :type="type"  />
+                    <filieresup-form @formSubmitted="getFiliereForm" :type="type" @filiereSupFormValid="filiereSupFormValid" />
                 </v-card-text>
                 <!-- Tabs de la Filiere pour toute les sections -->
 
@@ -229,6 +229,9 @@
         this.formValid = v
       },
       niveauMatiereFormValid(v){
+        this.formValid = v
+      },
+      filiereSupFormValid(v){
         this.formValid = v
       },
       async beforeChange() 

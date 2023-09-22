@@ -45,6 +45,7 @@
                         <v-col v-if="importation">
 
                             <v-file-input
+                                @change="handleFileUpload"
                                 clearable
                                 required
                                 v-model="form.fichier_faculte"
@@ -137,6 +138,7 @@
     </form>
 </template>
 <script>
+    import XLSX from "xlsx/dist/xlsx.extendscript.js";
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   export default {
@@ -149,6 +151,9 @@
     data: () => ({
         alertFirst: true,
         alertSecond: true,
+        headers: [],
+        data: [],
+        contentType: ['code','nom'],
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
         step: 1,
         importation: false,
@@ -159,6 +164,118 @@
     }),
 
     methods: {
+        handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const data = e.target.result;
+
+          // Utilisation de JavaScript natif pour lire le fichier Excel
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          // Convertir les données de la feuille en tableau
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          // La première ligne est généralement utilisée comme en-têtes de colonne
+          if (sheetData.length > 0) {
+            this.headers = sheetData[0];
+            this.data = sheetData.slice(1);
+
+            console.log('headers',this.headers,'data',this.data)
+
+            if(this.checkEntete(this.headers,this.contentType)){
+            //   console.log('bravo')
+            const missingDataIndex = this.donneesManquantes(this.data);
+
+            if (typeof missingDataIndex === "number") {
+                this.$swal.fire({
+                    title: 'Valider',
+                    text: "Votre fichier est valide!",
+                    icon: 'success',
+                    confirmButtonText: 'OK',
+                });
+            // console.log("L'indice de la ligne manquante est:", missingDataIndex);
+            } else {
+                const ligne=missingDataIndex.rowIndex+2;
+                const colonne=missingDataIndex.columnIndex+1;
+                this.$swal.fire({
+                        title: "Erreur",
+                        text:
+                        "Données manquantes à la ligne "+ligne+
+                        " et colonne "+ colonne + " Veuillez corriger!",
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                    });
+            console.log(
+
+            );
+            }
+
+            }else{
+                this.$swal.fire({
+                                title: "Erreur",
+                                text:
+                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                                icon: "warning",
+                                confirmButtonText: "OK",
+                            });
+            //   alert('drapppppppp')
+            }
+
+             // Exclure la première ligne (en-têtes)
+
+          }
+        };
+
+        reader.readAsBinaryString(file);
+
+      }
+    },
+
+
+
+    checkEntete(arr1, arr2) {
+      // Vérifie si les tableaux ont la même longueur
+      if (arr1.length !== arr2.length) {
+        return false;
+      }
+
+      // Compare chaque élément des tableaux
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          return false;
+        }
+      }
+
+      // Si toutes les comparaisons ont réussi, les tableaux sont égaux
+      return true;
+    },
+
+    donneesManquantes(tableau) {
+      for (let rowIndex = 0; rowIndex < tableau.length; rowIndex++) {
+        const row = tableau[rowIndex];
+
+        // Vérifie si la ligne n'existe pas (est undefined)
+        if (typeof row === "undefined") {
+          return rowIndex; // Retourne l'indice de la ligne manquante
+        }
+
+        // Parcours les éléments de la ligne
+        for (let columnIndex = 0; columnIndex < this.contentType.length; columnIndex++) {
+          if (typeof row[columnIndex] === "undefined") {
+            return {
+              rowIndex,
+              columnIndex,
+            }; // Retourne l'indice de la ligne et de la colonne où les données manquent
+          }
+        }
+      }
+
+      return -1; // Retourne -1 si toutes les données sont présentes
+    },
         onclickAlertButton(type) {
             if (type == "second") {
                 this.alertSecond = true;

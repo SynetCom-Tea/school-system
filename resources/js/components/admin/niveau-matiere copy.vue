@@ -10,24 +10,24 @@
                 </v-alert>
             </v-row>
             <br><br>
-           
+
             <v-divider></v-divider>
             <v-card>
                 <v-alert type="info"><li>Tous les champs de chaque ligne inserer sont obligatoires</li></v-alert>
                 <v-row>
                 <v-col md="2"></v-col>
                 <v-col md="4">
-                    <span style="color: red; font-size: x-large;">*</span>
+
                     <v-autocomplete label="Filieres" :items="['IG','MIEL']" chips></v-autocomplete>
                 </v-col>
                 <v-col md="4">
-                    <span style="color: red; font-size: x-large;">*</span>
+                    
                     <v-autocomplete label="Niveaux" :items="['1ere année','2e année']" chips></v-autocomplete>
                 </v-col>
                 </v-row>
                 <v-card>
                     <v-card-text>
-                        
+
                     </v-card-text>
                 <v-card-text>
                     <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
@@ -83,7 +83,7 @@
     components: {
         mdiPlusCircle,
         mdiCloseCircle,
-        mdiInformation 
+        mdiInformation
     },
     data: () => ({
         icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
@@ -99,7 +99,7 @@
             etablissement_section_id: null
         }),
     }),
-    
+
     methods: {
         getSection(type){
             console.log('type',type)
@@ -139,7 +139,7 @@
                     icon: 'warning',
                     confirmButtonText: 'OK',
                 });
-               
+
             }
         },
         isValid() {
