@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Enseignement\Entities\EnseignementAnnee;
 
 class ClasseAnnee extends Model
 {
@@ -17,14 +18,14 @@ class ClasseAnnee extends Model
         return $this->belongsTo(Classe::class);
     }
 
-    public function anneeScolaire(): BelongsTo
+    public function annee(): BelongsTo
     {
-        return $this->belongsTo(AnneeScolaire::class);
+        return $this->belongsTo(Annee::class);
     }
 
-    public function enseignantAnnees(): HasMany
+    public function enseignementtAnnees(): HasMany
     {
-        return $this->hasMany(EnseignantAnnee::class);
+        return $this->hasMany(EnseignementAnnee::class);
     }
 
     public function emplois(): HasMany

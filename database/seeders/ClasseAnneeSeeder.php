@@ -15,7 +15,7 @@ class ClasseAnneeSeeder extends Seeder
     {
         ClasseAnnee::create([
 
-            'classe_id' => 3,
+            'classe_id' => 4,
             'annee_id' => 2,
         ]);
 

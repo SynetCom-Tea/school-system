@@ -2,11 +2,15 @@
 
 namespace Modules\Scolarite\Entities;
 
+use App\Models\Annee;
+use App\Models\Etablissement;
+use App\Models\EtablissementSection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Modules\Enseignement\Entities\Niveau;
 
 class Frais extends Model
 {
@@ -18,7 +22,14 @@ class Frais extends Model
     {
         return $this->belongsTo(Filiere::class);
     } */
-
+    public function annee(): BelongsTo
+    {
+        return $this->belongsTo(Annee::class);
+    }
+    public function etablissement(): BelongsTo
+    {
+        return $this->belongsTo(Etablissement::class);
+    }
     public function niveau(): BelongsTo
     {
         return $this->belongsTo(Niveau::class);

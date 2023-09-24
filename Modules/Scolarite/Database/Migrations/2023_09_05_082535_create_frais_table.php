@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\Annee;
+use App\Models\Etablissement;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -21,6 +23,14 @@ return new class extends Migration
                 ->references('id')->on('filieres')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict'); */
+            $table->foreignIdFor(Annee::class)
+                ->references('id')->on('annees')->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
+            $table->foreignIdFor(Etablissement::class)
+                ->references('id')->on('etablissements')->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->references('id')->on('niveaux')->constrained()
                 ->onUpdate('cascade')
