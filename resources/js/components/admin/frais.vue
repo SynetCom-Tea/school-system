@@ -206,6 +206,7 @@
     </form>
 </template>
 <script>
+    import { ref, watch } from "vue";
     import XLSX from "xlsx/dist/xlsx.extendscript.js";
     import { router,useForm} from '@inertiajs/vue3';
     import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
@@ -232,7 +233,23 @@
             frais: [],
         }),
     }),
-
+    watch: {
+    // Surveillez les valeurs spécifiques ici
+    filieres(data,old){
+        console.log('nouvelle',data)
+        if(this.type == '3'){
+            this.tabsFilieres = data ? data.filieres : []
+        }else if(this.type == '4'){
+            if (data.departements && Array.isArray(data.departements)) {
+                data.departements.forEach(element => {
+                    this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+                });
+            }
+        }
+    }
+    
+       
+    },
     methods: {
         handleFileUpload(event) {
       const file = event.target.files[0];
@@ -431,20 +448,18 @@
                 }
             }
         },
-    },
+        updateFil(){
+            
+        },
+   
+  },
+  
     created(){
-        if(this.type == '3'){
-            this.tabsFilieres = this.filieres ? this.filieres.filieres : []
-        }else if(this.type == '4'){
-            if (this.filieres.departements && Array.isArray(this.filieres.departements)) {
-                this.filieres.departements.forEach(element => {
-                    this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
-                });
-            }
-        }
+        
     },
     mounted() {
         this.addRow()
+       
     },
   }
 </script>

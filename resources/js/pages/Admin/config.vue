@@ -57,7 +57,7 @@
                     <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"  />
                 </v-card-text>
                 <v-card-text v-show ="type == '4' && !loadingWizard">
-                    <filiere-form @formSubmitted="getFiliereForm" :type="type" :facultes="formFaculte.facultes" />
+                    <filiere-form @formSubmitted="getFiliereForm" :type="type" :facultes="formFaculte.facultes" @filiereFormValid="filiereFormValid" />
                 </v-card-text>
                 <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
                     <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatiereFormValid="niveauMatiereFormValid"/>
@@ -68,7 +68,7 @@
       <tab-content :title="tabTitle5"  v-if="type=='3' || type=='4'" :before-change="beforeChange">
         <v-card  flat>
                 <v-card-text v-show="type=='4' && !loadingWizard">
-                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" />
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" @fraisFormValid="fraisFormValid"/>
                 </v-card-text>
                 <v-card-text v-show="type=='3' && lmd != null && !loadingWizard">
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" @ueFormValid="ueFormValid" />
@@ -85,7 +85,7 @@
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" @ueFormValid="ueFormValid" />
                 </v-card-text>
                 <v-card-text v-show="type=='3' && !loadingWizard">
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues" @niveauMatiereSupFormValid="niveauMatiereSupFormValid"/>
                 </v-card-text>
             </v-card>
       </tab-content>
@@ -96,7 +96,7 @@
                     <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
                 </v-card-text>
                 <v-card-text v-show="lmd != null && !loadingWizard" >
-                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues"/>
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues" @niveauMatiereSupFormValid="niveauMatiereSupFormValid"/>
                 </v-card-text>
             </v-card>
       </tab-content>
@@ -238,6 +238,12 @@
         this.formValid = v
       },
       ueFormValid(v){
+        this.formValid = v
+      },
+      niveauMatiereSupFormValid(v){
+        this.formValid = v
+      },
+      filiereFormValid(v){
         this.formValid = v
       },
       async beforeChange()
