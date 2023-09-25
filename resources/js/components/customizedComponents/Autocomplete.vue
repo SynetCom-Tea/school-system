@@ -36,14 +36,14 @@ export default {
       type: Number,
       required: false,
     },
-    // itemTitle: {
-    //   type: String,
-    //   required: false,
-    // },
-    // itemValue: {
-    //   type: String,
-    //   required: false,
-    // },
+    itemTitle: {
+      type: String,
+      required: false,
+    },
+    itemValue: {
+      type: String,
+      required: false,
+    },
     baseColorValue: {
       type: String,
       default: "primary",
@@ -124,6 +124,8 @@ export default {
   >
     <v-autocomplete
       :items="items"
+      :item-value="itemValue"
+      :item-title="itemTitle"
       :variant="variant"
       :hint="hint"
       :density="density"
@@ -143,8 +145,9 @@ export default {
       <template #label v-else>
         {{ label }}
       </template>
-
-      <slot />
+      <template v-for="slot in parentSlots" #[slot]>
+        <slot :name="slot" />
+      </template>
     </v-autocomplete>
   </v-responsive>
 </template>
