@@ -11,8 +11,6 @@ use App\Models\Classe;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Niveau;
-// use App\Models\Etablissement;
-// use App\Models\Section;
 
 class ClasseController extends Controller
 {
@@ -35,9 +33,12 @@ class ClasseController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create($type)
     {
-        
+        return Inertia::render('Classe/Create', [
+            'section_id' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get(),
+        ]);
     }
 
     /**

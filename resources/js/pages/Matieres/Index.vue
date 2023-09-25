@@ -62,7 +62,7 @@
                         sortable: false,
                         key: 'code',
                     },
-                    { title: 'Libelé', align: 'center', key: 'nom' },
+                    { title: 'Libellé', align: 'center', key: 'nom' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
                 dialog_title: 'Création Matière',
@@ -221,7 +221,7 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Libelé" placeholder="Libelé" v-model="form.nom" isRequired :rules="rules"></text-field>
+                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.nom" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>

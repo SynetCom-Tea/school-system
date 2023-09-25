@@ -163,6 +163,17 @@
         </v-row>
         <v-row v-if="type == '4'">
             <v-col cols="3">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFacultes">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/faculte.png'" class="text-white">
+
+                    </v-img>
+                    <P class="text-h6" style="text-align: center;">Gestion des facultés</P>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="3">
                 <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/department.png'" class="text-white">
@@ -173,17 +184,7 @@
                 </v-card>
 
             </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
-
-                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/faculte.png'" class="text-white">
-
-                    </v-img>
-                    <P class="text-h6" style="text-align: center;">Gestion des facultés</P>
-
-                </v-card>
-
-            </v-col>
+            
             <v-col cols="3">
                 <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
 
@@ -334,6 +335,9 @@ export default {
         },
         getClasses() {
             router.get(route('classes.index', this.type))
+        },
+        getSalles() {
+            router.get(route('salles.index'))
         },
         getFrais() {
             router.get(route('frais.index', this.type))

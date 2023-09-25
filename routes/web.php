@@ -89,5 +89,6 @@ Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
 Route::resource('frais', FraisController::class)->only(['create', 'update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
+Route::resource('salles', SalleController::class);
 
 require __DIR__ . '/auth.php';

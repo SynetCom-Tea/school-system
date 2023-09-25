@@ -59,7 +59,7 @@
                         sortable: false,
                         key: 'code',
                     },
-                    { title: 'Libelé', align: 'center', key: 'libelle' },
+                    { title: 'Libellé', align: 'center', key: 'libelle' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
                 dialog_title: 'Création Classe',
@@ -85,7 +85,6 @@
                 console.log(this.niveaux)
             },
             editItem(item){
-                //console.log('edit',item) 
                 this.dialog_title = 'Modifier la classe' 
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
@@ -236,7 +235,7 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Libelé" placeholder="Libelé" v-model="form.libelle" isRequired :rules="rules"></text-field>
+                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.libelle" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>
