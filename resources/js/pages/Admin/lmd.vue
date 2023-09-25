@@ -79,15 +79,48 @@
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <v-btn
-                    variant="text"
-                    color="error"
-                    @click="goBack"
+                <Button
+                title="retourner à la page precédante"
+                nameButton="Retour"
+                variant="flat"
+                @click="goBack"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
                 >
-                Annuler
-                </v-btn>
+                </Button>
                 <v-spacer></v-spacer>
-                <v-btn variant="text" color="info" :disabled='check' @click="submit">Enregistrer</v-btn>
+                <Button
+                v-if="form.lmd"
+                :disabled='check'
+                title="retourner à la page precédante"
+                nameButton="Approuver"
+                variant="flat"
+                @click="submit"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button>
+                <Button
+                v-else
+                title="Ignorer"
+                nameButton="Ignorer"
+                variant="flat"
+                @click="submit"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button>
+
+
             </v-card-actions>
         </v-form>
     </v-card>
@@ -153,18 +186,7 @@
         submit(){
             this.form.type = this.type
             this.form.post(route('lmd.store'), {
-                onFinish: () => {
-                    this.$swal({
-                        icon: 'success',
-                        title: 'Enregistrement',
-                        text: 'Enregistrer avec succès!',
-                        toast: true,
-                        position: 'top-end',
-                        showConfirmButton: false,
-                        timer: 5000,
-                        timerProgressBar: true,
-                    });
-                },
+
             });
         },
 
