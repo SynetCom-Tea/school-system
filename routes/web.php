@@ -17,6 +17,7 @@ use Modules\Scolarite\Http\Controllers\AnneeClasseController;
 use Modules\Scolarite\Http\Controllers\TuteurController;
 use Modules\Scolarite\Http\Controllers\NiveauController;
 use Modules\Scolarite\Http\Controllers\InscriptionController;
+use Modules\Scolarite\Http\Controllers\FraisController;
 
 
 

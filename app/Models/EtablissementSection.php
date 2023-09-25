@@ -33,4 +33,5 @@ class EtablissementSection extends Model
     {
         return $this->hasMany(Classe::class);
     }
+    
 }

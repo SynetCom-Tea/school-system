@@ -122,6 +122,8 @@
                             }else if(this.$page.props.flash?.message?.type == 'success'){
                                 this.$swal({
                                 icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
                                 title: 'Suppression',
                                 text: this.$page.props.flash?.message?.text,
                                 toast: true,

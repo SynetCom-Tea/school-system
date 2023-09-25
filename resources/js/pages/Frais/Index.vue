@@ -36,7 +36,7 @@
             mdiCurrencyUsd
         },
         layout: AuthenticatedLayout,
-        props: ["frais","section_id", "niveaux"],
+        props: ["frais","section_id", "niveaux","annees"],
         data() {
             return {
                 icons: {
@@ -63,6 +63,8 @@
                         key: 'libelle',
                     },
                     { title: 'Montant', align: 'center', key: 'montant' },
+                    { title: 'Année Scolaire', align: 'center', key: 'annee.libelle' },
+                    { title: 'Niveau', align: 'center', key: 'niveau.libelle' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
                 dialog_title: 'Création Frais',
@@ -72,6 +74,7 @@
                     libelle: '',
                     montant: '',
                     niveau_id: '',
+                    annee_id: '',
                 }),
                 rules: [
                         value => {
@@ -93,6 +96,7 @@
                 this.form.niveau_id = item.niveau_id
                 this.form.libelle = item.libelle
                 this.form.montant = item.montant
+                this.form.annee_id = item.annee_id
                 this.dialog = true
             },
             deleteItem(item){
@@ -124,6 +128,8 @@
                             }else if(this.$page.props.flash?.message?.type == 'success'){
                                 this.$swal({
                                 icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
                                 title: 'Suppression',
                                 text: this.$page.props.flash?.message?.text,
                                 toast: true,
@@ -163,13 +169,15 @@
                     
                 }else if(this.form.id && valid) {
                     
-                     const {id,libele,montant,niveau_id} = this.form
+                     const {id,libelle,montant,niveau_id,annee_id} = this.form
                     
                     this.form.put(route('frais.update', this.form.id), {
                         onFinish: () => {
                            this.close()
                             this.$swal({
                                 icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
                                 title: 'Modification',
                                 text: 'Frais modifié avec succès!',
                                 toast: true,
@@ -188,6 +196,7 @@
                 this.form.niveau_id = ""
                 this.form.libelle = ""
                 this.form.montant = ""
+                this.form.annee_id = ""
                 this.dialog = false
             }
         }
@@ -215,6 +224,21 @@
                                         <v-row>
                                             <v-col cols="12" md="12">
                                                 <Select
+                                                    label="Année"
+                                                    :items="annees"
+                                                    variant="outlined"
+                                                    itemValue="id"
+                                                    itemTitle="libelle"
+                                                    v-model="form.annee_id"
+                                                    isRequired
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    >
+                                                </Select>
+                                            </v-col>
+                                        </v-row>
+                                        <v-row>
+                                            <v-col cols="12" md="12">
+                                                <Select
                                                     label="Niveau"
                                                     :items="niveaux"
                                                     variant="outlined"
@@ -229,13 +253,13 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.libelLe" isRequired :rules="rules"></text-field>
+                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.libelle" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Montant" placeholder="Montant" v-model="form.montant" isRequired :rules="rules"></text-field>
+                                                <text-field type="number" label="Montant" placeholder="Montant" v-model="form.montant" isRequired :rules="rules"></text-field>
                                             
                                             </v-col>
                                         </v-row>
@@ -251,7 +275,7 @@
                                 
                     </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des classes" :headers="headers" :items="frais" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des frais" :headers="headers" :items="frais" :functionOnClickAddButton="create" >
             
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">

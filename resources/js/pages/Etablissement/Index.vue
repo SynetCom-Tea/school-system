@@ -14,10 +14,10 @@ import {
     mdiContentSaveEditOutline,
     mdiCancel,
 } from '@mdi/js'
-import PageToolbar from '@/components/PageToolbar.vue';
+import Toolbar from '@/Components/customizedComponents/Toolbar.vue';
 export default {
     components: {
-        PageToolbar
+        Toolbar
     },
     layout: AuthenticatedLayout,
     props: ["ecoles", "instituts", "universites", "types", "sections"],

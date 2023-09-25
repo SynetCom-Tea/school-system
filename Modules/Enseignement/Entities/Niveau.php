@@ -37,11 +37,6 @@ class Niveau extends Model
         return $this->belongsTo(Section::class);
     }  
 
-    public function classes(): HasMany
-    {
-        return $this->hasMany(Classe::class);
-    }
-
     public function frais(): HasMany
     {
         return $this->hasMany(Frais::class);

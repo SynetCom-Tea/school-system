@@ -42,6 +42,11 @@ class Etablissement extends Model
         return $this->hasMany(Matiere::class);
     }
 
+    public function frais(): HasMany
+    {
+        return $this->hasMany(Frais::class);
+    }
+
     protected function telephone(): Attribute
     {
         return new Attribute(
