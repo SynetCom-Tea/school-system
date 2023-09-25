@@ -95,7 +95,7 @@ class DepartementController extends Controller
         }
         return redirect()->route('departements.index')->with('message', [
             'type' => 'success',
-            'text' => "Le Département a été supprimé avec succès !",
+            'text' => "Le Département a été supprimée avec succès !",
         ]);
     }
 }
