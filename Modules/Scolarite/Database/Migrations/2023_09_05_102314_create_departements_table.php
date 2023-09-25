@@ -16,7 +16,7 @@ return new class extends Migration
         Schema::create('departements', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->string('libele');
+            $table->string('libelle');
             $table->foreignIdFor(\Modules\Scolarite\Entities\Faculte::class)
                 ->references('id')->on('facultes')->constrained()
                 ->onUpdate('cascade')

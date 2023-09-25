@@ -22,10 +22,10 @@ class FraisController extends Controller
     public function index($type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $frais=Frais::with('annee','niveau')->whereHas('niveau',function ($query) use ($type){
+        $frais=Frais::with('annee','niveau')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
 
             $query->where('section_id',$type);})->get();
-        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+
         return Inertia::render('Frais/Index', [
             'frais' => $frais,
             'section_id' => $type,
@@ -51,7 +51,6 @@ class FraisController extends Controller
     public function store(Request $request,$type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
         request()->validate([
             'montant' => 'required',
             'libelle' => 'required|string',

@@ -19,6 +19,7 @@ use Modules\Scolarite\Http\Controllers\NiveauController;
 use Modules\Scolarite\Http\Controllers\InscriptionController;
 use Modules\Scolarite\Http\Controllers\FraisController;
 use Modules\Scolarite\Http\Controllers\FaculteController;
+use Modules\Scolarite\Http\Controllers\DepartementController;
 
 
 
@@ -86,6 +87,7 @@ Route::resource('etablissements', EtablissementController::class);
 Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->name('etablissement.activer');
 Route::resource('inscriptions', InscriptionController::class);
 Route::resource('facultes', FaculteController::class);
+Route::resource('departements', DepartementController::class);
 Route::resource('matieres', MatiereController::class);
 Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
 Route::resource('frais', FraisController::class)->only(['create', 'update', 'destroy']);

@@ -174,7 +174,7 @@
 
             </v-col>
             <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getDepartements">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/department.png'" class="text-white">
 
@@ -263,8 +263,6 @@
 
   
 <script>
-import MatiereForm from '@/components/admin/matiere.vue';
-
 import {
     router,
     useForm
@@ -344,6 +342,9 @@ export default {
         },
         getFacultes() {
             router.get(route('facultes.index'))
+        },
+        getDepartements() {
+            router.get(route('departements.index'))
         },
     },
     computed: {
