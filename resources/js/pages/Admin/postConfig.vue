@@ -342,6 +342,9 @@ export default {
         getFrais() {
             router.get(route('frais.index', this.type))
         },
+        getFacultes() {
+            router.get(route('facultes.index'))
+        },
     },
     computed: {
 
