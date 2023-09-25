@@ -77,7 +77,7 @@
                                     class="mt-2"
                                     item-title="libelle"
                                     item-value="id"
-                                    :items="uetabs"
+                                    :items="ues"
                                     v-model="ue.ue"
                                     @update:modelValue="submitForm(form.ues[i],null,null)"
                                     chips>
@@ -216,7 +216,6 @@ import Ue from './ue.vue';
         step: 1,
         importation: false,
         section: null,
-        uetabs: [],
         form: useForm({
             filiere: null,
             niveau: null,
@@ -225,22 +224,6 @@ import Ue from './ue.vue';
         }),
     }),
     watch: {
-    // Surveillez les valeurs spécifiques ici
-        // filieres(data,old){
-        //     console.log('nouvelle1111',data)
-        //     if(this.type == '3'){
-        //         this.tabsFilieres = data ? data.filieres : []
-        //     }else if(this.type == '4'){
-        //         if (data.departements && Array.isArray(data.departements)) {
-        //             data.departements.forEach(element => {
-        //                 this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
-        //             });
-        //         }
-        //     }
-        // },
-        ues(data1){
-            this.uetabs = data1
-        },
     },
     methods: {
         onclickAlertButton(type) {
@@ -260,13 +243,13 @@ import Ue from './ue.vue';
                 } 
             } 
         },
-        onSelectChange(itemToRemove){
-            const indexToRemove = this.uetabs.indexOf(itemToRemove);
-            if (indexToRemove !== -1) {
-                // Si l'élément existe dans le tableau, supprimez-le
-                this.uetabs.splice(indexToRemove, 1);
-            }
-        },
+        // onSelectChange(itemToRemove){
+        //     const indexToRemove = this.uetabs.indexOf(itemToRemove);
+        //     if (indexToRemove !== -1) {
+        //         // Si l'élément existe dans le tableau, supprimez-le
+        //         this.uetabs.splice(indexToRemove, 1);
+        //     }
+        // },
         formatNiveauLabel(item) {
             if(item){
                 return `${item?.code} - ${item?.libelle}`;

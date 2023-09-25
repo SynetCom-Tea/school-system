@@ -95,8 +95,7 @@
             <v-card v-if="!importation">
                  <v-card-text>
                     <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
-                        <v-col md="3" v-if="type == '3' || type == '4'" >
-
+                        <v-col md="3" v-if="type == '3' || type == '4'">
                             <Autocomplete
                                 :items="filieres"
                                 class="mt-2"

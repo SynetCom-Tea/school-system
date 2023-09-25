@@ -24,14 +24,11 @@ class EnseignementController extends Controller
      */
     public function index()
     {
-        // dd(Auth::user());
         return Inertia::render('Admin/accueil');
     }
 
     public function config($type)
     {
-        // dd(Auth::user());
-        
         $table = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first();
         $id = $table->id;
         $lmd = $table->systeme_lmd_id;
@@ -79,6 +76,12 @@ class EnseignementController extends Controller
         } 
         return redirect()->route('admin.config',$request->type);
        
+    }
+
+    public function storeConfig(Request $request)
+    {
+        dd('je suis la');
+
     }
 
     /**

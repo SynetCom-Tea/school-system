@@ -178,7 +178,13 @@
         formFrais:{},
         formUE:{},
         form: useForm({
-        matieres: [],
+          matieres: [],
+          classes: [],
+          salles: [],
+          frais: [],
+          niveauMatiere: [],
+          niveauMatiereSup: [],
+          niveauMatiereSansUe: [],
         }),
     }),
     created(){
@@ -188,9 +194,31 @@
       // Envoi formulaire vers le backend
 
       sendForm() {
+        console.log('hdhdghdghdghfg')
         // 1er cas
-          if(type == '1' || type == '2'){
-
+          if(this.type == '1' || this.type == '2'){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.niveauMatiere = this.formNiveauMatiere
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                    // this.form.reset()
+                    if (this.$page.props.flashd.messages) {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'Création',
+                            text: this.$page.props.flashd.messages,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+                },
+            });
+            
           }else if(type == '3' && lmd == null){
 
           }else if(type == '3' && lmd != null){
@@ -202,7 +230,9 @@
           }
         },
 
-        // fin envoi
+      // fin envoi
+
+      // Validation des formulaires
       matiereFormValid(v){
         this.formValid = v
       },
@@ -234,39 +264,10 @@
       filiereFormValid(v){
         this.formValid = v
       },
-      async beforeChange()
-      {
-        const isValid = await this.validateTabSwitch(); // Utilisation d'async/await
-        if (isValid) {
-          return true; // La validation réussit, permet le passage à l'onglet suivant
-        } else {
-          this.$swal.fire({
-            title: "Echec de passage à l'étape suivante",
-            text: "Merci de vérifier votre formulaire!",
-            icon: "warning",
-            confirmButtonText: "OK",
-          });
-          return false;
-        }
-      },
-      async validateTabSwitch(validationResult,activeTabIndex) {
-        return new Promise((resolve) => {
-          setTimeout(() => {
-            const isValid = this.formValid; // Remplacez par votre propre logique de validation
-            resolve(isValid);
-          }, 500); // Délai de 2 secondes pour simuler une opération asynchrone
-        });
-      },
-        handleLoading(loading) {
-          this.loadingWizard = loading
-        },
-        handleValidate(validationResult,activeTabIndex) {
-        },
-        handleChange(prevIndex, nextIndex) {
-        },
+      // Validation des formulaires
 
-        // fonction de recuperation des formulaires
-        getMatiereForm(donnees) {
+      // Recuperation de données des formulaires
+       getMatiereForm(donnees) {
           this.formMatiere = donnees
           console.log('Données du formulaire de la matiere :', this.formMatiere);
         },
@@ -313,32 +314,69 @@
           this.formFaculte = donnees
           console.log('Données du formulaire de faculté :', this.formFaculte);
         },
+        // Fin recuperation des formulaires
 
-        onChange(){
-          if(this.type == '1' || this.type == '2'){
-            this.tabTitle3 = 'FRAIS'
-            this.tabTitle4 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
-          }else if(this.type == '3' && this.lmd == null){
-            this.tabTitle3 = 'FILIERES'
-            this.tabTitle4 = 'FRAIS'
-            this.tabTitle5 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
-          }else if(this.type == '3' && this.lmd != null){
-            this.tabTitle3 = 'FILIERES'
-            this.tabTitle4 = 'FRAIS'
-            this.tabTitle5 = 'UNITES D\'ENSEIGNEMENT'
-            this.tabTitle6 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
-          }else if(this.type == '4' && this.lmd == null){
+
+      // fUNCTION DE FORM WIZARD
+      async beforeChange()
+      {
+        const isValid = await this.validateTabSwitch(); // Utilisation d'async/await
+        if (isValid) {
+          return true; // La validation réussit, permet le passage à l'onglet suivant
+        } else {
+          this.$swal.fire({
+            title: "Echec de passage à l'étape suivante",
+            text: "Merci de vérifier votre formulaire!",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+          return false;
+        }
+      },
+      async validateTabSwitch(validationResult,activeTabIndex) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const isValid = this.formValid; // Remplacez par votre propre logique de validation
+            resolve(isValid);
+          }, 500); // Délai de 2 secondes pour simuler une opération asynchrone
+        });
+      },
+      handleLoading(loading) {
+        this.loadingWizard = loading
+      },
+      handleValidate(validationResult,activeTabIndex) {
+      },
+      handleChange(prevIndex, nextIndex) {
+      },
+      // FIN fUNCTION DE FORM WIZARD
+
+      // Function pour le titre du stepper
+      onChange(){
+        if(this.type == '1' || this.type == '2'){
+          this.tabTitle3 = 'FRAIS'
+          this.tabTitle4 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+        }else if(this.type == '3' && this.lmd == null){
+          this.tabTitle3 = 'FILIERES'
+          this.tabTitle4 = 'FRAIS'
+          this.tabTitle5 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+        }else if(this.type == '3' && this.lmd != null){
+          this.tabTitle3 = 'FILIERES'
+          this.tabTitle4 = 'FRAIS'
+          this.tabTitle5 = 'UNITES D\'ENSEIGNEMENT'
+          this.tabTitle6 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+        }else if(this.type == '4' && this.lmd == null){
+          this.tabTitle3 = 'FACULTES'
+          this.tabTitle4 = 'FILIERES'
+          this.tabTitle5 = 'FRAIS'
+          this.tabTitle6 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+          }else if(this.type == '4' && this.lmd != null){
             this.tabTitle3 = 'FACULTES'
             this.tabTitle4 = 'FILIERES'
             this.tabTitle5 = 'FRAIS'
-            this.tabTitle6 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
-            }else if(this.type == '4' && this.lmd != null){
-              this.tabTitle3 = 'FACULTES'
-              this.tabTitle4 = 'FILIERES'
-              this.tabTitle5 = 'FRAIS'
-              this.tabTitle6 = 'UNITES D\'ENSEIGNEMENT'
-            }
+            this.tabTitle6 = 'UNITES D\'ENSEIGNEMENT'
+          }
       },
+      // Fin function pour le titre du stepper
     },
     computed: {
         doneButtonOptions() {
