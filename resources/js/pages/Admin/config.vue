@@ -74,7 +74,7 @@
                     <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" @ueFormValid="ueFormValid" />
                 </v-card-text>
                 <v-card-text v-show="type=='3'&& lmd == null && !loadingWizard">
-                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatieresansUEFormValid="niveauMatieresansUEFormValid" :filieres="formFiliere"/>
                 </v-card-text>
             </v-card>
       </tab-content>
@@ -93,7 +93,7 @@
       <tab-content title="AFFECTATION DE MATIERES AUX NIVEAUX" v-if="type=='4'" :before-change="beforeChange">
         <v-card  flat>
                 <v-card-text v-show="lmd == null && !loadingWizard">
-                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere"/>
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatieresansUEFormValid="niveauMatieresansUEFormValid" :filieres="formFiliere"/>
                 </v-card-text>
                 <v-card-text v-show="lmd != null && !loadingWizard" >
                     <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues" @niveauMatiereSupFormValid="niveauMatiereSupFormValid"/>
@@ -240,6 +240,10 @@
       ueFormValid(v){
         this.formValid = v
       },
+      niveauMatieresansUEFormValid(v){
+        this.formValid = v
+      },
+
       niveauMatiereSupFormValid(v){
         this.formValid = v
       },

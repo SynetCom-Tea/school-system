@@ -51,7 +51,8 @@
                             itemTitle="code"
                             :isRequired="true"
                             label="Filieres"
-                            :items="tabsFilieres"
+                            @update:modelValue="submitForm(any)"
+                            :items="filieres"
                         >
                         </Autocomplete>
                     </v-col>
@@ -62,9 +63,10 @@
                             v-model="form.niveau"
                             :isRequired="true"
                             :itemTitle="formatNiveauLabel"
+                            @update:modelValue="submitForm(any)"
                             label="Niveaux"
                             :items="niveaux"
-                        > 
+                        >
                         </Autocomplete>
 
 
@@ -88,7 +90,7 @@
                                     v-model="matiere.matiere"
                                     :isRequired="true"
                                     itemTitle="libelle"
-                                    @update:modelValue="verify(matiere,i, $event)"
+                                    @update:modelValue="submitForm(matiere)"
                                     label="Matieres"
                                     :items="matieres"
                                 >
@@ -97,11 +99,11 @@
                             </v-col>
                             <v-col md="2">
 
-                                <TextField label="Coeff" class="mt-2" :isRequired="true" placeholder="Coeff" required v-model="matiere.coefficient"></TextField>
+                                <TextField label="Coeff" class="mt-2" :isRequired="true" placeholder="Coeff"   @update:modelValue="submitForm(matiere)" v-model="matiere.coefficient"></TextField>
                             </v-col>
                             <v-col md="2">
 
-                                <TextField label="VH" class="mt-2" :isRequired="true" placeholder="VH" required v-model="matiere.volume_horaire"></TextField>
+                                <TextField label="VH" class="mt-2" :isRequired="true"   @update:modelValue="submitForm(matiere)" placeholder="VH"  v-model="matiere.volume_horaire"></TextField>
                             </v-col>
                             <v-col md="1">
                                 <br>
@@ -166,7 +168,6 @@
         importation: false,
         section: null,
         uetabs: [],
-        tabsFilieres: [],
         form: useForm({
             filiere: null,
             niveau: null,
@@ -218,51 +219,28 @@
                 this.addRow()
             }
         },
-        submitForm() {
-            // Empêche l'envoi du formulaire par défaut
-            event.preventDefault();
-            // Valide le formulaire avant de l'envoyer
-            if (this.isValid()) {
-                // this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section.libelle == this.section)
-                this.$emit('formSubmitted', this.form);
-                this.$swal.fire({
-                    title: 'Réussi',
-                    text: "Mise à jour réussi avec succes!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-                // this.$swal("Enregistrement réussi avec succes!")
-            }else{
-                // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-                this.$swal.fire({
-                    title: 'Erreur',
-                    text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-                    icon: 'warning',
-                    confirmButtonText: 'OK',
-                });
-
-            }
+        async submitForm(element,) {
+            await this.verify(element)
+            await this.isValid()
+            console.log('isValid',this.isValid())
+            this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section == this.section)
+            this.$emit('formSubmitted', this.form);
+            this.$emit("niveauMatieresansUEFormValid", this.isValid());
         },
-        isValid() {
-            // let lmd = false
-            // let fichier = false
-            // let valid = false
-            // if(this.form.lmd && this.form.type_lmd != null){
-            //     lmd = true
-            // }else if(!this.form.lmd && this.form.type_lmd == null){
-            //     lmd = true
-            // }
-            // if(this.importation && this.form.fichier_matiere != null){
-            //     fichier = true
-            // }else if(!this.importation && !this.form.matieres.find(el => el.code == null || el.libelle == null || el.code == '' || el.libelle == '')){
-            //     fichier = true
-            // }
-            // if(lmd && fichier){
-            //     valid = true
-            // }else{
-            //     valid = false
-            // }
-            return true
+        async isValid() {
+            let fichier = false
+            let valid = false
+            if(this.importation && this.form.fichier_matiere != null){
+                fichier = true
+            }else if(!this.importation && !this.form.matieres.find(el => this.form.filiere==null || this.form.filiere=='' || this.form.niveau == null || this.form.niveau == '' || this.form.matiere == '' || el.matiere == null || el.matiere == '' || el.coefficient == 0 || el.coefficient == null || el.coefficient.trim() == ''|| el.volume_horaire == null || el.volume_horaire.trim() == '')){
+                fichier = true
+            }
+            if(fichier){
+                valid = true
+            }else{
+                valid = false
+            }
+            return valid
         },
         goBack() {
             router.get(route('etablissements.index'))
@@ -277,14 +255,16 @@
         removeRow(matiere) {
             this.form.matieres = this.form.matieres.filter((el) => el !== matiere)
         },
-        async verify(matiere) {
+        async verify(element) {
             // console.log('ue',ue,'index',index,'matiere',matiere)
-            const array = this.form.matieres.filter(el => el.matiere !== null && el.matiere == matiere.matiere)
+            if(element){
+            const array = this.form.matieres.filter(el => el.matiere !== null && el.matiere == element.matiere)
             if (array.length > 1) {
                 this.removeRow(matiere)
                 this.$swal("L'élément existe déjà !")
                 // this.$alert.error("L'élément existe déjà !");
             }
+        }
         },
     },
     created(){
@@ -295,8 +275,8 @@
                 this.filieres.departements.forEach(element => {
                     this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
                 });
-            } 
-        } 
+            }
+        }
     },
     mounted() {
         // this.addRowInit()
