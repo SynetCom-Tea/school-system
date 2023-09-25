@@ -109,6 +109,7 @@ export default {
                         item-title="libelle"
                         v-model="form.section"
                         multiple
+                        ships
                         v-if="form.type_etablissement_id == 2"
                     ></Autocomplete>
                     </v-col>

@@ -7,7 +7,9 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
-use App\Models\Matiere;
+use Illuminate\Support\Facades\Auth;
+
+use Modules\Enseignement\Entities\Matiere;
 
 class MatiereController extends Controller
 {
@@ -16,8 +18,9 @@ class MatiereController extends Controller
      */
     public function index()
     {
+        $ets_id = Auth::user()->etablissement_id;
         return Inertia::render('Matieres/Index', [
-            'matieres' => Matiere::all()
+            'matieres' => Matiere::where('etablissement_id',$ets_id)->get(),
         ]);
     }
 
@@ -34,11 +37,14 @@ class MatiereController extends Controller
      */
     public function store(Request $request)
     {
+        $ets_id = Auth::user()->etablissement_id;
         request()->validate([
             'code' => 'required|string',
-            'libele' => 'required|string',
+            'nom' => 'required|string',
         ]);
-        Matiere::create($request->all());
+        $data = $request->all();
+        $data['etablissement_id'] = $ets_id;
+        Matiere::create($data);
         return redirect()->route('matieres.index')->with('message', [
             'type' => 'success',
             'text' => "La matière a été créée avec succès !",

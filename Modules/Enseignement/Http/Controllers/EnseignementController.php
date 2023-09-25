@@ -44,6 +44,19 @@ class EnseignementController extends Controller
         ]);
     }
 
+    //Pour la gestion des cruds après la configuration
+    public function gestion($type)
+    {
+        // dd(Auth::user());
+        $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        $id = $table->id;
+        return Inertia::render('Admin/postConfig',[
+            'type' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get(),
+        ]);
+    }
+
     public function lmd($type)
     {
         return Inertia::render('Admin/lmd', [

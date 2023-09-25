@@ -18,6 +18,8 @@ class Niveau extends Model
         'section_id'
     ];
 
+    protected $fillable = ['code','libelle','section_id'];
+    
     protected static function newFactory()
     {
         return \Modules\Enseignement\Database\factories\NiveauFactory::new();
@@ -27,13 +29,23 @@ class Niveau extends Model
     {
         return $this->hasMany(NiveauMatiere::class);
     }
-    public function classes(): HasMany
-    {
-        return $this->hasMany(Classe::class);
-    }
 
     /*  public function niveau(): BelongsTo
     {
         return $this->belongsTo(Niveau::class);
     } */
+     public function section(): BelongsTo
+    {
+        return $this->belongsTo(Section::class);
+    }  
+
+    public function classes(): HasMany
+    {
+        return $this->hasMany(Classe::class);
+    }
+
+    public function frais(): HasMany
+    {
+        return $this->hasMany(Frais::class);
+    }
 }
