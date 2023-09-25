@@ -22,6 +22,7 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Inscription;
 
 class UserController extends Controller
@@ -35,15 +36,23 @@ class UserController extends Controller
         $list = [];
         $authUser =  Auth::user();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
-        if ($params == "classe") {
-            if ($nameRole == 'Administrateur') {
-                $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
-                    $query->where('etablissement_id', (int)$authUser->etablissement_id);
-                })->with('apprenant', 'apprenant.etablissement')->get();
-            }
+        if (Auth::user() == null || Auth::user()->type_user == null) {
+            return redirect('/login')->with('message', [
+                'type' => 'error',
+                'text' => 'Session expiré!',
+            ]);
         }
-        if ($params == "organizationStudents") {
-            if ($nameRole == 'Administrateur') {
+        if ($nameRole == 'Administrateur') {
+            if ($params == "primaireClasses") {
+
+                $list = Niveau::where('section_id', 1)->get();
+            }
+            if ($params == "secondaireClasses") {
+
+                $list = Niveau::where('section_id', 2)->get();
+            }
+            if ($params == "organizationStudents") {
+
                 $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
                     $query->where('etablissement_id', (int)$authUser->etablissement_id);
                 })->with('apprenant', 'apprenant.etablissement')->get();
@@ -57,7 +66,12 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
-
+        if (Auth::user() == null || Auth::user()->type_user == null) {
+            return redirect('/login')->with('message', [
+                'type' => 'error',
+                'text' => 'Session expiré!',
+            ]);
+        }
         return Inertia::render('User/Index', [
             'users' => User::where('user_id', Auth::user()->id)->get()
         ]);

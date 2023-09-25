@@ -6,20 +6,38 @@
       toolbarTitle="Inscriptions"
     ></Toolbar>
     <div class="mt-3">
-      <v-container class="bg-surface-variant mb-6">
+      <v-container class="bg-primary-variant mb-6">
         <v-row align="center" no-gutters>
-          <v-col cols="auto">
-            <!-- <Autocomplete
-                  :items="listSection"
-                  class="mt-2"
-                  v-model="section"
-                  item-value="id"
-                  item-title="code"
-                  chips
-                  closable-chips
-                  color="blue-grey-lighten-2"
-                  label="Section"
-                ></Autocomplete> -->
+          <v-col cols="4">
+            <Autocomplete
+              :items="getSections"
+              class="mt-2"
+              v-model="section"
+              itemValue="id"
+              itemTitle="libelle"
+              isRequired
+              label="Section"
+            ></Autocomplete>
+            <Autocomplete
+              v-if="section == 1"
+              :items="getPrimaireClasses"
+              class="mt-2"
+              v-model="primaire"
+              itemValue="id"
+              itemTitle="libelle"
+              isRequired
+              label="Niveau primaire"
+            ></Autocomplete>
+            <Autocomplete
+              v-if="section == 2"
+              :items="getSecondaireClasses"
+              class="mt-2"
+              v-model="secondaire"
+              itemValue="id"
+              itemTitle="libelle"
+              isRequired
+              label="Niveau Secondaire"
+            ></Autocomplete>
           </v-col>
         </v-row>
       </v-container>
@@ -79,6 +97,10 @@ export default {
   // layout: AuthenticatedLayout,
   data() {
     return {
+      annee: null,
+      section: null,
+      primaire: null,
+      secondaire: null,
       headers: [
         {
           title: "N°",
@@ -136,6 +158,7 @@ export default {
       onDetailUpdate: false,
       dialogDetailUpdate: true,
       selectedItemForUpdate: "",
+      listSections: [],
       form: useForm({
         matricule: "",
         nom: "",
@@ -154,6 +177,19 @@ export default {
   async mounted() {
     console.log("page:", this.$page.props);
     await this.getListUsers();
+    this.getSections;
+  },
+  computed: {
+    getSections() {
+      let list = [];
+      let page = this.$page.props.sections;
+      if (page) {
+        list = page[0].sections;
+      }
+      console.log("list:", list);
+      console.log("page22:", list);
+      return list ?? [];
+    },
   },
   methods: {
     async getListUsers() {
