@@ -179,12 +179,15 @@
         formUE:{},
         form: useForm({
           matieres: [],
+          section: null,
+          systemeLMD: null,
           classes: [],
           salles: [],
+          facultes: [],
+          filieres: [],
           frais: [],
+          Ue:[],
           niveauMatiere: [],
-          niveauMatiereSup: [],
-          niveauMatiereSansUe: [],
         }),
     }),
     created(){
@@ -201,6 +204,7 @@
             this.form.classes = this.formClasse
             this.form.frais = this.formFrais
             this.form.niveauMatiere = this.formNiveauMatiere
+            this.form.section=this.type
             this.form.post(route('config.store'), {
                 onFinish: () => {
                     // this.form.reset()
@@ -218,14 +222,116 @@
                     }
                 },
             });
-            
-          }else if(type == '3' && lmd == null){
 
-          }else if(type == '3' && lmd != null){
+          }else if(this.type == '3' && this.lmd == null){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.filieres= this.formFiliereDonnees
+            this.form.niveauMatiere = this.formNiveauMatiereSansUe
+            this.form.section=this.type
+            this.form.systemeLMD= 0
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                    // this.form.reset()
+                    if (this.$page.props.flashd.messages) {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'Création',
+                            text: this.$page.props.flashd.messages,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+                },
+            });
 
-          }else if(type == '4' && lmd == null){
 
-          }else if(type == '4' && lmd != null){
+          }else if(this.type == '3' && this.lmd != null){
+
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.filieres= this.formFiliereDonnees
+            this.form.Ue= this.formUE
+            this.form.niveauMatiere = this.formNiveauMatiereSup
+            this.form.section=this.type
+            this.form.systemeLMD= this.lmd
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                    // this.form.reset()
+                    if (this.$page.props.flashd.messages) {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'Création',
+                            text: this.$page.props.flashd.messages,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+                },
+            });
+
+          }else if(this.type == '4' && this.lmd == null){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.facultes= this.formFaculte
+            this.form.filieres= this.formFiliereDonnees
+            this.form.niveauMatiere = this.formNiveauMatiereSansUe
+            this.form.section=this.type
+            this.form.systemeLMD= 0
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                    // this.form.reset()
+                    if (this.$page.props.flashd.messages) {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'Création',
+                            text: this.$page.props.flashd.messages,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+                },
+            });
+
+          }else if(this.type == '4' && this.lmd != null){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.facultes= this.formFaculte
+            this.form.filieres= this.formFiliereDonnees
+            this.form.Ue= this.formUE
+            this.form.niveauMatiere = this.formNiveauMatiereSup
+            this.form.section=this.type
+            this.form.systemeLMD= this.lmd
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                    // this.form.reset()
+                    if (this.$page.props.flashd.messages) {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'Création',
+                            text: this.$page.props.flashd.messages,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    }
+                },
+            });
 
           }
         },
@@ -294,10 +400,10 @@
         getFiliereForm(donnees) {
             if(this.type == '3'){
               this.formFiliere = donnees.filieres
-              console.log('Données du formulaire de la filiere sup :',this.formFiliere);  
+              console.log('Données du formulaire de la filiere sup :',this.formFiliere);
             }else if(this.type == '4'){
               this.formFiliere = donnees.tabsFilieres
-              console.log('Données du formulaire de la filiere :',this.formFiliere);  
+              console.log('Données du formulaire de la filiere :',this.formFiliere);
             }
             this.formFiliereDonnees = donnees
           },

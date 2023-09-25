@@ -42,7 +42,7 @@ class EnseignementController extends Controller
     }
 
     public function lmd($type)
-    {   
+    {
         return Inertia::render('Admin/lmd',[
             'type' => $type,
             'lmds' => SystemeLmd::all()
@@ -50,7 +50,7 @@ class EnseignementController extends Controller
     }
 
     public function storelmd(Request $request)
-    {   
+    {
         // dd($request->type_lmd);
         $eva = null;
         $ligne = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$request->type)->first();
@@ -72,15 +72,25 @@ class EnseignementController extends Controller
                     'regime_evaluation'=>$eva
                 ]);
             }
-            
-        } 
+
+        }
         return redirect()->route('admin.config',$request->type);
-       
+
     }
 
     public function storeConfig(Request $request)
     {
-        dd('je suis la');
+        if ($request->section==1 || $request->section==2) {
+            dd("salut c'est section primaire et secondaire");
+        }else if($request->section==3 && $request->systemeLMD==1){
+            dd("salut c'est superieur et LMD est true");
+        }else if($request->section==3 && $request->systemeLMD==0){
+            dd("salut c'est superieur et LMD est false");
+        }else if($request->section==4 && $request->systemeLMD==1){
+            dd("salut c'est Université et LMD est true");
+        }else if($request->section==4 && $request->systemeLMD==0){
+            dd("salut c'est Université et LMD est false");
+        }
 
     }
 
