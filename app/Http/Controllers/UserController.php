@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Apprenant;
 use App\Models\ClasseAnnee;
-use Modules\Enseignement\Entities\Enseignant;
 use App\Models\Role;
 use Inertia\Inertia;
 use Inertia\Response;
