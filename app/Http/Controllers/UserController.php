@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Annee;
 use App\Models\User;
 use App\Models\Apprenant;
+use App\Models\ApprenantClasseAnnee;
 use App\Models\ClasseAnnee;
 use Modules\Enseignement\Entities\Enseignant;
 use App\Models\PermissionRole;
@@ -30,19 +32,88 @@ class UserController extends Controller
     /**
      * Display a listing of the resource.
      */
+    //  $terre = ClasseAnnee::whereHas('annee', function ($query) use ($year, $section) {
+    //             $query->where('libelle', $year);
+    //         })->whereHas('classe', function ($query) use ($niveau, $findEtabSection) {
+    //             $query->where('niveau_id', $niveau)->where(
+    //                 'etablissement_section_id',
+    //                 $findEtabSection->id
+    //             );
+    //         })->with('annee', 'classe', 'classe.niveau')->get();
+    //         dump('$terre:', $terre);
+    public function getInscriptionsByYearAndSection($year, $section, $niveau)
+    {
+
+        $data = null;
+        $list = [];
+        $authUser =  Auth::user();
+        $collection = collect();
+        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
+
+        if ($nameRole == 'Administrateur') {
+
+            $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
+                $query->where('etablissement_id', (int)$authUser->etablissement_id);
+            })->with('apprenant', 'apprenant.etablissement', 'apprenant.etablissement')->get();
+
+            $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first();
+
+            $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
+                ->whereHas('classe_annee', function ($query) use ($year, $niveau, $findNiveau, $findEtabSection) {
+                    $query->whereHas('annee', function ($query) use ($year) {
+                        $query->where('libelle', $year);
+                    })->whereHas('classe', function ($query) use ($niveau, $findNiveau, $findEtabSection) {
+                        if ($findNiveau->count() != 0) {
+                            return $query->where('niveau_id', $niveau)->where(
+                                'etablissement_section_id',
+                                $findEtabSection->id
+                            );
+                        }
+                        return $query->where(
+                            'etablissement_section_id',
+                            $findEtabSection->id
+                        );
+                    });
+                })
+                ->get();
+
+
+            $list->map(function ($element) use ($apprenantsCABySection, $collection) {
+                $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
+                    return $el['apprenant_id'] == $element['apprenant_id'];
+                });
+                return $collection->push($vTerre->filter()->all());
+            });
+
+            // dd('$examples:', $collection->unique()->filter()->all());
+        }
+        $data = $collection->unique()->filter()->all();
+        $flattened = $collection->flatten()->unique()->filter();
+
+        $flattened->all();
+        // dd($flattened);
+        return $flattened ?? [];
+    }
     public function getUsersByCategory($params)
     {
+        // dd('$params:', $params);
         $data = null;
         $list = [];
         $authUser =  Auth::user();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
-        if (Auth::user() == null || Auth::user()->type_user == null) {
-            return redirect('/login')->with('message', [
-                'type' => 'error',
-                'text' => 'Session expiré!',
-            ]);
-        }
+        // if (Auth::user() == null || Auth::user()->type_user == null) {
+        //     return redirect('/login')->with('message', [
+        //         'type' => 'error',
+        //         'text' => 'Session expiré!',
+        //     ]);
+        // }
         if ($nameRole == 'Administrateur') {
+            if ($params == "allyears") {
+
+                $list = Annee::all();
+            }
+
             if ($params == "primaireClasses") {
 
                 $list = Niveau::where('section_id', 1)->get();
@@ -52,15 +123,12 @@ class UserController extends Controller
                 $list = Niveau::where('section_id', 2)->get();
             }
             if ($params == "organizationStudents") {
-
                 $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
                     $query->where('etablissement_id', (int)$authUser->etablissement_id);
-                })->with('apprenant', 'apprenant.etablissement')->get();
+                })->with('apprenant', 'apprenant.etablissement', 'apprenant.etablissement.sections')->get();
             }
         }
         $terre = ClasseAnnee::with('annee', 'classe', 'classe.niveau')->get();
-        // dump('T:', EtablissementSection::all());
-        // dump('Test:', $terre);
 
         return $list ?? [];
     }

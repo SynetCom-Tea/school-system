@@ -64,6 +64,7 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
         Route::resource('users', UserController::class);
     });
+    Route::get('get-inscriptions-by-year-and-section/{year}/{section}/{niveau}', [UserController::class, 'getInscriptionsByYearAndSection'])->name('getInscriptionsByYearAndSection');
     Route::get('get-users-by-category/{params}', [UserController::class, 'getUsersByCategory'])->name('getUsersByCategory');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

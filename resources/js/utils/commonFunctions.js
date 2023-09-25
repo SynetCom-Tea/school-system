@@ -1,3 +1,56 @@
+export   async function  getAcademicYears() {
+      let axiosResult = [];
+      axiosResult = await axios
+        .get(
+          route("getUsersByCategory", {
+            params: "allyears",
+          })
+        )
+        .then((res) => {
+          if (typeof res.data == "string" || typeof res.data == "undefined") {
+            this.$toast.error("Données non valides!");
+          } else {
+            return res.data;
+          }
+        });
+      return axiosResult ?? [];
+    }
+
+export async function getNiveauxPrimaire() {
+      let axiosResult = [];
+      axiosResult = await axios
+        .get(
+          route("getUsersByCategory", {
+            params: "primaireClasses",
+          })
+        )
+        .then((res) => {
+          if (typeof res.data == "string" || typeof res.data == "undefined") {
+            this.$toast.error("Données non valides!");
+          } else {
+            return res.data;
+          }
+        });
+      return axiosResult ?? [];
+    }
+export async function  getNiveauxSecondaire() {
+      let axiosResult = [];
+      axiosResult = await axios
+        .get(
+          route("getUsersByCategory", {
+            params: "secondaireClasses",
+          })
+        )
+        .then((res) => {
+          if (typeof res.data == "string" || typeof res.data == "undefined") {
+            this.$toast.error("Données non valides!");
+          } else {
+            return res.data;
+          }
+        });
+      return axiosResult ?? [];
+    }
+
 export function getTypeEtablissementById(vId) {
   let formatVId = vId ? parseInt(vId) : null
   if (formatVId) {

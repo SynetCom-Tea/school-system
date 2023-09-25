@@ -4,10 +4,11 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
-class ApprenantClasse extends Model
+class ApprenantClasseAnnee extends Model
 {
-    use HasFactory;
+    use HasFactory, SoftDeletes;
     protected $fillable = ['apprenant_id', 'classe_annee_id'];
 
     public function apprenant()
