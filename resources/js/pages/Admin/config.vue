@@ -174,6 +174,7 @@
         formNiveauMatiere: {},
         formFaculte: {},
         formFiliere:[],
+        formFiliereDonnees:{},
         formFrais:{},
         formUE:{},
         form: useForm({
@@ -198,23 +199,6 @@
 
           }else if(type == '4' && lmd != null){
 
-          }
-        // 2e cas
-
-          if(type == '1' || type == '2'){
-
-          }else if(type == '3'){
-            if(lmd == null){
-
-            }else{
-
-            }
-          }else if(type == '4'){
-            if(lmd == null){
-
-            }else{
-
-            }
           }
         },
 
@@ -280,6 +264,8 @@
         },
         handleChange(prevIndex, nextIndex) {
         },
+
+        // fonction de recuperation des formulaires
         getMatiereForm(donnees) {
           this.formMatiere = donnees
           console.log('Données du formulaire de la matiere :', this.formMatiere);
@@ -306,13 +292,13 @@
         },
         getFiliereForm(donnees) {
             if(this.type == '3'){
-              this.formFiliere = donnees
+              this.formFiliere = donnees.filieres
               console.log('Données du formulaire de la filiere sup :',this.formFiliere);  
             }else if(this.type == '4'){
               this.formFiliere = donnees.tabsFilieres
               console.log('Données du formulaire de la filiere :',this.formFiliere);  
-          
             }
+            this.formFiliereDonnees = donnees
           },
 
         getUEForm(donnees) {
