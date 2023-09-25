@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Enseignement\Database\Seeders;
+namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use Illuminate\Database\Eloquent\Model;
@@ -18,16 +18,20 @@ class MatiereTableSeeder extends Seeder
         Model::unguard();
 
         Matiere::create([
-            'nom' => 'SVT'
+            'nom' => 'SVT',
+            'etablissement_section_id'=>8
         ]);
         Matiere::create([
-            'nom' => 'HG'
+            'nom' => 'HG',
+            'etablissement_section_id'=>8
         ]);
         Matiere::create([
-            'nom' => 'Mathematique'
+            'nom' => 'Mathematique',
+            'etablissement_section_id'=>9
         ]);
         Matiere::create([
-            'nom' => 'Histoire'
+            'nom' => 'Histoire',
+            'etablissement_section_id'=>9
         ]);
 
         // $this->call("OthersTableSeeder");

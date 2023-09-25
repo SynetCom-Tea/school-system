@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('nom')->nullable();
             $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
                 ->index()
-                ->references('id')->on('etablissements');
+                ->references('id')->on('etablissement_sections');
             $table->timestamps();
         });
 

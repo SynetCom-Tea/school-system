@@ -13,16 +13,14 @@ return new class extends Migration
     {
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email');
-            $table->string('adresse');
-            $table->string('telephone');
-            $table->string('ville');
-            $table->boolean('statut');
+            $table->string('name')->nullable();
+            $table->string('email')->nullable();
+            $table->string('adresse')->nullable();
+            $table->json('telephone')->nullable();
+            $table->string('ville')->nullable();
             $table->string('logo')->nullable();
             $table->foreignIdFor(\App\Models\TypeEtablissement::class)->index()
                 ->references('id')->on('type_etablissements');
-
             $table->softDeletes();
             $table->timestamps();
         });
@@ -38,8 +36,6 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Section::class)
                 ->index()
                 ->references('id')->on('sections');
-            $table->foreignIdFor(\App\Models\SystemeLmd::class)->nullable()->index()
-                ->references('id')->on('systeme_lmds');
             $table->integer('configuration')->nullable();
             $table->timestamps();
         });

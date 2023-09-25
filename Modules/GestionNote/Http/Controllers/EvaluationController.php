@@ -2,18 +2,23 @@
 
 namespace Modules\GestionNote\Http\Controllers;
 
+use Inertia\Inertia;
 use App\Models\Section;
-use Modules\GestionNote\Entities\Periode;
-use Modules\GestionNote\Entities\TypeEvaluation;
-use Modules\GestionNote\Entities\Evaluation;
-use Illuminate\Contracts\Support\Renderable;
+use App\Models\SectionUser;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
-use Inertia\Inertia;
+use Modules\Enseignement\Entities\Ue;
+use Modules\GestionNote\Entities\Periode;
+use Illuminate\Contracts\Support\Renderable;
+use Modules\GestionNote\Entities\Evaluation;
 use Modules\Enseignement\Entities\Enseignant;
-use Modules\Enseignement\Entities\EnseignementAnnee;
+use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Enseignement\Entities\NiveauMatiere;
+use Modules\GestionNote\Entities\TypeEvaluation;
+use Modules\Enseignement\Entities\EnseignementAnnee;
 
 class EvaluationController extends Controller
 {
@@ -21,28 +26,12 @@ class EvaluationController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-
+        $user = Auth::user();
         $evaluations = Evaluation::with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.enseignant','enseignement_annee.niveau_matiere.niveau')->get();
-
-        // dd($evaluations);
-        $periodes = Periode::all();
-        $typeEvaluations = TypeEvaluation::all();
-        $enseigements= EnseignementAnnee::with('niveau_matiere.niveau.section','enseignant')->get();
-        // dd($enseigements);
-        $sections= Section::all();
-        $nivau_matieres= NiveauMatiere::all();
-        $enseignant= Enseignant::all();
         return Inertia::render('gestion-note/evaluation/index', [
             'evaluations'=>$evaluations,
-            'periodes'=>$periodes,
-            'typeEvaluations'=>$typeEvaluations,
-            'enseigements'=>$enseigements,
-            'sections'=>$sections,
-            'nivau_matieres'=>$nivau_matieres,
-            'enseignant'=>$enseignant,
-
         ]);
     }
 
@@ -50,11 +39,61 @@ class EvaluationController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create(Request $request)
     {
-
-        return Inertia::render('gestion-note/evaluation/index', [
-
+        $user = Auth::user();
+        $periode = [];
+        $typeEvaluations = TypeEvaluation::all();
+        $enseigements = EnseignementAnnee::with('niveau_matiere.niveau.section','enseignant')->get();
+        // RECUPERATION DES SECTIONS AUXQUELLES LES ENSEIGNANTs ONT ETE AFFECTE EN FONCTION DE L'ETABLISSEMENT DE
+        // l'ENSEIGNANT
+        $sections = DB::select("
+            SELECT s.id,s.libelle FROM sections s
+            JOIN etablissement_section es ON s.id = es.section_id
+            JOIN etablissements e ON e.id = es.etablissement_id
+            JOIN section_users su ON es.id = su.etablissement_section_id
+            JOIN users u ON u.id = su.user_id
+            WHERE e.id = :etat_id AND u.id = :user_id
+        ", [
+            'etat_id' => $user->etablissement_id,
+            'user_id' => $user->id,
+        ]) ;
+        $matieres = $request->section_id ? DB::select("
+            SELECT m.id,m.nom FROM matieres m
+            JOIN etablissement_section es ON es.id = m.etablissement_section_id
+            JOIN sections s ON s.id = es.section_id
+            JOIN etablissements e ON e.id = es.etablissement_id
+            JOIN section_users su ON es.id = su.etablissement_section_id
+            JOIN users u ON u.id = su.user_id
+            WHERE e.id = :etat_id AND u.id = :user_id AND s.id = :section_id
+        ", [
+        'etat_id' => $user->etablissement_id,
+        'user_id' => $user->id,
+        'section_id'=>$request->section_id
+        ]):collect();
+        // dd($matieres);
+        $cycle_filieres = CycleFiliere::whereHas('filiere',function ($q)use  ($user){
+            $q->where('etablissement_id',$user->etablissement_id);
+        })->get();
+        // dd($cycle_filieres);
+        $ues = Ue::where('etablissement_id',$user->etablissement_id)->get();
+        // dd($ues);
+        if ($request->section_id == 1) {
+            $periode = $request->section_id ? Periode::where('type',"Trimestre")->get():collect();
+        }else {
+            $periode = $request->section_id ? Periode::where('type',"Semestre")->get():collect();
+        }
+        $enseignant = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get();
+        return Inertia::render('gestion-note/evaluation/create', [
+            'periodes'=>$periode,
+            'typeEvaluations'=>$typeEvaluations,
+            'enseigements'=>$enseigements,
+            'sections'=>$sections,
+            'nivau_matieres'=>NiveauMatiere::all(),
+            'enseignant'=>$enseignant,
+            'matieres'=>$matieres,
+            'cycle_filieres'=>$cycle_filieres,
+            'ues'=>$ues
         ]);
     }
 

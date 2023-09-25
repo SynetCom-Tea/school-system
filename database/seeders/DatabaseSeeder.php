@@ -24,11 +24,6 @@ class DatabaseSeeder extends Seeder
             ClasseAnneeSeeder::class,
             TuteursSeeder::class,
             ApprenantSeeder::class,
-            RoleSeeder::class,
-            EnseignantSeeder::class,
-            FraisSeeder::class,
-            VersementsSeeder::class,
-
             // SalleSeeder::class,
 
             // EnseignementDatabaseSeeder::class,

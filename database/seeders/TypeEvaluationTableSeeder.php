@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\GestionNote\Database\Seeders;
+namespace Database\Seeders;
 
 use Modules\GestionNote\Entities\TypeEvaluation;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;

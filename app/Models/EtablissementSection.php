@@ -2,33 +2,13 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class EtablissementSection extends Model
 {
-
-    use HasFactory, SoftDeletes;
-    protected $fillable =  [
-        'code',
-        'regime_evaluation',
-        'etablissement_id',
-        'section_id',
-        'systeme_lmd_id',
-        'configuration'
-    ];
-    public function etablissements(): HasMany
-    {
-        return $this->hasMany(Etablissement::class);
-    }
-    public function sections(): HasMany
-    {
-        return $this->hasMany(Section::class);
-    }
-    public function classes(): HasMany
-    {
-        return $this->hasMany(Classe::class);
-    }
+    
+    use HasFactory;
 }
