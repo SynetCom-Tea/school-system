@@ -45,7 +45,7 @@
 
                 <!-- Tabs de la Frais pour toute les sections -->
                 <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
-                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" @fraisFormValid="fraisFormValid"/>
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" @fraisFormValid="fraisFormValid"/>
                 </v-card-text>
                 <!-- Tabs de la Frais pour toute les sections -->
             </v-card>
@@ -173,7 +173,7 @@
         NiveauMatiereSupForm :{},
         formNiveauMatiere: {},
         formFaculte: {},
-        formFiliere:{},
+        formFiliere:[],
         formFrais:{},
         formUE:{},
         form: useForm({
@@ -301,9 +301,15 @@
 
         },
         getFiliereForm(donnees) {
-          this.formFiliere = donnees
-          console.log('Données du formulaire de la filiere :',this.formFiliere);  
-        },
+            if(this.type == '3'){
+              this.formFiliere = donnees
+              console.log('Données du formulaire de la filiere sup :',this.formFiliere);  
+            }else if(this.type == '4'){
+              this.formFiliere = donnees.tabsFilieres
+              console.log('Données du formulaire de la filiere :',this.formFiliere);  
+          
+            }
+          },
 
         getUEForm(donnees) {
           this.formUE = donnees

@@ -98,7 +98,7 @@
                         <v-col md="3" v-if="type == '3' || type == '4'" >
 
                             <Autocomplete
-                                :items="tabsFilieres"
+                                :items="filieres"
                                 class="mt-2"
                                 v-model="frais.filiere"
                                 @update:modelValue="submitForm(frais)"
@@ -233,21 +233,21 @@
             frais: [],
         }),
     }),
-    watch: {
-    // Surveillez les valeurs spécifiques ici
-        filieres(data,old){
-            console.log('filieresFrais',data)
-            if(this.type == '3'){
-                this.tabsFilieres = data ? data.filieres : []
-            }else if(this.type == '4'){
-                if (data.departements && Array.isArray(data.departements)) {
-                    data.departements.forEach(element => {
-                        this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
-                    });
-                }
-            }
-        },
-    },
+    // watch: {
+    //     // Surveillez les valeurs spécifiques ici
+    //     filieres(data,old){
+    //         if(this.type == '3'){
+    //             console.log('filieresFrais type 3',data)
+    //             this.tabsFilieres = data ? data.filieres : []
+    //         }else if(this.type == '4'){
+    //             if (data.departements && Array.isArray(data.departements)) {
+    //                 data.departements.forEach(element => {
+    //                     this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+    //                 });
+    //             }
+    //         }
+    //     },
+    // },
     methods: {
         handleFileUpload(event) {
       const file = event.target.files[0];
@@ -314,10 +314,7 @@
                                 icon: "warning",
                                 confirmButtonText: "OK",
                             });
-            //   alert('drapppppppp')
             }
-
-             // Exclure la première ligne (en-têtes)
 
           }
         };
@@ -457,8 +454,6 @@
     },
     mounted() {
         this.addRow()
-        
-       
     },
   }
 </script>

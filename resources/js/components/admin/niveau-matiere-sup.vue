@@ -46,7 +46,7 @@
                             label="Filieres"
                             item-title="libelle"
                             item-value="id"
-                            :items="tabsFilieres"
+                            :items="filieres"
                             v-model="form.filiere"
                             @update:modelValue="submitForm(null,null,null)"
                             chips>
@@ -217,7 +217,6 @@ import Ue from './ue.vue';
         importation: false,
         section: null,
         uetabs: [],
-        tabsFilieres: [],
         form: useForm({
             filiere: null,
             niveau: null,
@@ -227,18 +226,18 @@ import Ue from './ue.vue';
     }),
     watch: {
     // Surveillez les valeurs spécifiques ici
-        filieres(data,old){
-            console.log('nouvelle1111',data)
-            if(this.type == '3'){
-                this.tabsFilieres = data ? data.filieres : []
-            }else if(this.type == '4'){
-                if (data.departements && Array.isArray(data.departements)) {
-                    data.departements.forEach(element => {
-                        this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
-                    });
-                }
-            }
-        },
+        // filieres(data,old){
+        //     console.log('nouvelle1111',data)
+        //     if(this.type == '3'){
+        //         this.tabsFilieres = data ? data.filieres : []
+        //     }else if(this.type == '4'){
+        //         if (data.departements && Array.isArray(data.departements)) {
+        //             data.departements.forEach(element => {
+        //                 this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+        //             });
+        //         }
+        //     }
+        // },
         ues(data1){
             this.uetabs = data1
         },

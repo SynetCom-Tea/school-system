@@ -193,8 +193,20 @@
             faculte: null,
             fichier_filiere: null,
             departements: [],
+            tabsFilieres: [],
         }),
     }),
+    // watch: {
+    //     // Surveillez les valeurs spécifiques ici
+    //     departements(nou,old){
+    //         console.log('tttttt',nou)
+    //             // if (data.departements && Array.isArray(data.departements)) {
+    //             //     data.departements.forEach(element => {
+    //             //         this.form.tabsFilieres = this.form.tabsFilieres.concat(element.filieres)
+    //             //     });
+    //             // }
+    //     },
+    // },
 
     methods: {
         onclickAlertButton(type) {
@@ -220,6 +232,14 @@
                 return 'Universitaire'
             }
         },
+        test(){
+            this.form.tabsFilieres = []
+            if (this.form.departements && Array.isArray(this.form.departements)) {
+                this.form.departements.forEach(element => {
+                    this.form.tabsFilieres = this.form.tabsFilieres.concat(element.filieres)
+                });
+            }
+        },
         resetForm(check){
             if(check){
                 this.form.departements = []
@@ -230,6 +250,7 @@
             await this.verify(departement,index,filiere)
             await this.verifyUe(departement)
             await this.isValid()
+            this.test()
             console.log('isValid',this.isValid())
             this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section == this.section)
             
