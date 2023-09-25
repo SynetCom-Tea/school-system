@@ -235,20 +235,18 @@
     }),
     watch: {
     // Surveillez les valeurs spécifiques ici
-    filieres(data,old){
-        console.log('nouvelle',data)
-        if(this.type == '3'){
-            this.tabsFilieres = data ? data.filieres : []
-        }else if(this.type == '4'){
-            if (data.departements && Array.isArray(data.departements)) {
-                data.departements.forEach(element => {
-                    this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
-                });
+        filieres(data,old){
+            console.log('filieresFrais',data)
+            if(this.type == '3'){
+                this.tabsFilieres = data ? data.filieres : []
+            }else if(this.type == '4'){
+                if (data.departements && Array.isArray(data.departements)) {
+                    data.departements.forEach(element => {
+                        this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+                    });
+                }
             }
-        }
-    }
-    
-       
+        },
     },
     methods: {
         handleFileUpload(event) {
@@ -455,10 +453,11 @@
   },
   
     created(){
-        
+       
     },
     mounted() {
         this.addRow()
+        
        
     },
   }

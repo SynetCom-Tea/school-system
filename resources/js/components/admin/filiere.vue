@@ -193,7 +193,6 @@
             faculte: null,
             fichier_filiere: null,
             departements: [],
-
         }),
     }),
 
@@ -233,6 +232,7 @@
             await this.isValid()
             console.log('isValid',this.isValid())
             this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section == this.section)
+            
             this.$emit('formSubmitted', this.form);
             this.$emit("filiereFormValid", this.isValid());
         },
@@ -265,15 +265,10 @@
         },
         async isValid() {
             let valide = false
-            // Appel à checkFiliereForm() une seule fois et attendez sa résolution
             const result = await this.checkFiliereForm();
-            console.log('result',result)
-        // Vérifiez si la faculté est définie, si la promesse est résolue à true, et définissez "valide" en conséquence
             if (this.form.faculte != null && this.form.faculte !== '' && result === true) {
                 valide = true;
-                console.log('dedans', valide);
             } 
-            console.log('dehors', valide);
             return valide
         },
         addRowUe() {

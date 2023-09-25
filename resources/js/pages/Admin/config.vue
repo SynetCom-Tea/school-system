@@ -45,7 +45,7 @@
 
                 <!-- Tabs de la Frais pour toute les sections -->
                 <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
-                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" @fraisFormValid="fraisFormValid"/>
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" @fraisFormValid="fraisFormValid"/>
                 </v-card-text>
                 <!-- Tabs de la Frais pour toute les sections -->
             </v-card>
@@ -302,7 +302,7 @@
         },
         getFiliereForm(donnees) {
           this.formFiliere = donnees
-          console.log('Données du formulaire de la filiere :', this.formFiliere);
+          console.log('Données du formulaire de la filiere :',this.formFiliere);  
         },
 
         getUEForm(donnees) {

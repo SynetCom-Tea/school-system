@@ -228,7 +228,7 @@ import Ue from './ue.vue';
     watch: {
     // Surveillez les valeurs spécifiques ici
         filieres(data,old){
-            console.log('nouvelle',data)
+            console.log('nouvelle1111',data)
             if(this.type == '3'){
                 this.tabsFilieres = data ? data.filieres : []
             }else if(this.type == '4'){
@@ -302,9 +302,8 @@ import Ue from './ue.vue';
             let valid = true
             for (let i = 0; i < this.form.ues.length; i++) {
                 const ue = this.form.ues[i];
-                // Vérifiez si la propriété "ue" n'est pas vide
                 if (!ue.ue || ue.ue == '' || ue.ue == null || ue.credit == 0 || ue.credit == '' || ue.credit == null) {
-                    valid = false; // Si "ue" est vide, définissez fichier sur false
+                    valid = false; 
                     break; // Sortez de la boucle car une condition n'est pas remplie
                 }
                 
@@ -326,21 +325,14 @@ import Ue from './ue.vue';
             }
         },
         async isValid() {
-            let fichier = false
             let valid = false
-            if(this.form.filiere != null && this.form.filiere != '' && this.form.niveau != null && this.form.niveau != '' && await this.checkNiveauMatiereForm()){
-                fichier = true
-            }
-            if(fichier){
+            const result = await this.checkNiveauMatiereForm()
+            if(this.form.filiere != null && this.form.filiere != '' && this.form.niveau != null && this.form.niveau != '' && result == true){
                 valid = true
-            }else{
-                valid = false
             }
             return valid
         },
-        goBack() {
-            router.get(route('etablissements.index'))
-        },
+        
         addRowUe() {
             this.form.ues.push({
                 ue_id: null,
