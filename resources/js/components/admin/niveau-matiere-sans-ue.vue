@@ -145,32 +145,8 @@
             <br>
         </v-card>
         <br>
-            <!-- <v-row class="text-center ml-3 mb-3"
-            ><v-col cols="auto">
-                <Button
-                type="submit"
-                title="Enregistrer cette étape"
-                nameButton="Enregistrer"
-                variant="flat"
-                @click="submitForm"
-                density="comfortable"
-                class="text-center"
-                :isBlock="true"
-                size="large"
-                style="text-transform: none"
-                >
-                </Button> </v-col
-            ></v-row> -->
             </v-card>
             <br>
-            <!-- <v-row>
-                <v-col md="5"></v-col>
-                <v-col md="4">
-                    <v-btn type="submit" title="enregistrer" color="info">
-                        Enregistrer
-                    </v-btn>
-                </v-col>
-            </v-row> -->
         </v-container>
     </form>
 </template>
@@ -200,6 +176,22 @@
             etablissement_section_id: null
         }),
     }),
+
+    watch: {
+    // Surveillez les valeurs spécifiques ici
+        filieres(data,old){
+            console.log('nouvelle',data)
+            if(this.type == '3'){
+                this.tabsFilieres = data ? data.filieres : []
+            }else if(this.type == '4'){
+                if (data.departements && Array.isArray(data.departements)) {
+                    data.departements.forEach(element => {
+                        this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+                    });
+                }
+            }
+        },
+    },
 
     methods: {
         onclickAlertButton(type) {
