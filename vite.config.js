@@ -40,7 +40,8 @@ export default defineConfig({
 
                             name: componentName,
                             from: "vuetify/labs/VDataIterator",
-                        };
+                         };
+
                 },
 
                 VuetifyResolver(),

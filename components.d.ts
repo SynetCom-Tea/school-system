@@ -11,5 +11,11 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     VDataIterator: typeof import('vuetify/labs/VDataIterator')['VDataIterator']
     VDataTable: typeof import('vuetify/labs/VDataTable')['VDataTable']
+    VListTile: typeof import('vuetify/lib')['VListTile']
+    VListTileAction: typeof import('vuetify/lib')['VListTileAction']
+    VListTileAvatar: typeof import('vuetify/lib')['VListTileAvatar']
+    VListTileContent: typeof import('vuetify/lib')['VListTileContent']
+    VListTileSubTitle: typeof import('vuetify/lib')['VListTileSubTitle']
+    VListTileTitle: typeof import('vuetify/lib')['VListTileTitle']
   }
 }

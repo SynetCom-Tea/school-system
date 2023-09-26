@@ -24,7 +24,7 @@ export default {
       type: String,
       default: "Titre de la modale",
     },
-    onCloseModale: { type: Function },
+    onCloseModale: { type: Function, required: false },
     heightDialog: {
       type: Number,
       default: 300,
@@ -63,6 +63,12 @@ export default {
       },
     },
   },
+  methods: {
+    isClose() {
+      this.dialog = false;
+      this.onCloseModale;
+    },
+  },
 };
 </script>
 
@@ -71,6 +77,7 @@ export default {
     <v-dialog
       v-model="dialog"
       :fullscreen="isfullscreen"
+      persistent
       scrollable
       :scrim="false"
       :width="widthDialog"
@@ -103,7 +110,7 @@ export default {
               fab
               variant="flat"
               :prependIcon="icons.mdiClose"
-              @click="onCloseModale"
+              @click="isClose"
             ></Button>
           </v-toolbar-items>
         </v-toolbar>
@@ -132,7 +139,7 @@ export default {
               variant="text"
               color="red"
               nameButton="Quitter"
-              @click="onCloseModale"
+              @click="isClose"
               style="float: right; margin: 10px; height: 30px"
             ></Button>
           </div>

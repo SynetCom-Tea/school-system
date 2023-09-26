@@ -40,6 +40,7 @@
               v-model="primaire"
               itemValue="id"
               itemTitle="libelle"
+              isRequired
               label="Niveau primaire"
               @update:modelValue="
                 onChangeModelValueNiveaux('primaire', primaire, section, year)
@@ -52,6 +53,7 @@
               v-model="secondaire"
               itemValue="id"
               itemTitle="libelle"
+              isRequired
               label="Secondaire"
               @update:modelValue="
                 onChangeModelValueNiveaux('secondaire', secondaire, section, year)
@@ -148,35 +150,59 @@
                       }}</span>
 
                       <div class="text-center" :key="index" v-else>
-                        <v-row>
-                          <v-col cols="5">
-                            <a
-                              style="cursor: pointer"
-                              class="text-caption text-decoration-none text-primary"
-                              target="_blank"
+                        <v-expansion-panels>
+                          <v-expansion-panel>
+                            <v-expansion-panel-title
+                              :expand-icon="icons.mdiPlus"
+                              :collapse-icon="icons.mdiMinus"
                             >
-                              Documents</a
-                            ></v-col
-                          >
-                          <v-col cols="3" @click="onclickFrais(item.raw)">
-                            <a
-                              style="cursor: pointer"
-                              class="text-caption text-decoration-none text-secondary"
-                              target="_blank"
+                              Documents
+                            </v-expansion-panel-title>
+                            <v-expansion-panel-text> Documents </v-expansion-panel-text>
+                          </v-expansion-panel>
+
+                          <v-expansion-panel>
+                            <v-expansion-panel-title @click="onclickFrais(item.raw)">
+                              Frais
+                              <template v-slot:actions="{ expanded }">
+                                <v-icon
+                                  :color="!expanded ? 'teal' : ''"
+                                  :icon="expanded ? icons.mdiPencil : icons.mdiCheck"
+                                ></v-icon>
+                              </template>
+                            </v-expansion-panel-title>
+                            <v-expansion-panel-text>
+                              <v-row v-for="(key, index) in dataVersements">
+                                <v-col>
+                                  <v-list-item
+                                    :key="index"
+                                    :title="key.title"
+                                    :subtitle="String(key.subtitle) ?? 'Non renseigné'"
+                                  ></v-list-item>
+                                </v-col>
+                              </v-row>
+                            </v-expansion-panel-text>
+                          </v-expansion-panel>
+
+                          <v-expansion-panel>
+                            <v-expansion-panel-title
+                              disable-icon-rotate
+                              @click="onclickTuteurs(item.raw)"
                             >
-                              Frais</a
-                            ></v-col
-                          >
-                          <v-col cols="4" @click="onclickTuteurs(item.raw)">
-                            <a
-                              style="cursor: pointer"
-                              class="text-caption text-decoration-none text-primary"
-                              target="_blank"
-                            >
-                              Tuteurs</a
-                            ></v-col
-                          >
-                        </v-row>
+                              Tuteurs
+                              <template v-slot:actions>
+                                <v-icon color="error" :icon="icons.mdiAlertCircle">
+                                </v-icon>
+                              </template>
+                            </v-expansion-panel-title>
+                            <v-expansion-panel-text>
+                              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
+                              do eiusmod tempor incididunt ut labore et dolore magna
+                              aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                              ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                            </v-expansion-panel-text>
+                          </v-expansion-panel>
+                        </v-expansion-panels>
                       </div>
                     </v-list-item-subtitle>
                   </v-list-item>
@@ -223,41 +249,6 @@
           </div>
         </template>
       </v-data-iterator>
-
-      <Dialog
-        :modelDialog="dialogFrais"
-        :toolbarTitle="'Détail Frais de' + dataVersements[0]?.nomApprenant"
-        :iconHeaderModal="icons.mdiCheck"
-        :widthDialog="600"
-      >
-        <template v-slot:content>
-          <v-card-text v-for="(key, index) in dataVersements" :key="index">
-            <div class="font-weight-bold ms-1 mb-2">Versement {{ index }}</div>
-
-            <v-timeline density="compact" align="start">
-              <v-timeline-item :dot-color="key[index].color" :key="index" size="x-small">
-                {{ console.log("key:", key, key.color, index, key[index]) }}
-                <div class="mb-4">
-                  <div class="font-weight-normal">
-                    <strong>Date de versement</strong>
-                  </div>
-                  <div>{{ key[index]?.nomApprenant }}</div>
-                </div>
-              </v-timeline-item>
-            </v-timeline>
-          </v-card-text>
-          <!-- <v-row>
-            <v-col
-              v-for="(key, index) in dataVersements"
-              :cols="12 / dataVersements.length"
-            >
-              <v-text-field :label="key.title">{{
-                String(key.subtitle) ?? "Non renseigné"
-              }}</v-text-field>
-            </v-col>
-          </v-row> -->
-        </template>
-      </Dialog>
     </div>
   </AuthenticatedLayout>
 </template>
@@ -268,7 +259,6 @@ import {
   getNiveauxPrimaire,
   getNiveauxSecondaire,
   getAcademicYears,
-  generateColorsForGraph,
 } from "../../utils/commonFunctions.js";
 import {
   mdiChevronLeft,
@@ -307,7 +297,10 @@ export default {
   // layout: AuthenticatedLayout,
   data() {
     return {
-      dialogFrais: false,
+      fav: true,
+      menu: false,
+      message: false,
+      hints: true,
       itemsPerPageArray: [3, 6, 9],
       itemsPerPage: 3,
       page: 1,
@@ -438,12 +431,6 @@ export default {
     getNiveauxPrimaire,
     getNiveauxSecondaire,
     getAcademicYears,
-    generateColorsForGraph,
-    oncloseDialog(classe) {
-      if (classe == "frais") {
-        this.dialogFrais = false;
-      }
-    },
     onclickTuteurs(e) {
       console.log("onclickTuteurs:", e);
     },
@@ -455,7 +442,7 @@ export default {
         idClasseAnnee = e.more.classeAnnee.id;
         idApprenant = e.more.apprenant.id;
       }
-      this.dialogFrais = true;
+
       axiosResult = await axios
         .get(
           route("getVersementsByClasseAnneeAndStudent", {
@@ -478,17 +465,13 @@ export default {
           if (element) {
             student = element.apprenant;
             frais = element.frais;
-            console.log("element:", element);
-            console.log("date_versement:", element.date_versement);
             dataR.push([
-              {
-                title: "Nom complet",
-                subtitle: student ? student.nom + " " + student.prenom : null,
-                nomApprenant: student ? student.nom + " " + student.prenom : null,
-              },
-              { title: "idVersement", subtitle: element.id },
-              { date_versement: element.date_versement },
-              { color: this.generateColorsForGraph(index) },
+              // {
+              //   title: "Nom complet",
+              //   subtitle: student ? student.nom + " " + student.prenom : null,
+              //   nomApprenant: student ? student.nom + " " + student.prenom : null,
+              // },
+              // { title: "idVersement", subtitle: element.id },
               { title: "Type de frais", subtitle: frais.type_frais.libelle },
               {
                 title: "Total  à verser",
@@ -506,7 +489,7 @@ export default {
           }
         });
         console.log("dataR:", dataR);
-        this.dataVersements = dataR ?? [];
+        this.dataVersements = dataR.flat() ?? [];
       }
     },
     nextPage() {

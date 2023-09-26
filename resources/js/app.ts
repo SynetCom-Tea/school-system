@@ -16,6 +16,7 @@ import * as directives from 'vuetify/directives'
 import * as labsComponents from 'vuetify/labs/components'
 import { VDataTable } from 'vuetify/labs/VDataTable'
 import { VDataIterator } from 'vuetify/labs/VDataIterator'
+
  import Vuex from 'vuex'
 import axios from 'axios'
 import VueAxios from 'vue-axios'
@@ -81,7 +82,8 @@ const vuetify = createVuetify({
     components: {
       VDataTable,
       VDataIterator,
-      VStepper
+      VStepper,
+
     },
     directives,
     labsComponents,

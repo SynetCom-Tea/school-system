@@ -21,13 +21,18 @@ class Frais extends Model
         'montant',
         'annee_id',
         'etablissement_id',
-        'niveau_id'
+        'niveau_id',
+        'type_frais_id'
     ];
 
     /* public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);
     } */
+    public function type_frais(): BelongsTo
+    {
+        return $this->belongsTo(TypeFrais::class);
+    }
     public function annee(): BelongsTo
     {
         return $this->belongsTo(Annee::class);

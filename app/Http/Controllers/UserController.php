@@ -26,25 +26,34 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Inscription;
+use Modules\Scolarite\Entities\Versement;
 
 class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    //  $terre = ClasseAnnee::whereHas('annee', function ($query) use ($year, $section) {
-    //             $query->where('libelle', $year);
-    //         })->whereHas('classe', function ($query) use ($niveau, $findEtabSection) {
-    //             $query->where('niveau_id', $niveau)->where(
-    //                 'etablissement_section_id',
-    //                 $findEtabSection->id
-    //             );
-    //         })->with('annee', 'classe', 'classe.niveau')->get();
-    //         dump('$terre:', $terre);
+    public function getVersementsByClasseAnneeAndStudent($classeAnnee, $apprenant)
+    {
+        $authUser =  Auth::user();
+        $data = null;
+        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        $getModelClasseAnnee = ClasseAnnee::find((int) $classeAnnee);
+        if ($nameRole == 'Administrateur') {
+
+            $data  = Versement::whereHas('apprenant', function ($query) use ($authUser) {
+                $query->where('etablissement_id', (int)$authUser->etablissement_id);
+            })->whereHas('frais', function ($query) use ($getModelClasseAnnee) {
+                $query->where('annee_id', (int)$getModelClasseAnnee->annee_id);
+            })->with('apprenant', 'frais', 'frais.type_frais')->where('apprenant_id', (int)$apprenant)
+                ->get();
+        }
+        return $data  ?? [];
+    }
     public function getInscriptionsByYearAndSection($year, $section, $niveau)
     {
 
-        $data = null;
+
         $list = [];
         $authUser =  Auth::user();
         $collection = collect();
@@ -85,14 +94,10 @@ class UserController extends Controller
                 });
                 return $collection->push($vTerre->filter()->all());
             });
-
-            // dd('$examples:', $collection->unique()->filter()->all());
         }
-        $data = $collection->unique()->filter()->all();
-        $flattened = $collection->flatten()->unique()->filter();
 
+        $flattened = $collection->flatten()->unique()->filter();
         $flattened->all();
-        // dd($flattened);
         return $flattened ?? [];
     }
     public function getUsersByCategory($params)
