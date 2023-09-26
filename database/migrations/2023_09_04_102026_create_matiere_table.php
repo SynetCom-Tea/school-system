@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->string('code')->nullable();
             $table->string('nom')->nullable();
-            $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
-                ->references('id')->on('etablissements');
+                ->references('id')->on('etablissement_section');
             $table->timestamps();
         });
 
@@ -43,7 +43,10 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
                 ->references('id')->on('niveaux');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\FiliereMatiereUe::class)
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)
+                ->nullable()->index()
+                ->references('id')->on('matieres');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\FiliereMatiereUe::class)->nullable()
                 ->index()
                 ->references('id')->on('filiere_matiere_ues_');
         });

@@ -1,6 +1,9 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { router, useForm } from "@inertiajs/vue3";
+import {
+    router,
+    useForm
+} from "@inertiajs/vue3";
 import {
     mdiPlus,
     mdiSchool,
@@ -11,7 +14,7 @@ import {
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
-    props: ["types","sections"],
+    props: ["types", "sections"],
     data() {
         return {
             icon: {
@@ -22,7 +25,7 @@ export default {
                 mdiCancel,
                 mdiCamera,
             },
-            villes: ['Agadez','Diffa','Dosso','Maradi','Niamey','Tahoua','Tilabéri','Zinder'],
+            villes: ['Agadez', 'Diffa', 'Dosso', 'Maradi', 'Niamey', 'Tahoua', 'Tilabéri', 'Zinder'],
             form: useForm({
                 name: "",
                 email: "",
@@ -38,50 +41,49 @@ export default {
             }),
         }
     },
-    created(){
-            console.log('typessssss')
-        },
+    created() {
+        console.log('typessssss')
+    },
     methods: {
-        
+
         goBack() {
             router.get(route('etablissements.index'))
         },
         async submit() {
-                const { valid } = await this.$refs.form.validate()
-                if(valid) {
-                    console.log(this.form)
-                    this.form.post(route('etablissements.store'), {
-                        onFinish: () => {
-                            this.close()
-                            this.$swal({
-                                icon: 'success',
-                                title: 'Enregistrement',
-                                text: 'Etablissement créé avec succès!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-                        },
-                    }); 
-                }
+            const {
+                valid
+            } = await this.$refs.form.validate()
+            if (valid) {
+                console.log(this.form)
+                this.form.post(route('etablissements.store'), {
+                    onFinish: () => {
+                        this.close()
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'Etablissement créé avec succès!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    },
+                });
+            }
         },
     }
 }
 </script>
 <template>
-    <v-card>
-        <Toolbar :icon="icon.mdiSchool" toolbarTitle="Création d'un Etablissement"></Toolbar>
+<v-card>
+    <Toolbar :icon="icon.mdiSchool" toolbarTitle="Création d'un Etablissement"></Toolbar>
 
-        <v-card-text>
-            <v-form ref="form">
-                <v-row>
+    <v-card-text>
+        <v-form ref="form">
+            <v-row>
                 <v-col>
-                    <v-alert
-                        type="info"      
-                        text
-                        >
+                    <v-alert type="info" text>
                         Etablissement
                     </v-alert>
                 </v-col>
@@ -101,17 +103,16 @@ export default {
                     </Select>
                     </v-col>
                     <v-col cols="6" md="6">
-                    <Autocomplete
-                        label="Sections"
+                    <Select
+                        label="Section"
                         :items="sections"
                         variant="outlined"
                         item-value="id"
                         item-title="libelle"
                         v-model="form.section"
-                        multiple
-                        ships
+                        isMultiple
                         v-if="form.type_etablissement_id == 2"
-                    ></Autocomplete>
+                    ></Select>
                     </v-col>
                     </v-row>
                     <v-row>
@@ -163,88 +164,46 @@ export default {
                                                 {{ fileName }}
                                             </v-chip>
 
-                                            <span
-                                                v-else-if="index === 2"
-                                                class="text-overline text-grey-darken-3 mx-2"
-                                            >
-                                                +{{ files.length - 2 }} File(s)
-                                            </span>
-                                        </template>
-                                    </template>
-                                </v-file-input>
-                        </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="4" md="4">
-                                <TextField
-                                    label="Adresse"
-                                    placeholder="Adresse"
-                                    v-model="form.adresse"
-                                    isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                                ></TextField>
-                            </v-col>
-                            <v-col cols="4" md="4">
-                                <TextField
-                                    label="Mail"
-                                    placeholder="Mail"
-                                    v-model="form.email"
-                                    isRequired
-                                    :rules="[
+                                <span v-else-if="index === 2" class="text-overline text-grey-darken-3 mx-2">
+                                    +{{ files.length - 2 }} File(s)
+                                </span>
+                            </template>
+                        </template>
+                    </v-file-input>
+                </v-col>
+            </v-row>
+            <v-row>
+                <v-col cols="4" md="4">
+                    <TextField label="Adresse" placeholder="Adresse" v-model="form.adresse" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
+                </v-col>
+                <v-col cols="4" md="4">
+                    <TextField label="Mail" placeholder="Mail" v-model="form.email" isRequired :rules="[
                                         (v) => !!v || 'Ce champ est requis!',
                                         (v) =>
                                         /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
                                         'Adresse Email invalide!',
-                                    ]"
-                                ></TextField>
-                            </v-col>
-                            <v-col cols="4" md="4">
-                                <text-field
-                                label="Téléphone"
-                                placeholder="Téléphone"
-                                v-model="form.telephone"
-                                isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                                ></text-field>
-                            </v-col>
-                            </v-row>
-                <v-row>
+                                    ]"></TextField>
+                </v-col>
+                <v-col cols="4" md="4">
+                    <text-field label="Téléphone"  placeholder="Téléphone" v-model="form.telephone" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></text-field>
+                </v-col>
+            </v-row>
+            <v-row>
                 <v-col>
-                    <v-alert
-                        color="info" 
-                        :icon="icon.mdiAccountSchool"      
-                        text
-                        >
+                    <v-alert color="info" :icon="icon.mdiAccountSchool" text>
                         Administrateur de l'établissement
                     </v-alert>
                 </v-col>
-                </v-row>
-                <v-row>
-                    <v-col cols="4" md="4">
-                        <text-field
-                        label="Nom"
-                        placeholder="Nom"
-                        v-model="form.nom"
-                        isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                        ></text-field>
-                    </v-col>
-                    <v-col cols="4" md="4">
-                        <text-field
-                        label="Prénom"
-                        placeholder="Prénom"
-                        v-model="form.prenom"
-                        isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                        ></text-field>
-                    </v-col>
-                    <v-col cols="4" md="4">
-                        <text-field
-                        label="Email"
-                        placeholder="Email"
-                        v-model="form.mail"
-                        isRequired
-                        :rules="[
+            </v-row>
+            <v-row>
+                <v-col cols="4" md="4">
+                    <text-field label="Nom" placeholder="Nom" v-model="form.nom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></text-field>
+                </v-col>
+                <v-col cols="4" md="4">
+                    <text-field label="Prénom" placeholder="Prénom" v-model="form.prenom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></text-field>
+                </v-col>
+                <v-col cols="4" md="4">
+                    <text-field label="Email" placeholder="Email" v-model="form.mail" isRequired :rules="[
                             (v) => !!v || 'Ce champ est requis!',
                             (v) =>
                             /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/.test(v) ||
@@ -261,9 +220,9 @@ export default {
       <v-btn dark small type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </v-btn>
-      <v-btn small color="primary" @click="submit">
+      <v-btn small color="success" @click="submit">
         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
       </v-btn>
     </v-card-actions>
-    </v-card>
+</v-card>
 </template>

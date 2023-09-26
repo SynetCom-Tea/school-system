@@ -230,22 +230,33 @@ export default {
 
         <v-spacer></v-spacer>
 
-        <Button
-          variant="flat"
-          class="add-button-style"
-          nameButton="Ajouter"
-          title="Ajouter une nouvelle ligne"
-          v-if="displayAddButton"
-          :prependIcon="icons.mdiPlus"
-          @click="onClickAddButton"
-        >
-        </Button>
-
-        <v-dialog v-model="dialog" :max-width="maxWidthAddDialog" persistent>
-          <v-card>
-            <v-card-title style="background-color: #7d002c">
-              <span class="text-h5 text-white">{{ formTitle }}</span>
-            </v-card-title>
+            <Button variant="flat" class="add-button-style" nameButton="Ajouter" title="Ajouter une nouvelle ligne" :prependIcon="icons.mdiPlus" @click="onClickAddButton">
+            </Button>
+            <!-- <ModalDetailUpdate
+          :onClickCancelButton="onClickCancelButtonForEditing"
+          :toolbarTitle="toolbarTitle"
+          :dialogDetailUpdate="dialogDetailUpdate"
+          :isEditing="isEditingModal"
+          :iconValueDetail="icons.mdiPencil"
+          :iconUpdate="icons.mdiAccount"
+        ></ModalDetailUpdate> -->
+            <v-dialog v-model="dialog" max-width="900px" persistent>
+                <!-- <template v-slot:activator="{ props }">
+            <Button
+              variant="flat"
+              class="mb-2"
+              nameButton="Ajouter"
+              title="Ajouter une nouvelle ligne"
+              style="height: 30px; text-transform: none"
+              :prependIcon="icons.mdiPlus"
+              v-bind="props"
+            >
+            </Button>
+          </template> -->
+                <v-card>
+                    <v-card-title style="background-color: #7d002c">
+                        <span class="text-h5 text-white">{{ formTitle }}</span>
+                    </v-card-title>
 
             <slot name="addDialogContent" />
             <v-card-actions class="card-actions-style">

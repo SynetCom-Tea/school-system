@@ -33,21 +33,17 @@ class EtablissementsTableSeeder extends Seeder
 
             ),
 
-            // 1 =>
-            // array(
-            //     'id' => 2,
-            //     'name' => 'IAI-Niger',
-            //     'email' => 'iainiger@gmail.com',
-            //     'adresse' => 'Plateau',
-            //     'telephone' => '\"20142564A\"',
-            //     'ville' => 'Niamey',
-            //     'statut' => 0,
-            //     'logo' => 'iai-logo.jpg',
-            //     'type_etablissement_id' => 3,
-            //     'deleted_at' => NULL,
-            //     'created_at' => '2023-09-06 11:11:35',
-            //     'updated_at' => '2023-09-06 11:11:35',
-            // ),
+            1 =>
+            array(
+                'id' => 2,
+                'name' => 'IAI-Niger',
+                'email' => 'iainiger@gmail.com',
+                'adresse' => 'Plateau',
+                'telephone' => '\"20142564A\"',
+                'ville' => 'Niamey',
+                'logo' => 'iai-logo.jpg',
+                'type_etablissement_id' => 3,
+            ),
             // 2 =>
 
             // array(

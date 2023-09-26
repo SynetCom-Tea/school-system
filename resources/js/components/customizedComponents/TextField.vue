@@ -105,10 +105,6 @@ export default {
       return this.$slots;
     },
 
-    scopedSlots() {
-      return this.$slots;
-    },
-
     modelValue: {
       get() {
         return this.vModel;

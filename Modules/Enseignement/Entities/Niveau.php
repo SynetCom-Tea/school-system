@@ -27,10 +27,6 @@ class Niveau extends Model
     {
         return $this->hasMany(NiveauMatiere::class);
     }
-    public function classes(): HasMany
-    {
-        return $this->hasMany(Classe::class);
-    }
 
      public function section(): BelongsTo
     {
