@@ -46,7 +46,6 @@ export function listMenus(page) {
     // console.log('this.$page.props.roles:', page)
       let tabs = [];
     let enfants = [];
-    //let child = [];
     let MenuAdmin;
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
@@ -55,7 +54,7 @@ export function listMenus(page) {
       { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/lmd/4' },
     ];
 
-    if (page?.role == "Administrateur") {
+    if (page?.roles == "Administrateur") {
 
       if (page?.sections[0]?.sections) {
         tabs = page?.sections[0].sections.map(function (el) {
@@ -81,57 +80,19 @@ MenuAdmin = {
       children: enfants,
 }
 
-//Menu pour la gestion des cruds après config
-let tab = [];
-    let enfant = [];
-    let MenuGestion;
-    const section = [
-      { title: "Primaire", icon: mdiSchool, link: "/enseignement/gestion/1" },
-      { title: "Secondaire", icon: mdiSchool, link: "/enseignement/gestion/2" },
-      { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/gestion/3' },
-      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/gestion/4' },
-    ];
-
-    if (page?.roles == "Administrateur") {
-
-      if (page?.sections[0]?.sections) {
-        tab = page?.sections[0].sections.map(function (el) {
-          return el.libelle;
-        });
-      }
-    }
-
-    if (tab != []) {
-        section.forEach((sect) => {
-            //   console.log('ele:',section)
-          if (tab.includes(sect.title)) {
-            // console.log('herre22')
-          enfant.push(sect);
-        }
-      });
-    }
-MenuGestion = {
-      icon: mdiCogOutline,
-      title: "Post Configs",
-      "icon-alt": mdiChevronLeft,
-      model: false,
-      children: enfant,
-}
-
-//Fin du menu des cruds
 
     let singleItems = [
      {
             title: "Home",
             icon: mdiHomeCity,
             link: "/dashboard",
-            permissions: "manage_system",
+            roles: "manage_system",
         },
         {
             title: "Profil",
             icon: mdiAccount,
             link: "/profile",
-            permissions: "manage_school",
+            roles: "manage_school",
         },
         {
             icon: mdiSchool,
@@ -161,13 +122,13 @@ MenuGestion = {
             title: "Evaluation",
             icon: mdiCogOutline,
             link: "/gestionnote/evaluation",
-        },
+        },*/
         {
             title: "Inscription",
             icon: mdiAccountSchool,
             link: "/inscriptions",
             permissions: "manage_system",
-        }, */
+        },
     ];
 
     let usersMenu = {
@@ -222,44 +183,62 @@ MenuGestion = {
         model: false,
         children: [
             {
-                title: "Evaluation",
-                icon: mdiWalletMembership,
-                link: "/gestionnote/evaluation",
-            },
-            {
                 icon: mdiGift,
                 title: "Affichage de notes",
                 link: "/gestionnote/note/affichage",
                 permissions: "manage_system",
             },
-            // {
-            //     icon: mdiWalletMembership,
-            //     title: "Attribution de notes",
-            //     link: "/gestionnote/note/attribution",
-            //     permissions: "manage_system",
-            // },
+            {
+                icon: mdiWalletMembership,
+                title: "Attribution de notes",
+                link: "/gestionnote/note/attribution",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiAccountSchool,
+                title: "Enseignants",
+                link: "/teachers",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSchool,
+                title: "Établissements",
+                link: "/organizations",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiCalendar,
+                title: "Années Scolaires",
+                link: "/annees",
+                permissions: "manage_system",
+            },
+
+            {
+                icon: mdiGoogleClassroom,
+                title: "Niveaux",
+                link: "/niveaux",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiGoogleClassroom,
+                title: "Salle de cours",
+                link: "/salles",
+                title: "Attribution de notes",
+                link: "/gestionnote/note/attribution",
+                permissions: "manage_system",
+            },
             // {
             //     icon: mdiAccountSchool,
             //     title: "Enseignants",
             //     link: "/teachers",
             //     permissions: "manage_system",
             // },
-           
             // {
-            //     icon: mdiGoogleClassroom,
-            //     title: "Niveaux",
-            //     link: "/niveaux",
+            //     icon: mdiSchool,
+            //     title: "Etablissements",
+            //     link: "/organizations",
             //     permissions: "manage_system",
             // },
-            // {
-            //     icon: mdiGoogleClassroom,
-            //     title: "Salle de cours",
-            //     link: "/salles",
-            //     title: "Attribution de notes",
-            //     link: "/gestionnote/note/attribution",
-            //     permissions: "manage_system",
-            // },
-            
         ],
     };
     // Gestion de Notes
@@ -346,8 +325,8 @@ MenuGestion = {
             // },
         ],
     };
-       if (page?.roles == "Administrateur") {
+    if (page?.roles != "Super-administrateur") {
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin,MenuGestion]
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
 }

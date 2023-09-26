@@ -43,7 +43,7 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(RouteServiceProvider::HOME);
         } catch (\Throwable $th) {
             //throw $th;
-            //dd('error:', $th);
+            dd('error:', $th);
         }
     }
 

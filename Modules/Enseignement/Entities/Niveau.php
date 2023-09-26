@@ -17,8 +17,6 @@ class Niveau extends Model
         'libelle',
         'section_id'
     ];
-
-    protected $fillable = ['code','libelle','section_id'];
     
     protected static function newFactory()
     {
