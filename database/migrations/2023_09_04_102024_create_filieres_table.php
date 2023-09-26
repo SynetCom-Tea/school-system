@@ -18,6 +18,9 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
                 ->index()
                 ->references('id')->on('etablissements');
+            $table->foreignIdFor(\Modules\Scolarite\Entities\Departement::class)->nullable()
+                ->index()
+                ->references('id')->on('departements');
             $table->softDeletes();
             $table->timestamps();
         });

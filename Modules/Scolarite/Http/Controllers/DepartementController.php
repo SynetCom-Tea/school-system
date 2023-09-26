@@ -15,7 +15,6 @@ class DepartementController extends Controller
 {
     /**
      * Display a listing of the resource.
-     * @return Response
      */
     public function index()
     {
@@ -31,8 +30,6 @@ class DepartementController extends Controller
 
     /**
      * Store a newly created resource in storage.
-     * @param Request $request
-     * @return Response
      */
     public function store(Request $request)
     {
@@ -52,8 +49,6 @@ class DepartementController extends Controller
 
     /**
      * Show the specified resource.
-     * @param int $id
-     * @return Response
      */
     public function show($id)
     {
@@ -62,9 +57,6 @@ class DepartementController extends Controller
 
     /**
      * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Response
      */
     public function update(Request $request,string $id)
     {
@@ -75,8 +67,6 @@ class DepartementController extends Controller
 
     /**
      * Remove the specified resource from storage.
-     * @param int $id
-     * @return Response
      */
     public function destroy(string $id)
     {
@@ -95,7 +85,7 @@ class DepartementController extends Controller
         }
         return redirect()->route('departements.index')->with('message', [
             'type' => 'success',
-            'text' => "Le Département a été supprimée avec succès !",
+            'text' => "Le Département a été supprimé avec succès !",
         ]);
     }
 }

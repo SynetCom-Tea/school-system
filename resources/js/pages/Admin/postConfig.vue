@@ -186,7 +186,7 @@
             </v-col>
             
             <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFilieres">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/filieres.jpg'" class="text-white">
 
@@ -345,6 +345,9 @@ export default {
         },
         getDepartements() {
             router.get(route('departements.index'))
+        },
+        getFilieres() {
+            router.get(route('filieres.index', this.type))
         },
     },
     computed: {
