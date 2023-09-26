@@ -34,7 +34,7 @@
             </v-col>
 
             <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getAffectations">
 
                     <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
 
@@ -80,7 +80,7 @@
                 </v-card>
             </v-col>
             <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getAffectations">
 
                     <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
 
@@ -329,7 +329,10 @@ export default {
             console.log()
         },
         getMatieres() {
-            router.get(route('matieres.index'))
+            router.get(route('matieres.index', this.type))
+        },
+        getAffectations() {
+            router.get(route('affectations.index', this.type))
         },
         getClasses() {
             router.get(route('classes.index', this.type))

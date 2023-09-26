@@ -5,6 +5,7 @@ use App\Http\Controllers\SalleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
+use App\Http\Controllers\AffectationController;
 
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
@@ -88,11 +89,17 @@ Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->na
 Route::resource('inscriptions', InscriptionController::class);
 Route::resource('facultes', FaculteController::class);
 Route::resource('departements', DepartementController::class);
-Route::resource('matieres', MatiereController::class);
+Route::resource('matieres', MatiereController::class)->only(['create', 'update', 'destroy']);
+Route::get('matieres/{type}', [MatiereController::class, 'index'])->name('matieres.index');
+Route::post('matieres/{type}', [MatiereController::class, 'store'])->name('matieres.store');
 Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
 Route::resource('frais', FraisController::class)->only(['create', 'update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
+Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
+Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
+Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
+Route::post('affectations/{type}', [AffectationController::class, 'store'])->name('affectations.store');
 Route::resource('salles', SalleController::class);
 
 require __DIR__ . '/auth.php';
