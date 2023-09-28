@@ -29,8 +29,6 @@ return new class extends Migration
 
         Schema::create('etablissement_section', function (Blueprint $table) {
             $table->id();
-
-            $table->string('code')->nullable();
             $table->integer('regime_evaluation')->nullable();
             $table->foreignIdFor(\App\Models\Etablissement::class)
                 ->index()
@@ -43,6 +41,32 @@ return new class extends Migration
             $table->integer('configuration')->nullable();
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE etablissement_section ADD COLUMN code varchar(255);");
+
+        DB::unprepared('
+            CREATE TRIGGER etablissement_section_before_insert BEFORE INSERT ON etablissement_section
+            FOR EACH ROW
+            BEGIN
+                DECLARE etablissement_name VARCHAR(255);
+                DECLARE section_libelle VARCHAR(255);
+
+                SELECT etablissements.name INTO etablissement_name
+                FROM etablissements
+                WHERE id = NEW.etablissement_id;
+
+                SELECT sections.libelle INTO section_libelle
+                FROM sections
+                WHERE id = NEW.section_id;
+
+                SET NEW.code = CONCAT(etablissement_name, "/", section_libelle);
+            END;
+        ');
+
+
+
+
+
     }
 
     /**

@@ -39,7 +39,7 @@ class EnseignementController extends Controller
         return Inertia::render('Admin/config', [
             'type' => $type,
             'niveaux' => Niveau::where('section_id', $type)->get(),
-            'matieres' => Matiere::where('etablissement_id', Auth::user()->etablissement_id)->get(),
+            // 'matieres' => Matiere::where('etablissement_id', Auth::user()->etablissement_id)->get(),
             'lmd' => $lmd
         ]);
     }

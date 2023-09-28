@@ -15,7 +15,7 @@ return new class extends Migration
     {
         Schema::create('emplois', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->date('date_debut');
             $table->date('date_fin');
             $table->foreignIdFor(\App\Models\ClasseAnnee::class)

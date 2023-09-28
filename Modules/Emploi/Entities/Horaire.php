@@ -5,6 +5,7 @@ namespace Modules\Emploi\Entities;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Horaire extends Model
@@ -26,5 +27,10 @@ class Horaire extends Model
     public function seances(): HasMany
     {
         return $this->hasMany(Seance::class);
+    }
+
+    public function seance(): HasOne
+    {
+        return $this->hasOne(Seance::class);
     }
 }

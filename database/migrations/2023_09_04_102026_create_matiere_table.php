@@ -13,13 +13,35 @@ return new class extends Migration
     {
         Schema::create('matieres', function (Blueprint $table) {
             $table->id();
-            $table->string('code')->nullable();
             $table->string('nom')->nullable();
             $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
                 ->references('id')->on('etablissement_section');
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE matieres ADD COLUMN code varchar(255);");
+
+        DB::unprepared('
+            CREATE TRIGGER matieres_before_insert BEFORE INSERT ON matieres
+            FOR EACH ROW
+            BEGIN
+                DECLARE etablissement_name VARCHAR(255);
+                DECLARE section_libelle VARCHAR(255);
+        
+                SELECT etablissements.name INTO etablissement_name
+                FROM etablissements
+                JOIN etablissement_section ON etablissements.id = etablissement_section.etablissement_id
+                WHERE etablissement_section.id = NEW.etablissement_section_id;
+        
+                SELECT sections.libelle INTO section_libelle
+                FROM sections
+                JOIN etablissement_section ON sections.id = etablissement_section.section_id
+                WHERE etablissement_section.id = NEW.etablissement_section_id;
+        
+                SET NEW.code = CONCAT(etablissement_name, "/", section_libelle, "/", NEW.nom);
+            END;
+        ');
 
         Schema::create('filiere_matiere_ues_', function (Blueprint $table) {
             $table->id();

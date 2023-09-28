@@ -1,10 +1,5 @@
 <template>
     <VueDatePicker
-      :range="range"
-      :start-placeholder="startPlaceholder"
-      :end-placeholder="endPlaceholder"
-      :format="format"
-      class="custom-datepicker"
     />
 </template>
 
