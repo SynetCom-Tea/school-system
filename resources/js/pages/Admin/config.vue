@@ -207,20 +207,18 @@
             this.form.section=this.type
             this.form.post(route('config.store'), {
                 onFinish: () => {
-                    // this.form.reset()
-                    if (this.$page.props.flashd.messages) {
+                        this.close()
                         this.$swal({
-                            icon: 'warning',
-                            title: 'Création',
-                            text: this.$page.props.flashd.messages,
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
                             timer: 5000,
                             timerProgressBar: true,
                         });
-                    }
-                },
+                    },
             });
 
           }else if(this.type == '3' && this.lmd == null){
@@ -232,20 +230,18 @@
             this.form.section=this.type
             this.form.post(route('config.store'), {
                 onFinish: () => {
-                    // this.form.reset()
-                    if (this.$page.props.flashd.messages) {
+                        this.close()
                         this.$swal({
-                            icon: 'warning',
-                            title: 'Création',
-                            text: this.$page.props.flashd.messages,
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
                             timer: 5000,
                             timerProgressBar: true,
                         });
-                    }
-                },
+                    },
             });
 
 
@@ -285,20 +281,18 @@
             this.form.section=this.type
             this.form.post(route('config.store'), {
                 onFinish: () => {
-                    // this.form.reset()
-                    if (this.$page.props.flashd.messages) {
+                        this.close()
                         this.$swal({
-                            icon: 'warning',
-                            title: 'Création',
-                            text: this.$page.props.flashd.messages,
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
                             timer: 5000,
                             timerProgressBar: true,
                         });
-                    }
-                },
+                    },
             });
 
           }else if(this.type == '4' && this.lmd != null){
@@ -313,20 +307,18 @@
             this.form.systemeLMD= this.lmd
             this.form.post(route('config.store'), {
                 onFinish: () => {
-                    // this.form.reset()
-                    if (this.$page.props.flashd.messages) {
+                        this.close()
                         this.$swal({
-                            icon: 'warning',
-                            title: 'Création',
-                            text: this.$page.props.flashd.messages,
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
                             timer: 5000,
                             timerProgressBar: true,
                         });
-                    }
-                },
+                    },
             });
 
           }
