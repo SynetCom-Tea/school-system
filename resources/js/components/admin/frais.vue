@@ -88,7 +88,7 @@
                             color="primary"
                             href="../models/echantillons/fiche_echantillonage.ods"
                             download>
-                                Télécharger le Model
+                                Télécharger le modèle
                         </v-btn></v-col>
                     </v-row>
                 </v-card-text>
@@ -108,7 +108,7 @@
                                 chips
                                 closable-chips
                                 color="blue-grey-lighten-2"
-                                label="filiere"
+                                label="filière"
                             ></Autocomplete>
                         </v-col>
                         <v-col md="3" >

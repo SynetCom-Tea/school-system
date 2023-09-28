@@ -47,7 +47,7 @@
             <v-row>
               <v-col>
                 <v-switch
-                  label="Souhaiterez-vous importez le fichier des filieres ?"
+                  label="Souhaiterez-vous importez le fichier des filières ?"
                   v-model="importation"
                   @update:modelValue="submitForm(null)"
                   color="info"
@@ -74,7 +74,7 @@
                   href="../models/echantillons/fiche_echantillonage.ods"
                   download
                 >
-                  Télécharger le Model
+                  Télécharger le modèle
                 </v-btn></v-col
               >
             </v-row>
@@ -83,8 +83,8 @@
             <v-row disabled :key="filiere.id" v-for="(filiere, i) in form.filieres">
               <v-col md="4">
                 <TextField
-                  label="Code filiere"
-                  placeholder="Code filiere"
+                  label="Code filière"
+                  placeholder="Code filière"
                   class="mt-2"
                   :isRequired="true"
                   v-model="filiere.code"
@@ -94,10 +94,10 @@
               </v-col>
               <v-col md="4">
                 <TextField
-                  label="Nom de la filiere"
+                  label="Nom de la filière"
                   class="mt-2"
                   :isRequired="true"
-                  placeholder="Nom de la filiere"
+                  placeholder="Nom de la filière"
                   required
                   v-model="filiere.libelle"
                   @update:modelValue="submitForm(filiere)"

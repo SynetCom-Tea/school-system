@@ -118,10 +118,10 @@
                     >
                       <v-col offset-md="1" md="4">
                         <TextField
-                          label="Code filiere"
+                          label="Code filière"
                           class="mt-2"
                           :isRequired="true"
-                          placeholder="Code filiere"
+                          placeholder="Code filière"
                           v-model="filiere.code"
                           @update:modelValue="
                             submitForm(form.departements[i], j, filiere)
@@ -130,10 +130,10 @@
                       </v-col>
                       <v-col md="4">
                         <TextField
-                          label="Nom de la filiere"
+                          label="Nom de la filière"
                           class="mt-2"
                           :isRequired="true"
-                          placeholder="Nom de la filiere"
+                          placeholder="Nom de la filière"
                           v-model="filiere.libelle"
                           @update:modelValue="
                             submitForm(form.departements[i], j, filiere)
@@ -279,7 +279,7 @@ export default {
       await this.verifyUe(departement);
       await this.isValid();
       this.test();
-      console.log("isValid", this.isValid());
+
       this.form.etablissement_section_id = this.$page.props.sections.find(
         (el) => el.section == this.section
       );
