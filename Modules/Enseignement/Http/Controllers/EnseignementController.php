@@ -264,7 +264,7 @@ class EnseignementController extends Controller
                }
             }
         }
-
+        return redirect()->route('admin.config',$request->section);
     }
 
     /**
