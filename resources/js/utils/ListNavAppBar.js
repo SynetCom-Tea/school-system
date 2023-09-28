@@ -44,8 +44,11 @@ import {
 } from "@mdi/js";
 export function listMenus(page) {
     // console.log('this.$page.props.roles:', page)
-      let tabs = [];
+    let tabs = [];
     let enfants = [];
+    let tab = [];
+    let section_user = [];
+    let MenuEvaluation;
     let MenuAdmin;
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
@@ -53,7 +56,13 @@ export function listMenus(page) {
       { title: 'Supérieur', icon: mdiSchool, link: '/enseignement/configuration/lmd/3' },
       { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/lmd/4' },
     ];
-
+    const section_users = [
+      { title: "Primaire", icon: mdiSchool, link: "/gestionnote/evaluation/1" },
+      { title: "Secondaire", icon: mdiSchool, link: "/gestionnote/evaluation/2" },
+      { title: 'Supérieur', icon: mdiSchool, link: '/gestionnote/evaluation/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/gestionnote/evaluation/4' },
+    ];
+    // console.log(page?.section_users)
     if (page?.role == "Administrateur") {
 
       if (page?.sections[0]?.sections) {
@@ -62,7 +71,21 @@ export function listMenus(page) {
         });
       }
     }
+    if (page?.role == "Enseignant") {
+      if (page?.section_users[0]?.libelle) {
+        tab = page?.section_users.map(el =>el.libelle);
+      }
+    }
 
+    if (tab != []) {
+        section_users.forEach((s) => {
+            //   console.log('ele:',section)
+          if (tab.includes(s.title)) {
+            // console.log('herre22')
+            section_user.push(s); 
+        }
+      });
+    }
     if (tabs != []) {
         sections.forEach((section) => {
             //   console.log('ele:',section)
@@ -72,6 +95,14 @@ export function listMenus(page) {
         }
       });
     }
+    MenuEvaluation = {
+        icon: mdiCogOutline,
+        title: "Evaluations",
+        "icon-alt": mdiChevronLeft,
+        model: false,
+        children: section_user,
+  }
+  
 MenuAdmin = {
       icon: mdiCogOutline,
       title: "Configurations",
@@ -79,7 +110,6 @@ MenuAdmin = {
       model: false,
       children: enfants,
 }
-
 
     let singleItems = [
      {
@@ -286,5 +316,5 @@ MenuAdmin = {
        if (page?.role == "Administrateur") {
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
-    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin]
+    return [singleItems,usersMenu,configsMenu,welcomeMenu, emploiMenu,MenuAdmin,MenuEvaluation]
 }

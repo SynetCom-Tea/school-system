@@ -45,7 +45,8 @@
                 <hr class="divider" />
                 <div class="links">
                     <v-list density="compact">
-                        <v-list-item class="list-case" v-for="link in getListMenus[0]" :key="link.title"  @click="page(link.link)" >
+                        
+                        <v-list-item class="list-case" v-for="link in getListMenus[0]" :key="link.title"  @click="page(link.link)"  >
                             <template v-slot:prepend>
                                 <v-icon :title="link.title" :icon="link.icon"></v-icon>
                             </template>
@@ -69,7 +70,7 @@
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
-                        <v-list-group :value="getListMenus[1]?.title" v-if="$page.props?.role[0] && ($page.props?.role ==  'Super-administrateur' || $page.props?.role ==  'Administrateur')" >
+                        <v-list-group :value="getListMenus[1]?.title" v-if="$page.props?.role[0]" >
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -106,18 +107,17 @@
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
-
-                        <v-list-group :value="getListMenus[2].title" v-if="$page.props.role == 'Enseignant'">
+                        <v-list-group :value="getListMenus[6].title" v-if="$page.props.role == 'Enseignant'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
-                                        <v-icon :title="getListMenus[2].title" :icon="getListMenus[2].icon"></v-icon>
+                                        <v-icon :title="getListMenus[6].title" :icon="getListMenus[6].icon"></v-icon>
                                     </template>
-                                    <v-list-item-title class="text-wrap" v-text="getListMenus[2].title"></v-list-item-title>
+                                    <v-list-item-title class="text-wrap" v-text="getListMenus[6].title"></v-list-item-title>
                                 </v-list-item>
                             </template>
 
-                            <v-list-item class="sub-list-group" v-for="(item, i) in getListMenus[2].children" :key="i" @click="page(item.link)">
+                            <v-list-item class="sub-list-group" v-for="(item, i) in getListMenus[6].children" :key="i" @click="page(item.link)">
                                 <template v-slot:prepend>
                                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                                 </template>
@@ -179,6 +179,7 @@ export default {
 
     data: () => {
         return {
+            longeur : null,
             MenuAdmin: [],
             open: ["getListMenus[1]"],
             drawer: true,
@@ -204,7 +205,8 @@ export default {
         listMenus(this.$page.props);
     },
     mounted() { 
-        // console.log("ici", this.$page.props);
+        this.longeur = this.$page?.props.sections[0].sections.map(el => el.libelle)
+        // console.log("sections", this.$page?.props.sections[0].sections.map(el => el.libelle));
         axios.interceptors.response.use(
             function (response) {
                 // console.log("response:", response);

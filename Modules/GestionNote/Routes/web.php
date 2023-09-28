@@ -13,7 +13,10 @@
 
 Route::prefix('gestionnote')->group(function() {
     Route::get('/', 'GestionNoteController@index');
-    Route::resource('evaluation',\Modules\GestionNote\Http\Controllers\EvaluationController::class);
+    Route::get('/evaluation/{type}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'index']);
+    Route::post('/evaluation',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'store'])->name('evaluation.store');
+    Route::put('/evaluation/{id}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'update'])->name('evaluation.update');
+    Route::delete('/evaluation/{id}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'destroy'])->name('evaluation.destroy');
     // Affichage de notes
     Route::get('/note/affichage',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'index'])->name('note.affichage');
     Route::get('/note/attribution',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attribution'])->name('note.attribution');

@@ -48,7 +48,7 @@ export default {
                 {
                     title: 'Cycle',
                     align: 'center',
-                    key: 'cycle.name'
+                    key: 'cycle_filieres.cycle.name'
                 },
                 {
                     title: 'Actions',

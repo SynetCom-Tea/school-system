@@ -26,7 +26,7 @@ use Inertia\Inertia;
 Route::prefix('enseignement')->group(function() {
     Route::get('/', 'EnseignementController@index');
     Route::resource('ues',UEController::class)->only(['index','create','store','edit','update']);
-    Route::resource('fillieres', FilliereController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
+    Route::resource('filieres', FilliereController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     // Route::resource('etablissements', EtablissementController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     Route::resource('cycles',CycleController::class)->only(['index','create','destroy','store','update']);
     Route::resource('permissions', PermissionController::class);
