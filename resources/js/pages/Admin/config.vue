@@ -230,7 +230,6 @@
             this.form.filieres= this.formFiliereDonnees
             this.form.niveauMatiere = this.formNiveauMatiereSansUe
             this.form.section=this.type
-            this.form.systemeLMD= 0
             this.form.post(route('config.store'), {
                 onFinish: () => {
                     // this.form.reset()
@@ -286,7 +285,6 @@
             this.form.filieres= this.formFiliereDonnees
             this.form.niveauMatiere = this.formNiveauMatiereSansUe
             this.form.section=this.type
-            this.form.systemeLMD= 0
             this.form.post(route('config.store'), {
                 onFinish: () => {
                     // this.form.reset()

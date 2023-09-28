@@ -9,8 +9,8 @@ class Filiere extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
-    
+    protected $fillable = ['code','name','etablissement_id','departement_id'];
+
     protected static function newFactory()
     {
         return \Modules\Enseignement\Database\factories\FiliereFactory::new();

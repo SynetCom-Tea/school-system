@@ -10,7 +10,7 @@ class Matiere extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = ['code', 'nom', 'etablissement_section_id'];
 
     protected static function newFactory()
     {

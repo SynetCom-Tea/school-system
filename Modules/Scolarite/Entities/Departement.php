@@ -11,13 +11,13 @@ class Departement extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code','libele','faculte_id'];
+    protected $fillable = ['code','libelle','faculte_id'];
 
     public function faculte(): BelongsTo
     {
         return $this->belongsTo(Faculte::class);
     }
-    
+
     public function filieres(): HasMany
     {
         return $this->hasMany(Filiere::class);
