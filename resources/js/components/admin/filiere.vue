@@ -44,7 +44,7 @@
 
         <v-card>
           <v-card-text> </v-card-text>
-          <v-card-text v-if="!importation">
+          <v-card-text>
             <v-row>
               <v-col offset-md="3" md="6">
                 <Autocomplete
@@ -52,8 +52,9 @@
                   class="mt-2"
                   :items="facultes"
                   v-model="form.faculte"
-                  item-value="id"
-                  item-title="libelle"
+                  @update:modelValue="submitForm(null, null, null)"
+                  itemValue="id"
+                  itemTitle="libelle"
                   chips
                   closable-chips
                 >
@@ -81,7 +82,7 @@
                       :isRequired="true"
                       placeholder="Departement"
                       v-model="departement.departement"
-                      required
+                      @update:modelValue="submitForm(form.departements[i], null, null)"
                     ></TextField>
                   </v-col>
 
@@ -113,7 +114,7 @@
                     <v-row
                       disabled
                       :key="filiere.id"
-                      v-for="(filiere, i) in departement.filieres"
+                      v-for="(filiere, j) in departement.filieres"
                     >
                       <v-col offset-md="1" md="4">
                         <TextField
@@ -122,6 +123,9 @@
                           :isRequired="true"
                           placeholder="Code filiere"
                           v-model="filiere.code"
+                          @update:modelValue="
+                            submitForm(form.departements[i], j, filiere)
+                          "
                         ></TextField>
                       </v-col>
                       <v-col md="4">
@@ -131,6 +135,9 @@
                           :isRequired="true"
                           placeholder="Nom de la filiere"
                           v-model="filiere.libelle"
+                          @update:modelValue="
+                            submitForm(form.departements[i], j, filiere)
+                          "
                         ></TextField>
                       </v-col>
                       <v-col md="1">
@@ -188,22 +195,6 @@
           </v-card-text>
         </v-card>
         <br />
-        <!-- <v-row class="text-center ml-3 mb-3"
-          ><v-col cols="auto">
-            <Button
-              type="submit"
-              title="Enregistrer cette étape"
-              nameButton="Enregistrer"
-              variant="flat"
-              @click="submitForm"
-              density="comfortable"
-              class="text-center"
-              :isBlock="true"
-              size="large"
-              style="text-transform: none"
-            >
-            </Button> </v-col
-        ></v-row> -->
       </v-card>
       <br />
     </v-container>
@@ -230,8 +221,20 @@ export default {
       faculte: null,
       fichier_filiere: null,
       departements: [],
+      tabsFilieres: [],
     }),
   }),
+  // watch: {
+  //     // Surveillez les valeurs spécifiques ici
+  //     departements(nou,old){
+  //         console.log('tttttt',nou)
+  //             // if (data.departements && Array.isArray(data.departements)) {
+  //             //     data.departements.forEach(element => {
+  //             //         this.form.tabsFilieres = this.form.tabsFilieres.concat(element.filieres)
+  //             //     });
+  //             // }
+  //     },
+  // },
 
   methods: {
     onclickAlertButton(type) {
@@ -257,61 +260,79 @@ export default {
         return "Universitaire";
       }
     },
+    test() {
+      this.form.tabsFilieres = [];
+      if (this.form.departements && Array.isArray(this.form.departements)) {
+        this.form.departements.forEach((element) => {
+          this.form.tabsFilieres = this.form.tabsFilieres.concat(element.filieres);
+        });
+      }
+    },
     resetForm(check) {
       if (check) {
         this.form.departements = [];
         this.addRowUe();
-        // this.addRow()
       }
     },
-    submitForm() {
-      // Empêche l'envoi du formulaire par défaut
-      event.preventDefault();
-      // Valide le formulaire avant de l'envoyer
-      if (this.isValid()) {
-        // this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section.libelle == this.section)
-        this.$emit("formSubmitted", this.form);
-        this.$swal.fire({
-          title: "Réussi",
-          text: "Mise à jour réussi avec succes!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // this.$swal("Enregistrement réussi avec succes!")
-      } else {
-        // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-        this.$swal.fire({
-          title: "Erreur",
-          text:
-            "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
+    async submitForm(departement, index, filiere) {
+      await this.verify(departement, index, filiere);
+      await this.verifyUe(departement);
+      await this.isValid();
+      this.test();
+      console.log("isValid", this.isValid());
+      this.form.etablissement_section_id = this.$page.props.sections.find(
+        (el) => el.section == this.section
+      );
+
+      this.$emit("formSubmitted", this.form);
+      this.$emit("filiereFormValid", this.isValid());
+    },
+    async checkFiliereForm() {
+      let valid = true; // Initialisez la variable fichier à true par défaut
+      // Parcourez chaque élément de "ues"
+      for (let i = 0; i < this.form.departements.length; i++) {
+        const departement = this.form.departements[i];
+        // Vérifiez si "ue" est défini et si "matieres" existe et n'est pas vide
+        if (
+          !departement ||
+          !departement.departement ||
+          departement.departement === "" ||
+          !departement.filieres ||
+          departement.filieres.length === 0
+        ) {
+          valid = false; // Si l'une des conditions n'est pas remplie, définissez fichier sur false
+          break; // Sortez de la boucle car une condition n'est pas remplie
+        }
+
+        // Parcourez chaque élément de "matieres" pour cette "ue"
+        for (let j = 0; j < departement.filieres.length; j++) {
+          const filiere = departement.filieres[j];
+          // Vérifiez si la propriété "matiere" n'est pas vide
+          if (
+            !filiere.code ||
+            filiere.code === "" ||
+            filiere.libelle === "" ||
+            filiere.code == null ||
+            filiere.libelle == null
+          ) {
+            valid = false; // Si "matiere" est vide, définissez fichier sur false
+            break; // Sortez de la boucle car une condition n'est pas remplie
+          }
+        }
+
+        if (!valid) {
+          break; // Sortez de la boucle externe si une condition n'est pas remplie
+        }
       }
+      return valid;
     },
-    isValid() {
-      // let lmd = false
-      // let fichier = false
-      // let valid = false
-      // if(this.form.lmd && this.form.type_lmd != null){
-      //     lmd = true
-      // }else if(!this.form.lmd && this.form.type_lmd == null){
-      //     lmd = true
-      // }
-      // if(this.importation && this.form.fichier_filiere != null){
-      //     fichier = true
-      // }else if(!this.importation && !this.form.filieres.find(el => el.code == null || el.libelle == null || el.code == '' || el.libelle == '')){
-      //     fichier = true
-      // }
-      // if(lmd && fichier){
-      //     valid = true
-      // }else{
-      //     valid = false
-      // }
-      return true;
-    },
-    goBack() {
-      router.get(route("etablissements.index"));
+    async isValid() {
+      let valide = false;
+      const result = await this.checkFiliereForm();
+      if (this.form.faculte != null && this.form.faculte !== "" && result === true) {
+        valide = true;
+      }
+      return valide;
     },
     addRowUe() {
       this.form.departements.push({
@@ -332,14 +353,6 @@ export default {
         after: null,
       });
     },
-    // addRowInit(){
-    //     this.form. departements[0].filieres.push({
-    //         filiere_id: null,
-    //         coefficient: null,
-    //         volume_horaire: null,
-    //         after: null
-    //     })
-    // },
     removeRowUe(id) {
       this.form.departements = this.form.departements.filter((el) => el !== id);
     },
@@ -347,25 +360,27 @@ export default {
       departement.filieres = departement.filieres.filter((el) => el !== filiere);
     },
     async verifyUe(element) {
-      const array = this.form.departements.filter(
-        (el) => el.departement_id !== null && el.departement_id == element.id
-      );
+      if (element) {
+        const array = this.form.departements.filter(
+          (el) => el.departement !== null && el.departement == element.departement
+        );
 
-      if (array.length > 1) {
-        this.removeRow(element);
-        this.$swal("L'élément existe déjà !");
-        // this.$alert.error("L'élément existe déjà !");
+        if (array.length > 1) {
+          this.removeRowUe(element);
+          this.$swal("L'élément existe déjà !");
+        }
       }
     },
-    async verify(element) {
-      const array = this.form.filieres.filter(
-        (el) => el.code !== null && el.code == element.code
-      );
+    async verify(departement, index, filiere) {
+      if (departement) {
+        const array = departement.filieres.filter(
+          (el) => el.code !== null && el.code == filiere.code
+        );
 
-      if (array.length > 1) {
-        this.removeRow(element);
-        this.$swal("L'élément existe déjà !");
-        // this.$alert.error("L'élément existe déjà !");
+        if (array.length > 1) {
+          this.removeRow(departement, departement.filieres[index]);
+          this.$swal("L'élément existe déjà !");
+        }
       }
     },
   },

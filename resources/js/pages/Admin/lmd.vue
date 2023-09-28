@@ -30,65 +30,103 @@
           <!-- <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li> -->
         </v-alert>
 
-        <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
-          <Button
-            style="height: 30px"
-            type="button"
-            title="Plier la note"
-            @click="onclickAlertButton('first')"
-            variant="outlined"
-            color="primary"
-            nameButton="Relire la note"
-          >
-          </Button>
+          <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+            <Button
+              style="height: 30px"
+              type="button"
+              title="Plier la note"
+              @click="onclickAlertButton('first')"
+              variant="outlined"
+              color="primary"
+              nameButton="Relire la note"
+            >
+            </Button>
+          </div>
         </div>
-      </div>
-      <v-divider></v-divider>
-      <!-- <v-card class="mx-auto" max-width="1000"> -->
-      <v-form v-model="valid">
-        <v-card-text>
-          <v-row>
-            <v-col>
-              <v-switch
-                label="Souhaiterez-vous appliquez le système LMD ?"
-                v-model="form.lmd"
-                @change="test()"
-                color="primary"
-                inset
-              ></v-switch>
-            </v-col>
-            <v-col v-if="form.lmd">
-              <Autocomplete
-                class="mt-1"
-                :items="lmds"
-                item-title="libelle"
-                item-value="id"
-                v-model="form.type_lmd"
-                @update:modelValue="test(form.type_lmd)"
-                chips
-                closable-chips
-                color="blue-grey-lighten-2"
-                label="Select"
-              ></Autocomplete>
-            </v-col>
-            <v-col>
-              <v-switch
-                label="Souhaiterez-vous appliquez le régime d'évaluation ?"
-                v-model="form.regime_evaluation"
-                color="indigo"
-                inset
-              ></v-switch>
-            </v-col>
-          </v-row>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn variant="text" color="error" @click="goBack"> Annuler </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn variant="text" color="info" :disabled="check" @click="submit"
-            >Enregistrer</v-btn
-          >
-        </v-card-actions>
-      </v-form>
+        <v-divider></v-divider>
+    <!-- <v-card class="mx-auto" max-width="1000"> -->
+        <v-form v-model="valid">
+            <v-card-text>
+                <v-row>
+                <v-col>
+                    <v-switch
+                    label="Souhaiterez-vous appliquez le système LMD ?"
+                    v-model="form.lmd"
+                    @change="test()"
+                    color="primary"
+                    inset
+                    ></v-switch>
+                </v-col>
+                <v-col v-if="form.lmd">
+                    <Autocomplete
+                        :items="lmds"
+                        item-title="libelle"
+                        item-value="id"
+                        v-model="form.type_lmd"
+                        @update:modelValue="test()"
+                        chips
+                        closable-chips
+                        required
+                        color="blue-grey-lighten-2"
+
+                        label="Select"
+                    ></Autocomplete>
+                </v-col>
+                <v-col>
+                    <v-switch
+                    label="Souhaiterez-vous appliquez le régime d'évaluation ?"
+                    v-model="form.regime_evaluation"
+                    color="indigo"
+                    inset
+                    ></v-switch>
+                </v-col>
+                </v-row>
+            </v-card-text>
+            <v-card-actions>
+                <Button
+                title="retourner à la page precédante"
+                nameButton="Retour"
+                variant="flat"
+                @click="goBack"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button>
+                <v-spacer></v-spacer>
+                <Button
+                v-if="form.lmd"
+                :disabled='check'
+                title="retourner à la page precédante"
+                nameButton="Approuver"
+                variant="flat"
+                @click="submit"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button>
+                <Button
+                v-else
+                title="Ignorer"
+                nameButton="Ignorer"
+                variant="flat"
+                @click="submit"
+                density="comfortable"
+                class="text-center"
+                :isBlock="true"
+                size="large"
+                style="text-transform: none"
+                >
+                </Button>
+
+
+            </v-card-actions>
+        </v-form>
     </v-card>
   </AuthenticatedLayout>
 </template>
@@ -148,47 +186,30 @@ export default {
       regime_evaluation: false,
       type: null,
     }),
-  }),
-  updated() {
-    console.log("lmds:", this.lmds);
-  },
-  methods: {
-    onclickAlertButton(type) {
-      if (type == "second") {
-        this.alertSecond = true;
-      }
-      if (type == "first") this.alertFirst = true;
-    },
-    test(e) {
-      console.log("lmdsTT:", this.lmds);
-      console.log(" form.type_lmd:", e);
 
-      if (this.form.lmd == true && e !== null) {
-        this.check = false;
-      } else if (this.form.lmd == false) {
-        this.check = false;
-      } else {
-        this.check = true;
-      }
-      console.log("check", this.check, "type_lmd", e);
-    },
-    submit() {
-      this.form.type = this.type;
-      this.form.post(route("lmd.store"), {
-        onFinish: () => {
-          this.$swal({
-            icon: "success",
-            title: "Enregistrement",
-            text: "Enregistrer avec succès!",
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
-          });
+    methods: {
+        onclickAlertButton(type) {
+        if (type == "second") {
+            this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
         },
-      });
-    },
+        test(){
+            if(this.form.lmd == true && this.form.type_lmd !== null){
+                this.check = false
+            }else if(this.form.lmd == false ){
+                this.check = false
+            }else{
+                this.check = true
+            }
+            console.log('check',this.check,'type_lmd', this.form.type_lmd );
+        },
+        submit(){
+            this.form.type = this.type
+            this.form.post(route('lmd.store'), {
+
+            });
+        },
 
     goBack() {
       router.get(route("dashboard"));

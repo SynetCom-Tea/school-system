@@ -7,194 +7,128 @@
     ></Toolbar>
     <!-- <br> -->
 
+    <div>
     <!-- Application de stepper -->
-    <FormWizard
+    <form-wizard
       color="#004980"
       back-button-text="Retour"
       next-button-text="Suivant"
       finish-button-text="Enregistrer"
-      @on-complete="submit"
-      @on-loading="onLoading"
+      @on-complete="sendForm" @on-loading="handleLoading" @on-error="handleError" @on-change="handleChange" @on-validate="validateTabSwitch"
     >
       <!-- Tabs 1 -->
-      <TabContent title="MATIÈRES" :before-change="beforeChange">
-        <v-card flat>
-          <matiere-form @formSubmitted="getMatiereForm" :type="type" />
-        </v-card>
-      </TabContent>
+      <tab-content title="MATIERES" :before-change="beforeChange">
+        <v-card  flat v-show="!loadingWizard">
+                <matiere-form @formSubmitted="getMatiereForm" :type="type" @matiereFormValid="matiereFormValid" />
+            </v-card>
+      </tab-content>
       <!-- Tabs 2 -->
-      <TabContent title="SALLES" :before-change="beforeChange">
-        <v-card flat>
-          <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" />
-        </v-card>
-      </TabContent>
+      <tab-content title="SALLES" :before-change="beforeChange">
+        <v-card  flat v-show="!loadingWizard">
+                <classe-form @formSubmitted="getClasseForm" :type="type" :niveaux="niveaux" @classeFormValid="classeFormValid" />
+            </v-card>
+      </tab-content>
       <!-- Tabs 3 -->
-      <TabContent :title="tabTitle3" :before-change="beforeChange">
-        <v-card flat>
-          <!-- Tabs de la Filiere pour toute les sections -->
-          <v-card-text v-if="type == '3'">
-            <filieresup-form @formSubmitted="getFiliereForm" :type="type" />
-          </v-card-text>
-          <!-- Tabs de la Filiere pour toute les sections -->
+      <tab-content :title="tabTitle3" :before-change="beforeChange">
+        <v-card  flat>
+                <!-- Tabs de la Filiere pour toute les sections -->
+                <v-card-text v-show="type == '3' && !loadingWizard">
+                    <filieresup-form @formSubmitted="getFiliereForm" :type="type" @filiereSupFormValid="filiereSupFormValid" />
+                </v-card-text>
+                <!-- Tabs de la Filiere pour toute les sections -->
 
-          <!-- Tabs de la Faculté pour toute les sections -->
-          <v-card-text v-else-if="type == '4'">
-            <faculte-form @formSubmitted="getFaculteForm" :type="type" />
-          </v-card-text>
-          <!-- Tabs de la Faculté pour toute les sections -->
+                <!-- Tabs de la Faculté pour toute les sections -->
+                <v-card-text v-show ="type == '4' && !loadingWizard">
+                    <faculte-form @formSubmitted="getFaculteForm" :type="type" @faculteFormValid="faculteFormValid" />
+                </v-card-text>
+                <!-- Tabs de la Faculté pour toute les sections -->
 
-          <!-- Tabs de la Frais pour toute les sections -->
-          <v-card-text v-else>
-            <frais-form
-              @formSubmitted="getFraisForm"
-              :type="type"
-              :niveaux="niveaux"
-              :filieres="formFiliere"
-            />
-          </v-card-text>
-          <!-- Tabs de la Frais pour toute les sections -->
-        </v-card>
-      </TabContent>
+                <!-- Tabs de la Frais pour toute les sections -->
+                <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" @fraisFormValid="fraisFormValid"/>
+                </v-card-text>
+                <!-- Tabs de la Frais pour toute les sections -->
+            </v-card>
+      </tab-content>
       <!-- Tabs 4 -->
-      <TabContent :title="tabTitle4" :before-change="beforeChange">
-        <v-card flat>
-          <v-card-text v-if="type == '3'">
-            <frais-form
-              @formSubmitted="getFraisForm"
-              :type="type"
-              :niveaux="niveaux"
-              :filieres="formFiliere"
-            />
-          </v-card-text>
-          <v-card-text v-else-if="type == '4'">
-            <filiere-form
-              @formSubmitted="getFiliereForm"
-              :type="type"
-              :facultes="formFaculte.facultes"
-            />
-          </v-card-text>
-          <v-card-text v-else>
-            <niveau-matiere-form
-              @formSubmitted="getNiveauMatiereForm"
-              :type="type"
-              :niveaux="niveaux"
-              :matieres="formMatiere.matieres"
-            />
-          </v-card-text>
-        </v-card>
-      </TabContent>
+      <tab-content :title="tabTitle4" :before-change="beforeChange">
+        <v-card  flat>
+                <v-card-text v-show="type == '3' && !loadingWizard">
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere"  />
+                </v-card-text>
+                <v-card-text v-show ="type == '4' && !loadingWizard">
+                    <filiere-form @formSubmitted="getFiliereForm" :type="type" :facultes="formFaculte.facultes" @filiereFormValid="filiereFormValid" />
+                </v-card-text>
+                <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
+                    <niveau-matiere-form @formSubmitted="getNiveauMatiereForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatiereFormValid="niveauMatiereFormValid"/>
+                </v-card-text>
+            </v-card>
+      </tab-content>
       <!-- Tabs 5 -->
-      <TabContent
-        :title="tabTitle5"
-        v-if="type == '3' || type == '4'"
-        :before-change="beforeChange"
-      >
-        <v-card flat>
-          <v-card-text v-if="type == '4'">
-            <frais-form
-              @formSubmitted="getFraisForm"
-              :type="type"
-              :niveaux="niveaux"
-              :filieres="formFiliere"
-            />
-          </v-card-text>
-          <v-card-text v-if="type == '3' && lmd != null">
-            <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
-          </v-card-text>
-          <v-card-text v-if="type == '3' && lmd == null">
-            <niveau-matiere-sans-ue-form
-              @formSubmitted="getNiveauMatiereSansUeForm"
-              :type="type"
-              :niveaux="niveaux"
-              :matieres="formMatiere.matieres"
-              :filieres="formFiliere"
-            />
-          </v-card-text>
-        </v-card>
-      </TabContent>
+      <tab-content :title="tabTitle5"  v-if="type=='3' || type=='4'" :before-change="beforeChange">
+        <v-card  flat>
+                <v-card-text v-show="type=='4' && !loadingWizard">
+                    <frais-form @formSubmitted="getFraisForm" :type="type" :niveaux="niveaux" :filieres="formFiliere" @fraisFormValid="fraisFormValid"/>
+                </v-card-text>
+                <v-card-text v-show="type=='3' && lmd != null && !loadingWizard">
+                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" @ueFormValid="ueFormValid" />
+                </v-card-text>
+                <v-card-text v-show="type=='3'&& lmd == null && !loadingWizard">
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatieresansUEFormValid="niveauMatieresansUEFormValid" :filieres="formFiliere"/>
+                </v-card-text>
+            </v-card>
+      </tab-content>
       <!-- Tabs 6 -->
-      <TabContent
-        :title="tabTitle6 ? tabTitle6 : ''"
-        v-if="(type == '3' || type == '4') && lmd != null"
-        :before-change="beforeChange"
-      >
-        <v-card>
-          <v-card-text v-if="type == '4'">
-            <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" />
-          </v-card-text>
-          <v-card-text v-if="type == '3'">
-            <niveau-matiere-sup-form
-              @formSubmitted="getNiveauMatiereSupForm"
-              :type="type"
-              :niveaux="niveaux"
-              :matieres="formMatiere.matieres"
-              :filieres="formFiliere"
-              :ues="formUE.ues"
-            />
-          </v-card-text>
-        </v-card>
-      </TabContent>
+      <tab-content :title="tabTitle6" v-if="(type=='3' || type=='4') && lmd != null" :before-change="beforeChange">
+        <v-card >
+                <v-card-text v-show="type=='4' && !loadingWizard">
+                    <ue-form @formSubmitted="getUEForm" :type="type" :niveaux="niveaux" @ueFormValid="ueFormValid" />
+                </v-card-text>
+                <v-card-text v-show="type=='3' && !loadingWizard">
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm " :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues" @niveauMatiereSupFormValid="niveauMatiereSupFormValid"/>
+                </v-card-text>
+            </v-card>
+      </tab-content>
       <!-- Tabs 7 -->
-      <TabContent title="AFFECTATION DE MATIÈRES AUX NIVEAUX" v-if="type == '4'">
-        <v-card flat>
-          <v-card-text v-if="lmd == null">
-            <niveau-matiere-sans-ue-form
-              @formSubmitted="getNiveauMatiereSansUeForm"
-              :type="type"
-              :niveaux="niveaux"
-              :matieres="formMatiere.matieres"
-              :filieres="formFiliere"
-            />
-          </v-card-text>
-          <v-card-text v-if="lmd != null">
-            <niveau-matiere-sup-form
-              @formSubmitted="getNiveauMatiereSupForm"
-              :type="type"
-              :niveaux="niveaux"
-              :matieres="formMatiere.matieres"
-              :filieres="formFiliere"
-              :ues="formUE.ues"
-            />
-          </v-card-text>
-        </v-card>
-      </TabContent>
-    </FormWizard>
+      <tab-content title="AFFECTATION DE MATIERES AUX NIVEAUX" v-if="type=='4'" :before-change="beforeChange">
+        <v-card  flat>
+                <v-card-text v-show="lmd == null && !loadingWizard">
+                    <niveau-matiere-sans-ue-form @formSubmitted="getNiveauMatiereSansUeForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" @niveauMatieresansUEFormValid="niveauMatieresansUEFormValid" :filieres="formFiliere"/>
+                </v-card-text>
+                <v-card-text v-show="lmd != null && !loadingWizard" >
+                    <niveau-matiere-sup-form @formSubmitted="getNiveauMatiereSupForm" :type="type" :niveaux="niveaux" :matieres="formMatiere.matieres" :filieres="formFiliere" :ues="formUE.ues" @niveauMatiereSupFormValid="niveauMatiereSupFormValid"/>
+                </v-card-text>
+            </v-card>
+      </tab-content>
+      <div class="loader" v-if="loadingWizard"></div>
+    </form-wizard>
     <!-- Application de stepper -->
-  </AuthenticatedLayout>
-</template>
-<script>
-import { FormWizard, TabContent } from "vue3-form-wizard";
-import "vue3-form-wizard/dist/style.css";
-import MatiereForm from "@/components/admin/matiere.vue";
-import NiveauMatiereSansUeForm from "@/components/admin/niveau-matiere-sans-ue.vue";
-import NiveauMatiereSupForm from "@/components/admin/niveau-matiere-sup.vue";
-import NiveauMatiereForm from "@/components/admin/niveau-matiere.vue";
-import ClasseForm from "@/components/admin/classe.vue";
-import filiereForm from "@/components/admin/filiere.vue";
-import filieresupForm from "@/components/admin/filieresup.vue";
-import faculteForm from "@/components/admin/faculte.vue";
-import ueForm from "@/components/admin/ue.vue";
-import fraisForm from "@/components/admin/frais.vue";
-import { router, useForm } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import Toolbar from "@/components/customizedComponents/Toolbar.vue";
-// import Datatable from "@/components/customizedComponents/datatable.vue";
-import Loader from "@/components/customizedComponents/Loader.vue";
-import {
-  mdiAccount,
-  mdiSchool,
-  mdiHomeOutline,
-  mdiInformation,
-  mdiCloseCircle,
-  mdiPlusCircle,
-  mdiCogOutline,
-  mdiPresentation,
-  mdiGift,
-} from "@mdi/js";
-export default {
-  props: ["type", "niveaux", "lmd"],
-  components: {
-    FormWizard,
+  </div>
+    </AuthenticatedLayout>
+  </template>
+  <script>
+    import {FormWizard, TabContent} from 'vue3-form-wizard'
+    import 'vue3-form-wizard/dist/style.css'
+    import MatiereForm from '@/components/admin/matiere.vue';
+    import NiveauMatiereSansUeForm from '@/components/admin/niveau-matiere-sans-ue.vue';
+    import NiveauMatiereSupForm from '@/components/admin/niveau-matiere-sup.vue';
+    import NiveauMatiereForm from '@/components/admin/niveau-matiere.vue';
+    import ClasseForm from '@/components/admin/classe.vue';
+    import filiereForm from '@/components/admin/filiere.vue';
+    import filieresupForm from '@/components/admin/filieresup.vue';
+    import faculteForm from '@/components/admin/faculte.vue';
+    import ueForm from '@/components/admin/ue.vue';
+    import fraisForm from '@/components/admin/frais.vue';
+    import { router,useForm} from '@inertiajs/vue3';
+    import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
+    import Toolbar from "@/components/customizedComponents/Toolbar.vue";
+    // import Datatable from "@/components/customizedComponents/datatable.vue";
+    import Loader from "@/components/customizedComponents/Loader.vue";
+    import { mdiAccount, mdiSchool, mdiHomeOutline, mdiInformation, mdiCloseCircle, mdiPlusCircle, mdiCogOutline,  mdiPresentation, mdiGift } from "@mdi/js";
+  export default {
+    props:['type','niveaux','lmd'],
+    components: {
+      FormWizard,
     TabContent,
     MatiereForm,
     ClasseForm,
@@ -220,193 +154,366 @@ export default {
     mdiCloseCircle,
     mdiGift,
   },
-  data: () => ({
-    icons: {
-      mdiAccount,
-      mdiPlusCircle,
-      mdiCloseCircle,
-      mdiSchool,
-      mdiInformation,
-      mdiHomeOutline,
-      mdiPresentation,
-      mdiGift,
-      mdiCogOutline,
-    },
-    step: 1,
-    tabTitle3: null,
-    tabTitle4: null,
-    tabTitle5: null,
-    tabTitle6: null,
-    currentTabIndex: 0,
-    items: [],
-    suivant: false,
-    pause: null,
-    formMatiere: {},
-    formClasse: {},
-    formNiveauMatiereSansUe: {},
-    NiveauMatiereSupForm: {},
-    formNiveauMatiere: {},
-    formFaculte: {},
-    formFiliere: {},
-    formFrais: {},
-    formUE: {},
-    form: useForm({
-      matieres: [],
+    data: () => ({
+        icons: {mdiAccount,mdiPlusCircle,mdiCloseCircle,mdiSchool,mdiInformation,mdiHomeOutline,mdiPresentation,mdiGift,mdiCogOutline},
+        step: 1,
+        tabTitle3: null,
+        tabTitle4: null,
+        tabTitle5: null,
+        tabTitle6: null,
+        formValid: false,
+        currentTabIndex: 0,
+        loadingWizard: false,
+        items: [],
+        suivant : false,
+        pause: null,
+        formMatiere: {},
+        formClasse: {},
+        formNiveauMatiereSansUe: {},
+        NiveauMatiereSupForm :{},
+        formNiveauMatiere: {},
+        formFaculte: {},
+        formFiliere:[],
+        formFiliereDonnees:{},
+        formFrais:{},
+        formUE:{},
+        form: useForm({
+          matieres: [],
+          section: null,
+          systemeLMD: null,
+          classes: [],
+          salles: [],
+          facultes: [],
+          filieres: [],
+          frais: [],
+          Ue:[],
+          niveauMatiere: [],
+        }),
     }),
-  }),
-  created() {
-    this.onChange();
-  },
-  methods: {
-    onLoading() {},
-    async beforeChange() {
-      const v = 1;
-      if (v == 0) {
-        this.onLoading(true);
-        return false;
-      } else {
-        this.onLoading(false);
-        return true;
-      }
+    created(){
+      this.onChange()
     },
-    submit() {
-      console.log("submitted", this.formMatiere ? this.formMatiere.matieres.length : 0);
-    },
-    btnsuivant() {
-      this.suivant = false;
-    },
-    getMatiereForm(donnees) {
-      this.formMatiere = donnees;
-      this.suivant = true;
-      // Traitez les données du formulaire soumises par l'événement
-      console.log("Données du formulaire de la matiere :", this.formMatiere);
-    },
-    getClasseForm(donnees) {
-      this.formClasse = donnees;
-      this.suivant = true;
-      // Traitez les données du formulaire soumises par l'événement
-      console.log("Données du formulaire de la classe :", this.formClasse);
-    },
-    getNiveauMatiereSansUeForm(donnees) {
-      this.formNiveauMatiereSansUe = donnees;
-      this.suivant = true;
-      console.log(
-        "Données du formulaire niveau matiere sup :",
-        this.formNiveauMatiereSansUe
-      );
-    },
-    getNiveauMatiereSupForm(donnees) {
-      this.formNiveauMatiereSup = donnees;
-      this.suivant = true;
-      console.log(
-        "Données du formulaire niveau matiere sup :",
-        this.formNiveauMatiereSup
-      );
-    },
+    methods: {
+      // Envoi formulaire vers le backend
 
-    getNiveauMatiereForm(donnees) {
-      this.formNiveauMatiere = donnees;
-      this.suivant = true;
-      console.log("Données du formulaire niveau matiere :", this.formNiveauMatiere);
-    },
-    getFiliereForm(donnees) {
-      this.formFiliere = donnees;
-      this.suivant = true;
-      // Traitez les données du formulaire soumises par l'événement
-      console.log("Données du formulaire de la filiere :", this.formFiliere);
-    },
+      sendForm() {
+        console.log('hdhdghdghdghfg')
+        // 1er cas
+          if(this.type == '1' || this.type == '2'){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.niveauMatiere = this.formNiveauMatiere
+            this.form.section=this.type
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                        this.close()
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    },
+            });
 
-    getUEForm(donnees) {
-      this.formUE = donnees;
-      this.suivant = true;
-      // Traitez les données du formulaire soumises par l'événement
-      console.log("Données du formulaire de l'unité d'enseignement :", this.formUE);
-    },
-    getFraisForm(donnees) {
-      this.formFrais = donnees;
-      this.suivant = true;
-      // Traitez les données du formulaire soumises par l'événement
-      console.log("Données du formulaire de frais :", this.formFrais);
-    },
-    getFaculteForm(donnees) {
-      this.formFaculte = donnees;
-      this.suivant = true;
-      // Traitez les données du formulaire soumises par l'événement
-      console.log("Données du formulaire de faculté :", this.formFaculte);
-    },
+          }else if(this.type == '3' && this.lmd == null){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.filieres= this.formFiliereDonnees
+            this.form.niveauMatiere = this.formNiveauMatiereSansUe
+            this.form.section=this.type
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                        this.close()
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    },
+            });
 
-    onChange() {
-      if (this.type == "1" || this.type == "2") {
-        this.tabTitle3 = "FRAIS";
-        this.tabTitle4 = "AFFECTATION DE MATIÈRES AUX NIVEAUX";
-      } else if (this.type == "3" && this.lmd == null) {
-        this.tabTitle3 = "FILIÈRES";
-        this.tabTitle4 = "FRAIS";
-        this.tabTitle5 = "AFFECTATION DE MATIÈRES AUX NIVEAUX";
-      } else if (this.type == "3" && this.lmd != null) {
-        this.tabTitle3 = "FILIÈRES";
-        this.tabTitle4 = "FRAIS";
-        this.tabTitle5 = "UNITÉS D'ENSEIGNEMENT";
-        this.tabTitle6 = "AFFECTATION DE MATIÈRES AUX NIVEAUX";
-      } else if (this.type == "4" && this.lmd == null) {
-        this.tabTitle3 = "FACULTÉS";
-        this.tabTitle4 = "FILIÈRES";
-        this.tabTitle5 = "FRAIS";
-        this.tabTitle6 = "AFFECTATION DE MATIÈRES AUX NIVEAUX";
-      } else if (this.type == "4" && this.lmd != null) {
-        this.tabTitle3 = "FACULTÉS";
-        this.tabTitle4 = "FILIÈRES";
-        this.tabTitle5 = "FRAIS";
-        this.tabTitle6 = "UNITÉS D'ENSEIGNEMENT";
-      }
-    },
-  },
-  computed: {
-    doneButtonOptions() {
-      return this.currentTabIndex >= 1
-        ? {
-            text: "Enregistrer",
-            icon: "check",
-            hideIcon: true, // default false but selected for sample
-            hideText: false, // default false but selected for sample
-            disabled: false,
+
+          }else if(this.type == '3' && this.lmd != null){
+
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.filieres= this.formFiliereDonnees
+            this.form.Ue= this.formUE
+            this.form.niveauMatiere = this.formNiveauMatiereSup
+            this.form.section=this.type
+            this.form.systemeLMD= this.lmd
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                        this.close()
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    },
+            });
+
+          }else if(this.type == '4' && this.lmd == null){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.facultes= this.formFaculte
+            this.form.filieres= this.formFiliereDonnees
+            this.form.niveauMatiere = this.formNiveauMatiereSansUe
+            this.form.section=this.type
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                        this.close()
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    },
+            });
+
+          }else if(this.type == '4' && this.lmd != null){
+            this.form.matieres = this.formMatiere
+            this.form.classes = this.formClasse
+            this.form.frais = this.formFrais
+            this.form.facultes= this.formFaculte
+            this.form.filieres= this.formFiliereDonnees
+            this.form.Ue= this.formUE
+            this.form.niveauMatiere = this.formNiveauMatiereSup
+            this.form.section=this.type
+            this.form.systemeLMD= this.lmd
+            this.form.post(route('config.store'), {
+                onFinish: () => {
+                        this.close()
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Enregistrement',
+                            text: 'La configuration enregistré avec succès!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
+                    },
+            });
+
           }
-        : { disabled: true };
-    },
-    backButtonOptions() {
-      return this.currentTabIndex >= 1
-        ? {
-            text: "Retour",
-            hideIcon: true, // default false but selected for sample
-            hideText: false, // default false but selected for sample
-            disabled: false,
+        },
+
+      // fin envoi
+
+      // Validation des formulaires
+      matiereFormValid(v){
+        this.formValid = v
+      },
+      classeFormValid(v){
+        this.formValid = v
+      },
+      fraisFormValid(v){
+        this.formValid = v
+      },
+      niveauMatiereFormValid(v){
+        this.formValid = v
+      },
+      filiereSupFormValid(v){
+        this.formValid = v
+      },
+      faculteFormValid(v){
+        this.formValid = v
+      },
+      ueFormValid(v){
+        this.formValid = v
+      },
+      niveauMatieresansUEFormValid(v){
+        this.formValid = v
+      },
+
+      niveauMatiereSupFormValid(v){
+        this.formValid = v
+      },
+      filiereFormValid(v){
+        this.formValid = v
+      },
+      // Validation des formulaires
+
+      // Recuperation de données des formulaires
+       getMatiereForm(donnees) {
+          this.formMatiere = donnees
+          console.log('Données du formulaire de la matiere :', this.formMatiere);
+        },
+        getClasseForm(donnees) {
+          this.formClasse = donnees
+          console.log('Données du formulaire de la classe :', this.formClasse);
+        },
+        getNiveauMatiereSansUeForm(donnees){
+          this.formNiveauMatiereSansUe = donnees
+          console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSansUe);
+
+        },
+        getNiveauMatiereSupForm (donnees){
+          this.formNiveauMatiereSup = donnees
+          console.log('Données du formulaire niveau matiere sup :', this.formNiveauMatiereSup);
+
+        },
+
+        getNiveauMatiereForm(donnees){
+          this.formNiveauMatiere = donnees
+          console.log('Données du formulaire niveau matiere :', this.formNiveauMatiere);
+
+        },
+        getFiliereForm(donnees) {
+            if(this.type == '3'){
+              this.formFiliere = donnees.filieres
+              console.log('Données du formulaire de la filiere sup :',this.formFiliere);
+            }else if(this.type == '4'){
+              this.formFiliere = donnees.tabsFilieres
+              console.log('Données du formulaire de la filiere :',this.formFiliere);
+            }
+            this.formFiliereDonnees = donnees
+          },
+
+        getUEForm(donnees) {
+          this.formUE = donnees
+          console.log('Données du formulaire de l\'unité d\'enseignement :', this.formUE);
+        },
+        getFraisForm(donnees) {
+          this.formFrais = donnees
+          console.log('Données du formulaire de frais :', this.formFrais);
+        },
+        getFaculteForm(donnees) {
+          this.formFaculte = donnees
+          console.log('Données du formulaire de faculté :', this.formFaculte);
+        },
+        // Fin recuperation des formulaires
+
+
+      // fUNCTION DE FORM WIZARD
+      async beforeChange()
+      {
+        const isValid = await this.validateTabSwitch(); // Utilisation d'async/await
+        if (isValid) {
+          return true; // La validation réussit, permet le passage à l'onglet suivant
+        } else {
+          this.$swal.fire({
+            title: "Echec de passage à l'étape suivante",
+            text: "Merci de vérifier votre formulaire!",
+            icon: "warning",
+            confirmButtonText: "OK",
+          });
+          return false;
+        }
+      },
+      async validateTabSwitch(validationResult,activeTabIndex) {
+        return new Promise((resolve) => {
+          setTimeout(() => {
+            const isValid = this.formValid; // Remplacez par votre propre logique de validation
+            resolve(isValid);
+          }, 500); // Délai de 2 secondes pour simuler une opération asynchrone
+        });
+      },
+      handleLoading(loading) {
+        this.loadingWizard = loading
+      },
+      handleValidate(validationResult,activeTabIndex) {
+      },
+      handleChange(prevIndex, nextIndex) {
+      },
+      // FIN fUNCTION DE FORM WIZARD
+
+      // Function pour le titre du stepper
+      onChange(){
+        if(this.type == '1' || this.type == '2'){
+          this.tabTitle3 = 'FRAIS'
+          this.tabTitle4 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+        }else if(this.type == '3' && this.lmd == null){
+          this.tabTitle3 = 'FILIERES'
+          this.tabTitle4 = 'FRAIS'
+          this.tabTitle5 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+        }else if(this.type == '3' && this.lmd != null){
+          this.tabTitle3 = 'FILIERES'
+          this.tabTitle4 = 'FRAIS'
+          this.tabTitle5 = 'UNITES D\'ENSEIGNEMENT'
+          this.tabTitle6 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+        }else if(this.type == '4' && this.lmd == null){
+          this.tabTitle3 = 'FACULTES'
+          this.tabTitle4 = 'FILIERES'
+          this.tabTitle5 = 'FRAIS'
+          this.tabTitle6 = 'AFFECTATION DE MATIERES AUX NIVEAUX'
+          }else if(this.type == '4' && this.lmd != null){
+            this.tabTitle3 = 'FACULTES'
+            this.tabTitle4 = 'FILIERES'
+            this.tabTitle5 = 'FRAIS'
+            this.tabTitle6 = 'UNITES D\'ENSEIGNEMENT'
           }
-        : { disabled: true };
+      },
+      // Fin function pour le titre du stepper
     },
-    nextButtonOptions() {
-      return this.currentTabIndex >= 0
-        ? {
-            text: "Suivant",
-            hideIcon: true, // default false but selected for sample
-            hideText: false, // default false but selected for sample
-            disabled: false,
-          }
-        : { disabled: true };
+    computed: {
+        doneButtonOptions() {
+        return this.currentTabIndex>=1
+          ? {
+              text: 'Enregistrer',
+              icon: 'check',
+              hideIcon: true, // default false but selected for sample
+              hideText: false, // default false but selected for sample
+              disabled: false,
+            }
+          : { disabled:true  };
+      },
+        backButtonOptions() {
+        return this.currentTabIndex>=1
+          ? {
+              text: 'Retour',
+              hideIcon: true, // default false but selected for sample
+              hideText: false, // default false but selected for sample
+              disabled: false,
+            }
+          : { disabled:true  };
+      },
+      nextButtonOptions() {
+        return this.currentTabIndex>=0
+          ? {
+              text: 'Suivant',
+              hideIcon: true, // default false but selected for sample
+              hideText: false, // default false but selected for sample
+              disabled: false,
+            }
+          : { disabled:true  };
+      },
+      Title () {
+        switch (this.type) {
+          case '1': return 'SECTION PRIMAIRE'
+          case '2': return 'SECTION SECONDAIRE'
+          case '3': return 'SECTION SUPERIEUR'
+          default: return 'SECTION UNIVERSITAIRE'
+        }
+      },
     },
-    Title() {
-      switch (this.type) {
-        case "1":
-          return "SECTION PRIMAIRE";
-        case "2":
-          return "SECTION SECONDAIRE";
-        case "3":
-          return "SECTION SUPERIEUR";
-        default:
-          return "SECTION UNIVERSITAIRE";
-      }
-    },
-  },
-};
+  }
 </script>
 <style scoped>
 .form-wizard-vue .fw-body-list .fw-list-progress-active {
@@ -416,4 +523,48 @@ export default {
 #fw-1695140104041 > ul > li:nth-child(1) > div.fw-list-progress.fw-list-progress-active {
   background: red;
 }
+
+/* This is a css loader. It's not related to vue-form-wizard */
+.loader,
+.loader:after {
+  border-radius: 50%;
+  width: 10em;
+  height: 10em;
+}
+.loader {
+  margin: 60px auto;
+  font-size: 10px;
+  position: relative;
+  text-indent: -9999em;
+  border-top: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-right: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-bottom: 1.1em solid rgba(255, 255, 255, 0.2);
+  border-left: 1.1em solid #3c80e7;
+  -webkit-transform: translateZ(0);
+  -ms-transform: translateZ(0);
+  transform: translateZ(0);
+  -webkit-animation: load8 1.1s infinite linear;
+  animation: load8 1.1s infinite linear;
+}
+@-webkit-keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes load8 {
+  0% {
+    -webkit-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  100% {
+    -webkit-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+
 </style>
