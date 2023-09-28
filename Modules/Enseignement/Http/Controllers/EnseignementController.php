@@ -38,7 +38,7 @@ class EnseignementController extends Controller
         $table = DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $type)->first();
         $id = $table->id;
         $lmd = $table->systeme_lmd_id;
-        // dd($table);
+
         return Inertia::render('Admin/config', [
             'type' => $type,
             'niveaux' => Niveau::where('section_id', $type)->get(),

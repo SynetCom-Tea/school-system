@@ -81,16 +81,16 @@
           <v-card-text v-if="!importation">
             <v-row :key="classe.id" v-for="(classe, i) in form.classes">
               <v-col cols="3" v-if="type == '1' || type == '2'">
-                <v-autocomplete
-                  :items="niveaux"
+                <Autocomplete
+                  :items="setNiveaux"
                   v-model="classe.niveau"
                   @update:modelValue="submitForm(classe)"
                   class="mt-2"
-                  :item-title="formatNiveauLabel"
+                  item-title="code_libelle"
                   item-value="id"
                   closable-chips
                   label="Niveaux"
-                ></v-autocomplete>
+                ></Autocomplete>
               </v-col>
               <v-col cols="4">
                 <TextField
@@ -178,7 +178,23 @@ export default {
       classes: [],
     }),
   }),
+  computed: {
+    setNiveaux() {
+      let list = [];
 
+      if (this.niveaux) {
+        this.niveaux.forEach((element) => {
+          if (element) {
+            list.push({
+              ...element,
+              code_libelle: element.code + "- " + element.libelle,
+            });
+          }
+        });
+      }
+      return list ?? [];
+    },
+  },
   methods: {
     handleFileUpload(event) {
       const file = event.target.files[0];
@@ -204,11 +220,8 @@ export default {
             } else {
               this.entete = ["niveau"].concat(this.contentType);
             }
-            console.log("entete", this.entete);
-            console.log("headers", this.headers, "data", this.data);
 
             if (this.checkEntete(this.headers, this.entete)) {
-              //   console.log('bravo')
               const missingDataIndex = this.donneesManquantes(this.data);
 
               if (typeof missingDataIndex === "number") {
@@ -218,7 +231,6 @@ export default {
                   icon: "success",
                   confirmButtonText: "OK",
                 });
-                // console.log("L'indice de la ligne manquante est:", missingDataIndex);
               } else {
                 this.form.fichier_classe = null;
                 this.submitForm(null);
@@ -235,7 +247,6 @@ export default {
                   icon: "warning",
                   confirmButtonText: "OK",
                 });
-                console.log();
               }
             } else {
               this.form.fichier_classe = null;
@@ -359,7 +370,6 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-      console.log();
     },
     addRow() {
       this.form.classes.push({

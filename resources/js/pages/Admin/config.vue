@@ -21,6 +21,7 @@
         @on-validate="validateTabSwitch"
       >
         <!-- Tabs 1 -->
+
         <tab-content title="MATIÈRES" :before-change="beforeChange">
           <v-card flat v-show="!loadingWizard">
             <matiere-form
@@ -65,15 +66,17 @@
             <!-- Tabs de la Faculté pour toute les sections -->
 
             <!-- Tabs de la Frais pour toute les sections -->
-            <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
-              <frais-form
-                @formSubmitted="getFraisForm"
-                :type="type"
-                :niveaux="niveaux"
-                :filieres="formFiliere"
-                @fraisFormValid="fraisFormValid"
-              />
-            </v-card-text>
+
+              <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
+                <frais-form
+                  @formSubmitted="getFraisForm"
+                  :type="type"
+                  :niveaux="niveaux"
+                  :filieres="formFiliere"
+                  @fraisFormValid="fraisFormValid"
+                />
+              </v-card-text>
+
             <!-- Tabs de la Frais pour toute les sections -->
           </v-card>
         </tab-content>
@@ -266,6 +269,9 @@ export default {
     mdiGift,
   },
   data: () => ({
+    previousIndex: 0,
+    nextIndex: 0,
+
     icons: {
       mdiAccount,
       mdiPlusCircle,
@@ -314,11 +320,13 @@ export default {
   created() {
     this.onChange();
   },
+  mounted() {
+
+  },
   methods: {
     // Envoi formulaire vers le backend
 
     sendForm() {
-      console.log("hdhdghdghdghfg");
       // 1er cas
       if (this.type == "1" || this.type == "2") {
         this.form.matieres = this.formMatiere;
@@ -513,6 +521,7 @@ export default {
 
     // fUNCTION DE FORM WIZARD
     async beforeChange() {
+
       const isValid = await this.validateTabSwitch(); // Utilisation d'async/await
       if (isValid) {
         return true; // La validation réussit, permet le passage à l'onglet suivant
@@ -527,6 +536,7 @@ export default {
       }
     },
     async validateTabSwitch(validationResult, activeTabIndex) {
+
       return new Promise((resolve) => {
         setTimeout(() => {
           const isValid = this.formValid; // Remplacez par votre propre logique de validation
@@ -538,9 +548,14 @@ export default {
       this.loadingWizard = loading;
     },
     handleValidate(validationResult, activeTabIndex) {},
-    handleChange(prevIndex, nextIndex) {},
-    // FIN fUNCTION DE FORM WIZARD
+    handleChange(prevIndex, nextIndex) {
+     ;
+      this.previousIndex = prevIndex;
+      this.nextIndex = nextIndex;
 
+    },
+    // FIN fUNCTION DE FORM WIZARD
+    handleError() {},
     // Function pour le titre du stepper
     onChange() {
       if (this.type == "1" || this.type == "2") {

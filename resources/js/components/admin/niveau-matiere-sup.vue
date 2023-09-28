@@ -66,9 +66,9 @@
               <v-col md="4">
                 <Autocomplete
                   label="Niveaux"
-                  :item-title="formatNiveauLabel"
+                  item-title="code_libelle"
                   item-value="id"
-                  :items="niveaux"
+                  :items="setNiveaux"
                   v-model="form.niveau"
                   @update:modelValue="submitForm(null, null, null)"
                   chips
@@ -266,6 +266,23 @@ export default {
     }),
   }),
   watch: {},
+  computed: {
+    setNiveaux() {
+      let list = [];
+
+      if (this.niveaux) {
+        this.niveaux.forEach((element) => {
+          if (element) {
+            list.push({
+              ...element,
+              code_libelle: element.code + "- " + element.libelle,
+            });
+          }
+        });
+      }
+      return list ?? [];
+    },
+  },
   methods: {
     onclickAlertButton(type) {
       if (type == "second") {
@@ -320,7 +337,7 @@ export default {
       await this.verifyUe(element);
       await this.verifySomme(element, index);
       await this.isValid();
-      console.log("isValid", this.isValid());
+
       this.form.etablissement_section_id = this.$page.props.sections.find(
         (el) => el.section == this.section
       );

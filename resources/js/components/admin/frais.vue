@@ -61,107 +61,123 @@
                             <v-switch label="Souhaiterez-vous appliquez le régime d'évaluation ?" v-model="form.regime_evaluation" color="indigo" inset></v-switch>
                         </v-col>
                     </v-row> -->
-                    <v-row>
-                        <v-col>
-                            <v-switch
-                                label="Renseignement des données par champs"
-                                v-model="importation"
-                                @update:modelValue="submitForm(null)"
-                                color="info" inset></v-switch>
-                        </v-col>
-                        <v-col v-if="importation">
-
-                            <v-file-input
-                                @change="handleFileUpload"
-                                clearable
-                                required
-                                v-model="form.fichier_frais"
-                                @update:modelValue="submitForm(null)"
-                                label="Charger le fichier de frais"
-                                variant="solo-inverted"
-                            ></v-file-input>
-                        </v-col>
-                        <v-col v-if="importation"><v-btn
-                            class="ma-2"
-                            outlined
-                            type="button"
-                            color="primary"
-                            href="../models/echantillons/fiche_echantillonage.ods"
-                            download>
-                                Télécharger le modèle
-                        </v-btn></v-col>
-                    </v-row>
-                </v-card-text>
-            </v-card>
-            <v-divider></v-divider>
-            <v-card v-if="!importation">
-                 <v-card-text>
-                    <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
-                        <v-col md="3" v-if="type == '3' || type == '4'">
-                            <Autocomplete
-                                :items="filieres"
-                                class="mt-2"
-                                v-model="frais.filiere"
-                                @update:modelValue="submitForm(frais)"
-                                item-value="id"
-                                item-title="code"
-                                chips
-                                closable-chips
-                                color="blue-grey-lighten-2"
-                                label="filière"
-                            ></Autocomplete>
-                        </v-col>
-                        <v-col md="3" >
-
-                            <Autocomplete
-                                :items="niveaux"
-                                class="mt-2"
-                                v-model="frais.niveau"
-                                @update:modelValue="submitForm(frais)"
-                                :item-title="formatNiveauLabel"
-                                item-value="id"
-                                chips
-                                closable-chips
-                                color="blue-grey-lighten-2"
-                                label="Niveaux"
-                            ></Autocomplete>
-                        </v-col>
-                        <!-- <v-col md="4">
+            <v-row>
+              <v-col>
+                <v-switch
+                  label="Renseignement des données par champs"
+                  v-model="importation"
+                  @update:modelValue="submitForm(null)"
+                  color="info"
+                  inset
+                ></v-switch>
+              </v-col>
+              <v-col v-if="importation">
+                <v-file-input
+                  @change="handleFileUpload"
+                  clearable
+                  required
+                  v-model="form.fichier_frais"
+                  @update:modelValue="submitForm(null)"
+                  label="Charger le fichier de frais"
+                  variant="solo-inverted"
+                ></v-file-input>
+              </v-col>
+              <v-col v-if="importation"
+                ><v-btn
+                  class="ma-2"
+                  outlined
+                  type="button"
+                  color="primary"
+                  href="../models/echantillons/fiche_echantillonage.ods"
+                  download
+                >
+                  Télécharger le modèle
+                </v-btn></v-col
+              >
+            </v-row>
+          </v-card-text>
+        </v-card>
+        <v-divider></v-divider>
+        <v-card v-if="!importation">
+          <v-card-text>
+            <v-row disabled :key="frais.id" v-for="(frais, i) in form.frais">
+              <v-col md="3" v-if="type == '3' || type == '4'">
+                <Autocomplete
+                  :items="filieres"
+                  class="mt-2"
+                  v-model="frais.filiere"
+                  @update:modelValue="submitForm(frais)"
+                  item-value="id"
+                  item-title="code"
+                  chips
+                  closable-chips
+                  color="blue-grey-lighten-2"
+                  label="filière"
+                ></Autocomplete>
+              </v-col>
+              <v-col md="3">
+                <Autocomplete
+                  :items="setNiveaux"
+                  class="mt-2"
+                  v-model="frais.niveau"
+                  @update:modelValue="submitForm(frais)"
+                  item-title="code_libelle"
+                  item-value="id"
+                  chips
+                  closable-chips
+                  color="blue-grey-lighten-2"
+                  label="Niveaux"
+                ></Autocomplete>
+              </v-col>
+              <!-- <v-col md="4">
 
                             <TextField label="Code frais" class="mt-2"  :isRequired="true" placeholder="Code frais" required @change="verify(frais)" v-model="frais.code"></TextField>
                         </v-col> -->
-                        <v-col md="3">
-                            <Autocomplete
-                                :items="['Frais d\inscription','Frais de formation','Frais de cantine','Frais de transport']"
-                                class="mt-2"
-                                v-model="frais.type_frais"
-                                @update:modelValue="submitForm(frais)"
-                                color="blue-grey-lighten-2"
-                                label="Frais"
-                            ></Autocomplete>
-                            <!-- <TextField label="Libelle frais" class="mt-2"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField> -->
-                        </v-col>
-                        <v-col md="2">
-
-                            <TextField label="Montant frais" class="mt-2"  :isRequired="true" placeholder="Montant frais" required v-model="frais.montant" @update:modelValue="submitForm(frais)"></TextField>
-                        </v-col>
-                        <v-col md="1" >
-                            <br>
-                            <Button
-                                type="button"
-                                variant="outlined"
-                                :disabled="!(form.frais.length > 1)"
-                                icon
-                                @click="removeRow(frais)"
-                                size="large"
-                                small
-                                color="error"
-                            >
-                                <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                            </Button>
-                            <!-- <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
+              <v-col md="3">
+                <Autocomplete
+                  :items="[
+                    'Frais d\inscription',
+                    'Frais de formation',
+                    'Frais de cantine',
+                    'Frais de transport',
+                  ]"
+                  class="mt-2"
+                  v-model="frais.type_frais"
+                  @update:modelValue="submitForm(frais)"
+                  color="blue-grey-lighten-2"
+                  label="Frais"
+                ></Autocomplete>
+                <!-- <TextField label="Libelle frais" class="mt-2"  :isRequired="true" placeholder="Libelle frais" required v-model="frais.libelle"></TextField> -->
+              </v-col>
+              <v-col md="2">
+                <TextField
+                  label="Montant frais"
+                  class="mt-2"
+                  :isRequired="true"
+                  placeholder="Montant frais"
+                  required
+                  v-model="frais.montant"
+                  @update:modelValue="submitForm(frais)"
+                ></TextField>
+              </v-col>
+              <v-col md="1">
+                <br />
+                <Button
+                  type="button"
+                  variant="outlined"
+                  :disabled="!(form.frais.length > 1)"
+                  icon
+                  @click="removeRow(frais)"
+                  size="large"
+                  small
+                  color="error"
+                >
+                  <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                </Button>
+                <!-- <v-btn variant="outlined" :disabled="!(form.frais.length > 1)" icon @click="removeRow(frais)" fab small color="error">
                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                             </v-btn> -->
+              </v-col>
             </v-row>
             <v-row>
               <v-col offset-md="11" cols="4">
@@ -206,50 +222,67 @@
   </form>
 </template>
 <script>
-    import { ref, watch } from "vue";
-    import XLSX from "xlsx/dist/xlsx.extendscript.js";
-    import { router,useForm} from '@inertiajs/vue3';
-    import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
-  export default {
-    props:['type','niveaux','filieres'],
-    components: {
-        mdiPlusCircle,
-        mdiCloseCircle,
-        mdiInformation
-    },
-    data: () => ({
-        alertFirst: true,
-        alertSecond: true,
-        headers: [],
-        data: [],
-        entete: [],
-        contentType: ['Niveaux','Libelles','Montant'],
-        icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
-        step: 1,
-        importation: false,
-        tabsFilieres: [],
-        form: useForm({
-            fichier_frais: null,
-            frais: [],
-        }),
+import { ref, watch } from "vue";
+import XLSX from "xlsx/dist/xlsx.extendscript.js";
+import { router, useForm } from "@inertiajs/vue3";
+import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+export default {
+  props: ["type", "niveaux", "filieres"],
+  components: {
+    mdiPlusCircle,
+    mdiCloseCircle,
+    mdiInformation,
+  },
+  data: () => ({
+    alertFirst: true,
+    alertSecond: true,
+    headers: [],
+    data: [],
+    entete: [],
+    contentType: ["Niveaux", "Libelles", "Montant"],
+    icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
+    step: 1,
+    importation: false,
+    tabsFilieres: [],
+    form: useForm({
+      fichier_frais: null,
+      frais: [],
     }),
-    // watch: {
-    //     // Surveillez les valeurs spécifiques ici
-    //     filieres(data,old){
-    //         if(this.type == '3'){
-    //             console.log('filieresFrais type 3',data)
-    //             this.tabsFilieres = data ? data.filieres : []
-    //         }else if(this.type == '4'){
-    //             if (data.departements && Array.isArray(data.departements)) {
-    //                 data.departements.forEach(element => {
-    //                     this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
-    //                 });
-    //             }
-    //         }
-    //     },
-    // },
-    methods: {
-        handleFileUpload(event) {
+  }),
+  // watch: {
+  //     // Surveillez les valeurs spécifiques ici
+  //     filieres(data,old){
+  //         if(this.type == '3'){
+  //             console.log('filieresFrais type 3',data)
+  //             this.tabsFilieres = data ? data.filieres : []
+  //         }else if(this.type == '4'){
+  //             if (data.departements && Array.isArray(data.departements)) {
+  //                 data.departements.forEach(element => {
+  //                     this.tabsFilieres = this.tabsFilieres.concat(element.filieres)
+  //                 });
+  //             }
+  //         }
+  //     },
+  // },
+  computed: {
+    setNiveaux() {
+      let list = [];
+
+      if (this.niveaux) {
+        this.niveaux.forEach((element) => {
+          if (element) {
+            list.push({
+              ...element,
+              code_libelle: element.code + "- " + element.libelle,
+            });
+          }
+        });
+      }
+      return list ?? [];
+    },
+  },
+  methods: {
+    handleFileUpload(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -268,63 +301,56 @@
           if (sheetData.length > 0) {
             this.headers = sheetData[0];
             this.data = sheetData.slice(1);
-            if (this.type =="1" || this.type =="2" ) {
-                this.entete=this.contentType.slice();
+            if (this.type == "1" || this.type == "2") {
+              this.entete = this.contentType.slice();
             } else {
-                this.entete=['Filieres'].concat(this.contentType);
+              this.entete = ["Filieres"].concat(this.contentType);
             }
-            console.log('entete', this.entete);
-            console.log('headers',this.headers,'data',this.data)
 
-            if(this.checkEntete(this.headers,this.entete)){
-            //   console.log('bravo')
-            const missingDataIndex = this.donneesManquantes(this.data);
+            if (this.checkEntete(this.headers, this.entete)) {
+              const missingDataIndex = this.donneesManquantes(this.data);
 
-            if (typeof missingDataIndex === "number") {
+              if (typeof missingDataIndex === "number") {
                 this.$swal.fire({
-                    title: 'Valider',
-                    text: "Votre fichier est valide!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
+                  title: "Valider",
+                  text: "Votre fichier est valide!",
+                  icon: "success",
+                  confirmButtonText: "OK",
                 });
-            // console.log("L'indice de la ligne manquante est:", missingDataIndex);
+              } else {
+                this.form.fichier_frais = null;
+                this.submitForm(null);
+                const ligne = missingDataIndex.rowIndex + 2;
+                const colonne = missingDataIndex.columnIndex + 1;
+                this.$swal.fire({
+                  title: "Erreur",
+                  text:
+                    "Données manquantes à la ligne " +
+                    ligne +
+                    " et colonne " +
+                    colonne +
+                    " Veuillez corriger!",
+                  icon: "warning",
+                  confirmButtonText: "OK",
+                });
+              }
             } else {
-                this.form.fichier_frais = null
-                this.submitForm(null)
-                const ligne=missingDataIndex.rowIndex+2;
-                const colonne=missingDataIndex.columnIndex+1;
-                this.$swal.fire({
-                        title: "Erreur",
-                        text:
-                        "Données manquantes à la ligne "+ligne+
-                        " et colonne "+ colonne + " Veuillez corriger!",
-                        icon: "warning",
-                        confirmButtonText: "OK",
-                    });
-
+              this.form.fichier_frais = null;
+              this.submitForm(null);
+              this.$swal.fire({
+                title: "Erreur",
+                text:
+                  "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                icon: "warning",
+                confirmButtonText: "OK",
+              });
             }
-
-            }else{
-                this.form.fichier_frais = null
-                this.submitForm(null)
-                this.$swal.fire({
-                                title: "Erreur",
-                                text:
-                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
-                                icon: "warning",
-                                confirmButtonText: "OK",
-                            });
-            }
-
           }
         };
 
         reader.readAsBinaryString(file);
-
       }
     },
-
-
 
     checkEntete(arr1, arr2) {
       // Vérifie si les tableaux ont la même longueur
@@ -365,95 +391,118 @@
 
       return -1; // Retourne -1 si toutes les données sont présentes
     },
-        onclickAlertButton(type) {
-            if (type == "second") {
-                this.alertSecond = true;
-            }
-            if (type == "first") this.alertFirst = true;
-            },
-        formatNiveauLabel(item) {
-            if(item){
-                return `${item?.code} - ${item?.libelle}`;
-            }
-        },
-        resetForm(check){
-            if(check){
-                this.form.frais = []
-                this.addRow()
-            }
-        },
-        async submitForm(element) {
-            await this.verify(element)
-            await this.isValid()
-            this.$emit('formSubmitted', this.form);
-            this.$emit("fraisFormValid", this.isValid());
-        },
-        async isValid() {
-            let fichier = false
-            let valid = false
-            if(this.importation && this.form.fichier_frais != null){
-                fichier = true
-            }else if(!this.importation && !this.form.frais.find((el) => {
-                if(this.type == '1' || this.type == '2'){
-                    return el.niveau == null || el.niveau == '' || el.type_frais == '' || el.type_frais == null || el.montant == null || el.montant.trim() == '';
-                }else{
-                    return el.filiere == null || el.filiere == '' || el.niveau == null || el.niveau == '' || el.type_frais == null || el.type_frais == '' || el.montant == null || el.montant.trim() == '';
-                }
-            }))
-            {
-                fichier = true
-            }
-            if(fichier){
-                valid = true
-            }else{
-                valid = false
-            }
-            return valid
-        },
-        goBack() {
-            router.get(route('etablissements.index'))
-            console.log()
-        },
-        addRow() {
+    onclickAlertButton(type) {
+      if (type == "second") {
+        this.alertSecond = true;
+      }
+      if (type == "first") this.alertFirst = true;
+    },
+    formatNiveauLabel(item) {
+      if (item) {
+        return `${item?.code} - ${item?.libelle}`;
+      }
+    },
+    resetForm(check) {
+      if (check) {
+        this.form.frais = [];
+        this.addRow();
+      }
+    },
+    async submitForm(element) {
+      await this.verify(element);
+      await this.isValid();
+      this.$emit("formSubmitted", this.form);
+      this.$emit("fraisFormValid", this.isValid());
+    },
+    async isValid() {
+      let fichier = false;
+      let valid = false;
+      if (this.importation && this.form.fichier_frais != null) {
+        fichier = true;
+      } else if (
+        !this.importation &&
+        !this.form.frais.find((el) => {
+          if (this.type == "1" || this.type == "2") {
+            return (
+              el.niveau == null ||
+              el.niveau == "" ||
+              el.type_frais == "" ||
+              el.type_frais == null ||
+              el.montant == null ||
+              el.montant.trim() == ""
+            );
+          } else {
+            return (
+              el.filiere == null ||
+              el.filiere == "" ||
+              el.niveau == null ||
+              el.niveau == "" ||
+              el.type_frais == null ||
+              el.type_frais == "" ||
+              el.montant == null ||
+              el.montant.trim() == ""
+            );
+          }
+        })
+      ) {
+        fichier = true;
+      }
+      if (fichier) {
+        valid = true;
+      } else {
+        valid = false;
+      }
+      return valid;
+    },
+    goBack() {
+      router.get(route("etablissements.index"));
 
-            this.form.frais.push({
-                etablissement:this.$page.props.admin_etablissement.etablissement_id,
-                filiere: null,
-                niveau: null,
-                type_frais: null,
-                montant: null,
-                before: null,
-                after: null
-            })
-        },
-        removeRow(id) {
-            this.form.frais = this.form.frais.filter((el) => el !== id)
-        },
-        async verify(element) {
-            if(element){
-                let array = []
-                if(this.type == '1' || this.type == '2'){
-                    array = this.form.frais.filter(el => el.code !== null && el.niveau == element.niveau && el.type_frais == element.type_frais)
-                }else{
-                    array = this.form.frais.filter(el => el.code !== null && el.filiere == element.filiere && el.niveau == element.niveau && el.type_frais == element.type_frais)
-                }
-                if (array.length > 1) {
-                    this.removeRow(element)
-                    this.$swal("L'élément existe déjà !")
-                }
-            }
-        },
-        updateFil(){
-
-        },
-
+    },
+    addRow() {
+      this.form.frais.push({
+        etablissement: this.$page.props.admin_etablissement.etablissement_id,
+        filiere: null,
+        niveau: null,
+        type_frais: null,
+        montant: null,
+        before: null,
+        after: null,
+      });
+    },
+    removeRow(id) {
+      this.form.frais = this.form.frais.filter((el) => el !== id);
+    },
+    async verify(element) {
+      if (element) {
+        let array = [];
+        if (this.type == "1" || this.type == "2") {
+          array = this.form.frais.filter(
+            (el) =>
+              el.code !== null &&
+              el.niveau == element.niveau &&
+              el.type_frais == element.type_frais
+          );
+        } else {
+          array = this.form.frais.filter(
+            (el) =>
+              el.code !== null &&
+              el.filiere == element.filiere &&
+              el.niveau == element.niveau &&
+              el.type_frais == element.type_frais
+          );
+        }
+        if (array.length > 1) {
+          this.removeRow(element);
+          this.$swal("L'élément existe déjà !");
+        }
+      }
+    },
+    updateFil() {},
   },
 
-    created(){
-
-    },
-    mounted() {
-        this.addRow()
-    },
-  }
+  created() {},
+  mounted() {
+    this.addRow();
+  },
+};
 </script>

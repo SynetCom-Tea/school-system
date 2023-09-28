@@ -209,10 +209,7 @@ export default {
             this.headers = sheetData[0];
             this.data = sheetData.slice(1);
 
-            console.log("headers", this.headers, "data", this.data);
-
             if (this.checkEntete(this.headers, this.contentType)) {
-              //   console.log('bravo')
               const missingDataIndex = this.donneesManquantes(this.data);
 
               if (typeof missingDataIndex === "number") {
@@ -222,7 +219,6 @@ export default {
                   icon: "success",
                   confirmButtonText: "OK",
                 });
-                // console.log("L'indice de la ligne manquante est:", missingDataIndex);
               } else {
                 this.form.fichier_faculte = null;
                 this.submitForm(null);
@@ -239,7 +235,6 @@ export default {
                   icon: "warning",
                   confirmButtonText: "OK",
                 });
-                console.log();
               }
             } else {
               this.form.fichier_faculte = null;
@@ -321,7 +316,7 @@ export default {
     async submitForm(element) {
       await this.verify(element);
       await this.isValid();
-      console.log("isValid", this.isValid());
+
       this.form.etablissement_section_id = this.$page.props.sections.find(
         (el) => el.section == this.section
       );
@@ -354,7 +349,6 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-      console.log();
     },
     addRow() {
       this.form.facultes.push({

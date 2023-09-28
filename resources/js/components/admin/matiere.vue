@@ -212,10 +212,7 @@ export default {
             this.headers = sheetData[0];
             this.data = sheetData.slice(1);
 
-            console.log("headers", this.headers, "data", this.data);
-
             if (this.checkEntete(this.headers, this.contentType)) {
-              //   console.log('bravo')
               const missingDataIndex = this.donneesManquantes(this.data);
 
               if (typeof missingDataIndex === "number") {
@@ -225,7 +222,6 @@ export default {
                   icon: "success",
                   confirmButtonText: "OK",
                 });
-                // console.log("L'indice de la ligne manquante est:", missingDataIndex);
               } else {
                 this.form.fichier_matiere = null;
                 this.submitForm(null);
@@ -295,7 +291,6 @@ export default {
       if (type == "first") this.alertFirst = true;
     },
     getSection(type) {
-      console.log("type", type);
       if (type == "1") {
         return "Primaire";
       } else if (type == "2") {
@@ -313,7 +308,6 @@ export default {
       }
     },
     async submitForm(element) {
-      // console.log('hhhhh',element)
       await this.verify(element);
       await this.isValid();
       this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
@@ -348,7 +342,6 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-      console.log();
     },
     addRow() {
       this.form.matieres.push({

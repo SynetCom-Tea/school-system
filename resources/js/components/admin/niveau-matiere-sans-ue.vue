@@ -58,7 +58,7 @@
                   v-model="form.filiere"
                   itemTitle="code"
                   :isRequired="true"
-                  label="Filieres"
+                  label="Filières"
                   @update:modelValue="submitForm(any)"
                   :items="filieres"
                 >
@@ -70,10 +70,10 @@
                   class="mt-2"
                   v-model="form.niveau"
                   :isRequired="true"
-                  :itemTitle="formatNiveauLabel"
+                  itemTitle="code_libelle"
                   @update:modelValue="submitForm(any)"
                   label="Niveaux"
-                  :items="niveaux"
+                  :items="setNiveaux"
                 >
                 </Autocomplete>
               </v-col>
@@ -192,11 +192,26 @@ export default {
       etablissement_section_id: null,
     }),
   }),
+  computed: {
+    setNiveaux() {
+      let list = [];
 
+      if (this.niveaux) {
+        this.niveaux.forEach((element) => {
+          if (element) {
+            list.push({
+              ...element,
+              code_libelle: element.code + "- " + element.libelle,
+            });
+          }
+        });
+      }
+      return list ?? [];
+    },
+  },
   watch: {
     // Surveillez les valeurs spécifiques ici
     filieres(data, old) {
-      console.log("nouvelle", data);
       if (this.type == "3") {
         this.tabsFilieres = data ? data.filieres : [];
       } else if (this.type == "4") {
@@ -239,7 +254,7 @@ export default {
     async submitForm(element) {
       await this.verify(element);
       await this.isValid();
-      console.log("isValid", this.isValid());
+
       this.form.etablissement_section_id = this.$page.props.sections.find(
         (el) => el.section == this.section
       );

@@ -249,7 +249,6 @@ export default {
       }
     },
     getSection(type) {
-      console.log("type", type);
       if (type == "1") {
         return "Primaire";
       } else if (type == "2") {

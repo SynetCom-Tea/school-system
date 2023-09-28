@@ -2,8 +2,6 @@
 
 use App\Models\Annee;
 use App\Models\Etablissement;
-use App\Models\Annee;
-use App\Models\Etablissement;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
