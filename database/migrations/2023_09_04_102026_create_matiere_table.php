@@ -49,6 +49,7 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\FiliereMatiereUe::class)->nullable()
                 ->index()
                 ->references('id')->on('filiere_matiere_ues_');
+            $table->timestamps();
         });
     }
 

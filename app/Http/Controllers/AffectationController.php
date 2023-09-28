@@ -53,9 +53,21 @@ class AffectationController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(Request $request, $type)
     {
-        //
+        foreach($request->niveau_id as $niv){
+            NiveauMatiere::updateOrInsert([
+                'matiere_id' => $request->matiere_id,
+                'niveau_id' => $niv
+            ],
+            ['volume_horaire' => $request->volume_horaire,
+            'coefficient' => $request->coefficient]
+        );
+        }
+        return redirect()->route('affectations.index', $type)->with('message', [
+            'type' => 'success',
+            'text' => "La matière a été affectée aux niveaux avec succès !",
+        ]);
     }
 
     /**
@@ -79,7 +91,10 @@ class AffectationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $aff = NiveauMatiere::find($id);
+        $aff->update($request->all());
+        $table = Niveau::where('id',$aff->niveau_id)->first();
+        return redirect()->route('affectations.index', $table->section_id);
     }
 
     /**
@@ -87,6 +102,24 @@ class AffectationController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try{
+            $aff = NiveauMatiere::find($id);
+            $table = Niveau::where('id',$aff->niveau_id)->first();
+            $aff->delete();
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                //dd($e->getCode());
+                return redirect()->route('affectations.index',$table->section_id)->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer la matière de ce niveau!",
+                ]);
+
+            }
+        }
+        return redirect()->route('affectations.index',$table->section_id)->with('message', [
+            'type' => 'success',
+            'text' => "La matière a été supprimée de ce niveau avec succès !",
+        ]);
     }
 }

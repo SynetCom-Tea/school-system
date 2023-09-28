@@ -145,28 +145,7 @@
             },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
-                if(!this.form.id && valid) {
-                    this.form.post(route('affectations.store',this.section_id), {
-                        onFinish: () => {
-                            //console.log(this.form)
-                            this.close()
-                            
-                            this.$swal({
-                                icon: 'success',
-                                iconColor: '#004980',
-                                color: '#004980',
-                                title: 'Enregistrement',
-                                text: 'Niveau_Matière créé avec succès!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-                        },
-                    });
-                    
-                }else if(this.form.id && valid) {
+                 if(this.form.id && valid) {
                     
                      const {id,volume_horaire,coefficient,niveau_id,matiere_id} = this.form
                     

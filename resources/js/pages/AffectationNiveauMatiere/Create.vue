@@ -29,7 +29,7 @@ export default {
             form: useForm({
                 volume_horaire: '',
                 coefficient: '',
-                niveau_id: '',
+                niveau_id: [],
                 matiere_id: '',
             }),
         }
@@ -53,18 +53,27 @@ export default {
                         this.close()
                         this.$swal({
                             icon: 'success',
-                            title: 'Enregistrement',
-                            text: 'Niveau_Matière créé avec succès!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 5000,
-                            timerProgressBar: true,
+                                iconColor: '#004980',
+                                color: '#004980',
+                                title: 'Enregistrement',
+                                text: 'Niveau_Matière créé avec succès!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
                         });
                     },
                 });
             }
         },
+        close() {
+                this.form.id = ""
+                this.form.niveau_id = []
+                this.form.volume_horaire = ""
+                this.form.coefficient = ""
+                this.form.matiere_id = ""
+            }
     }
 }
 </script>
