@@ -51,6 +51,7 @@
               :items="niveauxSecondaire"
               v-model="secondaire"
               itemValue="id"
+              class="mt-2"
               itemTitle="libelle"
               label="Secondaire"
               @update:modelValue="
@@ -58,14 +59,14 @@
               "
             ></Autocomplete>
           </v-col>
-          <v-col cols="2">
-            <v-btn
-              color="primary"
-              style="text-transform: none; font-size: 10px"
-              @click="reset()"
-            >
-              Réinitialiser</v-btn
-            ></v-col
+
+          <Button
+            color="primary"
+            sizeButton="x-large"
+            style="height=70px;text-transform: none; font-size: 10px"
+            @click="reset()"
+          >
+            Réinitialiser</Button
           >
         </v-row>
       </v-container>
@@ -104,12 +105,12 @@
             ></v-select>
             <v-spacer></v-spacer>
             <v-btn-toggle v-model="sortOrder" mandatory>
-              <v-btn color="blue" value="asc">
-                <v-icon :icon="icons.mdiArrowUp"></v-icon>
-              </v-btn>
-              <v-btn color="blue" value="desc">
+              <Button value="asc" color="primary" :appendIcon="icons.mdiArrowUp">
+                <!-- <v-icon :icon="icons.mdiArrowUp"></v-icon> -->
+              </Button>
+              <Button value="desc">
                 <v-icon :icon="icons.mdiArrowDown"></v-icon>
-              </v-btn>
+              </Button>
             </v-btn-toggle>
           </v-toolbar>
         </template>
@@ -223,53 +224,23 @@
           </div>
         </template>
       </v-data-iterator>
-
-      <Dialog
-        :modelDialog="dialogFrais"
-        :toolbarTitle="'Détail Frais de' + dataVersements[0]?.nomApprenant"
-        :iconHeaderModal="icons.mdiCheck"
-        :widthDialog="600"
-      >
-        <template v-slot:content>
-          <v-card-text v-for="(key, index) in dataVersements" :key="index">
-            <div class="font-weight-bold ms-1 mb-2">Versement {{ index }}</div>
-
-            <v-timeline density="compact" align="start">
-              <v-timeline-item :dot-color="key[index].color" :key="index" size="x-small">
-                {{ console.log("key:", key, key.color, index, key[index]) }}
-                <div class="mb-4">
-                  <div class="font-weight-normal">
-                    <strong>Date de versement</strong>
-                  </div>
-                  <div>{{ key[index]?.nomApprenant }}</div>
-                </div>
-              </v-timeline-item>
-            </v-timeline>
-          </v-card-text>
-          <!-- <v-row>
-            <v-col
-              v-for="(key, index) in dataVersements"
-              :cols="12 / dataVersements.length"
-            >
-              <v-text-field :label="key.title">{{
-                String(key.subtitle) ?? "Non renseigné"
-              }}</v-text-field>
-            </v-col>
-          </v-row> -->
-        </template>
-      </Dialog>
+      <div v-if="selectedFrais != null">
+        <FraisDetail :item="selectedFrais" />
+      </div>
     </div>
   </AuthenticatedLayout>
 </template>
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router, useForm } from "@inertiajs/vue3";
+import { inject, provide, computed } from "vue";
 import {
   getNiveauxPrimaire,
   getNiveauxSecondaire,
   getAcademicYears,
   generateColorsForGraph,
 } from "../../utils/commonFunctions.js";
+import FraisDetail from "../../components/inscriptions/FraisDetail.vue";
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -291,6 +262,7 @@ import {
 } from "@mdi/js";
 export default {
   components: {
+    FraisDetail,
     AuthenticatedLayout,
     mdiAccountCircle,
     mdiAccountSchool,
@@ -308,6 +280,7 @@ export default {
   data() {
     return {
       dialogFrais: false,
+      selectedFrais: null,
       itemsPerPageArray: [3, 6, 9],
       itemsPerPage: 3,
       page: 1,
@@ -378,8 +351,7 @@ export default {
       },
       dParams: {},
       academicYears: [],
-      onDetailUpdate: false,
-      dialogDetailUpdate: true,
+
       selectedItemForUpdate: "",
       listSections: [],
       dataVersements: [],
@@ -399,21 +371,25 @@ export default {
     };
   },
   async mounted() {
-    // console.log("page:", this.$page.props);
-
     this.academicYears = await this.getAcademicYears();
-
     this.getSections;
   },
   computed: {
+    modelValueDialogFrais: {
+      get() {
+        return this.dialogFrais;
+      },
+      set(newValue) {
+        this.$emit("value", newValue);
+      },
+    },
     numberOfPages() {
       if (this.subscribers.length > 0)
         return Math.ceil(this.subscribers.length / this.itemsPerPage);
     },
     filteredKeys() {
-      // return this.headers.filter((k) => console.log("key:", key));
       return this.headers.filter((key) => {
-        console.log("key:", key);
+        // console.log("key:", key);
         return key && key.title !== "Matricule";
       });
     },
@@ -439,75 +415,12 @@ export default {
     getNiveauxSecondaire,
     getAcademicYears,
     generateColorsForGraph,
-    oncloseDialog(classe) {
-      if (classe == "frais") {
-        this.dialogFrais = false;
-      }
-    },
-    onclickTuteurs(e) {
-      console.log("onclickTuteurs:", e);
-    },
-    async onclickFrais(e) {
-      console.log("onclickFrais:", e);
-      let axiosResult = [];
-      let idClasseAnnee, idApprenant;
-      if (e && e.more) {
-        idClasseAnnee = e.more.classeAnnee.id;
-        idApprenant = e.more.apprenant.id;
-      }
-      this.dialogFrais = true;
-      axiosResult = await axios
-        .get(
-          route("getVersementsByClasseAnneeAndStudent", {
-            classeAnnee: idClasseAnnee,
-            apprenant: idApprenant,
-          })
-        )
-        .then((res) => {
-          if (typeof res.data == "string" || typeof res.data == "undefined") {
-            this.$toast.error("Données non valides!");
-          } else {
-            return res.data;
-          }
-        });
 
-      let dataR = [];
-      let frais, student;
-      if (axiosResult && axiosResult.length > 0) {
-        axiosResult.forEach((element, index) => {
-          if (element) {
-            student = element.apprenant;
-            frais = element.frais;
-            console.log("element:", element);
-            console.log("date_versement:", element.date_versement);
-            dataR.push([
-              {
-                title: "Nom complet",
-                subtitle: student ? student.nom + " " + student.prenom : null,
-                nomApprenant: student ? student.nom + " " + student.prenom : null,
-              },
-              { title: "idVersement", subtitle: element.id },
-              { date_versement: element.date_versement },
-              { color: this.generateColorsForGraph(index) },
-              { title: "Type de frais", subtitle: frais.type_frais.libelle },
-              {
-                title: "Total  à verser",
-                subtitle: frais.montant
-                  ? parseFloat(frais.montant).toLocaleString()
-                  : null,
-              },
-              {
-                title: "Versement effectué",
-                subtitle: element.montant
-                  ? parseFloat(element.montant).toLocaleString()
-                  : null,
-              },
-            ]);
-          }
-        });
-        console.log("dataR:", dataR);
-        this.dataVersements = dataR ?? [];
-      }
+    onclickTuteurs(e) {},
+    async onclickFrais(e) {
+      this.selectedFrais = e;
+
+      this.dialogFrais = true;
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -515,11 +428,17 @@ export default {
     prevPage() {
       if (this.page - 1 >= 1) this.page -= 1;
     },
-    onClickRow(value) {
-      console.log("onClickRow:", value);
-    },
+    onClickRow(value) {},
     reset() {
       this.dParams = {};
+      this.subscribers = [];
+      this.year = null;
+      this.annee = null;
+      this.section = null;
+      this.primaire = null;
+      this.secondaire = null;
+      this.niveauxPrimaire = [];
+      this.niveauxSecondaire = [];
     },
     async onChangeModelValueNiveaux(classe, value, section, year) {
       let niveau;
@@ -538,9 +457,7 @@ export default {
       let getData = await this.getListUsers(this.dParams);
       this.subscribers = this.customizeData(getData);
     },
-    async onChangeModelValueYears(year) {
-      console.log("year from onChangeModelValueYears", year);
-    },
+    async onChangeModelValueYears(year) {},
     async onChangeModelValueSections(e, year) {
       let list;
       this.dParams = {
@@ -576,7 +493,6 @@ export default {
             })
           )
           .then((res) => {
-            console.log("res:", res);
             if (typeof res.data == "string" || typeof res.data == "undefined") {
               this.$toast.error("Données non valides!");
             } else {
@@ -599,7 +515,6 @@ export default {
             columns.push({
               matricule: element.apprenant?.matricule,
               name: element.apprenant?.nom + " " + element.apprenant?.prenom,
-              // prenom: element.apprenant?.prenom,
               adresse: element.apprenant?.adresse,
               date_lieu_naissance:
                 element.apprenant?.date_naissance +
@@ -613,49 +528,26 @@ export default {
                 classeAnnee: element.classe_annee,
               },
             });
-            // columns.push({
-            //   apprenant: element.apprenant,
-            //   classe: element.classe_annee?.classe,
-            //   niveau: element.classe_annee?.classe?.niveau,
-            // });
           }
         });
       }
-      console.log("flattenedData", columns);
+
       return columns ?? [];
     },
     functionOnClickAddButton() {
       router.get(route("inscriptions.create"));
     },
-    submitNewLine() {
-      console.log("submitNewLine");
-    },
+    submitNewLine() {},
     editItem(item) {
-      console.log("item from editItem:", item);
       this.editedObject = Object.assign({}, item);
       if (item) {
         this.selectedItemForUpdate = item;
       }
-      if (this.dialogDetailUpdate) {
-        console.log("here");
-        this.onDetailUpdate = true;
-      }
-      // console.log("this.selectedItemForUpdate:", this.selectedItemForUpdate);
-      // console.log("this.dialogDetailUpdate:", this.dialogDetailUpdate);
     },
     deleteItem(item) {
       // console.log("item from deleteItem:", item);
     },
-    onConfirmDeleting() {
-      console.log("confirm deleting");
-    },
-    onClickCancelButtonOfMDU() {
-      this.onDetailUpdate = false;
-    },
-    onClickSaveButtonOfMDU() {
-      // console.log("enregistrer la mise à jour:");
-      this.onDetailUpdate = false;
-    },
+    onConfirmDeleting() {},
 
     addRow() {
       this.form.tuteurs.push({
@@ -670,6 +562,11 @@ export default {
     removeRow(p) {
       this.form.tuteurs = this.form.tuteurs.filter((product) => product !== p);
     },
+  },
+  provide() {
+    return {
+      vmodeldialogFrais: computed(() => this.dialogFrais),
+    };
   },
 };
 </script>

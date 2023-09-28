@@ -7,7 +7,7 @@ import {
   mdiPresentation,
   mdiGift,
 } from "@mdi/js";
-
+import { inject, provide, computed } from "vue";
 export default {
   components: {
     mdiAccount,
@@ -65,9 +65,14 @@ export default {
   },
   methods: {
     isClose() {
-      this.dialog = false;
-      this.onCloseModale;
+      // this.onCloseModale;
+      this.modelDialog = false;
     },
+  },
+  provide() {
+    return {
+      vmodelDialog: computed(() => this.dialog),
+    };
   },
 };
 </script>
@@ -84,13 +89,13 @@ export default {
       :height="heightDialog"
     >
       <v-card>
-        <v-toolbar dark color="primary">
-          <Button
+        <v-toolbar dark color="secondary">
+          <v-icon
             title="Icon de la modale"
-            variant="flat"
-            :prependIcon="iconHeaderModal"
+            style="margin: 10px"
+            :icon="iconHeaderModal"
             size="x-large"
-          ></Button>
+          ></v-icon>
 
           <v-toolbar-title
             style="
@@ -105,13 +110,7 @@ export default {
           </v-toolbar-title>
 
           <v-toolbar-items>
-            <Button
-              title="Fermer la modale"
-              fab
-              variant="flat"
-              :prependIcon="icons.mdiClose"
-              @click="isClose"
-            ></Button>
+            <slot name="toolbars-items"></slot>
           </v-toolbar-items>
         </v-toolbar>
         <!-- content -->
@@ -139,7 +138,7 @@ export default {
               variant="text"
               color="red"
               nameButton="Quitter"
-              @click="isClose"
+              @click="isClose()"
               style="float: right; margin: 10px; height: 30px"
             ></Button>
           </div>
