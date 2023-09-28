@@ -39,5 +39,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/configuration/lmd/{type}', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'lmd'])->name('admin.lmd');
         Route::post('/configuration/lmd/store', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'storelmd'])->name('lmd.store');
         Route::post('/configuration/submit', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'storeConfig'])->name('config.store');
+        //Pour la gestion des cruds après la configuration
+        Route::get('/gestion/{type}', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'gestion'])->name('admin.gestion');
     });
 });

@@ -52,13 +52,14 @@ class EtablissementSectionSeeder extends Seeder
                 'section_id' => 4,
                 'systeme_lmd_id' => NULL,
             ),
-            // 1 =>
-            // array(
-            //     'id' => 2,
-            //     'etablissement_id' => 2,
-            //     'code' => NULL,
-            //     'section_id' => 3,
-            // ),
+            4 =>
+            array(
+                'id' => 5,
+                'etablissement_id' => 2,
+                'code' => NULL,
+                'section_id' => 3,
+                'systeme_lmd_id' => NULL,
+            ),
             // 2 =>
 
             // array(

@@ -30,6 +30,8 @@ export default {
         mdiMenuDown,
       },
       date: null,
+      niveaux: [],
+      classes: [],
       activeStep: 1,
       daysOfWeek: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
       form: useForm({
@@ -37,6 +39,8 @@ export default {
         section: null,
         niveau: null,
         classe: null,
+        date: null,
+        ensalle: 'Non'
       }),
     };
   },
@@ -44,18 +48,12 @@ export default {
     goBack() {
       router.get(route("emplois.index"));
     },
-    setNiveau() {
-      this.$inertia.replace(this.$page.url, {
-        data: {
-          section: this.form.section,
-        },
-      });
+    setNiveau(section) {
+      this.niveaux = this.$page.props.niveaux.filter(niveau => niveau.section_id == section);
     },
-    setClasse() {
-      this.$inertia.replace(this.$page.url, {
-        data: {
-          niveau: this.form.niveau,
-        },
+    setClasse(niveau) {
+      this.classes = this.$page.props.classes.filter(classe => {
+        return classe.niveau_id == niveau 
       });
     },
     addRow(day) {
@@ -64,6 +62,7 @@ export default {
         name: null,
         before: null,
         after: null,
+        ensalle: 'Non'
       });
     },
     removeRow(day, p) {
@@ -92,7 +91,7 @@ export default {
     // }
   },
   mounted() {
-    // console.log(this.sections)
+    console.log('Mounted',this.sections)
     this.daysOfWeek.forEach((day) => {
       this.form.seances[day] = [];
       this.addRow(day);
@@ -117,13 +116,13 @@ export default {
             >
             <v-card outlined>
               <v-card-text id="heit">
-                <v-row dennse>
+                <v-row dense>
                   <v-col md="4">
                     <autocomplete
                       label="Section"
                       v-model="form.section"
                       :items="$page.props.sections"
-                      :onchangeModelValue="setNiveau"
+                      :onchangeModelValue="setNiveau(form.section)"
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
@@ -132,8 +131,9 @@ export default {
                     <autocomplete
                       label="Niveau"
                       v-model="form.niveau"
-                      :items="$page.props.niveaux"
-                      :onchangeModelValue="setClasse"
+                      :items="niveaux"
+                      :onchangeModelValue="setClasse(form.niveau)"
+                      :disabled="!form.section"
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
@@ -142,17 +142,28 @@ export default {
                     <autocomplete
                       label="Classe"
                       v-model="form.classe"
-                      :items="[
-                        'California',
-                        'Colorado',
-                        'Florida',
-                        'Georgia',
-                        'Texas',
-                        'Wyoming',
-                      ]"
+                      :items="classes"
+                      :disabled="!form.niveau"
+                      item-title="libelle"
+                      item-value="id"
                     ></autocomplete>
                   </v-col>
                   <v-col>
+                    <date-range-picker
+                      v-model="form.date"
+                      @focus="handleFocusDate"
+                      @update:model-value="handleDate"
+                      locale="fr"
+                      cancelText="Annuler"
+                      selectText="Confirme"
+                      flow="calendar"
+                      :only-date="true"
+                      date-picker
+                      range
+                      placeholder="Start Typing ..."> 
+                    </date-range-picker>
+                  </v-col>
+                  <!-- <v-col>
                     <VueDatePicker
                       v-model="date"
                       @focus="handleFocusDate"
@@ -165,7 +176,7 @@ export default {
                       range
                       placeholder="Start Typing ..."
                     />
-                  </v-col>
+                  </v-col> -->
                 </v-row>
                 <br />
                 <v-expansion-panels>
@@ -187,24 +198,35 @@ export default {
                           <VueDatePicker v-model="seance.horaire" time-picker range />
                         </v-col>
                         <v-col md="3">
-                          <text-field
-                            density="medium"
-                            dense
-                            label="Matiere"
-                            placeholder="Matiere"
-                            v-model="seance.name"
-                          ></text-field>
-                        </v-col>
-                        <v-col md="5">
                           <autocomplete
                             dense
-                            label="Salle"
-                            item-title="name"
+                            label="Matiere"
+                            item-title="nom"
                             item-value="id"
-                            :items="fillieres"
-                            multiple
+                            :items="$page.props.matieres"
+                            v-model="seance.matiere"
+                          >
+                          </autocomplete>
+                        </v-col>
+                        <v-col md="3">
+                          <v-switch
+                            v-model="seance.ensalle"
+                            hide-details
+                            true-value="Oui"
+                            false-value="Non"
+                            :label="`Dans une autre salle?: ${seance.ensalle}`"
+                          ></v-switch>
+                        </v-col>
+                        <v-col md="2">
+                          <autocomplete
+                            dense
+                            v-if="seance.ensalle == 'Oui'"
+                            label="Salle"
+                            item-title="libelle"
+                            item-value="id"
+                            :items="$page.props.salles"
                             chips
-                            v-model="seance.filliere"
+                            v-model="seance.salle"
                           >
                           </autocomplete>
                         </v-col>

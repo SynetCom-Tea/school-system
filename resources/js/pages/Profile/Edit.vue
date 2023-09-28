@@ -4,8 +4,9 @@ import { useRoute } from 'vue-router'
 import { ref } from 'vue'
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
-import { mdiAccountOutline, mdiLockOpenOutline } from "@mdi/js";
+import { mdiAccountOutline, mdiLockOpenOutline, mdiAccount } from "@mdi/js";
 import { Head } from '@inertiajs/vue3';
+import Toolbar from '@/components/customizedComponents/Toolbar.vue';
 
 defineProps({
     mustVerifyEmail: {
@@ -39,6 +40,11 @@ const tabs = [
 <template>
 <Head title="Profile" />
 <AuthenticatedLayout>
+  <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="mdiAccount"
+      toolbarTitle="Profil"
+    ></Toolbar>
   <div>
     <VTabs
       v-model="activeTab"

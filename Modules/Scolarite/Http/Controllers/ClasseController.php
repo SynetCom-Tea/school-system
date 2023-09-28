@@ -7,7 +7,10 @@ use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
-use Modules\Scolarite\Entities\Classe;
+use App\Models\Classe;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Modules\Enseignement\Entities\Niveau;
 
 class ClasseController extends Controller
 {
@@ -15,10 +18,14 @@ class ClasseController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index($type)
     {
+        $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
         return Inertia::render('Classe/Index', [
-            'classes' => Classe::all()
+            'classes' => Classe::where('etablissement_section_id',$table->id)->get(),
+            'section_id' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get(),
         ]);
     }
 
@@ -26,9 +33,12 @@ class ClasseController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create($type)
     {
-        
+        return Inertia::render('Classe/Create', [
+            'section_id' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get(),
+        ]);
     }
 
     /**
@@ -36,14 +46,18 @@ class ClasseController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function store(Request $request, $type)
     {
+        $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
         request()->validate([
             'code' => 'required|string',
-            'libele' => 'required|string',
+            'libelle' => 'required|string',
         ]);
-        Classe::create($request->all());
-        return redirect()->route('classes.index')->with('message', [
+        $data = $request->all();
+        $data['etablissement_section_id'] = $table->id;
+        Classe::create($data);
+        return redirect()->route('classes.index', $type)->with('message', [
             'type' => 'success',
             'text' => "La classe a été créée avec succès !",
         ]);
@@ -81,7 +95,8 @@ class ClasseController extends Controller
     {
         $classe = Classe::find($id);
         $classe->update($request->all());
-        return redirect()->route('classes.index');
+        $table = DB::table('etablissement_section')->where('id',$classe->etablissement_section_id)->first();
+        return redirect()->route('classes.index', $table->section_id);
     }
 
     /**
@@ -93,19 +108,20 @@ class ClasseController extends Controller
     {
         try{
             $classe = Classe::find($id);
+            $table = DB::table('etablissement_section')->where('id',$classe->etablissement_section_id)->first();
             $classe->delete();
         }
         catch(\Illuminate\Database\QueryException $e){
             if($e->getCode() == "23000"){
                 //dd($e->getCode());
-                return redirect()->route('classes.index')->with('message', [
+                return redirect()->route('classes.index',$table->section_id)->with('message', [
                     'type' => 'error',
                     'text' => "Désolé, vous ne pouvez pas supprimer cette classe!",
                 ]);
 
             }
         }
-        return redirect()->route('classes.index')->with('message', [
+        return redirect()->route('classes.index',$table->section_id)->with('message', [
             'type' => 'success',
             'text' => "La classe a été supprimée avec succès !",
         ]);

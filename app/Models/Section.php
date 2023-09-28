@@ -19,8 +19,8 @@ class Section extends Model
         return $this->hasMany(Niveau::class);
     }
 
-    public function etablissements(): BelongsToMany
+    public function etablissement_sections(): BelongsToMany
     {
-        return $this->belongsToMany(Etablissement::class);
+        return $this->belongsToMany(EtablissementSection::class);
     }
 }

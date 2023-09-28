@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Modules\Enseignement\Entities;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -14,7 +15,7 @@ class Etablissement extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'email', 'adresse','type_etablissement_id','systeme_lmd_id', 'telephone', 'ville', 'logo'];
+    protected $fillable = ['name', 'email', 'adresse','type_etablissement_id','systeme_lmd_id', 'telephone', 'ville', 'logo', 'statut'];
 
     public function type_etablissement(): BelongsTo
     {
@@ -34,6 +35,21 @@ class Etablissement extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function matieres(): HasMany
+    {
+        return $this->hasMany(Matiere::class);
+    }
+
+    public function facultes(): HasMany
+    {
+        return $this->hasMany(Faculte::class);
+    }
+
+    public function frais(): HasMany
+    {
+        return $this->hasMany(Frais::class);
     }
 
     protected function telephone(): Attribute

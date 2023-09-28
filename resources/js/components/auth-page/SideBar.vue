@@ -181,7 +181,43 @@
                   ></v-list-item-title>
                 </v-list-item>
               </v-list-group>
+              <!-- Menu Gestion -->
+              <v-list-group
+                :value="MenuGestion.title"
+                v-if="$page.props.roles[0] == 'Administrateur'"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon
+                        :title="MenuGestion.title"
+                        :icon="MenuGestion.icon"
+                      ></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="MenuGestion.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
 
+                <v-list-item
+                  class="sub-list-group"
+                  v-for="(item, i) in MenuGestion.children"
+                  :key="i"
+                  @click="page(item.link)"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  </template>
+
+                  <v-list-item-title
+                    class="text-wrap"
+                    v-text="item.title"
+                  ></v-list-item-title>
+                </v-list-item>
+              </v-list-group>
+              <!-- Fin Menu Gestion -->
               <v-list-group
                 :value="getListMenus[2].title"
                 v-if="$page.props.roles == 'Note'"
@@ -264,6 +300,7 @@ export default {
   data: () => {
     return {
       MenuAdmin: [],
+      MenuGestion: [],
       open: ["getListMenus[1]"],
       drawer: true,
       menuCompact: {
@@ -377,6 +414,7 @@ export default {
       let list = listMenus(this.$page.props);
       let role = this.$page.props.roles ? this.$page.props.roles[0] : null;
       this.MenuAdmin = list[5];
+      this.MenuGestion = list[6];
       return list;
     },
   },

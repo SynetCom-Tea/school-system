@@ -10,72 +10,71 @@ import {
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router, usePage, useForm } from "@inertiajs/vue3";
 export default {
-  components: {
-    mdiAccountGroup,
-    mdiPlus,
-  },
-  layout: AuthenticatedLayout,
-  props: ["users"],
-  // Properties returned from data() become reactive state
-  // and will be exposed on `this`.
-  data() {
-    return {
-      form: this.$inertia.form({
-        nom: "",
-        email: "",
-        password: "",
-        password_confirmation: "",
-      }),
-      icon: {
+    components: {
         mdiAccountGroup,
         mdiPlus,
-      },
-      search: "",
-      dialog: false,
-      dialogDelete: false,
-      headers: [
-        {
-          title: "Id",
-          align: "start",
-          key: "id",
-          sortable: false,
-          key: "id",
-        },
-        {
-          title: "Nom",
-          align: "center",
-          key: "nom",
-        },
-        {
-          title: "Prénom",
-          align: "center",
-          key: "prenom",
-        },
-        {
-          title: "Sexe",
-          align: "center",
-          key: "sex",
-        },
-        {
-          title: "Téléphone",
-          align: "center",
-          key: "telephone",
-        },
-        {
-          title: "Email",
-          align: "center",
-          key: "email",
-        },
-        {
-          title: "Actions",
-          align: "center",
-          key: "actions",
-        },
-      ],
-      searchQuery: "",
-      isLoading: false,
-    };
-  },
+    },
+    layout: AuthenticatedLayout,
+    props: ["users"],
+    // Properties returned from data() become reactive state
+    // and will be exposed on `this`.
+    data() {
+        return {
+            form: this.$inertia.form({
+                nom: '',
+                email: '',
+                password: '',
+                password_confirmation: '',
+            }),
+            icon: {
+                mdiAccountGroup,
+                mdiPlus,
+            },
+            search: '',
+            dialog: false,
+            dialogDelete: false,
+            headers: [{
+                    title: 'Id',
+                    align: 'start',
+                    key: 'id',
+                    sortable: false,
+                    key: "id",
+                },
+                {
+                    title: "Nom",
+                    align: "center",
+                    key: "nom"
+                },
+                {
+                    title: "Prénom",
+                    align: "center",
+                    key: "prenom"
+                },
+                {
+                    title: "Sexe",
+                    align: "center",
+                    key: "sex"
+                },
+                {
+                    title: "Téléphone",
+                    align: "center",
+                    key: "telephone"
+                },
+                {
+                    title: "Email",
+                    align: "center",
+                    key: "email"
+                },
+                {
+                    title: "Actions",
+                    align: "center",
+                    key: "actions"
+                },
+            ],
+            searchQuery: "",
+            isLoading: false,
+        };
+    },
 
   computed: {
     formTitle() {
@@ -125,9 +124,11 @@ export default {
     ></Toolbar>
 
     <v-card-text>
-      <Datatable :headers="headers" :items="users" :functionOnClickAddButton="goTo">
-        <template v-slot:item.actions="{ item }"> </template>
-      </Datatable>
+        <Datatable :headers="headers" :items="users" :functionOnClickAddButton="goTo">
+
+            <template v-slot:item.actions="{item}">
+            </template>
+        </Datatable>
     </v-card-text>
   </v-card>
 </template>

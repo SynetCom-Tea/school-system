@@ -28,10 +28,6 @@ class SectionSeeder extends Seeder
         ]);
 
         Role::create([
-            'name' => 'Super-administrateur',
-            'guard_name' => 'web',
-        ]);
-        Role::create([
             'name' => 'Administrateur',
             'guard_name' => 'web',
         ]);

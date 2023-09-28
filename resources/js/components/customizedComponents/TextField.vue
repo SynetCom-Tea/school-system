@@ -136,6 +136,7 @@ export default {
       :base-color="baseColorValue"
       :color="colorValue"
       :class="class"
+      :append-icon="appendIcon"
     >
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>

@@ -21,16 +21,17 @@ class EtablissementSection extends Model
         'systeme_lmd_id',
         'configuration'
     ];
-    public function etablissements(): HasMany
+    public function etablissement(): BelongsTo
     {
-        return $this->hasMany(Etablissement::class);
+        return $this->belongsTo(Etablissement::class);
     }
-    public function sections(): HasMany
+    public function sections(): BelongsTo
     {
-        return $this->hasMany(Section::class);
+        return $this->belongsTo(Section::class);
     }
     public function classes(): HasMany
     {
         return $this->hasMany(Classe::class);
     }
+    
 }

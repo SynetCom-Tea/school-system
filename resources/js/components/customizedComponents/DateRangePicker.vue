@@ -1,145 +1,52 @@
-<script>
-import { ref } from "vue";
+<template>
+    <VueDatePicker
+      :range="range"
+      :start-placeholder="startPlaceholder"
+      :end-placeholder="endPlaceholder"
+      :format="format"
+      class="custom-datepicker"
+    />
+</template>
 
+<script>
 export default {
   props: {
-    vModel: [String, Number],
-    type: {
-      type: String,
-      default: "text",
-    },
-    variantValue: {
-      type: String,
-      default: "outlined",
-    },
-    hintValue: {
-      type: String,
-      default: "",
-    },
-    densityValue: {
-      type: String,
-      default: "compact",
-    },
     maxHeightResponsive: {
       type: Number,
-      default: "",
+      required: false,
+      // default: 100,
     },
     heightResponsive: {
       type: Number,
-      default: "",
+      required: false,
     },
     classResponsive: {
       type: String,
-      default: "py-4",
+
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,
-      default: "",
-    },
-    name: {
-      type: String,
       required: false,
+      // default: 250,
     },
-    baseColorValue: {
-      type: String,
-      default: "primary",
-    },
-    colorValue: {
-      type: String,
-      default: "primary",
-    },
-    label: {
-      type: String,
-      required: true,
-    },
-    conditionDisabled: {
-      type: String,
-      required: false,
-    },
-    range: {
-      type: Boolean,
-      required: false,
-    },
-    icon: {
-      type: String,
-      default: "",
-    },
-    successMessage: {
-      type: String,
-      default: "",
-    },
-    placeholder: {
-      type: String,
-      default: "",
-    },
-    rules: {
-      type: [Object, String],
-      default: "",
-    },
-    errorMessageValue: {
-      type: [Object, String],
-      default: "",
-    },
-    onchangeField: { type: Function },
-    classLabel: { type: String, default: "defaultClassLabel" },
-    isRequired: { type: Boolean, default: false },
   },
-  setup() {},
-  updated() {},
-  computed: {
-    modelValue: {
-      get() {
-        return this.vModel;
-      },
-      set(newValue) {
-        this.$emit("input", newValue);
-      },
-    },
+  data() {
+    return {
+      range: true,
+      format: 'yyyy-MM-dd',
+    };
   },
 };
 </script>
-<template>
-  <v-responsive
-    :class="classResponsive"
-    :height="heightResponsive"
-    :max-height="maxHeightResponsive"
-    :max-width="maxWidthResponsive"
-  >
-    <VueDatePicker
-        v-model="modelValue"
-        :range="range"
-        >
-      <template #label v-if="isRequired">
-        <span id="required-field">{{ label }}</span>
-      </template>
-      <template #label v-else>
-        {{ label }}
-      </template>
-    </VueDatePicker>
-  </v-responsive>
-</template>
 <style scoped>
-#required-field::after {
-  content: "*";
-  color: red;
-}
-
-#app
-  > div
-  > main
-  > div.v-responsive.py-4
-  > div.v-responsive__content
-  > div
-  > div.v-input__control
-  > div.v-text-field
-  .v-field {
-  cursor: text;
-  height: 30px;
-}
-.v-text-field .v-input__control {
-  height: 30px;
-  min-height: auto !important;
-  display: flex !important;
-  align-items: center !important;
+.custom-datepicker .dp__input,
+.custom-datepicker .dp__input:focus {
+  /* Ajustez la hauteur et la largeur du champ selon vos besoins */
+  height: 50px !important;
+  width: 300px !important; /* Vous pouvez ajuster cette valeur selon vos besoins */
+  font-size: 16px !important;
+  padding: 10px !important;
+  border: 1px solid #1976d2 !important;
 }
 </style>
