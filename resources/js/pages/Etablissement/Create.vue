@@ -25,7 +25,7 @@ export default {
                 mdiCancel,
                 mdiCamera,
             },
-            villes: ['Agadez', 'Diffa', 'Dosso', 'Maradi', 'Niamey', 'Tahoua', 'Tilabéri', 'Zinder'],
+        
             form: useForm({
                 name: "",
                 email: "",
@@ -122,19 +122,17 @@ export default {
                             placeholder="Nom Etablissement"
                             v-model="form.name"
                             isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                            :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></TextField>
                         </v-col>
                         <v-col cols="4" md="4">
-                            <Select
+                            <TextField
                             label="Ville"
                             placeholder="Ville"
-                            :items="villes"
-                            variant="outlined"
                             v-model="form.ville"
                             isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                            ></Select>
+                            :rules="[(v) => !!v || 'Ce champ est requis!']"
+                            ></TextField>
                         </v-col>
                         <v-col cols="4" md="4">
                             <v-file-input
@@ -220,7 +218,7 @@ export default {
       <v-btn dark small type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </v-btn>
-      <v-btn small color="success" @click="submit">
+      <v-btn small color="primary" @click="submit">
         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
       </v-btn>
     </v-card-actions>

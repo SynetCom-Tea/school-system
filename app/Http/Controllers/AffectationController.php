@@ -21,7 +21,7 @@ class AffectationController extends Controller
     public function index($type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->first();
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
         $niveauMat = NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
 
             $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
@@ -39,9 +39,15 @@ class AffectationController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create($type)
     {
-        //
+        $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        return Inertia::render('AffectationNiveauMatiere/Create', [
+            'section_id' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get(),
+            'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+        ]);
     }
 
     /**
