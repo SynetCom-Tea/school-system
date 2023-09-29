@@ -11,6 +11,7 @@
       <!-- Application de stepper -->
       <form-wizard
         color="#004980"
+        step-size="sm"
         back-button-text="Retour"
         next-button-text="Suivant"
         finish-button-text="Enregistrer"
