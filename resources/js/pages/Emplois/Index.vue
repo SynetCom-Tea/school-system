@@ -38,6 +38,10 @@ export default {
       // ],
       config: {
         // see configuration section
+        dayBoundaries: {
+          start: 7,
+          end: 15,
+        },
         style: {
         colorSchemes: {
           meetings: {
