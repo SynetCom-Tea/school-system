@@ -12,7 +12,10 @@ use Modules\Enseignement\Entities\EnseignementAnnee;
 class ClasseAnnee extends Model
 {
     use HasFactory;
-
+    public function etablissement_section(): BelongsTo
+    {
+        return $this->belongsTo(EtablissementSection::class);
+    }
     public function classe(): BelongsTo
     {
         return $this->belongsTo(Classe::class);

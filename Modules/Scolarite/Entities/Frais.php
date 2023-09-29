@@ -16,12 +16,23 @@ class Frais extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['libelle', 'montant', 'niveau_id', 'annee_id', 'etablissement_id'];
+    protected $fillable = [
+        'libelle',
+        'montant',
+        'annee_id',
+        'etablissement_id',
+        'niveau_id',
+        'type_frais_id'
+    ];
 
     /* public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);
     } */
+    public function type_frais(): BelongsTo
+    {
+        return $this->belongsTo(TypeFrais::class);
+    }
     public function annee(): BelongsTo
     {
         return $this->belongsTo(Annee::class);

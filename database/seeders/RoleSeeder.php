@@ -50,6 +50,7 @@ class RoleSeeder extends Seeder
                 $eleve1 = User::create([
                         'email' => 'eleve1@gmail.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'apprenant_id' => 3,
 
 
@@ -64,6 +65,7 @@ class RoleSeeder extends Seeder
                 $eleve2 = User::create([
                         'email' => 'eleve2@gmail.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'apprenant_id' => 4,
 
                 ]);
@@ -76,6 +78,7 @@ class RoleSeeder extends Seeder
                 $eleve3 = User::create([
                         'email' => 'eleve1@gmail.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'apprenant_id' => 5,
 
 
@@ -90,6 +93,7 @@ class RoleSeeder extends Seeder
                 $eleve4 = User::create([
                         'email' => 'eleve2@gmail.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'apprenant_id' => 6,
 
                 ]);
@@ -107,6 +111,7 @@ class RoleSeeder extends Seeder
                 $tuteur1 = User::create([
                         'email' => 'tuteurp1@univers-school.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'tuteur_id' => 1,
                 ]);
                 $tuteur1Role = Role::firstOrcreate(['name' => 'Tuteur']);
@@ -117,6 +122,7 @@ class RoleSeeder extends Seeder
                 $tuteur2 = User::create([
                         'email' => 'tuteurp2@univers-school.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'tuteur_id' => 2,
                 ]);
                 $tuteur2Role = Role::firstOrcreate(['name' => 'Tuteur']);
@@ -127,6 +133,7 @@ class RoleSeeder extends Seeder
                 $tuteur3 = User::create([
                         'email' => 'tuteurc1@univers-school.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'tuteur_id' => 3,
                 ]);
                 $tuteur3Role = Role::firstOrcreate(['name' => 'Tuteur']);
@@ -137,6 +144,7 @@ class RoleSeeder extends Seeder
                 $tuteur4 = User::create([
                         'email' => 'tuteur2@univers-school.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'tuteur_id' => 4,
                 ]);
                 $tuteur4Role = Role::firstOrcreate(['name' => 'Tuteur']);
@@ -147,6 +155,7 @@ class RoleSeeder extends Seeder
                 $tuteur5 = User::create([
                         'email' => 'tuteurl1@univers-school.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'tuteur_id' => 5,
                 ]);
                 $tuteur5Role = Role::firstOrcreate(['name' => 'Tuteur']);
@@ -157,6 +166,7 @@ class RoleSeeder extends Seeder
                 $tuteur6 = User::create([
                         'email' => 'tuteurl2@univers-school.com',
                         'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
                         'tuteur_id' => 6,
                 ]);
                 $tuteur6Role = Role::firstOrcreate(['name' => 'Tuteur']);

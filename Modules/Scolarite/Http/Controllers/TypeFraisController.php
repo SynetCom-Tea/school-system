@@ -2,16 +2,11 @@
 
 namespace Modules\Scolarite\Http\Controllers;
 
+use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Inertia\Inertia;
-use Illuminate\Support\Facades\Redirect;
-use Modules\Scolarite\Entities\Inscription;
-use Modules\Enseignement\Entities\Niveau;
-use Illuminate\Support\Facades\Auth;
 
-class InscriptionController extends Controller
+class TypeFraisController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -19,25 +14,7 @@ class InscriptionController extends Controller
      */
     public function index()
     {
-        try {
-            //code...
-
-            if (Auth::user() == null) {
-
-                return redirect('/login')->with('message', [
-                    'type' => 'error',
-                    'text' => 'Session ou Token expiré!',
-                ]);
-            }
-
-            return Inertia::render('Inscription/Index', []);
-        } catch (\Throwable $th) {
-            //throw $th;
-            return redirect()->back()->with('message', [
-                'type' => 'error',
-                'text' => $th,
-            ]);
-        }
+        return view('scolarite::index');
     }
 
     /**
@@ -46,9 +23,7 @@ class InscriptionController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Inscription/Create', [
-            'niveaux' => Niveau::all()
-        ]);
+        return view('scolarite::create');
     }
 
     /**

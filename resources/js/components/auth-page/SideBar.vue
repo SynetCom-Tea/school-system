@@ -1,22 +1,27 @@
 <template>
-<div style="height: 100%">
+  <div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
-        <div class="app-bar-content">
-            <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
-            <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
-            <div class="d-flex align-center ml-auto" id="profile-bar">
-                <v-list-item @click="goToProfilePage()" lines="two" :title="getUserProfile.name" :subtitle="getUserProfile.typeUser">
-                    <template v-slot:prepend>
-                        <v-icon size="22" :icon="icons.mdiAccount"></v-icon>
-                    </template>
-                </v-list-item>
-            </div>
-            &nbsp; &nbsp;
-            <div class="d-flex">
-                <SiteWebButton />
-                <MenuTopButton />
-            </div>
+      <div class="app-bar-content">
+        <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
+        <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
+        <div class="d-flex align-center ml-auto" id="profile-bar">
+          <v-list-item
+            @click="goToProfilePage()"
+            lines="two"
+            :title="getUserProfile.name"
+            :subtitle="getUserProfile.typeUser"
+          >
+            <template v-slot:prepend>
+              <v-icon size="22" :icon="icons.mdiAccount"></v-icon>
+            </template>
+          </v-list-item>
         </div>
+        &nbsp; &nbsp;
+        <div class="d-flex">
+          <SiteWebButton />
+          <MenuTopButton />
+        </div>
+      </div>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -73,12 +78,49 @@
                   v-text="link.title"
                 ></v-list-item-title>
               </v-list-item>
-              <!-- <v-list-group :value="getListMenus[1].title"> -->
+
+              <!--Debut des menu sections -->
+              <div v-for="(itemSection, i) in menusBySection" :key="i">
+                <v-list-group
+                  :value="itemSection.title"
+                  v-if="$page.props.roles[0] == 'Administrateur'"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="itemSection.title"
+                          :icon="itemSection.icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="itemSection.title"
+                      ></v-list-item-title>
+                    </v-list-item>
+                  </template>
+
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in itemSection.children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                    </template>
+
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="item.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </v-list-group>
+              </div>
+              <!-- Debut evaluation  -->
               <v-list-group
-                v-if="
-                  $page.props?.roles[0] && $page.props?.roles[0] != 'Super-administrateur'
-                "
                 :value="getListMenus[4].title"
+                v-if="$page.props.roles[0] == 'Administrateur'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
@@ -111,38 +153,10 @@
                   ></v-list-item-title>
                 </v-list-item>
               </v-list-group>
-              <v-list-group :value="getListMenus[1]?.title">
-                <template v-slot:activator="{ props }">
-                  <v-list-item class="group-title" v-bind="props">
-                    <template v-slot:prepend>
-                      <v-icon
-                        :title="getListMenus[1]?.title"
-                        :icon="getListMenus[1]?.icon"
-                      ></v-icon>
-                    </template>
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="getListMenus[1]?.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </template>
 
-                <v-list-item
-                  class="sub-list-group"
-                  v-for="(item, i) in getListMenus[1]?.children"
-                  :key="i"
-                  @click="page(item.link)"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                  </template>
+              <!-- Fin evaluation -->
 
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
+              <!-- Debut du menu preconfig -->
 
               <v-list-group
                 :value="MenuAdmin.title"
@@ -177,14 +191,17 @@
                 </v-list-item>
               </v-list-group>
               <!-- Menu Gestion -->
-                  <v-list-group
+              <v-list-group
                 :value="MenuGestion.title"
                 v-if="$page.props.roles[0] == 'Administrateur'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
                     <template v-slot:prepend>
-                      <v-icon :title="MenuGestion.title" :icon="MenuGestion.icon"></v-icon>
+                      <v-icon
+                        :title="MenuGestion.title"
+                        :icon="MenuGestion.icon"
+                      ></v-icon>
                     </template>
                     <v-list-item-title
                       class="text-wrap"
@@ -210,41 +227,6 @@
                 </v-list-item>
               </v-list-group>
               <!-- Fin Menu Gestion -->
-              <v-list-group
-                :value="getListMenus[2].title"
-                v-if="$page.props.roles == 'Note'"
-              >
-                <template v-slot:activator="{ props }">
-                  <v-list-item class="group-title" v-bind="props">
-                    <template v-slot:prepend>
-                      <v-icon
-                        :title="getListMenus[2].title"
-                        :icon="getListMenus[2].icon"
-                      ></v-icon>
-                    </template>
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="getListMenus[2].title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </template>
-
-                <v-list-item
-                  class="sub-list-group"
-                  v-for="(item, i) in getListMenus[2].children"
-                  :key="i"
-                  @click="page(item.link)"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                  </template>
-
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
 
               <!-- Déconnexion doit etre le dernier menu -->
               <v-list-item class="list-case" @click="logout" key="logout">
@@ -258,49 +240,42 @@
         </div>
       </div>
     </v-navigation-drawer>
-</div>
+  </div>
 </template>
 
 <script>
+import { router } from "@inertiajs/vue3";
 import {
-    router
-} from "@inertiajs/vue3";
-import {
-    mdiChevronLeft,
-    mdiAccount,
-    mdiSchool,
-    mdiCogOutline,
-    mdiLogout,
-    mdiMenu,
+  mdiChevronLeft,
+  mdiAccount,
+  mdiSchool,
+  mdiCogOutline,
+  mdiLogout,
+  mdiMenu,
 } from "@mdi/js";
-import {
-    listMenus
-} from "../../utils/ListNavAppBar.js";
-import {
-    Vue3Marquee
-} from "vue3-marquee";
-import {
-    getTypeEtablissementById
-} from "../../utils/commonFunctions.js";
+import { listMenus } from "../../utils/ListNavAppBar.js";
+import { Vue3Marquee } from "vue3-marquee";
+import { getTypeEtablissementById } from "../../utils/commonFunctions.js";
 import SiteWebButton from "./SiteWebButton.vue";
 import MenuTopButton from "./MenuTopButton.vue";
 export default {
-    name: "Sidebar",
-    components: {
-        mdiAccount,
-        mdiChevronLeft,
-        mdiCogOutline,
-        mdiLogout,
-        mdiMenu,
-        mdiSchool,
-        MenuTopButton,
-        SiteWebButton,
-    },
+  name: "Sidebar",
+  components: {
+    mdiAccount,
+    mdiChevronLeft,
+    mdiCogOutline,
+    mdiLogout,
+    mdiMenu,
+    mdiSchool,
+    MenuTopButton,
+    SiteWebButton,
+  },
 
   data: () => {
     return {
       MenuAdmin: [],
       MenuGestion: [],
+      menusBySection: [],
       open: ["getListMenus[1]"],
       drawer: true,
       menuCompact: {
@@ -315,54 +290,53 @@ export default {
       },
       username: "",
 
-            rail: true,
-        };
-    },
-    created() {
-        console.log("ici", this.$page.props.roles[0]);
-        this.getListMenus;
-        this.getUserProfile;
-        this.getOrganizationProfile;
-        listMenus(this.$page.props);
-    },
-    mounted() {
-        console.log("ici", this.$page.props.roles.name);
-        axios.interceptors.response.use(
-            function (response) {
-                // console.log("response:", response);
-                return response;
-            },
-            function (error) {
-                // console.log("error:", error);
-                if (error.response ?.status === 403) {
-                    alert(
-                        "Session expirée. Vous serez redirigé(e) vers la page d'authentification!!"
-                    );
-                    window.location.href = "/login";
-                }
-                return Promise.reject(error);
-            }
-        );
-        this.$gates.setRoles(this.$page.props.roles);
-        this.$gates.setPermissions(this.$page.props.permissions);
-        // console.log("console sections", this.$page.props.sections);
-    },
-    computed: {
-        getOrganizationProfile() {
-            let fullName;
-            let organization;
-            let user = this.$page.props.auth ? this.$page.props.auth.user : null;
-            let sections, allSections;
-            if (this.$page.props && this.$page.props.admin_etablissement) {
-                organization = this.$page.props.admin_etablissement.etablissement;
-                if (this.$page.props ?.sections[0] && this.$page.props ?.sections[0].sections) {
-                    sections = this.$page.props.sections[0].sections;
-                }
-            }
+      rail: true,
+    };
+  },
+  created() {
+    console.log("ici", this.$page.props.roles[0]);
+    this.getListMenus;
+    this.getUserProfile;
+    this.getOrganizationProfile;
+    // listMenus(this.$page.props);
+  },
+  mounted() {
+    axios.interceptors.response.use(
+      function (response) {
+        // console.log("response:", response);
+        return response;
+      },
+      function (error) {
+        // console.log("error:", error);
+        if (error.response?.status === 403) {
+          alert(
+            "Session expirée. Vous serez redirigé(e) vers la page d'authentification!!"
+          );
+          window.location.href = "/login";
+        }
+        return Promise.reject(error);
+      }
+    );
+    this.$gates.setRoles(this.$page.props.roles);
+    this.$gates.setPermissions(this.$page.props.permissions);
+    // console.log("console sections", this.$page.props.sections);
+  },
+  computed: {
+    getOrganizationProfile() {
+      let fullName;
+      let organization;
+      let user = this.$page.props.auth ? this.$page.props.auth.user : null;
+      let sections, allSections;
+      if (this.$page.props && this.$page.props.admin_etablissement) {
+        organization = this.$page.props.admin_etablissement.etablissement;
+        if (this.$page.props?.sections[0] && this.$page.props?.sections[0].sections) {
+          sections = this.$page.props.sections[0].sections;
+        }
+      }
 
-            if (sections && sections.length == 4) {
-                allSections = "Toutes les Sections";
-            }
+      if (sections && sections.length == 4) {
+        allSections = "Toutes les Sections";
+      }
 
       if (this.$page.props.admin_etablissement == null) {
         organization = {
@@ -371,20 +345,22 @@ export default {
         };
       }
       let roles = this.$page.props?.roles ? this.$page.props?.roles[0] : null;
-      let organizationName = allSections? allSections: getTypeEtablissementById(organization.type_etablissement_id);
+      let organizationName = allSections
+        ? allSections
+        : getTypeEtablissementById(organization.type_etablissement_id);
 
-            fullName = user ?.nom + " " + user ?.prenom;
-            let item = {
-                typeUser: roles,
-                organization: {
-                    name: organization.name,
-                    type: organizationName ?? organization.type,
-                },
-                photo: {
-                    file: organization.logo ?? "team.png",
-                    title: "photo de l'établissement",
-                },
-            };
+      fullName = user?.nom + " " + user?.prenom;
+      let item = {
+        typeUser: roles,
+        organization: {
+          name: organization.name,
+          type: organizationName ?? organization.type,
+        },
+        photo: {
+          file: organization.logo ?? "team.png",
+          title: "photo de l'établissement",
+        },
+      };
 
       return item;
     },
@@ -396,7 +372,7 @@ export default {
       let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
       let vRoles = this.$page.props.roles.length > 1 ? "Profil" : roles;
       firstname = user.nom ?? "Nom";
-      lastname = user.prenom ?? "Prenom";
+      lastname = user.prenom ?? "Prénom";
       fullName = firstname + " " + lastname;
       let item = {
         name: fullName,
@@ -411,8 +387,11 @@ export default {
     getListMenus() {
       let list = listMenus(this.$page.props);
       let role = this.$page.props.roles ? this.$page.props.roles[0] : null;
-      this.MenuAdmin = list[5];
-      this.MenuGestion = list[6];
+      let menuSection = list[1];
+      console.log("menuBySection:", menuSection);
+      this.menusBySection = menuSection ?? [];
+      this.MenuAdmin = list[2];
+      this.MenuGestion = list[3];
       return list;
     },
   },
@@ -439,17 +418,14 @@ export default {
       let btnToggleIcon = document.getElementById("btn-toggle-icon");
       this.menuCompact.hidden = !this.menuCompact.hidden;
 
-            if (this.menuCompact.hidden) {
-                return (btnToggleIcon.style.transform = "rotateY(0deg)");
-            } else {
-                return (btnToggleIcon.style.transform = "rotateY(180deg)");
-            }
-            this.rail = !this.rail;
-        },
+      if (this.menuCompact.hidden) {
+        return (btnToggleIcon.style.transform = "rotateY(0deg)");
+      } else {
+        return (btnToggleIcon.style.transform = "rotateY(180deg)");
+      }
+      this.rail = !this.rail;
     },
-    mounted(){
-        console.log(this.$page.props.roles)
-    }
+  },
 };
 // <v-list density="compact" v-model:opened="open">
 </script>

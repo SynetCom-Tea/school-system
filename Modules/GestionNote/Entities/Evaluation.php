@@ -2,15 +2,16 @@
 
 namespace Modules\GestionNote\Entities;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Modules\Enseignement\Entities\EnseignementAnnee;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Evaluation extends Model
 {
-    use HasFactory, softDeletes;
+    use HasFactory;
 
     protected $fillable = ['date', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id','enseignement_annee_id'];
 

@@ -15,15 +15,19 @@ class SectionSeeder extends Seeder
     public function run(): void
     {
         Section::create([
+            'id' => 1,
             'libelle' => 'Primaire'
         ]);
         Section::create([
+            'id' => 2,
             'libelle' => 'Secondaire'
         ]);
         Section::create([
-            'libelle' => 'Supérieur'
+            'id' => 3,
+            'libelle' => 'Supérieure'
         ]);
         Section::create([
+            'id' => 4,
             'libelle' => 'Universitaire'
         ]);
 

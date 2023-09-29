@@ -17,7 +17,7 @@ class Departement extends Model
     {
         return $this->belongsTo(Faculte::class);
     }
-    
+
     public function filieres(): HasMany
     {
         return $this->hasMany(Filiere::class);

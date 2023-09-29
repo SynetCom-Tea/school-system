@@ -92,10 +92,8 @@ watch(
   { deep: true }
 );
 function onClickCancelButton(e) {
-  console.log("onClickCancelButton12:", vmodelDialoDU);
   e.preventDefault();
   vmodelDialoDU.value = false;
-  console.log(" statusClose:", vmodelDialoDU);
 
   // return (vmodelDialoDU.value = false);
 }

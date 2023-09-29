@@ -3,7 +3,7 @@
     <v-container fluid>
       <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
-          >FACULTÉS</v-card-title
+          >FACULTES</v-card-title
         >
         <v-divider></v-divider>
         <br />
@@ -19,10 +19,10 @@
             title="Note"
           >
             <li>
-              Cette section vous permet de configurer les facultés de cet établissement
+              Cette section vous permet de configurer les facultes de cet établissement
             </li>
             <li>
-              Le formulaire sera valide si et seulement si tous les champs obligatoires
+              Le formulaire sera valide si est seulement si tous les champs obligatoires
               marqués par <span style="color: red">*</span> sont renseignés
             </li>
           </v-alert>
@@ -46,17 +46,19 @@
               <v-col>
                 <v-switch
                   label="Souhaiterez-vous importez le fichier des facultés ?"
-                  @update:modelValue="resetForm(importation)"
                   v-model="importation"
+                  @update:modelValue="submitForm(null)"
                   color="info"
                   inset
                 ></v-switch>
               </v-col>
               <v-col v-if="importation">
                 <v-file-input
+                  @change="handleFileUpload"
                   clearable
                   required
                   v-model="form.fichier_faculte"
+                  @update:modelValue="submitForm(null)"
                   label="Charger le fichier des facultés"
                   variant="solo-inverted"
                 ></v-file-input>
@@ -86,6 +88,7 @@
                   required
                   @change="verify(faculte)"
                   v-model="faculte.code"
+                  @update:modelValue="submitForm(faculte)"
                 ></TextField>
               </v-col>
               <v-col md="4">
@@ -95,6 +98,7 @@
                   :isRequired="true"
                   placeholder="Nom de la faculte"
                   v-model="faculte.libelle"
+                  @update:modelValue="submitForm(faculte)"
                 ></TextField>
               </v-col>
               <v-col md="2">
@@ -159,6 +163,7 @@
   </form>
 </template>
 <script>
+import XLSX from "xlsx/dist/xlsx.extendscript.js";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {
@@ -171,6 +176,9 @@ export default {
   data: () => ({
     alertFirst: true,
     alertSecond: true,
+    headers: [],
+    data: [],
+    contentType: ["code", "nom"],
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
     step: 1,
     importation: false,
@@ -181,6 +189,113 @@ export default {
   }),
 
   methods: {
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const data = e.target.result;
+
+          // Utilisation de JavaScript natif pour lire le fichier Excel
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          // Convertir les données de la feuille en tableau
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          // La première ligne est généralement utilisée comme en-têtes de colonne
+          if (sheetData.length > 0) {
+            this.headers = sheetData[0];
+            this.data = sheetData.slice(1);
+
+            if (this.checkEntete(this.headers, this.contentType)) {
+              const missingDataIndex = this.donneesManquantes(this.data);
+
+              if (typeof missingDataIndex === "number") {
+                this.$swal.fire({
+                  title: "Valider",
+                  text: "Votre fichier est valide!",
+                  icon: "success",
+                  confirmButtonText: "OK",
+                });
+              } else {
+                this.form.fichier_faculte = null;
+                this.submitForm(null);
+                const ligne = missingDataIndex.rowIndex + 2;
+                const colonne = missingDataIndex.columnIndex + 1;
+                this.$swal.fire({
+                  title: "Erreur",
+                  text:
+                    "Données manquantes à la ligne " +
+                    ligne +
+                    " et colonne " +
+                    colonne +
+                    " Veuillez corriger!",
+                  icon: "warning",
+                  confirmButtonText: "OK",
+                });
+              }
+            } else {
+              this.form.fichier_faculte = null;
+              this.submitForm(null);
+              this.$swal.fire({
+                title: "Erreur",
+                text:
+                  "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                icon: "warning",
+                confirmButtonText: "OK",
+              });
+              //   alert('drapppppppp')
+            }
+
+            // Exclure la première ligne (en-têtes)
+          }
+        };
+
+        reader.readAsBinaryString(file);
+      }
+    },
+
+    checkEntete(arr1, arr2) {
+      // Vérifie si les tableaux ont la même longueur
+      if (arr1.length !== arr2.length) {
+        return false;
+      }
+
+      // Compare chaque élément des tableaux
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          return false;
+        }
+      }
+
+      // Si toutes les comparaisons ont réussi, les tableaux sont égaux
+      return true;
+    },
+
+    donneesManquantes(tableau) {
+      for (let rowIndex = 0; rowIndex < tableau.length; rowIndex++) {
+        const row = tableau[rowIndex];
+
+        // Vérifie si la ligne n'existe pas (est undefined)
+        if (typeof row === "undefined") {
+          return rowIndex; // Retourne l'indice de la ligne manquante
+        }
+
+        // Parcours les éléments de la ligne
+        for (let columnIndex = 0; columnIndex < this.contentType.length; columnIndex++) {
+          if (typeof row[columnIndex] === "undefined") {
+            return {
+              rowIndex,
+              columnIndex,
+            }; // Retourne l'indice de la ligne et de la colonne où les données manquent
+          }
+        }
+      }
+
+      return -1; // Retourne -1 si toutes les données sont présentes
+    },
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
@@ -198,29 +313,15 @@ export default {
         this.addRow();
       }
     },
-    submitForm() {
-      // Empêche l'envoi du formulaire par défaut
-      event.preventDefault();
-      // Valide le formulaire avant de l'envoyer
-      if (this.isValid()) {
-        this.$emit("formSubmitted", this.form);
-        this.$swal.fire({
-          title: "Réussi",
-          text: "Mise à jour réussi avec succes!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // this.$swal("Enregistrement réussi avec succes!")
-      } else {
-        // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-        this.$swal.fire({
-          title: "Erreur",
-          text:
-            "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
-      }
+    async submitForm(element) {
+      await this.verify(element);
+      await this.isValid();
+
+      this.form.etablissement_section_id = this.$page.props.sections.find(
+        (el) => el.section == this.section
+      );
+      this.$emit("formSubmitted", this.form);
+      this.$emit("faculteFormValid", this.isValid());
     },
     isValid() {
       let fichier = false;
@@ -248,7 +349,6 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-      console.log();
     },
     addRow() {
       this.form.facultes.push({
@@ -263,14 +363,16 @@ export default {
       this.form.facultes = this.form.facultes.filter((el) => el !== id);
     },
     async verify(element) {
-      const array = this.form.facultes.filter(
-        (el) => el.code !== null && el.code == element.code
-      );
+      if (element) {
+        const array = this.form.facultes.filter(
+          (el) => el.code !== null && el.code == element.code
+        );
 
-      if (array.length > 1) {
-        this.removeRow(element);
-        this.$swal("L'élément existe déjà !");
-        // this.$alert.error("L'élément existe déjà !");
+        if (array.length > 1) {
+          this.removeRow(element);
+          this.$swal("L'élément existe déjà !");
+          // this.$alert.error("L'élément existe déjà !");
+        }
       }
     },
   },
