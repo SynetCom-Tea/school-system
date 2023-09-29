@@ -39,6 +39,7 @@
         "core-js": "^3.32.1",
         "echarts": "^5.4.3",
         "form-wizard-vue3": "^1.1.0",
+        "qalendar": "^3.5.0",
         "unplugin-vue-components": "^0.25.1",
         "vee-validate": "^4.11.3",
         "vite-plugin-vuetify": "^1.0.2",

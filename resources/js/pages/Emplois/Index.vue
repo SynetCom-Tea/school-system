@@ -2,15 +2,55 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router } from "@inertiajs/vue3";
 import { mdiPlus, mdiTimetable } from "@mdi/js";
+import { Qalendar } from "qalendar";
 export default {
   layout: AuthenticatedLayout,
-  props: ["emplois"],
+  components: {
+    Qalendar,
+  },
+  props: ["emplois", "events"],
   data() {
     return {
       icon: {
         mdiPlus,
         mdiTimetable,
       },
+      // events: [
+      //   // ...
+      //   {
+      //     title: "Advanced algebra",
+      //     with: "Chandler Bing",
+      //     time: { start: "2023-09-29 12:05", end: "2023-09-29 13:35" },
+      //     isEditable: true,
+      //     id: "753944708f0f",
+      //     colorScheme: 'meetings',
+      //     description: "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores assumenda corporis doloremque et expedita molestias necessitatibus quam quas temporibus veritatis. Deserunt excepturi illum nobis perferendis praesentium repudiandae saepe sapiente voluptatem!"
+      //   },
+      //   {
+      //     title: "Ralph on holiday",
+      //     with: "Rachel Greene",
+      //     time: { start: "2023-09-20", end: "2023-09-30" },
+      //     colorScheme: 'sports',
+      //     isEditable: true,
+      //     id: "5602b6f589fc"
+      //   }
+      //   // ...
+      // ],
+      config: {
+        // see configuration section
+        style: {
+        colorSchemes: {
+          meetings: {
+            color: '#fff',
+            backgroundColor: '#131313',
+          },
+          sports: {
+            color: '#fff',
+            backgroundColor: '#ff4081',
+          }
+        }
+      },
+      }
     };
   },
   methods: {
@@ -30,5 +70,13 @@ export default {
         </button>
       </v-card>
     </v-card-text>
+    <Qalendar 
+      :events="events"
+      :config="config"
+    />
   </v-card>
 </template>
+
+<style>
+    @import "qalendar/dist/style.css";
+</style>

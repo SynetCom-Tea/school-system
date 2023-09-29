@@ -17,6 +17,8 @@ return new class extends Migration
         Schema::create('seances', function (Blueprint $table) {
             $table->id();
             $table->date('date_seance')->nullable();
+            $table->time('heure_debut');
+            $table->time('heure_fin');
             $table->boolean('statut');
             $table->foreignIdFor(\Modules\Emploi\Entities\Horaire::class)
                 ->index()
