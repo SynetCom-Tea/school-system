@@ -163,7 +163,8 @@
   </form>
 </template>
 <script>
-import XLSX from "xlsx/dist/xlsx.extendscript.js";
+// import XLSX from "xlsx/dist/xlsx.extendscript.js";
+import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {

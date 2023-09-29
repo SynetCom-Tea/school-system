@@ -1,7 +1,7 @@
 <template>
-    <form @submit.prevent="submitForm" novalidate>
-        <v-container fluid>
-            <v-card variant="outlined" style="border: 2px solid #7d002c">
+  <form @submit.prevent="submitForm" novalidate>
+    <v-container fluid>
+      <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
           >UNITE D'ENSEIGNEMENT</v-card-title
         >
@@ -18,8 +18,14 @@
             type="info"
             title="Note"
           >
-            <li>Cette section vous permet de configurer les unités des enseignements de cet établissement</li>
-            <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li>
+            <li>
+              Cette section vous permet de configurer les unités des enseignements de cet
+              établissement
+            </li>
+            <li>
+              Le formulaire sera valide si est seulement si tous les champs obligatoires
+              marqués par <span style="color: red">*</span> sont renseignés
+            </li>
           </v-alert>
 
           <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
@@ -35,77 +41,100 @@
           </div>
         </div>
         <v-divider></v-divider>
-    <v-card>
-        <v-card-text>
-
+        <v-card>
+          <v-card-text>
             <v-row>
-                <v-col>
-                    <v-switch label="Souhaiterez-vous importez le fichier des unités des enseignements ?"  v-model="importation"  @update:modelValue="submitForm(null)" color="info" inset></v-switch>
-                </v-col>
-                <v-col v-if="importation">
-                    <v-file-input
-                        @change="handleFileUpload"
-                        clearable
-                        required
-                        v-model="form.fichier_ue"
-                        @update:modelValue="submitForm(null)"
-                        label="Charger le fichier des UES"
-                        variant="solo-inverted"
-                    ></v-file-input>
-                </v-col>
-                <v-col v-if="importation"><v-btn
-                    class="ma-2"
-                    outlined
-                    type="button"
-                    color="primary"
-                    href="../models/echantillons/fiche_echantillonage.ods"
-                    download>
-                        Télécharger le Model
-                </v-btn></v-col>
-            </v-row>
-        </v-card-text>
-
-        <v-card-text v-if="!importation">
-            <v-row disabled :key="ue.id" v-for="(ue, i) in form.ues">
-                <v-col md="4">
-                    <TextField label="Code UE"  class="mt-2" :isRequired="true" placeholder="Code UE" @change="verify(ue)" v-model="ue.code"  @update:modelValue="submitForm(ue)"></TextField>
-                </v-col>
-                <v-col md="4">
-                    <TextField label="Nom de l'UE" class="mt-2"  :isRequired="true" placeholder="Nom de l'UE" v-model="ue.libelle"  @update:modelValue="submitForm(ue)"></TextField>
-                </v-col>
-                <v-col md="1">
-                    <br>
-                    <Button
-                    type="button"
-                    variant="outlined"
-                    :disabled="!(form.ues.length > 1)"
-                    icon
-                    @click="removeRow(ue)"
-                    size="large"
-                    small
-                    color="error"
+              <v-col>
+                <v-switch
+                  label="Souhaiterez-vous importez le fichier des unités des enseignements ?"
+                  v-model="importation"
+                  @update:modelValue="submitForm(null)"
+                  color="info"
+                  inset
+                ></v-switch>
+              </v-col>
+              <v-col v-if="importation">
+                <!-- <v-file-input
+                  @change="handleFileUpload"
+                  clearable
+                  required
+                  v-model="form.fichier_ue"
+                  @update:modelValue="submitForm(null)"
+                  label="Charger le fichier des UES"
+                  variant="solo-inverted"
+                ></v-file-input> -->
+              </v-col>
+              <v-col v-if="importation"
+                ><v-btn
+                  class="ma-2"
+                  outlined
+                  type="button"
+                  color="primary"
+                  href="../models/echantillons/fiche_echantillonage.ods"
+                  download
                 >
-                    <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-              </Button>
-                </v-col>
+                  Télécharger le Model
+                </v-btn></v-col
+              >
+            </v-row>
+          </v-card-text>
+
+          <v-card-text v-if="!importation">
+            <v-row disabled :key="ue.id" v-for="(ue, i) in form.ues">
+              <v-col md="4">
+                <TextField
+                  label="Code UE"
+                  class="mt-2"
+                  :isRequired="true"
+                  placeholder="Code UE"
+                  @change="verify(ue)"
+                  v-model="ue.code"
+                  @update:modelValue="submitForm(ue)"
+                ></TextField>
+              </v-col>
+              <v-col md="4">
+                <TextField
+                  label="Nom de l'UE"
+                  class="mt-2"
+                  :isRequired="true"
+                  placeholder="Nom de l'UE"
+                  v-model="ue.libelle"
+                  @update:modelValue="submitForm(ue)"
+                ></TextField>
+              </v-col>
+              <v-col md="1">
+                <br />
+                <Button
+                  type="button"
+                  variant="outlined"
+                  :disabled="!(form.ues.length > 1)"
+                  icon
+                  @click="removeRow(ue)"
+                  size="large"
+                  small
+                  color="error"
+                >
+                  <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                </Button>
+              </v-col>
             </v-row>
             <v-row>
-            <v-col offset-md="11" cols="4">
-              <Button
-                type="button"
-                variant="outlined"
-                @click="addRow"
-                icon
-                size="large"
-                color="primary"
-              >
-                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
-              </Button>
-            </v-col>
-          </v-row>
-        </v-card-text>
-    </v-card>
-    <br>
+              <v-col offset-md="11" cols="4">
+                <Button
+                  type="button"
+                  variant="outlined"
+                  @click="addRow"
+                  icon
+                  size="large"
+                  color="primary"
+                >
+                  <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                </Button>
+              </v-col>
+            </v-row>
+          </v-card-text>
+        </v-card>
+        <br />
         <!-- <v-row class="text-center ml-3 mb-3"
           ><v-col cols="auto">
             <Button
@@ -122,10 +151,9 @@
             >
             </Button> </v-col
         ></v-row> -->
-    </v-card>
-
+      </v-card>
     </v-container>
-        <!-- <v-row>
+    <!-- <v-row>
             <v-col md="5"></v-col>
             <v-col md="4">
                 <v-btn type="submit" title="enregistrer" color="info">
@@ -133,112 +161,108 @@
                 </v-btn>
             </v-col>
         </v-row> -->
-        <br>
-    </form>
+    <br />
+  </form>
 </template>
 <script>
-    import XLSX from "xlsx/dist/xlsx.extendscript.js";
-    import { router,useForm} from '@inertiajs/vue3';
-    import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
-  export default {
-    props:['type'],
-    components: {
-        mdiPlusCircle,
-        mdiCloseCircle,
-        mdiInformation
-    },
-    data: () => ({
-        alertFirst: true,
-        alertSecond: true,
-        headers: [],
-        data: [],
-        contentType: ['code','nom'],
-        icons: {mdiPlusCircle,mdiCloseCircle,mdiInformation},
-        step: 1,
-        importation: false,
-        form: useForm({
-            fichier_ue: null,
-            ues: [],
-        }),
+// import XLSX from "xlsx/dist/xlsx.extendscript.js";
+import { router, useForm } from "@inertiajs/vue3";
+import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+export default {
+  props: ["type"],
+  components: {
+    mdiPlusCircle,
+    mdiCloseCircle,
+    mdiInformation,
+  },
+  data: () => ({
+    alertFirst: true,
+    alertSecond: true,
+    headers: [],
+    data: [],
+    contentType: ["code", "nom"],
+    icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
+    step: 1,
+    importation: false,
+    form: useForm({
+      fichier_ue: null,
+      ues: [],
     }),
+  }),
 
-    methods: {
-        handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+  methods: {
+    // handleFileUpload(event) {
+    //   const file = event.target.files[0];
+    //   if (file) {
+    //     const reader = new FileReader();
 
-        reader.onload = (e) => {
-          const data = e.target.result;
+    //     reader.onload = (e) => {
+    //       const data = e.target.result;
 
-          // Utilisation de JavaScript natif pour lire le fichier Excel
-          const workbook = XLSX.read(data, { type: "binary" });
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    //       // Utilisation de JavaScript natif pour lire le fichier Excel
+    //       const workbook = XLSX.read(data, { type: "binary" });
+    //       const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-          // Convertir les données de la feuille en tableau
-          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    //       // Convertir les données de la feuille en tableau
+    //       const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-          // La première ligne est généralement utilisée comme en-têtes de colonne
-          if (sheetData.length > 0) {
-            this.headers = sheetData[0];
-            this.data = sheetData.slice(1);
+    //       // La première ligne est généralement utilisée comme en-têtes de colonne
+    //       if (sheetData.length > 0) {
+    //         this.headers = sheetData[0];
+    //         this.data = sheetData.slice(1);
 
-            console.log('headers',this.headers,'data',this.data)
+    //         console.log("headers", this.headers, "data", this.data);
 
-            if(this.checkEntete(this.headers,this.contentType)){
-            //   console.log('bravo')
-            const missingDataIndex = this.donneesManquantes(this.data);
+    //         if (this.checkEntete(this.headers, this.contentType)) {
+    //           //   console.log('bravo')
+    //           const missingDataIndex = this.donneesManquantes(this.data);
 
-            if (typeof missingDataIndex === "number") {
-                this.$swal.fire({
-                    title: 'Valider',
-                    text: "Votre fichier est valide!",
-                    icon: 'success',
-                    confirmButtonText: 'OK',
-                });
-            // console.log("L'indice de la ligne manquante est:", missingDataIndex);
-            } else {
-                this.form.fichier_ue = null
-                this.submitForm(null)
-                const ligne=missingDataIndex.rowIndex+2;
-                const colonne=missingDataIndex.columnIndex+1;
-                this.$swal.fire({
-                        title: "Erreur",
-                        text:
-                        "Données manquantes à la ligne "+ligne+
-                        " et colonne "+ colonne + " Veuillez corriger!",
-                        icon: "warning",
-                        confirmButtonText: "OK",
-                    });
-            console.log(
+    //           if (typeof missingDataIndex === "number") {
+    //             this.$swal.fire({
+    //               title: "Valider",
+    //               text: "Votre fichier est valide!",
+    //               icon: "success",
+    //               confirmButtonText: "OK",
+    //             });
+    //             // console.log("L'indice de la ligne manquante est:", missingDataIndex);
+    //           } else {
+    //             this.form.fichier_ue = null;
+    //             this.submitForm(null);
+    //             const ligne = missingDataIndex.rowIndex + 2;
+    //             const colonne = missingDataIndex.columnIndex + 1;
+    //             this.$swal.fire({
+    //               title: "Erreur",
+    //               text:
+    //                 "Données manquantes à la ligne " +
+    //                 ligne +
+    //                 " et colonne " +
+    //                 colonne +
+    //                 " Veuillez corriger!",
+    //               icon: "warning",
+    //               confirmButtonText: "OK",
+    //             });
+    //             console.log();
+    //           }
+    //         } else {
+    //           this.form.fichier_ue = null;
+    //           this.submitForm(null);
+    //           this.$swal.fire({
+    //             title: "Erreur",
+    //             text:
+    //               "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+    //             icon: "warning",
+    //             confirmButtonText: "OK",
+    //           });
+    //           //   alert('drapppppppp')
+    //         }
 
-            );
-            }
+    //         // Exclure la première ligne (en-têtes)
+    //       }
+    //     };
 
-            }else{
-                this.form.fichier_ue = null
-                this.submitForm(null)
-                this.$swal.fire({
-                                title: "Erreur",
-                                text:
-                                "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
-                                icon: "warning",
-                                confirmButtonText: "OK",
-                            });
-            //   alert('drapppppppp')
-            }
-
-             // Exclure la première ligne (en-têtes)
-
-          }
-        };
-
-        reader.readAsBinaryString(file);
-
-      }
-    },
-
-
+    //     reader.readAsBinaryString(file);
+    //   }
+    // },
 
     checkEntete(arr1, arr2) {
       // Vérifie si les tableaux ont la même longueur
@@ -279,80 +303,87 @@
 
       return -1; // Retourne -1 si toutes les données sont présentes
     },
-        onclickAlertButton(type) {
-        if (type == "second") {
-            this.alertSecond = true;
+    onclickAlertButton(type) {
+      if (type == "second") {
+        this.alertSecond = true;
+      }
+      if (type == "first") this.alertFirst = true;
+    },
+    formatNiveauLabel(item) {
+      if (item) {
+        return `${item?.code} - ${item?.libelle}`;
+      }
+    },
+    resetForm(check) {
+      if (check) {
+        this.form.ues = [];
+        this.addRow();
+      }
+    },
+    async submitForm(element) {
+      await this.verify(element);
+      await this.isValid();
+      console.log("isValid", this.isValid());
+      this.form.etablissement_section_id = this.$page.props.sections.find(
+        (el) => el.section == this.section
+      );
+      this.$emit("formSubmitted", this.form);
+      this.$emit("ueFormValid", this.isValid());
+    },
+    isValid() {
+      let fichier = false;
+      let valid = false;
+      if (this.importation && this.form.fichier_ue != null) {
+        fichier = true;
+      } else if (
+        !this.importation &&
+        !this.form.ues.find((el) => {
+          return (
+            el.code == null || el.libelle == null || el.code == "" || el.libelle == ""
+          );
+        })
+      ) {
+        fichier = true;
+      }
+
+      if (fichier) {
+        valid = true;
+      } else {
+        valid = false;
+      }
+      return valid;
+    },
+    goBack() {
+      router.get(route("etablissements.index"));
+      console.log();
+    },
+    addRow() {
+      this.form.ues.push({
+        code: null,
+        libelle: null,
+        etablissement: this.$page.props.admin_etablissement.etablissement_id,
+        before: null,
+        after: null,
+      });
+    },
+    removeRow(id) {
+      this.form.ues = this.form.ues.filter((el) => el !== id);
+    },
+    async verify(element) {
+      if (element) {
+        const array = this.form.ues.filter(
+          (el) => el.code !== null && el.code == element.code
+        );
+        if (array.length > 1) {
+          this.removeRow(element);
+          this.$swal("L'élément existe déjà !");
+          // this.$alert.error("L'élément existe déjà !");
         }
-        if (type == "first") this.alertFirst = true;
-        },
-        formatNiveauLabel(item) {
-            if(item){
-                return `${item?.code} - ${item?.libelle}`;
-            }
-        },
-        resetForm(check){
-            if(check){
-                this.form.ues = []
-                this.addRow()
-            }
-        },
-        async submitForm(element) {
-            await this.verify(element)
-            await this.isValid()
-            console.log('isValid',this.isValid())
-            this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section == this.section)
-            this.$emit('formSubmitted', this.form);
-            this.$emit("ueFormValid", this.isValid());
-        },
-        isValid() {
-            let fichier = false
-            let valid = false
-            if(this.importation && this.form.fichier_ue != null){
-                fichier = true
-            }else if(!this.importation && !this.form.ues.find((el) => {
-                return el.code == null || el.libelle == null || el.code == '' || el.libelle == '';
-            }))
-            {
-                fichier = true
-            }
-
-            if(fichier){
-                valid = true
-            }else{
-                valid = false
-            }
-            return valid
-        },
-        goBack() {
-            router.get(route('etablissements.index'))
-            console.log()
-        },
-        addRow() {
-            this.form.ues.push({
-                code: null,
-                libelle: null,
-                etablissement: this.$page.props.admin_etablissement.etablissement_id,
-                before: null,
-                after: null
-            })
-        },
-        removeRow(id) {
-            this.form.ues = this.form.ues.filter((el) => el !== id)
-        },
-        async verify(element) {
-            if (element) {
-                const array = this.form.ues.filter(el => el.code !== null && el.code == element.code)
-                if (array.length > 1) {
-                    this.removeRow(element)
-                    this.$swal("L'élément existe déjà !")
-                    // this.$alert.error("L'élément existe déjà !");
-                }
-            }
-        },
+      }
     },
-    mounted() {
-        this.addRow()
-    },
-  }
+  },
+  mounted() {
+    this.addRow();
+  },
+};
 </script>
-

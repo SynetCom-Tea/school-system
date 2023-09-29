@@ -78,7 +78,46 @@
                   v-text="link.title"
                 ></v-list-item-title>
               </v-list-item>
+              <!-- Début Super-Admin  -->
+              <div v-for="(itemSection, i) in superAdminMenus" :key="i">
+                <v-list-group
+                  :value="itemSection.title"
+                  v-if="$page.props.roles[0] == 'Super-administrateur'"
+                >
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="itemSection.title"
+                          :icon="itemSection.icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="itemSection.title"
+                      ></v-list-item-title>
+                    </v-list-item>
+                  </template>
 
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in itemSection.children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                    </template>
+
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="item.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </v-list-group>
+              </div>
+
+              <!-- Fin Super-Admin -->
               <!--Debut des menu sections -->
               <div v-for="(itemSection, i) in menusBySection" :key="i">
                 <v-list-group
@@ -119,7 +158,7 @@
               </div>
               <!-- Debut evaluation  -->
               <v-list-group
-                :value="getListMenus[4].title"
+                :value="getListMenus[4] && getListMenus[4].title"
                 v-if="$page.props.roles[0] == 'Administrateur'"
               >
                 <template v-slot:activator="{ props }">
@@ -159,24 +198,27 @@
               <!-- Debut du menu preconfig -->
 
               <v-list-group
-                :value="MenuAdmin.title"
+                :value="getListMenus[2].title"
                 v-if="$page.props.roles[0] == 'Administrateur'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
                     <template v-slot:prepend>
-                      <v-icon :title="MenuAdmin.title" :icon="MenuAdmin.icon"></v-icon>
+                      <v-icon
+                        :title="getListMenus[2].title"
+                        :icon="getListMenus[2].icon"
+                      ></v-icon>
                     </template>
                     <v-list-item-title
                       class="text-wrap"
-                      v-text="MenuAdmin.title"
+                      v-text="getListMenus[2].title"
                     ></v-list-item-title>
                   </v-list-item>
                 </template>
 
                 <v-list-item
                   class="sub-list-group"
-                  v-for="(item, i) in MenuAdmin.children"
+                  v-for="(item, i) in getListMenus[2].children"
                   :key="i"
                   @click="page(item.link)"
                 >
@@ -276,7 +318,8 @@ export default {
       MenuAdmin: [],
       MenuGestion: [],
       menusBySection: [],
-      open: ["getListMenus[1]"],
+      superAdminMenus: [],
+      open: null,
       drawer: true,
       menuCompact: {
         hidden: true,
@@ -294,8 +337,6 @@ export default {
     };
   },
   created() {
-    console.log("ici", this.$page.props.roles[0]);
-    this.getListMenus;
     this.getUserProfile;
     this.getOrganizationProfile;
     // listMenus(this.$page.props);
@@ -386,12 +427,16 @@ export default {
     },
     getListMenus() {
       let list = listMenus(this.$page.props);
-      let role = this.$page.props.roles ? this.$page.props.roles[0] : null;
-      let menuSection = list[1];
-      console.log("menuBySection:", menuSection);
-      this.menusBySection = menuSection ?? [];
+
+      let role = this.$page.props.roles ? this.$page.props?.roles[0] : null;
+      console.log("role:", role);
+      console.log("list:", list);
+      this.menusBySection = list[1] ?? [];
       this.MenuAdmin = list[2];
+      console.log("MenuAdmin:", this.MenuAdmin);
       this.MenuGestion = list[3];
+      this.superAdminMenus = list[5];
+
       return list;
     },
   },

@@ -46,10 +46,10 @@ import {
    mdiTimerStar,mdiTimerStarOutline, mdiTimerStopOutline,mdiTimerSyncOutline
 } from "@mdi/js";
 export function listMenus(page) {
-    // console.log('this.$page.props.roles:', page)
+     console.log('listNav:', page)
     let tabs = [];
     let enfants = [];
-    let tab = [];
+    let tab,tab_s = [];
     let section_user = [];
     let MenuEvaluation;
     let MenuAdmin;
@@ -65,8 +65,9 @@ export function listMenus(page) {
       { title: 'Supérieur', icon: mdiSchool, link: '/gestionnote/evaluation/3' },
       { title: 'Universitaire', icon: mdiSchool, link: '/gestionnote/evaluation/4' },
     ];
-    // console.log(page?.section_users)
-    if (page?.role == "Administrateur") {
+
+  //  Début de menu pre-configs
+    if (page?.roles[0] == "Administrateur") {
 
       if (page?.sections[0]?.sections) {
         tabs = page?.sections[0].sections.map(function (el) {
@@ -74,30 +75,43 @@ export function listMenus(page) {
         });
       }
     }
-    if (page?.role == "Enseignant") {
-      if (page?.section_users[0]?.libelle) {
-        tab = page?.section_users.map(el =>el.libelle);
-      }
-    }
 
-    if (tab != []) {
-        section_users.forEach((s) => {
-            //   console.log('ele:',section)
-          if (tab.includes(s.title)) {
-            // console.log('herre22')
-            section_user.push(s);
-        }
-      });
-    }
-    if (tabs != []) {
+    if (tabs.length!=0) {
+
         sections.forEach((section) => {
-            //   console.log('ele:',section)
+
           if (tabs.includes(section.title)) {
-            // console.log('herre22')
+
           enfants.push(section);
         }
       });
     }
+  MenuAdmin = {
+      icon: mdiCogOutline,
+      title: "Configurations",
+      "icon-alt": mdiChevronLeft,
+      model: false,
+      children: enfants,
+  }
+
+  // Fin de menu pre-configs
+    if (page?.roles[0]== "Enseignant") {
+      if (page?.section_users[0]?.libelle) {
+        tab_s = page?.section_users.map(el =>el.libelle);
+      }
+    }
+
+    if (tab_s != []) {
+        section_users.forEach((s) => {
+
+          if (tab_s.includes(s.title)) {
+
+            section_user.push(s);
+        }
+      });
+    }
+
+
     MenuEvaluation = {
         icon: mdiCogOutline,
         title: "Evaluations",
@@ -106,13 +120,7 @@ export function listMenus(page) {
         children: section_user,
   }
 
-MenuAdmin = {
-      icon: mdiCogOutline,
-      title: "Configurations",
-      "icon-alt": mdiChevronLeft,
-      model: false,
-      children: enfants,
-}
+
 
 //Menu pour la gestion des cruds après config
 
@@ -132,17 +140,18 @@ MenuAdmin = {
           return el.libelle;
         });
       }
-    }
+
 
     if (tab != []) {
         section.forEach((sect) => {
-            //   console.log('ele:',section)
+
           if (tab.includes(sect.title)) {
-            // console.log('herre22')
+
           enfant.push(sect);
         }
       });
     }
+       }
 MenuGestion = {
       icon: mdiCogOutline,
       title: "Post Configs",
@@ -153,8 +162,8 @@ MenuGestion = {
 
 //Fin du menu des cruds
 
-    let pageSections = page.sections[0]?.sections
-    console.log('pageSections:', pageSections)
+    let pageSections = page.sections? page.sections[0]?.sections:null
+
     let listMenusSections = []
     let iconSection;
     let childrenBySection = [
@@ -199,7 +208,6 @@ MenuGestion = {
             if (element) {
                 iconSection = element.id == 1 ? mdiAccountSchoolOutline : element.id == 2 ? mdiTimerStarOutline :
                       element.id==3?mdiTimerSyncOutline:mdiOfficeBuilding
-                console.log('element:', element)
                 listMenusSections.push({
                     icon: iconSection,
                     title: element.libelle,
@@ -209,7 +217,7 @@ MenuGestion = {
             }
         })
     }
-    console.log('listMenusSections:',listMenusSections)
+
     let singleItems = [
      {
             title: "Home",
@@ -230,8 +238,7 @@ MenuGestion = {
             permissions : "manage_system",
         },
     ];
-    let singleMenus = singleItems.concat(listMenusSections)
-    // console.log('singleMenus:',singleMenus)
+
 
     let usersMenu = {
         icon: mdiAccountCogOutline,
@@ -260,122 +267,15 @@ MenuGestion = {
             },
         ],
     };
-    let enseignements = {
-        icon: mdiAccountCogOutline,
-        title: "Gestions d'Enseignements",
-        "icon-alt": mdiChevronDown,
-        permissions: "manage_system",
-        model: false,
-        children: [
-            {
-                icon: mdiSquareMedium,
-                title: "Fillières",
-                link: "/enseignement/fillieres",
-                permissions: "manage_system",
-            },
-        ],
-    };
-    // Gestion de Notes
-    let configsMenu = {
-        icon: mdiCog,
-        "icon-alt": mdiChevronDown,
-        title: "Notes",
-        permissions: "manage_system",
-        divider: true,
-        model: false,
-        children: [
-            {
-                icon: mdiGift,
-                title: "Affichage de notes",
-                link: "/gestionnote/note/affichage",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiWalletMembership,
-                title: "Attribution de notes",
-                link: "/gestionnote/note/attribution",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiAccountSchool,
-                title: "Enseignants",
-                link: "/teachers",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiSchool,
-                title: "Établissements",
-                link: "/organizations",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiCalendar,
-                title: "Années Scolaires",
-                link: "/annees",
-                permissions: "manage_system",
-            },
 
-            {
-                icon: mdiGoogleClassroom,
-                title: "Niveaux",
-                link: "/niveaux",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiGoogleClassroom,
-                title: "Salle de cours",
-                link: "/salles",
-                title: "Attribution de notes",
-                link: "/gestionnote/note/attribution",
-                permissions: "manage_system",
-            },
-            // {
-            //     icon: mdiAccountSchool,
-            //     title: "Enseignants",
-            //     link: "/teachers",
-            //     permissions: "manage_system",
-            // },
-            // {
-            //     icon: mdiSchool,
-            //     title: "Etablissements",
-            //     link: "/organizations",
-            //     permissions: "manage_system",
-            // },
-        ],
-    };
-    // Gestion de Notes
-    let welcomeMenu = {
-        icon: "simple-icons:welcometothejungle",
-        "icon-alt": mdiChevronDown,
-        title: "Paramétrage du site vitrine",
-        permissions: "manage_welcome",
-        divider: true,
-        model: false,
-        // children: [
-        //     {
-        //         icon:mdiGoogleClassroom,
-        //         title: "Généralités",
-        //         link: "/manage-welcome",
-        //         permissions: "manage_welcome",
-        //     },
-        //     {
-        //         icon: formsAppsScriptOutlineRounded,
-        //         title: "Formulaires",
-        //         link: "/manage-welcome/forms",
-        //         permissions: "manage_welcome",
-        //     },
-        //     {
-        //         icon: articlesIcon,
-        //         title: "Articles",
-        //         link: "/manage-welcome/articles",
-        //         permissions: "manage_welcome",
-        //     },
-        // ],
-    }
+let superAdminMenus=[]
 
-
-    if (page?.roles != "Super-administrateur") {
+    if (page?.roles[0] != "Super-administrateur") {
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
-    return [singleItems,listMenusSections,MenuAdmin,MenuGestion,MenuEvaluation]
+  if (page?.roles[0] == "Super-administrateur") {
+   superAdminMenus.push(usersMenu)
+  }
+
+    return [singleItems,listMenusSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus]
 }

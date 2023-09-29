@@ -223,7 +223,8 @@
 </template>
 <script>
 import { ref, watch } from "vue";
-import XLSX from "xlsx/dist/xlsx.extendscript.js";
+// import XLSX from "xlsx/dist/xlsx.extendscript.js";
+import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {
@@ -456,7 +457,6 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-
     },
     addRow() {
       this.form.frais.push({
