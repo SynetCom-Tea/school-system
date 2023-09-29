@@ -10,13 +10,13 @@
     if (!function_exists('countWeekdayOccurrences')) {
         function countWeekdayOccurrences($startDate, $endDate, $seances) {
             $occurrences = array(
-                'Dimanche' => ['occurrences' => 0, 'seances' => [], 'dateStart' => null],
-                'Lundi' => ['occurrences' => 0, 'seances' => [], 'dateStart' => null],
-                'Mardi' => ['occurrences' => 0, 'seances' => [], 'dateStart' => null],
-                'Mercredi' => ['occurrences' => 0, 'seances' => [], 'dateStart' => null],
-                'Jeudi' => ['occurrences' => 0, 'seances' => [], 'dateStart' => null],
-                'Vendredi' => ['occurrences' => 0, 'seances' => [], 'dateStart' => null],
-                'Samedi' => ['occurrences' => 0, 'seances' => [], 'dateStart' => null]
+                'Dimanche' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
+                'Lundi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
+                'Mardi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
+                'Mercredi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
+                'Jeudi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
+                'Vendredi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
+                'Samedi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null]
             );
 
             $startDateTime = new DateTime($startDate);
@@ -29,10 +29,12 @@
         
                 // Incrémenter le compteur pour ce jour de la semaine
                 $occurrences[$dayOfWeekFrench]['occurrences']++;
-                $occurrences[$dayOfWeekFrench]['dateStart'] = $startDateTime;
                 // Ajouter les séances pour ce jour de la semaine
                 if (isset($seances[$dayOfWeekFrench])) {
                     $occurrences[$dayOfWeekFrench]['seances'] = $seances[$dayOfWeekFrench];
+                    if ($occurrences[$dayOfWeekFrench]['date_debut'] === null) {
+                        $occurrences[$dayOfWeekFrench]['date_debut'] = $currentDate->format('Y-m-d');
+                    }
                 }
         
                 // Passer au jour suivant
