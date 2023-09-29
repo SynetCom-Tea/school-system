@@ -217,7 +217,7 @@ MenuGestion = {
             }
         })
     }
-
+console.log('listMenusSections:',listMenusSections)
     let singleItems = [
      {
             title: "Home",
