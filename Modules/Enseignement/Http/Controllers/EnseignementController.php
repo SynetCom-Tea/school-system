@@ -42,7 +42,7 @@ class EnseignementController extends Controller
         return Inertia::render('Admin/config', [
             'type' => $type,
             'niveaux' => Niveau::where('section_id', $type)->get(),
-            // 'matieres' => Matiere::where('etablissement_id',Auth::user()->etablissement_id)->get(),
+            // 'matieres' => Matiere::where('etablissement_id', Auth::user()->etablissement_id)->get(),
             'lmd' => $lmd
         ]);
     }
@@ -52,11 +52,11 @@ class EnseignementController extends Controller
     {
         // dd(Auth::user());
         $ets_id = Auth::user()->etablissement_id;
-        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        $table = DB::table('etablissement_section')->where('etablissement_id', $ets_id)->where('section_id', $type)->first();
         $id = $table->id;
-        return Inertia::render('Admin/postConfig',[
+        return Inertia::render('Admin/postConfig', [
             'type' => $type,
-            'niveaux' => Niveau::where('section_id',$type)->get(),
+            'niveaux' => Niveau::where('section_id', $type)->get(),
         ]);
     }
 

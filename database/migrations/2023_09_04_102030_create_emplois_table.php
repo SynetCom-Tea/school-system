@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
 {
@@ -15,7 +16,7 @@ return new class extends Migration
     {
         Schema::create('emplois', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->date('date_debut');
             $table->date('date_fin');
             $table->foreignIdFor(\App\Models\ClasseAnnee::class)
@@ -24,6 +25,20 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+
+        DB::statement("ALTER TABLE emplois ADD COLUMN nom_classe varchar(255);");
+
+        DB::statement("
+            CREATE TRIGGER update_emploi_info
+            BEFORE INSERT ON emplois
+            FOR EACH ROW
+            BEGIN
+
+                SET @classe_id = (SELECT classe_id FROM classe_annees WHERE id = NEW.classe_annee_id);
+
+                SET NEW.nom_classe = (SELECT libelle FROM classes WHERE id = @classe_id);
+            END
+        ");
     }
 
     /**

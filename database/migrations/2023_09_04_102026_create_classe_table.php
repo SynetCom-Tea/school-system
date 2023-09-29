@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('classes', function (Blueprint $table) {
             $table->id();
-
             $table->string('code')->nullable();
             $table->string('libelle')->nullable();
             $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
