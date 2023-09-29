@@ -15,10 +15,11 @@ defineProps({
     status: {
         type: String,
     },
-});
+})
 
 const route = useRoute()
-const activeTab = ref(route.params.tab)
+//const activeTab = ref(route.params.tab)
+const activeTab = ref(false)
 
 // tabs
 const tabs = [
@@ -43,7 +44,7 @@ const tabs = [
   <Toolbar
       styleToolbar="background-color: white;"
       :icon="mdiAccount"
-      toolbarTitle="Profil"
+      toolbarTitle="Mon Profil"
     ></Toolbar>
   <div>
     <VTabs

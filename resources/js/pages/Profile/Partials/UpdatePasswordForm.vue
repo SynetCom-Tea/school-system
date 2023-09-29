@@ -57,7 +57,7 @@ const updatePassword = () => {
 <v-row>
     <!-- SECTION: Change Password -->
     <v-col cols="12">
-        <v-card title="Changer le mot de passe" elevation="6" rounded="lg" width="950" style="margin-left: auto; margin-right: auto;margin-top:20px;margin-bottom:20px;">
+        <v-card title="Changer le mot de passe" elevation="6" rounded="lg" width="950" style="margin-left: auto; margin-right: auto;margin-top:10px;margin-bottom:20px;">
             <form>
                 <v-card-text>
                     <!-- ðŸ‘‰ Current Password -->

@@ -183,7 +183,7 @@ export default {
       regime_evaluation: false,
       type: null,
     }),
-
+  }),
     methods: {
         onclickAlertButton(type) {
         if (type == "second") {
@@ -259,5 +259,5 @@ export default {
     //     }
     //   },
   },
-};
+}
 </script>

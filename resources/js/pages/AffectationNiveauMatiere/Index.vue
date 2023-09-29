@@ -108,7 +108,7 @@ export default {
                     },
                     editItem(item) {
                         console.log(item)
-                        this.dialog_title = 'Modifier ' + item.matiere.nom + ' ' + item.niveau.code
+                        this.dialog_title = 'Modifier '+item.matiere.nom+' '+item.niveau.code
                         this.form.id = item.id
                         this.form.niveau_id = item.niveau_id
                         this.form.volume_horaire = item.volume_horaire
@@ -130,24 +130,24 @@ export default {
                             if (result.isConfirmed) {
                                 this.form.delete(route("affectations.destroy", item.id), {
                                     onFinish: () => {
-                                        if (this.$page.props.flash ? .message ? .type == "error") {
+                                        if (this.$page.props.flash?.message?.type == "error") {
                                             this.$swal({
                                                 icon: "error",
                                                 title: "Suppression",
-                                                text: this.$page.props.flash ? .message ? .text,
+                                                text: this.$page.props.flash?.message?.text,
                                                 toast: true,
                                                 position: "top-end",
                                                 showConfirmButton: false,
                                                 timer: 5000,
                                                 timerProgressBar: true,
                                             });
-                                        } else if (this.$page.props.flash ? .message ? .type == "success") {
+                                        } else if (this.$page.props.flash?.message?.type == "success") {
                                             this.$swal({
                                                 icon: "success",
                                                 iconColor: "#004980",
                                                 color: "#004980",
                                                 title: "Suppression",
-                                                text: this.$page.props.flash ? .message ? .text,
+                                                text: this.$page.props.flash?.message?.text,
                                                 toast: true,
                                                 position: "top-end",
                                                 showConfirmButton: false,
