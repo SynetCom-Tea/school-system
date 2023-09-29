@@ -98,8 +98,9 @@ export default {
                 (value) => {
                     if (value) return true;
                     return "Ce champ est requis!";
-                },
-        };
+                }
+            ],
+        }
     },
                 methods: {
                     create() {
