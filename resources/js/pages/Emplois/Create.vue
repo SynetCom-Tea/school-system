@@ -133,7 +133,7 @@ export default {
               text-color="white"
               color="rgb(125, 0, 44, 0.75)"
               class="text-md-h6 green--text"
-              >Classe concerner</v-chip
+              >Classe concernée</v-chip
             >
             <v-card outlined>
               <v-card-text id="heit">

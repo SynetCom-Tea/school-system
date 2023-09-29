@@ -32,28 +32,39 @@ class EmploiController extends Controller
     public function index()
     {
         // return view('emploi::index');
+
+        //code...
+
         $events = [];
         $emplois = Emploi::with('seances.horaire')->get();
-        foreach ($emplois[0]->seances as $seance) {
+        // dd('$emplois:', $emplois, $emplois->count());
 
-            // Extraire les heures et les minutes de heure_debut et heure_fin
-            $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
-            $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
+        if ($emplois->count() != 0) {
 
-            $event = [
-                'title' => $seance->nom_matiere,
-                'with' => 'Chandler Bing', // Modifier selon vos besoins
-                'time' => [
-                    'start' => $seance->date_seance . ' ' . $heureDebut,
-                    'end' => $seance->date_seance . ' ' . $heureFin
-                ],
-                'isEditable' => true,
-                'id' => uniqid(), // Générer un identifiant unique pour l'événement
-                'colorScheme' => 'meetings',
-                'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores assumenda corporis doloremque et expedita molestias necessitatibus quam quas temporibus veritatis. Deserunt excepturi illum nobis perferendis praesentium repudiandae saepe sapiente voluptatem!'
-            ];
 
-            $events[] = $event;
+
+
+            foreach ($emplois[0]->seances as $seance) {
+
+                // Extraire les heures et les minutes de heure_debut et heure_fin
+                $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
+                $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
+
+                $event = [
+                    'title' => $seance->nom_matiere,
+                    'with' => 'Chandler Bing', // Modifier selon vos besoins
+                    'time' => [
+                        'start' => $seance->date_seance . ' ' . $heureDebut,
+                        'end' => $seance->date_seance . ' ' . $heureFin
+                    ],
+                    'isEditable' => true,
+                    'id' => uniqid(), // Générer un identifiant unique pour l'événement
+                    'colorScheme' => 'meetings',
+                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores assumenda corporis doloremque et expedita molestias necessitatibus quam quas temporibus veritatis. Deserunt excepturi illum nobis perferendis praesentium repudiandae saepe sapiente voluptatem!'
+                ];
+
+                $events[] = $event;
+            }
         }
         // dd($events);
         return Inertia::render('Emplois/Index', [
