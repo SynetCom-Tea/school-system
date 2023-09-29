@@ -42,6 +42,7 @@ export default {
           start: 7,
           end: 15,
         },
+        defaultMode: "month",
         style: {
         colorSchemes: {
           meetings: {
@@ -74,7 +75,8 @@ export default {
         </button>
       </v-card>
     </v-card-text>
-    <Qalendar 
+    <Qalendar
+      :selected-date="new Date(2022, 0, 8)"
       :events="events"
       :config="config"
     />
