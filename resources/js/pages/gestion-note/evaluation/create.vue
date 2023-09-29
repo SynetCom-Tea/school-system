@@ -37,7 +37,7 @@ export default {
         mdiContentSaveEditOutline
     },
     layout: AuthenticatedLayout,
-    props: ["periodes", "typeEvaluations","matieres", "enseigements", "sections", "nivau_matieres", "enseignant","cycle_filieres","ues"],
+    props: ["periodes", "typeEvaluations", "matieres", "enseigements", "sections", "nivau_matieres", "enseignant", "cycle_filieres", "ues", "niveaux","classes"],
     data() {
         return {
             icon: {
@@ -61,8 +61,10 @@ export default {
                 type_evaluation_id: null,
                 periode_id: null,
                 enseignement_annee_id: null,
-                cycle_filiere_id:null,
-                ue_id : null
+                cycle_filiere_id: null,
+                ue_id: null,
+                niveau_id: null,
+                classe_id : null
             }),
         }
     },
@@ -175,9 +177,21 @@ export default {
         setPeriode(e) {
             // console.log(e)
             this.form.periode_id = null
+            this.form.niveau_id = null
+            this.form.matiere_id = null
+            this.form.classe_id = null
             this.$inertia.replace(this.$page.url, {
                 data: {
                     section_id: e,
+                },
+
+            })
+        },
+        setClasses(e) {
+            this.form.classe_id = null
+            this.$inertia.replace(this.$page.url, {
+                data: {
+                    niveau_id: e,
                 },
 
             })
@@ -190,51 +204,55 @@ export default {
 <Head title="Dashboard" />
 
 <AuthenticatedLayout>
-    <template #header>
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Evaluation</h2>
-    </template>
-
     <v-card>
-        <page-toolbar :icon="icon.mdiTools">Gestion des Evaluations</page-toolbar>
+        <Toolbar :icon="icon.mdiTools" toolbarTitle="Gestion des Evaluations"></Toolbar>
         <v-card-text>
-                <v-form ref="form">
-                    <v-container>
-                        <v-row>
-                            <v-col cols="6">
-                                <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                                </TextField>
-                            </v-col>
-                            <v-col cols="6">
-                                <Autocomplete label="Sections" variant="outlined" item-title="libelle" item-value="id" :items="sections" v-model="form.section_id" @update:modelValue="setPeriode(form.section_id)" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                                </Autocomplete>
-                            </v-col>
-                            <v-col cols="6">
-                                <Autocomplete v-model="form.periode_id" label="Periodes" itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
-                                </Autocomplete>
-                            </v-col>
-                            <v-col cols="6">
-                                <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="typeEvaluations" v-model="form.type_evaluation_id" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                                </Autocomplete>
-                            </v-col>
-                            <v-col cols="6">
-                                <Autocomplete label="Matieres" variant="outlined" itemTitle="nom" itemValue="id" :items="matieres" v-model="form.matiere_id" :isRequired="true">
-                                </Autocomplete>
-                            </v-col>
-                            <v-col cols="6">
-                                <Autocomplete label="Cycles/Filieres" variant="outlined" itemTitle="code" itemValue="id" :items="cycle_filieres" v-model="form.cycle_filiere_id" :isRequired="true">
-                                </Autocomplete>
-                            </v-col>
-                            <v-col cols="6">
-                                <Autocomplete label="Unités d'enseignement" variant="outlined" itemTitle="libelle" itemValue="id" :items="ues" v-model="form.ue_id" :isRequired="true">
-                                </Autocomplete>
-                            </v-col>
-                            <v-col cols="6">
-                                <TextField :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage"  v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                                </TextField>
-                            </v-col>
-                        </v-row>
-                    </v-container>
-                </v-form>
+            <v-form ref="form">
+                <v-container>
+                    <v-row>
+                        <v-col cols="6">
+                            <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                            </TextField>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete label="Sections" variant="outlined" item-title="libelle" item-value="id" :items="sections" v-model="form.section_id" @update:modelValue="setPeriode(form.section_id)" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete v-model="form.periode_id" label="Periodes" itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="typeEvaluations" v-model="form.type_evaluation_id" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']" chips clearable>
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete label="Matieres" variant="outlined" itemTitle="nom" itemValue="id" :items="matieres" v-model="form.matiere_id" :isRequired="true" chips clearable>
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete label="Niveaux" variant="outlined" itemTitle="code" itemValue="id" :items="niveaux" v-model="form.niveau_id" @update:modelValue="setClasses(form.niveau_id)" :isRequired="true" chips clearable>
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete label="Classes" variant="outlined" itemTitle="code" itemValue="id" :items="classes" v-model="form.classe_id" :isRequired="true" chips clearable>
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete  label="Cycles/Filieres" variant="outlined" itemTitle="code" itemValue="id" :items="cycle_filieres" v-model="form.cycle_filiere_id" :isRequired="true" chips clearable>
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <Autocomplete label="Unités d'enseignement" variant="outlined" itemTitle="libelle" itemValue="id" :items="ues" v-model="form.ue_id" :isRequired="true" chips clearable>
+                            </Autocomplete>
+                        </v-col>
+                        <v-col cols="6">
+                            <TextField :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                            </TextField>
+                        </v-col>
+                    </v-row>
+                </v-container>
+            </v-form>
             <v-card-actions class="justify-end">
                 <v-spacer></v-spacer>
                 <Button class="mb-2" style="height: 30px" nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">

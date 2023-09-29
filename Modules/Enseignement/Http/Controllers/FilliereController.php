@@ -2,12 +2,12 @@
 
 namespace Modules\Enseignement\Http\Controllers;
 
-use Modules\Enseignement\Entities\Filliere;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Modules\Enseignement\Entities\Cycle;
+use App\Models\Cycle;
+use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
-
+use Illuminate\Support\Facades\Auth;
+use Modules\Enseignement\Entities\Filiere;
 
 class FilliereController extends Controller
 {
@@ -16,8 +16,9 @@ class FilliereController extends Controller
      */
     public function index()
     {
+        // dd(Filiere::where('etablissement_id',Auth::user()->etablissement_id)->with('cycle_filieres.cycle')->get());
         return Inertia::render('Filliere/Filliere', [
-            'fillieres' => Filliere::with('cycle')->get(),
+            'fillieres' => Filiere::where('etablissement_id',Auth::user()->etablissement_id)->with('cycle_filieres.cycle')->get(),
             'cycles'=>Cycle::all()
         ]);
     }

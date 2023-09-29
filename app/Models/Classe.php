@@ -32,4 +32,9 @@ class Classe extends Model
     {
         return $this->hasMany(ClasseAnnee::class);
     }
+
+    public function etablissement_section(): BelongsTo
+    {
+        return $this->belongsTo(EtablissementSection::class);
+    }
 }

@@ -46,10 +46,12 @@ import {
    mdiTimerStar,mdiTimerStarOutline, mdiTimerStopOutline,mdiTimerSyncOutline
 } from "@mdi/js";
 export function listMenus(page) {
-     console.log('this.$page.props:', page)
-      let tabs = [];
+    // console.log('this.$page.props.roles:', page)
+    let tabs = [];
     let enfants = [];
-    //let child = [];
+    let tab = [];
+    let section_user = [];
+    let MenuEvaluation;
     let MenuAdmin;
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
@@ -57,8 +59,14 @@ export function listMenus(page) {
       { title: 'Supérieure', icon: mdiSchool, link: '/enseignement/configuration/lmd/3' },
       { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/configuration/lmd/4' },
     ];
-
-    if (page?.roles == "Administrateur") {
+    const section_users = [
+      { title: "Primaire", icon: mdiSchool, link: "/gestionnote/evaluation/1" },
+      { title: "Secondaire", icon: mdiSchool, link: "/gestionnote/evaluation/2" },
+      { title: 'Supérieur', icon: mdiSchool, link: '/gestionnote/evaluation/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/gestionnote/evaluation/4' },
+    ];
+    // console.log(page?.section_users)
+    if (page?.role == "Administrateur") {
 
       if (page?.sections[0]?.sections) {
         tabs = page?.sections[0].sections.map(function (el) {
@@ -66,7 +74,21 @@ export function listMenus(page) {
         });
       }
     }
+    if (page?.role == "Enseignant") {
+      if (page?.section_users[0]?.libelle) {
+        tab = page?.section_users.map(el =>el.libelle);
+      }
+    }
 
+    if (tab != []) {
+        section_users.forEach((s) => {
+            //   console.log('ele:',section)
+          if (tab.includes(s.title)) {
+            // console.log('herre22')
+            section_user.push(s);
+        }
+      });
+    }
     if (tabs != []) {
         sections.forEach((section) => {
             //   console.log('ele:',section)
@@ -76,6 +98,14 @@ export function listMenus(page) {
         }
       });
     }
+    MenuEvaluation = {
+        icon: mdiCogOutline,
+        title: "Evaluations",
+        "icon-alt": mdiChevronLeft,
+        model: false,
+        children: section_user,
+  }
+
 MenuAdmin = {
       icon: mdiCogOutline,
       title: "Configurations",
