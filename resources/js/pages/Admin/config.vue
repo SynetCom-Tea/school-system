@@ -74,6 +74,7 @@
                 :type="type"
                 :niveaux="niveaux"
                 :filieres="formFiliere"
+                :typeFrais="typeFrais"
                 @fraisFormValid="fraisFormValid"
               />
             </v-card-text>
@@ -89,6 +90,7 @@
                 @formSubmitted="getFraisForm"
                 :type="type"
                 :niveaux="niveaux"
+                :typeFrais="typeFrais"
                 :filieres="formFiliere"
               />
             </v-card-text>
@@ -124,6 +126,7 @@
                 :type="type"
                 :niveaux="niveaux"
                 :filieres="formFiliere"
+                :typeFrais="typeFrais"
                 @fraisFormValid="fraisFormValid"
               />
             </v-card-text>
@@ -241,7 +244,7 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
-  props: ["type", "niveaux", "lmd"],
+  props: ["type", "niveaux", "lmd", "typeFrais"],
   components: {
     FormWizard,
     TabContent,
