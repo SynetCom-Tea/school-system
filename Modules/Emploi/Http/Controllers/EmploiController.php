@@ -32,8 +32,10 @@ class EmploiController extends Controller
     public function index()
     {
         // return view('emploi::index');
+        $emplois = Emploi::with('seances.horaire')->get();
+        dd($emplois);
         return Inertia::render('Emplois/Index', [
-            'emplois' => Emploi::all()
+            'emplois' => $emplois
         ]);
     }
 
