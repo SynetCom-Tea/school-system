@@ -19,16 +19,25 @@ class InscriptionController extends Controller
      */
     public function index()
     {
+        try {
+            //code...
 
-        if (Auth::user() == null && Auth::user()->type_user == null) {
+            if (Auth::user() == null) {
 
-            return redirect('/login')->with('message', [
+                return redirect('/login')->with('message', [
+                    'type' => 'error',
+                    'text' => 'Session ou Token expiré!',
+                ]);
+            }
+
+            return Inertia::render('Inscription/Index', []);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->back()->with('message', [
                 'type' => 'error',
-                'text' => 'Session ou Token expiré!',
+                'text' => $th,
             ]);
         }
-
-        return Inertia::render('Inscription/Index', []);
     }
 
     /**

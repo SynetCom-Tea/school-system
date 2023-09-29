@@ -78,76 +78,47 @@
                   v-text="link.title"
                 ></v-list-item-title>
               </v-list-item>
-              <!-- <v-list-group :value="getListMenus[1].title"> -->
-              <v-list-group
-                v-if="
-                  $page.props?.roles[0] && $page.props?.roles[0] != 'Super-administrateur'
-                "
-                :value="getListMenus[4].title"
-              >
-                <template v-slot:activator="{ props }">
-                  <v-list-item class="group-title" v-bind="props">
-                    <template v-slot:prepend>
-                      <v-icon
-                        :title="getListMenus[4].title"
-                        :icon="getListMenus[4].icon"
-                      ></v-icon>
-                    </template>
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="getListMenus[4].title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </template>
 
-                <v-list-item
-                  class="sub-list-group"
-                  v-for="(item, i) in getListMenus[4].children"
-                  :key="i"
-                  @click="page(item.link)"
+              <!--Debut des menu sections -->
+              <div v-for="(itemSection, i) in menusBySection" :key="i">
+                <v-list-group
+                  :value="itemSection.title"
+                  v-if="$page.props.roles[0] == 'Administrateur'"
                 >
-                  <template v-slot:prepend>
-                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="itemSection.title"
+                          :icon="itemSection.icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="itemSection.title"
+                      ></v-list-item-title>
+                    </v-list-item>
                   </template>
 
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
-              <v-list-group :value="getListMenus[1]?.title">
-                <template v-slot:activator="{ props }">
-                  <v-list-item class="group-title" v-bind="props">
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in itemSection.children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
                     <template v-slot:prepend>
-                      <v-icon
-                        :title="getListMenus[1]?.title"
-                        :icon="getListMenus[1]?.icon"
-                      ></v-icon>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
                     </template>
+
                     <v-list-item-title
                       class="text-wrap"
-                      v-text="getListMenus[1]?.title"
+                      v-text="item.title"
                     ></v-list-item-title>
                   </v-list-item>
-                </template>
+                </v-list-group>
+              </div>
 
-                <v-list-item
-                  class="sub-list-group"
-                  v-for="(item, i) in getListMenus[1]?.children"
-                  :key="i"
-                  @click="page(item.link)"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                  </template>
-
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
+              <!-- Debut du menu preconfig -->
 
               <v-list-group
                 :value="MenuAdmin.title"
@@ -218,41 +189,6 @@
                 </v-list-item>
               </v-list-group>
               <!-- Fin Menu Gestion -->
-              <v-list-group
-                :value="getListMenus[2].title"
-                v-if="$page.props.roles == 'Note'"
-              >
-                <template v-slot:activator="{ props }">
-                  <v-list-item class="group-title" v-bind="props">
-                    <template v-slot:prepend>
-                      <v-icon
-                        :title="getListMenus[2].title"
-                        :icon="getListMenus[2].icon"
-                      ></v-icon>
-                    </template>
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="getListMenus[2].title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </template>
-
-                <v-list-item
-                  class="sub-list-group"
-                  v-for="(item, i) in getListMenus[2].children"
-                  :key="i"
-                  @click="page(item.link)"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                  </template>
-
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
 
               <!-- Déconnexion doit etre le dernier menu -->
               <v-list-item class="list-case" @click="logout" key="logout">
@@ -301,6 +237,7 @@ export default {
     return {
       MenuAdmin: [],
       MenuGestion: [],
+      menusBySection: [],
       open: ["getListMenus[1]"],
       drawer: true,
       menuCompact: {
@@ -323,10 +260,9 @@ export default {
     this.getListMenus;
     this.getUserProfile;
     this.getOrganizationProfile;
-    listMenus(this.$page.props);
+    // listMenus(this.$page.props);
   },
   mounted() {
-    console.log("ici", this.$page.props.roles.name);
     axios.interceptors.response.use(
       function (response) {
         // console.log("response:", response);
@@ -413,8 +349,11 @@ export default {
     getListMenus() {
       let list = listMenus(this.$page.props);
       let role = this.$page.props.roles ? this.$page.props.roles[0] : null;
-      this.MenuAdmin = list[5];
-      this.MenuGestion = list[6];
+      let menuSection = list[1];
+      console.log("menuBySection:", menuSection);
+      this.menusBySection = menuSection ?? [];
+      this.MenuAdmin = list[2];
+      this.MenuGestion = list[3];
       return list;
     },
   },
