@@ -89,8 +89,8 @@
                 router.get(route('affectations.create', this.section_id))
             },
             editItem(item){
-                //console.log('edit',item) 
-                this.dialog_title = 'Modifier Niveau_Matière' 
+                console.log(item)
+                this.dialog_title = 'Modifier '+item.matiere.nom+' '+item.niveau.code
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
                 this.form.volume_horaire = item.volume_horaire
