@@ -63,7 +63,8 @@ export default {
     },
     addRow(day) {
       this.form.seances[day].push({
-        name: null,
+        matiere: null,
+        jour: day,
         before: null,
         after: null,
         ensalle: 'Non'

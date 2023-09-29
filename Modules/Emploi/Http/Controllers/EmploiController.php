@@ -10,6 +10,7 @@ use App\Models\EtablissementSection;
 use App\Models\Salle;
 use App\Models\Section;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
@@ -92,19 +93,8 @@ class EmploiController extends Controller
         // dd($request->all());
         $dateDebut = Carbon::parse($request->date[0]);
         $dateFin = Carbon::parse($request->date[1]);
-        $diffInDays = $dateFin->diffInDays($dateDebut);
-
-        // Ajoute 1 car on compte également la date de début
-        $repetitions = $diffInDays + 1;
-        $repetitionsParJour = [];
-        foreach ($request->seances as $jour => $seancesDuJour) {
-            // Vérifie s'il y a des horaires pour ce jour
-            if (count($seancesDuJour) > 0) {
-                $repetitionsParJour[$jour] = $dateDebut->diffInDays($dateFin) + 1;
-            } else {
-                $repetitionsParJour[$jour] = 0;
-            }
-        }
+        $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
+        dd($occurrences);
         $classeAnnee = ClasseAnnee::where('annee_id', Annee::find(2)->id)
         ->where('classe_id', $request->classe)
         ->first();
@@ -113,17 +103,15 @@ class EmploiController extends Controller
             'date_fin' => $request->date[1],
             'classe_annee_id' => $classeAnnee->id
         ]);
-        foreach ($request->seances as $jour => $seancesDuJour) {
+        foreach ($occurrences as $jour => $seancesDuJour) {
             // Vérifie s'il y a des horaires pour ce jour
-            if (count($seancesDuJour) > 0) {
+            if (count($seancesDuJour['seances']) > 0 && $seancesDuJour['seances'][0]['matiere'] != null) {
+                //dump($seancesDuJour);
                 // Récupère les horaires pour ce jour
-                foreach ($seancesDuJour as $seance) {
-                    if (isset($seance['horaire'][0]) && isset($seance['horaire'][1]) && isset($seance['matiere'])) {
-                        for ($i = 0; $i < $repetitions; $i++) {
-                            // dd($repetitions);
+                foreach ($seancesDuJour['seances'] as $seance) {
+                    for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
+                        if ($seance['matiere'] != null){
                             $dateSeance = $dateDebut->copy()->addDays($i);
-        
-                            // Reste du code pour créer les séances...
                             Horaire::create([
                                 'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
                                 'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
@@ -137,10 +125,12 @@ class EmploiController extends Controller
                                 'date_seance' => $dateSeance,
                             ]);
                         }
+                        // dd($repetitions);
                     }
                 }
             }
-        }        
+        } 
+        //die();       
     }
 
     /**
