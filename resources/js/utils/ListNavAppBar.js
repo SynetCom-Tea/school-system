@@ -115,7 +115,7 @@ MenuAdmin = {
 }
 
 //Menu pour la gestion des cruds après config
-let tab = [];
+
     let enfant = [];
     let MenuGestion;
     const section = [
@@ -150,33 +150,7 @@ MenuGestion = {
       model: false,
       children: enfant,
 }
-    let emploiMenu = {
-        icon: mdiTimetable,
-        title: "Gestions Emplois",
-        "icon-alt": mdiChevronDown,
-        permissions: "manage_system",
-        model: false,
-        children: [
-            {
-                icon: mdiSquareMedium,
-                title: "Emploi",
-                link: "/emploi/emplois",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiSquareMedium,
-                title: "Calendrier",
-                link: "/emploi/emplois/create",
-                permissions: "manage_system",
-            },
-            // {
-            //     icon: mdiSquareMedium,
-            //     title: "Permissions",
-            //     link: "/permissions",
-            //     permissions: "manage_system",
-            // },
-        ],
-    };
+
 //Fin du menu des cruds
 
     let pageSections = page.sections[0]?.sections
@@ -403,5 +377,5 @@ MenuGestion = {
     if (page?.roles != "Super-administrateur") {
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
-    return [singleItems,listMenusSections,MenuAdmin,MenuGestion]
+    return [singleItems,listMenusSections,MenuAdmin,MenuGestion,MenuEvaluation]
 }

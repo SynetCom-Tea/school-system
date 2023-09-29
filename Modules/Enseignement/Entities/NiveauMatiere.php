@@ -32,9 +32,4 @@ class NiveauMatiere extends Model
     {
         return $this->belongsTo(FiliereMatiereUe::class);
     }
-
-    public function niveau(): BelongsTo
-    {
-        return $this->belongsTo(Niveau::class);
-    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\EtablissementSection;
 use App\Models\ClasseAnnee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -28,13 +29,8 @@ class Classe extends Model
     {
         return $this->belongsTo(Niveau::class);
     }
-    public function classeAnnees(): HasMany
+    public function classe_annees(): HasMany
     {
         return $this->hasMany(ClasseAnnee::class);
-    }
-
-    public function etablissement_section(): BelongsTo
-    {
-        return $this->belongsTo(EtablissementSection::class);
     }
 }
