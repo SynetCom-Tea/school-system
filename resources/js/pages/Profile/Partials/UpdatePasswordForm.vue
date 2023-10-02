@@ -32,7 +32,7 @@ const form = useForm({
     mdp: user.password,
 });
 
-const updatePassword = () => {
+const updatePassword = async () => {
     console.log('mdp', form)
     //(v) => v === form.mdp || 'Mot de passe invalide!',
     form.put(route('password.update'), {
@@ -58,7 +58,7 @@ const updatePassword = () => {
     <!-- SECTION: Change Password -->
     <v-col cols="12">
         <v-card title="Changer le mot de passe" elevation="6" rounded="lg" width="950" style="margin-left: auto; margin-right: auto;margin-top:10px;margin-bottom:20px;">
-            <form>
+            <v-form ref="form" v-model="valid">
                 <v-card-text>
                     <!-- ðŸ‘‰ Current Password -->
                     <v-row class="mb-3">
@@ -120,7 +120,7 @@ const updatePassword = () => {
                         Réinitialiser
                     </v-btn>
                 </v-card-actions>
-            </form>
+            </v-form>
 
         </v-card>
     </v-col>
