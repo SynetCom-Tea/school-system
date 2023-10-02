@@ -12,7 +12,7 @@ class Emploi extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['code', 'date_debut', 'date_fin'];
+    protected $fillable = ['code', 'date_debut', 'date_fin', 'classe_annee_id'];
     
     protected static function newFactory()
     {

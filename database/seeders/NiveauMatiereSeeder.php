@@ -12,85 +12,90 @@ class NiveauMatiereSeeder extends Seeder
      */
     public function run(): void
     {
+        \DB::table('niveau_matieres')->delete();
+
         \DB::table('niveau_matieres')->insert(array(
             0 =>
             array(
-                'volume_horaire' => 20,
-                'coefficient' => 1,
-                'niveau_id' => 1,
-                'matiere_id' => 8
+                'id' => 1,
+                'volume_horaire' => 50,
+                'coefficient' => 3,
+                'niveau_id' => 10,
+                'matiere_id' => 1,
+                'filiere_matiere_ue_id' => NULL
             ),
             1 =>
             array(
-                'volume_horaire' => 20,
-                'coefficient' => 1,
-                'niveau_id' => 2,
-                'matiere_id' => 8
-            ),
-            2 =>
-            array(
-                'volume_horaire' => 20,
-                'coefficient' => 1,
-                'niveau_id' => 3,
-                'matiere_id' => 8
-            ),
-            3 =>
-            array(
-                'volume_horaire' => 20,
-                'coefficient' => 1,
-                'niveau_id' => 4,
-                'matiere_id' => 8
-            ),
-            4 =>
-            array(
-                'volume_horaire' => 20,
-                'coefficient' => 1,
-                'niveau_id' => 5,
-                'matiere_id' => 8
-            ),
-            5 =>
-            array(
-                'volume_horaire' => 20,
-                'coefficient' => 1,
-                'niveau_id' => 6,
-                'matiere_id' => 8
-            ),
-            6 =>
-            array(
-                'volume_horaire' => 40,
-                'coefficient' => 2,
-                'niveau_id' => 7,
-                'matiere_id' => 9
-            ),
-            7 =>
-            array(
-                'volume_horaire' => 40,
-                'coefficient' => 2,
-                'niveau_id' => 8,
-                'matiere_id' => 9
-            ),
-            8 =>
-            array(
-                'volume_horaire' => 40,
-                'coefficient' => 2,
-                'niveau_id' => 9,
-                'matiere_id' => 9
-            ),
-            9 =>
-            array(
+                'id' => 2,
                 'volume_horaire' => 40,
                 'coefficient' => 2,
                 'niveau_id' => 10,
-                'matiere_id' => 9
+                'matiere_id' => 2,
+                'filiere_matiere_ue_id' => NULL
             ),
-            10 =>
+            2 =>
             array(
+                'id' => 3,
+                'volume_horaire' => 60,
+                'coefficient' => 5,
+                'niveau_id' => 10,
+                'matiere_id' => 3,
+                'filiere_matiere_ue_id' => NULL
+            ),
+            3 =>
+            array(
+                'id' => 4,
+                'volume_horaire' => 30,
+                'coefficient' => 2,
+                'niveau_id' => 10,
+                'matiere_id' => 9,
+                'filiere_matiere_ue_id' => NULL
+            ),
+            4 =>
+            array(
+                'id' => 5,
+                'volume_horaire' => 20,
+                'coefficient' => 1,
+                'niveau_id' => 3,
+                'matiere_id' => 8,
+                'filiere_matiere_ue_id' => NULL
+            ),
+            5 =>
+            array(
+                'id' => 6,
                 'volume_horaire' => 40,
                 'coefficient' => 2,
-                'niveau_id' => 8,
-                'matiere_id' => 1
+                'niveau_id' => 3,
+                'matiere_id' => 6,
+                'filiere_matiere_ue_id' => NULL
+            ),
+            6 =>
+            array(
+                'id' => 7,
+                'volume_horaire' => 30,
+                'coefficient' => 2,
+                'niveau_id' => 3,
+                'matiere_id' => 7,
+                'filiere_matiere_ue_id' => NULL
+            ),
+            7 =>
+            array(
+                'id' => 8,
+                'volume_horaire' => 30,
+                'coefficient' => 2,
+                'niveau_id' => 3,
+                'matiere_id' => 4,
+                'filiere_matiere_ue_id' => NULL
+            ),
+            8 =>
+            array(
+                'id' => 9,
+                'volume_horaire' => 30,
+                'coefficient' => 2,
+                'niveau_id' => 3,
+                'matiere_id' => 5,
+                'filiere_matiere_ue_id' => NULL
             ),
         ));
-        
     }
 }

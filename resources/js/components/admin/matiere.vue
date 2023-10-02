@@ -55,9 +55,9 @@
             </v-col>
             <v-col v-if="importation">
               <v-file-input
-                @change="handleFileUpload"
                 clearable
                 required
+                @change="handleFileUpload"
                 v-model="form.fichier_matiere"
                 @update:modelValue="submitForm(null)"
                 label="Charger le fichier des Matières"
@@ -158,7 +158,8 @@
   </form>
 </template>
 <script>
-import XLSX from "xlsx/dist/xlsx.extendscript.js";
+// import XLSX from "xlsx/dist/xlsx.extendscript.js";
+import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {

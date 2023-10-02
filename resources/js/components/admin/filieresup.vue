@@ -55,7 +55,7 @@
                 ></v-switch>
               </v-col>
               <v-col v-if="importation">
-                <v-file-input
+                <!-- <v-file-input
                   @change="handleFileUpload"
                   clearable
                   required
@@ -63,7 +63,7 @@
                   @update:modelValue="submitForm(null)"
                   label="Charger le fichier des filiére"
                   variant="solo-inverted"
-                ></v-file-input>
+                ></v-file-input> -->
               </v-col>
               <v-col v-if="importation"
                 ><v-btn
@@ -150,7 +150,7 @@
   </form>
 </template>
 <script>
-import XLSX from "xlsx/dist/xlsx.extendscript.js";
+// import XLSX from "xlsx/dist/xlsx.extendscript.js";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {
@@ -176,73 +176,73 @@ export default {
   }),
 
   methods: {
-    handleFileUpload(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const reader = new FileReader();
+    // handleFileUpload(event) {
+    //   const file = event.target.files[0];
+    //   if (file) {
+    //     const reader = new FileReader();
 
-        reader.onload = (e) => {
-          const data = e.target.result;
+    //     reader.onload = (e) => {
+    //       const data = e.target.result;
 
-          // Utilisation de JavaScript natif pour lire le fichier Excel
-          const workbook = XLSX.read(data, { type: "binary" });
-          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+    //       // Utilisation de JavaScript natif pour lire le fichier Excel
+    //       const workbook = XLSX.read(data, { type: "binary" });
+    //       const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-          // Convertir les données de la feuille en tableau
-          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+    //       // Convertir les données de la feuille en tableau
+    //       const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
 
-          // La première ligne est généralement utilisée comme en-têtes de colonne
-          if (sheetData.length > 0) {
-            this.headers = sheetData[0];
-            this.data = sheetData.slice(1);
+    //       // La première ligne est généralement utilisée comme en-têtes de colonne
+    //       if (sheetData.length > 0) {
+    //         this.headers = sheetData[0];
+    //         this.data = sheetData.slice(1);
 
-            if (this.checkEntete(this.headers, this.contentType)) {
-              const missingDataIndex = this.donneesManquantes(this.data);
+    //         if (this.checkEntete(this.headers, this.contentType)) {
+    //           const missingDataIndex = this.donneesManquantes(this.data);
 
-              if (typeof missingDataIndex === "number") {
-                this.$swal.fire({
-                  title: "Valider",
-                  text: "Votre fichier est valide!",
-                  icon: "success",
-                  confirmButtonText: "OK",
-                });
-              } else {
-                this.form.fichier_filiere = null;
-                this.submitForm(null);
-                const ligne = missingDataIndex.rowIndex + 2;
-                const colonne = missingDataIndex.columnIndex + 1;
-                this.$swal.fire({
-                  title: "Erreur",
-                  text:
-                    "Données manquantes à la ligne " +
-                    ligne +
-                    " et colonne " +
-                    colonne +
-                    " Veuillez corriger!",
-                  icon: "warning",
-                  confirmButtonText: "OK",
-                });
-              }
-            } else {
-              this.form.fichier_filiere = null;
-              this.submitForm(null);
-              this.$swal.fire({
-                title: "Erreur",
-                text:
-                  "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
-                icon: "warning",
-                confirmButtonText: "OK",
-              });
-              //   alert('drapppppppp')
-            }
+    //           if (typeof missingDataIndex === "number") {
+    //             this.$swal.fire({
+    //               title: "Valider",
+    //               text: "Votre fichier est valide!",
+    //               icon: "success",
+    //               confirmButtonText: "OK",
+    //             });
+    //           } else {
+    //             this.form.fichier_filiere = null;
+    //             this.submitForm(null);
+    //             const ligne = missingDataIndex.rowIndex + 2;
+    //             const colonne = missingDataIndex.columnIndex + 1;
+    //             this.$swal.fire({
+    //               title: "Erreur",
+    //               text:
+    //                 "Données manquantes à la ligne " +
+    //                 ligne +
+    //                 " et colonne " +
+    //                 colonne +
+    //                 " Veuillez corriger!",
+    //               icon: "warning",
+    //               confirmButtonText: "OK",
+    //             });
+    //           }
+    //         } else {
+    //           this.form.fichier_filiere = null;
+    //           this.submitForm(null);
+    //           this.$swal.fire({
+    //             title: "Erreur",
+    //             text:
+    //               "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+    //             icon: "warning",
+    //             confirmButtonText: "OK",
+    //           });
+    //           //   alert('drapppppppp')
+    //         }
 
-            // Exclure la première ligne (en-têtes)
-          }
-        };
+    //         // Exclure la première ligne (en-têtes)
+    //       }
+    //     };
 
-        reader.readAsBinaryString(file);
-      }
-    },
+    //     reader.readAsBinaryString(file);
+    //   }
+    // },
 
     checkEntete(arr1, arr2) {
       // Vérifie si les tableaux ont la même longueur

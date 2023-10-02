@@ -14,6 +14,7 @@ import {
   mdiMenuDown,
 } from "@mdi/js";
 export default {
+  props: ["allSections"],
   layout: AuthenticatedLayout,
   data() {
     return {
@@ -32,6 +33,7 @@ export default {
       date: null,
       niveaux: [],
       classes: [],
+      matieres: [],
       activeStep: 1,
       daysOfWeek: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
       form: useForm({
@@ -40,7 +42,6 @@ export default {
         niveau: null,
         classe: null,
         date: null,
-        ensalle: 'Non'
       }),
     };
   },
@@ -49,20 +50,27 @@ export default {
       router.get(route("emplois.index"));
     },
     setNiveau(section) {
-      this.niveaux = this.$page.props.niveaux.filter(niveau => niveau.section_id == section);
+      this.niveaux = this.$page.props.niveaux.filter(
+        (niveau) => niveau.section_id == section
+      );
     },
     setClasse(niveau) {
-      this.classes = this.$page.props.classes.filter(classe => {
-        return classe.niveau_id == niveau 
+      this.classes = this.$page.props.classes.filter((classe) => {
+        return classe.niveau_id == niveau;
+      });
+      this.matieres = this.$page.props.matieres.filter((matiere) => {
+        let nm = this.$page.props.niveauMatiere.filter((nm) => nm.niveau_id == niveau);
+        const matiereIds = nm.map((item) => item.matiere_id);
+        return matiereIds.includes(matiere.id);
       });
     },
     addRow(day) {
       this.form.seances[day].push({
-        horaire: null,
-        name: null,
+        matiere: null,
+        jour: day,
         before: null,
         after: null,
-        ensalle: 'Non'
+        ensalle: "Non",
       });
     },
     removeRow(day, p) {
@@ -70,6 +78,19 @@ export default {
     },
     submit() {
       console.log(this.form);
+      this.form.post(route("emplois.store"), {
+        // onFinish: () => this.form.reset(),
+        onError: (error) => {
+          // Logique à exécuter en cas d'erreur
+          this.$swal(
+            "Oops...",
+            `<ul> <li v-for"${name} in ${error}"> ${name} </li> </ul>`,
+            "error"
+          );
+          // console.log('Erreur de requête');
+          console.log(error);
+        },
+      });
     },
     handleDate() {
       let vh = document.getElementById("heit");
@@ -91,7 +112,7 @@ export default {
     // }
   },
   mounted() {
-    console.log('Mounted',this.sections)
+    console.log("Mounted", this.allSections);
     this.daysOfWeek.forEach((day) => {
       this.form.seances[day] = [];
       this.addRow(day);
@@ -121,7 +142,7 @@ export default {
                     <autocomplete
                       label="Section"
                       v-model="form.section"
-                      :items="$page.props.sections"
+                      :items="allSections"
                       :onchangeModelValue="setNiveau(form.section)"
                       item-title="libelle"
                       item-value="id"
@@ -156,11 +177,12 @@ export default {
                       locale="fr"
                       cancelText="Annuler"
                       selectText="Confirme"
-                      flow="calendar"
                       :only-date="true"
                       date-picker
+                      :disabled="!form.classe"
                       range
-                      placeholder="Start Typing ..."> 
+                      placeholder="Emploi du ..."
+                    >
                     </date-range-picker>
                   </v-col>
                   <!-- <v-col>
@@ -195,15 +217,21 @@ export default {
                         dense
                       >
                         <v-col md="3">
-                          <VueDatePicker v-model="seance.horaire" time-picker range />
+                          <VueDatePicker
+                            :disabled="!form.date"
+                            v-model="seance.horaire"
+                            time-picker
+                            range
+                          />
                         </v-col>
                         <v-col md="3">
                           <autocomplete
                             dense
+                            :disabled="!seance.horaire"
                             label="Matiere"
                             item-title="nom"
                             item-value="id"
-                            :items="$page.props.matieres"
+                            :items="matieres"
                             v-model="seance.matiere"
                           >
                           </autocomplete>
@@ -212,6 +240,7 @@ export default {
                           <v-switch
                             v-model="seance.ensalle"
                             hide-details
+                            :disabled="!seance.matiere"
                             true-value="Oui"
                             false-value="Non"
                             :label="`Dans une autre salle?: ${seance.ensalle}`"
@@ -220,6 +249,7 @@ export default {
                         <v-col md="2">
                           <autocomplete
                             dense
+                            :disabled="!seance.ensalle"
                             v-if="seance.ensalle == 'Oui'"
                             label="Salle"
                             item-title="libelle"
@@ -234,7 +264,7 @@ export default {
                           <v-icon
                             color="error"
                             :disabled="!(form.seances[day].length > 1)"
-                            @click="removeRow(seance)"
+                            @click="removeRow(day, seance)"
                             :icon="icon.mdiCloseCircle"
                           ></v-icon>
                         </v-col>

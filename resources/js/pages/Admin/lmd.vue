@@ -184,35 +184,33 @@ export default {
       type: null,
     }),
   }),
-    methods: {
-        onclickAlertButton(type) {
-        if (type == "second") {
-            this.alertSecond = true;
-        }
-        if (type == "first") {this.alertFirst = true;}
-        },
-        test(){
-            if(this.form.lmd == true && this.form.type_lmd !== null){
-                this.check = false
-            }else if(this.form.lmd == false ){
-                this.check = false
-            }else{
-                this.check = true
-            }
+  methods: {
+    onclickAlertButton(type) {
+      if (type == "second") {
+        this.alertSecond = true;
+      }
+      if (type == "first") {
+        this.alertFirst = true;
+      }
+    },
+    test() {
+      if (this.form.lmd == true && this.form.type_lmd !== null) {
+        this.check = false;
+      } else if (this.form.lmd == false) {
+        this.check = false;
+      } else {
+        this.check = true;
+      }
+    },
+    //  submit(){
+    //     this.form.type = this.type
+    //     this.form.post(route('lmd.store'))
 
-        },
-         submit(){
-            this.form.type = this.type
-            this.form.post(route('lmd.store'))
-
-
-        },
-        // submit(){
-        //     this.form.type = this.type
-        //     this.form.post(route('lmd.store'), {
-
-        //     });
-        // },
+    // },
+    submit() {
+      this.form.type = this.type;
+      this.form.post(route("lmd.store"), {});
+    },
 
     goBack() {
       router.get(route("dashboard"));

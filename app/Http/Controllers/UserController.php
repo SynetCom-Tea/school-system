@@ -137,7 +137,7 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
-        if (Auth::user() == null || Auth::user()->type_user == null) {
+        if (Auth::user() == null) {
             return redirect('/login')->with('message', [
                 'type' => 'error',
                 'text' => 'Session expiré!',

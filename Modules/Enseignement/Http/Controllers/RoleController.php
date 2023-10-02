@@ -18,32 +18,33 @@ class RoleController extends Controller
      */
     public function index(Request $request)
     {
-    $user = Auth::user();
-    $tabs = [];
-    $all = [];
-    $roles = Role::has('permission_roles')->get();
+        $user = Auth::user();
+        $tabs = [];
+        $all = [];
+        $roles = Role::has('permission_roles')->get();
         foreach ($roles as  $role) {
-            $yy = PermissionRole::where('user_id',$user->id)->where('role_id',$role->id)->with('permission')->get();
-            if($yy->count() != 0){
+            $yy = PermissionRole::where('user_id', $user->id)->where('role_id', $role->id)->with('permission')->get();
+            if ($yy->count() != 0) {
                 // $key = $key - 1;
                 $tabs = [
                     'role' => $role,
                     'permissions' => $yy
                 ];
-                $all[] = $tabs ;
-                
-            } 
+                $all[] = $tabs;
+            }
         }
         // dd($all);
-    $permissions = Permission::with('permission_roles.user','permission_roles.role')->get();
-    $permission = $request->role ? Permission::whereHas('permission_roles.user', function ($query) use($user){
-            $query->where('id',1);})->whereHas('permission_roles.role', function ($query) use($request){
-            $query->where('id',$request->role);})->with('permission_roles.role')->get() : collect();
+        $permissions = Permission::with('permission_roles.user', 'permission_roles.role')->get();
+        $permission = $request->role ? Permission::whereHas('permission_roles.user', function ($query) use ($user) {
+            $query->where('id', 1);
+        })->whereHas('permission_roles.role', function ($query) use ($request) {
+            $query->where('id', $request->role);
+        })->with('permission_roles.role')->get() : collect();
         return Inertia::render('Enseignement/Configs/Role', [
             'permission_role_users' => $all,
-            'roles'=>Role::all(),
+            'allRoles' => Role::all(),
             'permissions' => $permissions,
-            'permission'=>$permission
+            'permission' => $permission
         ]);
     }
     /**
@@ -60,19 +61,18 @@ class RoleController extends Controller
     public function store(Request $request)
     {
         $role = Role::find($request->role_id);
-        if (PermissionRole::where('role_id',$role->id)->where('user_id',Auth::user()->id)->exists()){
-        return redirect()->back()->with('messages', 'Ce rôle existe déjâ!');
-        }else {
-            foreach($request->permissions as $permssion){
+        if (PermissionRole::where('role_id', $role->id)->where('user_id', Auth::user()->id)->exists()) {
+            return redirect()->back()->with('messages', 'Ce rôle existe déjâ!');
+        } else {
+            foreach ($request->permissions as $permssion) {
                 PermissionRole::create([
                     'user_id' => Auth::user()->id,
-                    'role_id'=>$role->id,
+                    'role_id' => $role->id,
                     'permission_id' => $permssion
                 ]);
             }
-        return redirect()->back()->with('message', 'Rôle créé avec succès!');
+            return redirect()->back()->with('message', 'Rôle créé avec succès!');
         }
-        
     }
 
     /**
@@ -96,20 +96,19 @@ class RoleController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $permission_roles = PermissionRole::where('user_id',Auth::user()->id)->where('role_id',$id)->get();
-        
-        foreach($permission_roles as $permission_role){
+        $permission_roles = PermissionRole::where('user_id', Auth::user()->id)->where('role_id', $id)->get();
+
+        foreach ($permission_roles as $permission_role) {
             // dd($permission_role->id);
             $permission_role_users = PermissionRole::find($permission_role->id);
             // dump($permission_role_users->id);
             foreach ($request->permissions as $permission) {
                 $permission_role_users->updateOrCreate([
                     'user_id' => Auth::user()->id,
-                    'role_id'=>$request->role,
+                    'role_id' => $request->role,
                     'permission_id' => $permission
                 ]);
             }
-                
         } // die();
     }
     /**

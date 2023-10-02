@@ -11,6 +11,7 @@
       <!-- Application de stepper -->
       <form-wizard
         color="#004980"
+        step-size="sm"
         back-button-text="Retour"
         next-button-text="Suivant"
         finish-button-text="Enregistrer"
@@ -67,15 +68,16 @@
 
             <!-- Tabs de la Frais pour toute les sections -->
 
-              <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
-                <frais-form
-                  @formSubmitted="getFraisForm"
-                  :type="type"
-                  :niveaux="niveaux"
-                  :filieres="formFiliere"
-                  @fraisFormValid="fraisFormValid"
-                />
-              </v-card-text>
+            <v-card-text v-show="type != '3' && type != '4' && !loadingWizard">
+              <frais-form
+                @formSubmitted="getFraisForm"
+                :type="type"
+                :niveaux="niveaux"
+                :filieres="formFiliere"
+                :typeFrais="typeFrais"
+                @fraisFormValid="fraisFormValid"
+              />
+            </v-card-text>
 
             <!-- Tabs de la Frais pour toute les sections -->
           </v-card>
@@ -88,6 +90,7 @@
                 @formSubmitted="getFraisForm"
                 :type="type"
                 :niveaux="niveaux"
+                :typeFrais="typeFrais"
                 :filieres="formFiliere"
               />
             </v-card-text>
@@ -123,6 +126,7 @@
                 :type="type"
                 :niveaux="niveaux"
                 :filieres="formFiliere"
+                :typeFrais="typeFrais"
                 @fraisFormValid="fraisFormValid"
               />
             </v-card-text>
@@ -240,7 +244,7 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
-  props: ["type", "niveaux", "lmd"],
+  props: ["type", "niveaux", "lmd", "typeFrais"],
   components: {
     FormWizard,
     TabContent,
@@ -320,9 +324,7 @@ export default {
   created() {
     this.onChange();
   },
-  mounted() {
-
-  },
+  mounted() {},
   methods: {
     // Envoi formulaire vers le backend
 
@@ -521,7 +523,6 @@ export default {
 
     // fUNCTION DE FORM WIZARD
     async beforeChange() {
-
       const isValid = await this.validateTabSwitch(); // Utilisation d'async/await
       if (isValid) {
         return true; // La validation réussit, permet le passage à l'onglet suivant
@@ -536,7 +537,6 @@ export default {
       }
     },
     async validateTabSwitch(validationResult, activeTabIndex) {
-
       return new Promise((resolve) => {
         setTimeout(() => {
           const isValid = this.formValid; // Remplacez par votre propre logique de validation
@@ -549,10 +549,8 @@ export default {
     },
     handleValidate(validationResult, activeTabIndex) {},
     handleChange(prevIndex, nextIndex) {
-     ;
       this.previousIndex = prevIndex;
       this.nextIndex = nextIndex;
-
     },
     // FIN fUNCTION DE FORM WIZARD
     handleError() {},

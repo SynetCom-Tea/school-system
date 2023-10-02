@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\Matiere;
 use App\Models\Etablissement;
+use Modules\Scolarite\Entities\TypeFrais;
 use App\Models\Salle;
 use App\Models\Section;
 use App\Models\SystemeLmd;
@@ -42,7 +43,8 @@ class EnseignementController extends Controller
         return Inertia::render('Admin/config', [
             'type' => $type,
             'niveaux' => Niveau::where('section_id', $type)->get(),
-            // 'matieres' => Matiere::where('etablissement_id',Auth::user()->etablissement_id)->get(),
+            'typeFrais' => TypeFrais::all(),
+            // 'matieres' => Matiere::where('etablissement_id', Auth::user()->etablissement_id)->get(),
             'lmd' => $lmd
         ]);
     }
@@ -52,11 +54,11 @@ class EnseignementController extends Controller
     {
         // dd(Auth::user());
         $ets_id = Auth::user()->etablissement_id;
-        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        $table = DB::table('etablissement_section')->where('etablissement_id', $ets_id)->where('section_id', $type)->first();
         $id = $table->id;
-        return Inertia::render('Admin/postConfig',[
+        return Inertia::render('Admin/postConfig', [
             'type' => $type,
-            'niveaux' => Niveau::where('section_id',$type)->get(),
+            'niveaux' => Niveau::where('section_id', $type)->get(),
         ]);
     }
 
@@ -113,7 +115,7 @@ class EnseignementController extends Controller
             }
 
             foreach ($request->frais['frais'] as $frais) {
-                $frai = ['libelle' => $frais['type_frais'], 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
+                $frai = ['type_frais_id' => $frais['type_frais'], 'annee_id' => 1, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
                 //  dd($frai);
                 Frais::create($frai);
             }
@@ -144,7 +146,7 @@ class EnseignementController extends Controller
                 foreach ($request->frais['frais'] as $frais) {
 
                     if ($nfiliere->code == $frais['filiere']) {
-                        $frai = ['libelle' => $frais['type_frais'], 'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
+                        $frai = ['type_frais_id' => $frais['type_frais'], 'annee_id' => 1,'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
                         // dd($frai);
                         Frais::create($frai);
                     }
@@ -172,7 +174,7 @@ class EnseignementController extends Controller
                 foreach ($request->frais['frais'] as $frais) {
 
                     if ($nfiliere->code == $frais['filiere']) {
-                        $frai = ['libelle' => $frais['type_frais'], 'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
+                        $frai = ['type_frais_id' => $frais['type_frais'], 'annee_id' => 1, 'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
                         // dd($frai);
                         Frais::create($frai);
                     }
@@ -213,7 +215,7 @@ class EnseignementController extends Controller
                             foreach ($request->frais['frais'] as $frais) {
 
                                 if ($nfiliere->code == $frais['filiere']) {
-                                    $frai = ['libelle' => $frais['type_frais'], 'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
+                                    $frai = ['type_frais_id' => $frais['type_frais'], 'annee_id' => 1, 'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
                                     // dd($frai);
                                     Frais::create($frai);
                                 }
@@ -253,7 +255,7 @@ class EnseignementController extends Controller
                             foreach ($request->frais['frais'] as $frais) {
 
                                 if ($nfiliere->code == $frais['filiere']) {
-                                    $frai = ['libelle' => $frais['type_frais'], 'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
+                                    $frai = ['type_frais_id' => $frais['type_frais'], 'annee_id' => 1, 'filiere_id' => $nfiliere->id, 'montant' => $frais['montant'], 'etablissement_id' => Auth::user()->etablissement_id, 'niveau_id' => $frais['niveau']];
                                     // dd($frai);
                                     Frais::create($frai);
                                 }
