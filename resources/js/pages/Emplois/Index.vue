@@ -53,7 +53,7 @@ export default {
             color: '#fff',
             backgroundColor: '#ff4081',
           }
-        }
+        },
       },
       }
     };
@@ -76,10 +76,22 @@ export default {
       </v-card>
     </v-card-text>
     <Qalendar
-      :selected-date="new Date(2022, 0, 8)"
+      :selected-date="new Date()"
       :events="events"
       :config="config"
-    />
+    >
+      <template #weekDayEvent="eventProps">
+        <div :style="{ backgroundColor: 'cornflowerblue', color: '#01579B', width: '100%', height: '100%', overflow: 'hidden' }">
+          <span>{{ timeFormattingFunction(eventProps.eventData.time) }}</span>
+
+          <span>{{ eventProps.eventData.title }}</span>
+        </div>
+      </template>
+
+      <template #monthEvent="monthEventProps">
+        <span>{{ monthEventProps.eventData.title }}</span>
+      </template>
+    </Qalendar>
   </v-card>
 </template>
 
