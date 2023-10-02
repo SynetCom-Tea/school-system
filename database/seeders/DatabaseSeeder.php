@@ -33,9 +33,7 @@ class DatabaseSeeder extends Seeder
             SalleSeeder::class,
             MatiereTableSeeder::class,
             NiveauMatiereSeeder::class,
-            NiveauMatiereSeeder::class
-            // SalleSeeder::class,
-
+            EnseignantSeeder::class
             // EnseignementDatabaseSeeder::class,
         ]);
     }
