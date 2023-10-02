@@ -4,6 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
+
 return new class extends Migration
 {
     /**
@@ -15,9 +16,13 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code');
+
             $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
                 ->index()
                 ->references('id')->on('etablissements');
+            $table->foreignIdFor(\Modules\Scolarite\Entities\Departement::class)->nullable()
+                ->index()
+                ->references('id')->on('departements');
             $table->softDeletes();
             $table->timestamps();
         });
@@ -25,6 +30,7 @@ return new class extends Migration
         Schema::create('cycle_filieres', function (Blueprint $table) {
             $table->id();
             $table->string('code');
+
             $table->foreignIdFor(\App\Models\Cycle::class)->nullable()->index()
                 ->references('id')->on('cycles');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Filiere::class)

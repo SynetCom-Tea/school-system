@@ -27,6 +27,7 @@ export default {
     heightResponsive: {
       type: Number,
       required: false,
+      default: 80,
     },
     classResponsive: {
       type: String,

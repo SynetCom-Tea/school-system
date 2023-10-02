@@ -67,7 +67,7 @@ class VersementsSeeder extends Seeder
             'frais_id' => 27,
             'libelle' => 'Versement 1 Frais de scolarité',
             'montant' => 150000,
-            'apprenant_id' => 2,
+            'apprenant_id' => 3,
             'date_versement' => "2023-09-22"
         ]);
 
@@ -86,7 +86,7 @@ class VersementsSeeder extends Seeder
             'frais_id' => 29,
             'libelle' => 'Versement 1 Frais de scolarité',
             'montant' => 150000,
-            'apprenant_id' => 2,
+            'apprenant_id' => 4,
             'date_versement' => "2023-06-22"
         ]);
 
@@ -96,7 +96,7 @@ class VersementsSeeder extends Seeder
             'frais_id' => 11,
             'libelle' => 'Versement de frais d\'inscription',
             'montant' => 15000,
-            'apprenant_id' => 4,
+            'apprenant_id' => 5,
             'date_versement' => "2023-07-22"
         ]);
 
@@ -105,7 +105,7 @@ class VersementsSeeder extends Seeder
             'frais_id' => 30,
             'libelle' => 'Versement 1 Frais de scolarité',
             'montant' => 150000,
-            'apprenant_id' => 2,
+            'apprenant_id' => 5,
             'date_versement' => "2023-07-22"
         ]);
         ///Apprenant6
@@ -114,7 +114,7 @@ class VersementsSeeder extends Seeder
             'frais_id' => 18,
             'libelle' => 'Versement de frais d\'inscription',
             'montant' => 15000,
-            'apprenant_id' => 4,
+            'apprenant_id' => 6,
             'date_versement' => "2023-08-22"
         ]);
 
@@ -123,7 +123,7 @@ class VersementsSeeder extends Seeder
             'frais_id' => 37,
             'libelle' => 'Versement 1 Frais de scolarité',
             'montant' => 150000,
-            'apprenant_id' => 2,
+            'apprenant_id' => 5,
             'date_versement' => "2023-08-22"
         ]);
     }

@@ -14,9 +14,9 @@ class NiveauMatiereSeeder extends Seeder
     {
         \DB::table('niveau_matieres')->delete();
 
-        \DB::table('niveau_matieres')->insert(array (
+        \DB::table('niveau_matieres')->insert(array(
             0 =>
-            array (
+            array(
                 'id' => 1,
                 'volume_horaire' => 50,
                 'coefficient' => 3,
@@ -25,7 +25,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             1 =>
-            array (
+            array(
                 'id' => 2,
                 'volume_horaire' => 40,
                 'coefficient' => 2,
@@ -34,7 +34,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             2 =>
-            array (
+            array(
                 'id' => 3,
                 'volume_horaire' => 60,
                 'coefficient' => 5,
@@ -43,7 +43,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             3 =>
-            array (
+            array(
                 'id' => 4,
                 'volume_horaire' => 30,
                 'coefficient' => 2,
@@ -52,7 +52,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             4 =>
-            array (
+            array(
                 'id' => 5,
                 'volume_horaire' => 20,
                 'coefficient' => 1,
@@ -61,7 +61,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             5 =>
-            array (
+            array(
                 'id' => 6,
                 'volume_horaire' => 40,
                 'coefficient' => 2,
@@ -70,7 +70,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             6 =>
-            array (
+            array(
                 'id' => 7,
                 'volume_horaire' => 30,
                 'coefficient' => 2,
@@ -79,7 +79,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             7 =>
-            array (
+            array(
                 'id' => 8,
                 'volume_horaire' => 30,
                 'coefficient' => 2,
@@ -88,7 +88,7 @@ class NiveauMatiereSeeder extends Seeder
                 'filiere_matiere_ue_id' => NULL
             ),
             8 =>
-            array (
+            array(
                 'id' => 9,
                 'volume_horaire' => 30,
                 'coefficient' => 2,

@@ -2,13 +2,15 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\EtablissementSection;
+use App\Models\ClasseAnnee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Modules\Enseignement\Entities\Niveau;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Classe extends Model
 {
@@ -27,7 +29,7 @@ class Classe extends Model
     {
         return $this->belongsTo(Niveau::class);
     }
-    public function classeAnnees(): HasMany
+    public function classe_annees(): HasMany
     {
         return $this->hasMany(ClasseAnnee::class);
     }

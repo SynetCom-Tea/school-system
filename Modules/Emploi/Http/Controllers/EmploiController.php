@@ -32,28 +32,39 @@ class EmploiController extends Controller
     public function index()
     {
         // return view('emploi::index');
+
+        //code...
+
         $events = [];
         $emplois = Emploi::with('seances.horaire')->get();
-        foreach ($emplois[0]->seances as $seance) {
+        // dd('$emplois:', $emplois, $emplois->count());
 
-            // Extraire les heures et les minutes de heure_debut et heure_fin
-            $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
-            $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
+        if ($emplois->count() != 0) {
 
-            $event = [
-                'title' => $seance->nom_matiere,
-                'with' => 'Chandler Bing', // Modifier selon vos besoins
-                'time' => [
-                    'start' => $seance->date_seance . ' ' . $heureDebut,
-                    'end' => $seance->date_seance . ' ' . $heureFin
-                ],
-                'isEditable' => true,
-                'id' => uniqid(), // Générer un identifiant unique pour l'événement
-                'colorScheme' => 'meetings',
-                'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores assumenda corporis doloremque et expedita molestias necessitatibus quam quas temporibus veritatis. Deserunt excepturi illum nobis perferendis praesentium repudiandae saepe sapiente voluptatem!'
-            ];
-        
-            $events[] = $event;
+
+
+
+            foreach ($emplois[0]->seances as $seance) {
+
+                // Extraire les heures et les minutes de heure_debut et heure_fin
+                $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
+                $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
+
+                $event = [
+                    'title' => $seance->nom_matiere,
+                    'with' => 'Chandler Bing', // Modifier selon vos besoins
+                    'time' => [
+                        'start' => $seance->date_seance . ' ' . $heureDebut,
+                        'end' => $seance->date_seance . ' ' . $heureFin
+                    ],
+                    'isEditable' => true,
+                    'id' => uniqid(), // Générer un identifiant unique pour l'événement
+                    'colorScheme' => 'meetings',
+                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores assumenda corporis doloremque et expedita molestias necessitatibus quam quas temporibus veritatis. Deserunt excepturi illum nobis perferendis praesentium repudiandae saepe sapiente voluptatem!'
+                ];
+
+                $events[] = $event;
+            }
         }
         // dd($events);
         return Inertia::render('Emplois/Index', [
@@ -74,17 +85,17 @@ class EmploiController extends Controller
         $sectionIds = $etablissement->sections->pluck('id');
         // Récupérer les niveaux pour toutes les sections
         $sectionEtablissement = DB::table('etablissement_section')
-        ->where('etablissement_id', Auth::user()->etablissement_id)
-        ->whereIn('section_id', $sectionIds)
-        ->pluck('id');
+            ->where('etablissement_id', Auth::user()->etablissement_id)
+            ->whereIn('section_id', $sectionIds)
+            ->pluck('id');
         $classeAnnees = ClasseAnnee::where('annee_id', $anneeScolaireId)->pluck('classe_id');
         $classes = Classe::whereIn('id', $classeAnnees)->whereIn('etablissement_section_id', $sectionEtablissement)->get();
         $niveaux = Niveau::whereIn('section_id', $sectionIds)->get();
         $matieres = Matiere::whereIn('etablissement_section_id', $sectionEtablissement)->get();
         $niveauMatiere = DB::table('niveau_matieres')
-        ->whereIn('niveau_id', $niveaux->pluck('id'))
-        ->whereIn('matiere_id', $matieres->pluck('id'))
-        ->get();
+            ->whereIn('niveau_id', $niveaux->pluck('id'))
+            ->whereIn('matiere_id', $matieres->pluck('id'))
+            ->get();
         $salles = Salle::where('etablissement_id', Auth::user()->etablissement_id)->get();
         // $classes = $request->niveau ? DB::select("
         //     SELECT * FROM classes c
@@ -99,7 +110,7 @@ class EmploiController extends Controller
         // ]) : collect();
         // dd($sections->sections, $niveaux, $classes, $anneeScolaireId);
         return Inertia::render('Emplois/Create', [
-            'sections' => $etablissement->sections,
+            'allSections' => $etablissement->sections,
             'niveaux' => $niveaux,
             'classes' => $classes,
             'sectionEtablissement' => $sectionEtablissement,
@@ -122,8 +133,8 @@ class EmploiController extends Controller
         $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
         // dd($occurrences);
         $classeAnnee = ClasseAnnee::where('annee_id', Annee::find(2)->id)
-        ->where('classe_id', $request->classe)
-        ->first();
+            ->where('classe_id', $request->classe)
+            ->first();
         $emploi = Emploi::create([
             'date_debut' => $request->date[0],
             'date_fin' => $request->date[1],
@@ -135,7 +146,7 @@ class EmploiController extends Controller
                 // Récupère les horaires pour ce jour
                 foreach ($seancesDuJour['seances'] as $seance) {
                     for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
-                        if ($seance['matiere'] != null){
+                        if ($seance['matiere'] != null) {
                             $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));
                             Horaire::create([
                                 'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
@@ -156,7 +167,7 @@ class EmploiController extends Controller
                 }
             }
         }
-        // die();       
+        // die();
     }
 
     /**

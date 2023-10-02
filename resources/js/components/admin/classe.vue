@@ -47,8 +47,8 @@
               <v-col>
                 <v-switch
                   label="Importatation d\'un fichier pour alimenter les salles de cours"
-                  @update:modelValue="resetForm(importation)"
                   v-model="importation"
+                  @update:modelValue="submitForm(null)"
                   color="info"
                   inset
                 ></v-switch>
@@ -56,8 +56,10 @@
               <v-col v-if="importation">
                 <v-file-input
                   clearable
+                  @change="handleFileUpload"
                   required
                   v-model="form.fichier_classe"
+                  @update:modelValue="submitForm(null)"
                   label="Charger le fichier de salles"
                   variant="solo-inverted"
                 ></v-file-input>
@@ -79,15 +81,16 @@
           <v-card-text v-if="!importation">
             <v-row :key="classe.id" v-for="(classe, i) in form.classes">
               <v-col cols="3" v-if="type == '1' || type == '2'">
-                <v-autocomplete
-                  :items="niveaux"
+                <Autocomplete
+                  :items="setNiveaux"
                   v-model="classe.niveau"
+                  @update:modelValue="submitForm(classe)"
                   class="mt-2"
-                  :item-title="formatNiveauLabel"
+                  item-title="code_libelle"
                   item-value="id"
                   closable-chips
                   label="Niveaux"
-                ></v-autocomplete>
+                ></Autocomplete>
               </v-col>
               <v-col cols="4">
                 <TextField
@@ -96,7 +99,7 @@
                   :isRequired="true"
                   placeholder="Code salle"
                   required
-                  @change="verify(classe)"
+                  @update:modelValue="submitForm(classe)"
                   v-model="classe.code"
                 ></TextField>
               </v-col>
@@ -108,7 +111,7 @@
                   placeholder="Libelle salle"
                   required
                   v-model="classe.libelle"
-                  @update:modelValue="submitForm"
+                  @update:modelValue="submitForm(classe)"
                 ></TextField>
               </v-col>
               <v-col cols="1">
@@ -140,45 +143,18 @@
                   <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
                 </Button>
               </v-col>
-              <!-- <v-col offset-md="11" md="1">
-                            <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
-                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                            </v-btn>
-                        </v-col> -->
             </v-row>
           </v-card-text>
         </v-card>
         <br />
-        <!-- <v-row class="text-center ml-3 mb-3"
-            ><v-col cols="auto">
-                <Button
-                type="submit"
-                title="Enregistrer cette étape"
-                nameButton="Enregistrer"
-                variant="flat"
-                @click="submitForm"
-                density="comfortable"
-                class="text-center"
-                :isBlock="true"
-                size="large"
-                style="text-transform: none"
-                >
-                </Button> </v-col
-            ></v-row> -->
       </v-card>
-      <!-- <v-row>
-            <v-col md="5"></v-col>
-            <v-col md="4">
-                <v-btn type="submit" title="enregistrer" color="info">
-                    Enregistrer
-                </v-btn>
-            </v-col>
-        </v-row> -->
     </v-container>
     <br />
   </form>
 </template>
 <script>
+// import XLSX from "xlsx/dist/xlsx.extendscript.js";
+import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {
@@ -189,6 +165,10 @@ export default {
     mdiInformation,
   },
   data: () => ({
+    headers: [],
+    data: [],
+    entete: [],
+    contentType: ["code", "nom"],
     alertFirst: true,
     alertSecond: true,
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
@@ -199,8 +179,136 @@ export default {
       classes: [],
     }),
   }),
+  computed: {
+    setNiveaux() {
+      let list = [];
 
+      if (this.niveaux) {
+        this.niveaux.forEach((element) => {
+          if (element) {
+            list.push({
+              ...element,
+              code_libelle: element.code + "- " + element.libelle,
+            });
+          }
+        });
+      }
+      return list ?? [];
+    },
+  },
   methods: {
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const data = e.target.result;
+
+          // Utilisation de JavaScript natif pour lire le fichier Excel
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          // Convertir les données de la feuille en tableau
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          // La première ligne est généralement utilisée comme en-têtes de colonne
+          if (sheetData.length > 0) {
+            this.headers = sheetData[0];
+            this.data = sheetData.slice(1);
+            if (this.type == "3" || this.type == "4") {
+              this.entete = this.contentType.slice();
+            } else {
+              this.entete = ["niveau"].concat(this.contentType);
+            }
+
+            if (this.checkEntete(this.headers, this.entete)) {
+              const missingDataIndex = this.donneesManquantes(this.data);
+
+              if (typeof missingDataIndex === "number") {
+                this.$swal.fire({
+                  title: "Valider",
+                  text: "Votre fichier est valide!",
+                  icon: "success",
+                  confirmButtonText: "OK",
+                });
+              } else {
+                this.form.fichier_classe = null;
+                this.submitForm(null);
+                const ligne = missingDataIndex.rowIndex + 2;
+                const colonne = missingDataIndex.columnIndex + 1;
+                this.$swal.fire({
+                  title: "Erreur",
+                  text:
+                    "Données manquantes à la ligne " +
+                    ligne +
+                    " et colonne " +
+                    colonne +
+                    " Veuillez corriger!",
+                  icon: "warning",
+                  confirmButtonText: "OK",
+                });
+              }
+            } else {
+              this.form.fichier_classe = null;
+              this.submitForm(null);
+              this.$swal.fire({
+                title: "Erreur",
+                text:
+                  "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                icon: "warning",
+                confirmButtonText: "OK",
+              });
+              //   alert('drapppppppp')
+            }
+
+            // Exclure la première ligne (en-têtes)
+          }
+        };
+
+        reader.readAsBinaryString(file);
+      }
+    },
+
+    checkEntete(arr1, arr2) {
+      // Vérifie si les tableaux ont la même longueur
+      if (arr1.length !== arr2.length) {
+        return false;
+      }
+
+      // Compare chaque élément des tableaux
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          return false;
+        }
+      }
+
+      // Si toutes les comparaisons ont réussi, les tableaux sont égaux
+      return true;
+    },
+
+    donneesManquantes(tableau) {
+      for (let rowIndex = 0; rowIndex < tableau.length; rowIndex++) {
+        const row = tableau[rowIndex];
+
+        // Vérifie si la ligne n'existe pas (est undefined)
+        if (typeof row === "undefined") {
+          return rowIndex; // Retourne l'indice de la ligne manquante
+        }
+
+        // Parcours les éléments de la ligne
+        for (let columnIndex = 0; columnIndex < this.entete.length; columnIndex++) {
+          if (typeof row[columnIndex] === "undefined") {
+            return {
+              rowIndex,
+              columnIndex,
+            }; // Retourne l'indice de la ligne et de la colonne où les données manquent
+          }
+        }
+      }
+
+      return -1; // Retourne -1 si toutes les données sont présentes
+    },
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
@@ -218,50 +326,49 @@ export default {
         this.addRow();
       }
     },
-    submitForm() {
-      // if (this.isValid()) {
+    async submitForm(element) {
+      await this.verify(element);
+      await this.isValid();
       this.$emit("formSubmitted", this.form);
-      //     this.$swal.fire({
-      //         title: 'Réussi',
-      //         text: "Mise à jour réussi avec succes!",
-      //         icon: 'success',
-      //         confirmButtonText: 'OK',
-      //     });
-      //     // this.$swal("Enregistrement réussi avec succes!")
-      // }else{
-      //     // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-      //     this.$swal.fire({
-      //         title: 'Erreur',
-      //         text: "Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!",
-      //         icon: 'warning',
-      //         confirmButtonText: 'OK',
-      //     });
-
-      // }
+      this.$emit("classeFormValid", this.isValid());
     },
-    // isValid() {
-    //     let fichier = false
-    //     let valid = false
+    async isValid() {
+      let fichier = false;
+      let valid = false;
+      if (this.importation && this.form.fichier_classe != null) {
+        fichier = true;
+      } else if (
+        !this.importation &&
+        !this.form.classes.find((el) => {
+          if (this.type == "1" || this.type == "2") {
+            return (
+              el.niveau == null ||
+              el.niveau == "" ||
+              el.code == null ||
+              el.libelle == null ||
+              el.code.trim() == "" ||
+              el.libelle.trim() == ""
+            );
+          } else {
+            return (
+              el.code == null ||
+              el.libelle == null ||
+              el.code.trim() == "" ||
+              el.libelle.trim() == ""
+            );
+          }
+        })
+      ) {
+        fichier = true;
+      }
 
-    //     if(this.importation && this.form.fichier_classe != null){
-    //         fichier = true
-    //     }else if(!this.importation && !this.form.classes.find((el) => {
-    //         if(this.type == '1' || this.type == '2'){
-    //             return el.niveau == null || el.niveau == '' || el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
-    //         }else{
-    //             return el.code == null || el.libelle == null || el.code.trim() == '' || el.libelle.trim() == '';
-    //         }}))
-    //     {
-    //         fichier = true
-    //     }
-
-    //     if(fichier){
-    //         valid = true
-    //     }else{
-    //         valid = false
-    //     }
-    //     return valid
-    // },
+      if (fichier) {
+        valid = true;
+      } else {
+        valid = false;
+      }
+      return valid;
+    },
     goBack() {
       router.get(route("etablissements.index"));
     },
@@ -278,21 +385,19 @@ export default {
       this.form.classes = this.form.classes.filter((el) => el !== id);
     },
     async verify(element) {
-      const array = this.form.classes.filter(
-        (el) => el.code !== null && el.code == element.code
-      );
-
-      if (array.length > 1) {
-        this.removeRow(element);
-        this.$swal("L'élément existe déjà !");
-        // this.$alert.error("L'élément existe déjà !");
+      if (element) {
+        const array = this.form.classes.filter(
+          (el) => el.code !== null && el.code == element.code
+        );
+        if (array.length > 1) {
+          this.removeRow(element);
+          this.$swal("L'élément existe déjà !");
+        }
       }
     },
   },
   mounted() {
     this.addRow();
-    console.log("N:", this.niveaux);
-    // console.log("NT:", this.classe.niveau);
   },
 };
 </script>

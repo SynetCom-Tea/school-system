@@ -50,10 +50,12 @@
               <Autocomplete
                 label="Niveaux"
                 class="mt-2"
-                :item-title="formatNiveauLabel"
+                item-title="code_libelle"
                 item-value="id"
+                :isRequired="true"
                 :items="niveaux"
                 v-model="form.niveau"
+                @update:modelValue="submitForm(any)"
                 chips
               >
               </Autocomplete>
@@ -72,10 +74,11 @@
                     class="mt-2"
                     item-title="libelle"
                     item-value="id"
+                    :isRequired="true"
                     :items="matieres"
                     chips
                     v-model="matiere.matiere"
-                    @update:modelValue="verify(matiere, i, $event)"
+                    @update:modelValue="submitForm(matiere)"
                   >
                   </Autocomplete>
                 </v-col>
@@ -87,16 +90,17 @@
                     placeholder="Coeff"
                     required
                     v-model="matiere.coefficient"
+                    @update:modelValue="submitForm(matiere)"
                   ></TextField>
                 </v-col>
                 <v-col md="2">
                   <TextField
                     label="VH"
                     class="mt-2"
-                    :isRequired="true"
                     placeholder="VH"
                     required
                     v-model="matiere.volume_horaire"
+                    @update:modelValue="submitForm(matiere)"
                   ></TextField>
                 </v-col>
                 <v-col md="1">
@@ -113,9 +117,6 @@
                   >
                     <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                   </Button>
-                  <!-- <v-btn variant="outlined" :disabled="!(form.matieres.length > 1)" icon @click="removeRow(matiere)" fab small color="error">
-                                        <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-                                    </v-btn> -->
                 </v-col>
               </v-row>
               <v-row>
@@ -131,32 +132,11 @@
                     <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
                   </Button>
                 </v-col>
-                <!-- <v-col offset-md="11" md="1">
-                            <v-btn variant="outlined" icon @click="addRow" fab small color="blue">
-                                <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                            </v-btn>
-                        </v-col> -->
               </v-row>
             </v-card-text>
           </v-card>
         </v-card-text>
         <br />
-        <!-- <v-row class="text-center ml-3 mb-3"
-            ><v-col cols="auto">
-                <Button
-                type="submit"
-                title="Enregistrer cette étape"
-                nameButton="Enregistrer"
-                variant="flat"
-                @click="submitForm"
-                density="comfortable"
-                class="text-center"
-                :isBlock="true"
-                size="large"
-                style="text-transform: none"
-                >
-                </Button> </v-col
-            ></v-row> -->
       </v-card>
     </v-container>
   </form>
@@ -185,6 +165,23 @@ export default {
     }),
   }),
 
+  computed: {
+    setNiveaux() {
+      let list = [];
+
+      if (this.niveaux) {
+        this.niveaux.forEach((element) => {
+          if (element) {
+            list.push({
+              ...element,
+              code_libelle: element.code + "- " + element.libelle,
+            });
+          }
+        });
+      }
+      return list ?? [];
+    },
+  },
   methods: {
     onclickAlertButton(type) {
       if (type == "second") {
@@ -212,58 +209,48 @@ export default {
         this.addRow();
       }
     },
-    submitForm() {
-      // Empêche l'envoi du formulaire par défaut
-      event.preventDefault();
-      // Valide le formulaire avant de l'envoyer
-      if (this.isValid()) {
-        // this.form.etablissement_section_id = this.$page.props.sections.find(el => el.section.libelle == this.section)
-        this.$emit("formSubmitted", this.form);
-        this.$swal.fire({
-          title: "Réussi",
-          text: "Mise à jour réussi avec succes!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // this.$swal("Enregistrement réussi avec succes!")
-      } else {
-        // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-        this.$swal.fire({
-          title: "Erreur",
-          text:
-            "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
+    async submitForm(element) {
+      await this.verify(element);
+      await this.isValid();
+
+      this.form.etablissement_section_id = this.$page.props.sections.find(
+        (el) => el.section == this.section
+      );
+      this.$emit("formSubmitted", this.form);
+      this.$emit("niveauMatiereFormValid", this.isValid());
+    },
+    async isValid() {
+      let fichier = false;
+      let valid = false;
+      if (this.importation && this.form.fichier_matiere != null) {
+        fichier = true;
+      } else if (
+        !this.importation &&
+        !this.form.matieres.find(
+          (el) =>
+            this.form.niveau == null ||
+            this.form.niveau == "" ||
+            this.form.matiere == "" ||
+            el.matiere == null ||
+            el.matiere == "" ||
+            el.coefficient == 0 ||
+            el.coefficient == null ||
+            el.coefficient.trim() == ""
+        )
+      ) {
+        fichier = true;
       }
-    },
-    isValid() {
-      // let lmd = false
-      // let fichier = false
-      // let valid = false
-      // if(this.form.lmd && this.form.type_lmd != null){
-      //     lmd = true
-      // }else if(!this.form.lmd && this.form.type_lmd == null){
-      //     lmd = true
-      // }
-      // if(this.importation && this.form.fichier_matiere != null){
-      //     fichier = true
-      // }else if(!this.importation && !this.form.matieres.find(el => el.code == null || el.libelle == null || el.code == '' || el.libelle == '')){
-      //     fichier = true
-      // }
-      // if(lmd && fichier){
-      //     valid = true
-      // }else{
-      //     valid = false
-      // }
-      return true;
-    },
-    goBack() {
-      router.get(route("etablissements.index"));
+      if (fichier) {
+        valid = true;
+      } else {
+        valid = false;
+      }
+      return valid;
     },
     addRow() {
       this.form.matieres.push({
         etablissement_section_id: this.$page.props.admin_etablissement.etablissement_id,
+        matiere: null,
         coefficient: 0,
         volume_horaire: 0,
         after: null,
@@ -273,22 +260,20 @@ export default {
       this.form.matieres = this.form.matieres.filter((el) => el !== matiere);
     },
     async verify(matiere) {
-      // console.log('ue',ue,'index',index,'matiere',matiere)
       const array = this.form.matieres.filter(
         (el) => el.matiere !== null && el.matiere == matiere.matiere
       );
       if (array.length > 1) {
         this.removeRow(matiere);
         this.$swal("L'élément existe déjà !");
-        // this.$alert.error("L'élément existe déjà !");
       }
     },
   },
   created() {},
   mounted() {
-    // this.addRowInit()
     this.addRow();
     this.section = this.getSection(this.type);
+    console.log("setNiveaux:", this.setNiveaux);
   },
 };
 </script>

@@ -5,6 +5,7 @@ use App\Http\Controllers\SalleController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
+use App\Http\Controllers\AffectationController;
 
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
@@ -17,6 +18,9 @@ use Modules\Scolarite\Http\Controllers\AnneeClasseController;
 use Modules\Scolarite\Http\Controllers\TuteurController;
 use Modules\Scolarite\Http\Controllers\NiveauController;
 use Modules\Scolarite\Http\Controllers\InscriptionController;
+use Modules\Scolarite\Http\Controllers\FraisController;
+use Modules\Scolarite\Http\Controllers\FaculteController;
+use Modules\Scolarite\Http\Controllers\DepartementController;
 
 
 
@@ -65,6 +69,8 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
         Route::resource('users', UserController::class);
     });
+    Route::get('get-versements-by-classeAnnee-and-student/{classeAnnee}/{apprenant}', [UserController::class, 'getVersementsByClasseAnneeAndStudent'])->name('getVersementsByClasseAnneeAndStudent');
+    Route::get('get-inscriptions-by-year-and-section/{year}/{section}/{niveau}', [UserController::class, 'getInscriptionsByYearAndSection'])->name('getInscriptionsByYearAndSection');
     Route::get('get-users-by-category/{params}', [UserController::class, 'getUsersByCategory'])->name('getUsersByCategory');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -83,11 +89,19 @@ Route::resource('niveaux', NiveauController::class);
 Route::resource('etablissements', EtablissementController::class);
 Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->name('etablissement.activer');
 Route::resource('inscriptions', InscriptionController::class);
-Route::resource('matieres', MatiereController::class);
+Route::resource('facultes', FaculteController::class);
+Route::resource('departements', DepartementController::class);
+Route::resource('matieres', MatiereController::class)->only(['create', 'update', 'destroy']);
+Route::get('matieres/{type}', [MatiereController::class, 'index'])->name('matieres.index');
+Route::post('matieres/{type}', [MatiereController::class, 'store'])->name('matieres.store');
 Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
 Route::resource('frais', FraisController::class)->only(['create', 'update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
-Route::get('/NotFoud', [UserController::class,'NotFoud'])->name('NotFoud');
+Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
+Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
+Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
+Route::post('affectations/{type}', [AffectationController::class, 'store'])->name('affectations.store');
+Route::resource('salles', SalleController::class);
 
 require __DIR__ . '/auth.php';

@@ -2,6 +2,7 @@
 
 namespace Modules\Enseignement\Entities;
 
+use App\Models\EtablissementSection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,7 +12,7 @@ class Matiere extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['nom', 'code', 'etablissement_id'];
+    protected $fillable = ['code', 'nom', 'etablissement_section_id'];
 
     protected static function newFactory()
     {
@@ -23,8 +24,8 @@ class Matiere extends Model
         return $this->hasMany(NiveauMatiere::class);
     }
 
-    public function etablissement(): BelongsTo
+    public function etablissement_section(): BelongsTo
     {
-        return $this->belongsTo(Etablissement::class);
+        return $this->belongsTo(EtablissementSection::class);
     }
 }

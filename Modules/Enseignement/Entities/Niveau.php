@@ -28,19 +28,10 @@ class Niveau extends Model
         return $this->hasMany(NiveauMatiere::class);
     }
 
-    /*  public function niveau(): BelongsTo
-    {
-        return $this->belongsTo(Niveau::class);
-    } */
      public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }  
-
-    public function classes(): HasMany
-    {
-        return $this->hasMany(Classe::class);
-    }
 
     public function frais(): HasMany
     {

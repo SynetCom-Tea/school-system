@@ -11,6 +11,7 @@ use Modules\Scolarite\Entities\Frais;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Niveau;
+use App\Models\Annee;
 
 class FraisController extends Controller
 {
@@ -21,11 +22,15 @@ class FraisController extends Controller
     public function index($type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        $frais=Frais::with('annee','niveau')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
+
+            $query->where('section_id',$type);})->get();
+
         return Inertia::render('Frais/Index', [
-            'frais' => Frais::where('etablissement_section_id',$table->id)->get(),
+            'frais' => $frais,
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
+            'annees' => Annee::All(),
         ]);
     }
 
@@ -35,7 +40,7 @@ class FraisController extends Controller
      */
     public function create()
     {
-        return view('scolarite::create');
+        //
     }
 
     /**
@@ -43,9 +48,20 @@ class FraisController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function store(Request $request,$type)
     {
-        //
+        $ets_id = Auth::user()->etablissement_id;
+        request()->validate([
+            'montant' => 'required',
+            'libelle' => 'required|string',
+        ]);
+        $data = $request->all();
+        $data['etablissement_id'] = $ets_id;
+        Frais::create($data);
+        return redirect()->route('frais.index', $type)->with('message', [
+            'type' => 'success',
+            'text' => "Le frais a été créé avec succès !",
+        ]);
     }
 
     /**
@@ -76,7 +92,10 @@ class FraisController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $frais = Frais::find($id);
+        $frais->update($request->all());
+        $niveau = Niveau::where('id',$frais->niveau_id)->first();
+        return redirect()->route('frais.index', $niveau->section_id);
     }
 
     /**
@@ -86,6 +105,24 @@ class FraisController extends Controller
      */
     public function destroy($id)
     {
-        //
+        try{
+            $frais = Frais::find($id);
+            $niveau = Niveau::where('id',$frais->niveau_id)->first();
+            $frais->delete();
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer ce frais!",
+                ]);
+
+            }
+        }
+        return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+            'type' => 'success',
+            'text' => "Le frais a été supprimé avec succès !",
+        ]);
     }
+    
 }

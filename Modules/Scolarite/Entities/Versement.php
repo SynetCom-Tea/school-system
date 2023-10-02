@@ -2,6 +2,7 @@
 
 namespace Modules\Scolarite\Entities;
 
+use App\Models\Apprenant;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -11,11 +12,11 @@ class Versement extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['libelle', 'date_versement', 'montant', 'etudiant_id', 'frais_id'];
+    protected $fillable = ['libelle', 'date_versement', 'montant', 'apprenant_id', 'frais_id'];
 
-    public function etudiant(): BelongsTo
+    public function apprenant(): BelongsTo
     {
-        return $this->belongsTo(Etudiant::class);
+        return $this->belongsTo(Apprenant::class);
     }
 
     public function frais(): BelongsTo

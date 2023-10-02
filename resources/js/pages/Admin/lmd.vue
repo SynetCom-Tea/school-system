@@ -59,14 +59,14 @@
             </v-col>
             <v-col v-if="form.lmd">
               <Autocomplete
-                class="mt-1"
                 :items="lmds"
                 item-title="libelle"
                 item-value="id"
                 v-model="form.type_lmd"
-                @update:modelValue="test(form.type_lmd)"
+                @update:modelValue="test()"
                 chips
                 closable-chips
+                required
                 color="blue-grey-lighten-2"
                 label="Select"
               ></Autocomplete>
@@ -82,11 +82,46 @@
           </v-row>
         </v-card-text>
         <v-card-actions>
-          <v-btn variant="text" color="error" @click="goBack"> Annuler </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn variant="text" color="info" :disabled="check" @click="submit"
-            >Enregistrer</v-btn
+          <Button
+            title="retourner à la page precédante"
+            nameButton="Retour"
+            variant="flat"
+            @click="goBack"
+            density="comfortable"
+            class="text-center"
+            :isBlock="true"
+            size="large"
+            style="text-transform: none"
           >
+          </Button>
+          <v-spacer></v-spacer>
+          <Button
+            v-if="form.lmd"
+            :disabled="check"
+            title="retourner à la page precédante"
+            nameButton="Approuver"
+            variant="flat"
+            @click="submit"
+            density="comfortable"
+            class="text-center"
+            :isBlock="true"
+            size="large"
+            style="text-transform: none"
+          >
+          </Button>
+          <Button
+            v-else
+            title="Ignorer"
+            nameButton="Ignorer"
+            variant="flat"
+            @click="submit"
+            density="comfortable"
+            class="text-center"
+            :isBlock="true"
+            size="large"
+            style="text-transform: none"
+          >
+          </Button>
         </v-card-actions>
       </v-form>
     </v-card>
@@ -149,45 +184,32 @@ export default {
       type: null,
     }),
   }),
-  updated() {
-    console.log("lmds:", this.lmds);
-  },
   methods: {
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
       }
-      if (type == "first") this.alertFirst = true;
+      if (type == "first") {
+        this.alertFirst = true;
+      }
     },
-    test(e) {
-      console.log("lmdsTT:", this.lmds);
-      console.log(" form.type_lmd:", e);
-
-      if (this.form.lmd == true && e !== null) {
+    test() {
+      if (this.form.lmd == true && this.form.type_lmd !== null) {
         this.check = false;
       } else if (this.form.lmd == false) {
         this.check = false;
       } else {
         this.check = true;
       }
-      console.log("check", this.check, "type_lmd", e);
     },
+    //  submit(){
+    //     this.form.type = this.type
+    //     this.form.post(route('lmd.store'))
+
+    // },
     submit() {
       this.form.type = this.type;
-      this.form.post(route("lmd.store"), {
-        onFinish: () => {
-          this.$swal({
-            icon: "success",
-            title: "Enregistrement",
-            text: "Enregistrer avec succès!",
-            toast: true,
-            position: "top-end",
-            showConfirmButton: false,
-            timer: 5000,
-            timerProgressBar: true,
-          });
-        },
-      });
+      this.form.post(route("lmd.store"), {});
     },
 
     goBack() {

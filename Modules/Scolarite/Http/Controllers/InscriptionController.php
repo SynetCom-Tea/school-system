@@ -9,6 +9,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Modules\Scolarite\Entities\Inscription;
 use Modules\Enseignement\Entities\Niveau;
+use Illuminate\Support\Facades\Auth;
 
 class InscriptionController extends Controller
 {
@@ -18,7 +19,25 @@ class InscriptionController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Inscription/Index', []);
+        try {
+            //code...
+
+            if (Auth::user() == null) {
+
+                return redirect('/login')->with('message', [
+                    'type' => 'error',
+                    'text' => 'Session ou Token expiré!',
+                ]);
+            }
+
+            return Inertia::render('Inscription/Index', []);
+        } catch (\Throwable $th) {
+            //throw $th;
+            return redirect()->back()->with('message', [
+                'type' => 'error',
+                'text' => $th,
+            ]);
+        }
     }
 
     /**

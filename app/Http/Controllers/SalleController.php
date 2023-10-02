@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Salle;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
 
 class SalleController extends Controller
 {
@@ -13,8 +14,9 @@ class SalleController extends Controller
      */
     public function index()
     {
+        $ets_id = Auth::user()->etablissement_id;
         return Inertia::render('Salles/Index', [
-            'salles' => Salle::all()
+            'salles' => Salle::where('etablissement_id',$ets_id)->get(),
         ]);
     }
 
@@ -31,7 +33,18 @@ class SalleController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $ets_id = Auth::user()->etablissement_id;
+        request()->validate([
+            'code' => 'required|string',
+            'libelle' => 'required|string',
+        ]);
+        $data = $request->all();
+        $data['etablissement_id'] = $ets_id;
+        Salle::create($data);
+        return redirect()->route('salles.index')->with('message', [
+            'type' => 'success',
+            'text' => "La salle a été créée avec succès !",
+        ]);
     }
 
     /**
@@ -53,16 +66,34 @@ class SalleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Salle $salle)
+    public function update(Request $request, string $id)
     {
-        //
+        $salle = Salle::find($id);
+        $salle->update($request->all());
+        return redirect()->route('salles.index');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Salle $salle)
+    public function destroy(string $id)
     {
-        //
+        try{
+            $salle = Salle::find($id);
+            $salle->delete();
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                return redirect()->route('salles.index')->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer cette salle!",
+                ]);
+
+            }
+        }
+        return redirect()->route('salles.index')->with('message', [
+            'type' => 'success',
+            'text' => "La salle a été supprimée avec succès !",
+        ]);
     }
 }
