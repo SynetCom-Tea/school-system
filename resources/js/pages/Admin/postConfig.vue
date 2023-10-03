@@ -61,6 +61,19 @@
 
             </v-col>
         </v-row>
+        <v-row v-if="type == '1'">
+        <v-col cols="auto" md="3">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getSalles">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/salle.jpg'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des salles</p>
+
+                </v-card>
+
+            </v-col>
+          </v-row>
         <v-row v-if="type == '2'">
             <v-col cols="auto" md="3">
                 <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
@@ -154,7 +167,7 @@
         </v-row>
             <v-row v-if="type == '3'">
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFrais">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
 

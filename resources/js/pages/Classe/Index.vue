@@ -252,7 +252,7 @@
                     </v-dialog>
         <v-card-text>
             <Datatable titleDatatable="Liste des classes" :headers="headers" :items="classes" :functionOnClickAddButton="create" >
-            
+                
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
@@ -264,5 +264,10 @@
     </v-card>
 </template>
 <style>
-
+.theme--light.v-data-table tbody tr:nth-of-type(even) {
+    background-color: rgba(0, 0, 0, .03);
+}
+.theme--dark.v-data-table tbody tr:nth-of-type(even) {
+    background-color: rgba(0, 0, 0, .5);
+}
 </style>

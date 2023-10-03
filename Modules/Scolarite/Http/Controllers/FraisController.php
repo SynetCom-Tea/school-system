@@ -8,6 +8,7 @@ use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Modules\Scolarite\Entities\Frais;
+use Modules\Scolarite\Entities\TypeFrais;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Niveau;
@@ -22,12 +23,13 @@ class FraisController extends Controller
     public function index($type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $frais=Frais::with('annee','niveau')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
+        $frais=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
 
             $query->where('section_id',$type);})->get();
 
         return Inertia::render('Frais/Index', [
             'frais' => $frais,
+            'typefrais' => TypeFrais::where('etablissement_id',$ets_id)->get(),
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
             'annees' => Annee::All(),
@@ -38,9 +40,17 @@ class FraisController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create($type)
     {
-        //
+        $ets_id = Auth::user()->etablissement_id;
+
+        return Inertia::render('Frais/Create', [
+            'typefrais' => TypeFrais::where('etablissement_id',$ets_id)->get(),
+            'section_id' => $type,
+            'niveaux' => Niveau::where('section_id',$type)->get(),
+            'annees' => Annee::All(),
+        ]);
+
     }
 
     /**
@@ -51,13 +61,22 @@ class FraisController extends Controller
     public function store(Request $request,$type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        request()->validate([
-            'montant' => 'required',
-            'libelle' => 'required|string',
-        ]);
-        $data = $request->all();
-        $data['etablissement_id'] = $ets_id;
-        Frais::create($data);
+        
+        foreach($request->donnees as $donnee){
+            foreach($donnee['niveau_id'] as $niv){
+                Frais::updateOrInsert([
+                    'niveau_id' => $niv,
+                    'annee_id' => $request->annee_id,
+                    'type_frais_id' => $donnee['type_frais_id']
+                ],
+                [
+                'montant' => $donnee['montant'],
+                'etablissement_id' => $ets_id
+                ]
+                );
+            }
+        }
+
         return redirect()->route('frais.index', $type)->with('message', [
             'type' => 'success',
             'text' => "Le frais a été créé avec succès !",

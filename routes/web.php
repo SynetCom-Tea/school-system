@@ -95,8 +95,9 @@ Route::resource('matieres', MatiereController::class)->only(['create', 'update',
 Route::get('matieres/{type}', [MatiereController::class, 'index'])->name('matieres.index');
 Route::post('matieres/{type}', [MatiereController::class, 'store'])->name('matieres.store');
 Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
-Route::resource('frais', FraisController::class)->only(['create', 'update', 'destroy']);
+Route::resource('frais', FraisController::class)->only(['update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
+Route::get('Frais/{type}', [FraisController::class, 'create'])->name('frais.create');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
 Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');

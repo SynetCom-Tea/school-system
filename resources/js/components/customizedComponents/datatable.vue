@@ -369,7 +369,7 @@ export default {
   </v-data-table>
 </template>
 
-<style scoped>
+<style>
 .add-button-style:hover {
   background-color: #7d002c;
   box-shadow: 0px 0px 8px #7d002c;

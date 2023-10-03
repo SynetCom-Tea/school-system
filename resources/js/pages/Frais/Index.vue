@@ -1,6 +1,6 @@
 <script>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { useForm } from '@inertiajs/vue3';
+    import { useForm, router} from '@inertiajs/vue3';
     
     import {
         mdiAccountSchool,
@@ -36,7 +36,7 @@
             mdiCurrencyUsd
         },
         layout: AuthenticatedLayout,
-        props: ["frais","section_id", "niveaux","annees"],
+        props: ["frais","section_id", "niveaux","annees","typefrais"],
         data() {
             return {
                 icons: {
@@ -57,21 +57,21 @@
                 },
                 headers: [
                     {
-                        title: 'Libelé',
+                        title: 'Libellé',
                         align: 'start',
                         sortable: false,
-                        key: 'libelle',
+                        key: 'type_frais.libelle',
                     },
                     { title: 'Montant', align: 'center', key: 'montant' },
                     { title: 'Année Scolaire', align: 'center', key: 'annee.libelle' },
                     { title: 'Niveau', align: 'center', key: 'niveau.libelle' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                dialog_title: 'Création Frais',
+                dialog_title: 'Modifier Frais',
                 dialog: false,
                 
                 form: useForm({
-                    libelle: '',
+                    type_frais_id: '',
                     montant: '',
                     niveau_id: '',
                     annee_id: '',
@@ -86,15 +86,14 @@
         },
         methods:{
             create() {
-                this.dialog = true;
-                this.dialog_title = 'Création Frais'
+                router.get(route('frais.create', this.section_id))
             },
             editItem(item){
                 //console.log('edit',item) 
                 this.dialog_title = 'Modifier le frais' 
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
-                this.form.libelle = item.libelle
+                this.form.type_frais_id = item.type_frais_id
                 this.form.montant = item.montant
                 this.form.annee_id = item.annee_id
                 this.dialog = true
@@ -146,30 +145,9 @@
             },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
-                if(!this.form.id && valid) {
-                    this.form.post(route('frais.store',this.section_id), {
-                        onFinish: () => {
-                            //console.log(this.form)
-                            this.close()
-                            
-                            this.$swal({
-                                icon: 'success',
-                                iconColor: '#004980',
-                                color: '#004980',
-                                title: 'Enregistrement',
-                                text: 'Frais créé avec succès!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-                        },
-                    });
+                if(this.form.id && valid) {
                     
-                }else if(this.form.id && valid) {
-                    
-                     const {id,libelle,montant,niveau_id,annee_id} = this.form
+                     const {id,type_frais_id,montant,niveau_id,annee_id} = this.form
                     
                     this.form.put(route('frais.update', this.form.id), {
                         onFinish: () => {
@@ -194,7 +172,7 @@
             close() {
                 this.form.id = ""
                 this.form.niveau_id = ""
-                this.form.libelle = ""
+                this.form.type_frais_id = ""
                 this.form.montant = ""
                 this.form.annee_id = ""
                 this.dialog = false
@@ -253,8 +231,17 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.libelle" isRequired :rules="rules"></text-field>
-                                            
+                                                <Select
+                                                    label="Type Frais"
+                                                    :items="typefrais"
+                                                    variant="outlined"
+                                                    itemValue="id"
+                                                    itemTitle="libelle"
+                                                    v-model="form.type_frais_id"
+                                                    isRequired
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    >
+                                                </Select>
                                             </v-col>
                                         </v-row>
                                         <v-row>

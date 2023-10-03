@@ -10,11 +10,13 @@ import {
     mdiAccountSchool,
     mdiCheckCircle,
     mdiCancel,
-    mdiClipboardEditOutline,
+   mdiCurrencyUsd,
+    mdiPlusCircle,
+    mdiCloseCircle
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
-    props: ["section_id", "niveaux","matieres"],
+    props: ["typefrais","section_id", "niveaux","annees"],
     data() {
         return {
             icon: {
@@ -23,24 +25,53 @@ export default {
                 mdiAccountSchool,
                 mdiCheckCircle,
                 mdiCancel,
-                mdiClipboardEditOutline,
+                mdiCurrencyUsd,
+                mdiPlusCircle,
+                mdiCloseCircle
             },
         
             form: useForm({
-                volume_horaire: '',
-                coefficient: '',
-                niveau_id: [],
-                matiere_id: '',
+                annee_id: '',
+                donnees: []
             }),
         }
     },
-    created() {
-        
+    mounted() {
+        this.addRow()
     },
     methods: {
 
         goBack() {
-            router.get(route('affectations.index', this.section_id))
+            router.get(route('frais.index', this.section_id))
+        },
+        addRow() {
+            this.form.donnees.push({
+                niveau_id: [],
+                type_frais_id: null,
+                montant: null,
+                before: null,
+                after: null
+            })
+        },
+        removeRow(p) {
+            this.form.donnees = this.form.donnees.filter((product) => product !== p)
+        },
+        async verify(p) {
+            const array = this.form.donnees.filter(el => el.montant !== null && el.montant == p.montant )
+            if (array.length > 1) {  
+                this.removeRow(p)
+                this.$swal({
+                            icon: 'error',
+                                title: 'Erreur',
+                                text: 'Cet élément existe déjà!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 3000,
+                                timerProgressBar: true,
+                        });
+                //return 'Cette ligne est déjà sélectionnée!'
+            }
         },
         async submit() {
             const {
@@ -48,7 +79,7 @@ export default {
             } = await this.$refs.form.validate()
             if (valid) {
                 console.log(this.form)
-                this.form.post(route('affectations.store',this.section_id), {
+                this.form.post(route('frais.store',this.section_id), {
                     onFinish: () => {
                         this.close()
                         this.$swal({
@@ -56,7 +87,7 @@ export default {
                                 iconColor: '#004980',
                                 color: '#004980',
                                 title: 'Enregistrement',
-                                text: 'Niveau_Matière créé avec succès!',
+                                text: 'Frais créé avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -68,74 +99,95 @@ export default {
             }
         },
         close() {
-                this.form.id = ""
-                this.form.niveau_id = []
-                this.form.volume_horaire = ""
-                this.form.coefficient = ""
-                this.form.matiere_id = ""
+                this.form.reset()
             }
     }
 }
 </script>
 <template>
 <v-card>
-    <Toolbar :icon="icon.mdiClipboardEditOutline" toolbarTitle="Affectation de matière aux niveaux"></Toolbar>
+    <Toolbar :icon="icon.mdiCurrencyUsd" toolbarTitle="Création frais"></Toolbar>
 
     <v-card-text>
         <v-form ref="form">
-                <v-row>
-                    <v-col cols="6" md="6">
+            <v-row>
+                <v-col cols="4" md="4">
+                </v-col>
+                <v-col cols="4" md="4">
                     <Select
-                        label="Matière"
-                        :items="matieres"
+                        label="Année Scolaire"
+                        :items="annees"
                         variant="outlined"
                         item-value="id"
-                        item-title="nom"
-                        v-model="form.matiere_id"
+                        item-title="libelle"
+                        v-model="form.annee_id"
                         isRequired
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         >
                     </Select>
                     </v-col>
-                    <v-col cols="6" md="6">
-                    <Select
+            </v-row>
+                    
+            <v-card-text>
+                    <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des frais</v-chip>
+                    <v-card outlined class="mb-md-2">
+                        <v-card-text>
+                            <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
+                                <v-col md="4">
+                                     <Select
                         label="Niveaux"
                         :items="niveaux"
                         variant="outlined"
                         item-value="id"
-                        item-title="libelle"
-                        v-model="form.niveau_id"
+                        item-title="code"
+                        v-model="donnee.niveau_id"
                         multiple
-                        ships
                         isRequired
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         >
                     ></Select>
-                    </v-col>
-                    </v-row>
-                    <v-row>
-                        <v-col cols="6" md="6">
-                            <TextField
+                                </v-col>
+                                <v-col md="4">
+                                    <Select
+                        label="TypeFrais"
+                        :items="typefrais"
+                        variant="outlined"
+                        item-value="id"
+                        item-title="libelle"
+                        v-model="donnee.type_frais_id"
+                        isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        >
+                    </Select>
+                                </v-col>
+                                <v-col md="3">
+                                    <TextField
                             type="number"
-                            label="Volume_Horaire"
-                            placeholder="Volume_Horaire"
-                            v-model="form.volume_horaire"
+                            label="Montant"
+                            placeholder="Montant"
+                            v-model="donnee.montant"
                             isRequired
                             :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></TextField>
-                        </v-col>
-                        <v-col cols="6" md="6">
-                            <TextField
-                            type="number"
-                            label="Coefficient"
-                            placeholder="Coefficient"
-                            v-model="form.coefficient"
-                            isRequired
-                            :rules="[(v) => !!v || 'Ce champ est requis!']"
-                            ></TextField>
-                        </v-col>
-                        
-            </v-row>          
+                                </v-col>
+                                <v-col md="1">
+                                    <v-btn variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
+                                        <v-icon :icon="icon.mdiCloseCircle"></v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col md="11">
+                                </v-col>
+                                <v-col offset-md="11" md="1">
+                                    <v-btn variant="outlined" icon @click="addRow()" fab small color="primary">
+                                        <v-icon :icon="icon.mdiPlusCircle"></v-icon>
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                        </v-card-text>
+                    </v-card>
+                </v-card-text>          
         </v-form>
         </v-card-text>
         <v-card-actions class="justify-end">
