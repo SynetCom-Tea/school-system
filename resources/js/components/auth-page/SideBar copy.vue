@@ -119,41 +119,43 @@
 
               <!-- Fin Super-Admin -->
               <!--Debut des menu sections -->
-              <v-list-group
-                :value="menusBySection.title"
-                v-if="$page.props.roles[0] == 'Administrateur'"
-              >
-                <template v-slot:activator="{ props }">
-                  <v-list-item class="group-title" v-bind="props">
-                    <template v-slot:prepend>
-                      <v-icon
-                        :title="menusBySection.title"
-                        :icon="menusBySection.icon"
-                      ></v-icon>
-                    </template>
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="menusBySection.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </template>
-
-                <v-list-item
-                  class="sub-list-group"
-                  v-for="(item, i) in menusBySection.children"
-                  :key="i"
-                  @click="pageSection(item)"
+              <div v-for="(itemSection, i) in menusBySection" :key="i">
+                <v-list-group
+                  :value="itemSection.title"
+                  v-if="$page.props.roles[0] == 'Administrateur'"
                 >
-                  <template v-slot:prepend>
-                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                      <template v-slot:prepend>
+                        <v-icon
+                          :title="itemSection.title"
+                          :icon="itemSection.icon"
+                        ></v-icon>
+                      </template>
+                      <v-list-item-title
+                        class="text-wrap"
+                        v-text="itemSection.title"
+                      ></v-list-item-title>
+                    </v-list-item>
                   </template>
 
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
+                  <v-list-item
+                    class="sub-list-group"
+                    v-for="(item, i) in itemSection.children"
+                    :key="i"
+                    @click="page(item.link)"
+                  >
+                    <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                    </template>
+
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="item.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </v-list-group>
+              </div>
               <!-- Debut evaluation  -->
               <v-list-group
                 :value="getListMenus[4] && getListMenus[4].title"
@@ -342,9 +344,11 @@ export default {
   mounted() {
     axios.interceptors.response.use(
       function (response) {
+        // console.log("response:", response);
         return response;
       },
       function (error) {
+        // console.log("error:", error);
         if (error.response?.status === 403) {
           alert(
             "Session expirée. Vous serez redirigé(e) vers la page d'authentification!!"
@@ -356,6 +360,7 @@ export default {
     );
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
+    // console.log("console sections", this.$page.props.sections);
   },
   computed: {
     getOrganizationProfile() {
@@ -422,9 +427,13 @@ export default {
     },
     getListMenus() {
       let list = listMenus(this.$page.props);
+
       let role = this.$page.props.roles ? this.$page.props?.roles[0] : null;
+      console.log("role:", role);
+      console.log("list:", list);
       this.menusBySection = list[1] ?? [];
       this.MenuAdmin = list[2];
+      console.log("MenuAdmin:", this.MenuAdmin);
       this.MenuGestion = list[3];
       this.superAdminMenus = list[5];
 
@@ -446,21 +455,6 @@ export default {
     },
     onClickMenuButton() {
       this.drawer = !this.drawer;
-    },
-    pageSection(item) {
-      if (item.link == "gestion/primaire") {
-        router.get(route("indexPrimaire"));
-      }
-      if (item.link == "gestion/secondaire") {
-        router.get(route("indexSecondaire"));
-      }
-      if (item.link == "gestion/superieure") {
-        router.get(route("indexSuperieure"));
-      }
-      if (item.link == "gestion/universitaire") {
-        router.get(route("indexUniversitaire"));
-      }
-      // router.get("/dashboard");
     },
     page(link) {
       router.get(link);

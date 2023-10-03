@@ -8,7 +8,7 @@ import {
   mdiMagnify,
   mdiContentSaveEditOutline,
 } from "@mdi/js";
-import TextFieldC from "./TextFieldC.vue";
+
 import ModalDetailUpdate from "./ModalDetailUpdate.vue";
 // import { provide, reactive, ref } from "vue";
 export default {
@@ -72,11 +72,11 @@ export default {
     mdiPlus,
     mdiCancel,
     mdiContentSaveEditOutline,
-    TextFieldC,
   },
 
   data() {
     return {
+      selected: [],
       pagination: null,
       dialog: false,
       status: false,
@@ -101,7 +101,9 @@ export default {
     };
   },
 
-  mounted() {},
+  mounted() {
+    console.log("$slots:", this.items);
+  },
   computed: {
     scopedSlots() {
       return this.$slots;
@@ -138,6 +140,14 @@ export default {
   },
 
   methods: {
+    // itemRowBackground(items, search, filter) {
+    itemRowBackground: function (item) {
+      return item.protein > 4.2 ? "style-1" : "style-2";
+      // }
+      // console.log("itemE:", items);
+      // console.log("search:", search);
+      // return item ? "style-1" : "style-2";
+    },
     //Fonction en ecoute lorsqu'on clique sur le bouton 'Ajouter'
     onClickAddButton() {
       if (this.addDialog) {
@@ -193,9 +203,12 @@ export default {
     :headers="headers"
     :items="items"
     :search="searchQuery"
-    :sort-by="[{ key: 'calories', order: 'asc' }]"
+    item-key="id"
     :pagination.sync="pagination"
     class="style-table"
+    v-model="selected"
+    item-class="style-2"
+    :row-height="20"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
@@ -230,9 +243,17 @@ export default {
 
         <v-spacer></v-spacer>
 
-            <Button variant="flat" class="add-button-style" nameButton="Ajouter" title="Ajouter une nouvelle ligne" :prependIcon="icons.mdiPlus" @click="onClickAddButton">
-            </Button>
-            <!-- <ModalDetailUpdate
+        <Button
+          v-if="displayAddButton == true"
+          variant="flat"
+          class="add-button-style"
+          nameButton="Ajouter"
+          title="Ajouter une nouvelle ligne"
+          :prependIcon="icons.mdiPlus"
+          @click="onClickAddButton"
+        >
+        </Button>
+        <!-- <ModalDetailUpdate
           :onClickCancelButton="onClickCancelButtonForEditing"
           :toolbarTitle="toolbarTitle"
           :dialogDetailUpdate="dialogDetailUpdate"
@@ -240,8 +261,8 @@ export default {
           :iconValueDetail="icons.mdiPencil"
           :iconUpdate="icons.mdiAccount"
         ></ModalDetailUpdate> -->
-            <v-dialog v-model="dialog" max-width="900px" persistent>
-                <!-- <template v-slot:activator="{ props }">
+        <v-dialog v-model="dialog" max-width="900px" persistent>
+          <!-- <template v-slot:activator="{ props }">
             <Button
               variant="flat"
               class="mb-2"
@@ -253,10 +274,10 @@ export default {
             >
             </Button>
           </template> -->
-                <v-card>
-                    <v-card-title style="background-color: #7d002c">
-                        <span class="text-h5 text-white">{{ formTitle }}</span>
-                    </v-card-title>
+          <v-card>
+            <v-card-title style="background-color: #7d002c">
+              <span class="text-h5 text-white">{{ formTitle }}</span>
+            </v-card-title>
 
             <slot name="addDialogContent" />
             <v-card-actions class="card-actions-style">
@@ -316,7 +337,13 @@ export default {
       </v-toolbar>
       <v-card outlined height="3px" color="secondary"></v-card>
     </template>
+
+    <!-- <template v-slot:item="{ item }">
+      {{ itemRowBackground(item) }}
+      </slot>
+    </template> -->
     <template v-slot:item.actions="{ item }">
+      <!-- <div style="background-color: red"> -->
       <v-icon
         size="small"
         class="me-2"
@@ -334,6 +361,7 @@ export default {
         :icon="icons.mdiDelete"
       >
       </v-icon>
+      <!-- </div> -->
     </template>
     <template v-slot:no-data>
       <div>
@@ -360,16 +388,44 @@ export default {
         </div>
       </div>
     </template>
-    <template v-for="(index, name) in $slots" v-slot:[name]>
-      <slot :name="name"></slot>
+    <template class="slot-style" v-for="(index, name) in $slots" v-slot:[name]>
+      <div style="background-color: red"><slot :name="name"></slot></div>
     </template>
-    <template v-for="(index, name) of $slots" v-slot:[name]="data">
-      <slot :name="name" v-bind="data"></slot>
+    <template
+      class="slot-data-style"
+      v-for="(index, name) of $slots"
+      v-slot:[name]="data"
+    >
+      <div style="background-color: red"><slot :name="name" v-bind="data"></slot></div>
     </template>
   </v-data-table>
 </template>
 
 <style scoped>
+.v-theme--light.v-data-table
+  > .v-table__wrapper
+  > table
+  > tbody
+  > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)
+  > td {
+  background: red;
+}
+:slotted(tr.v-data-table__tr) {
+  background-color: green;
+}
+.slot-style {
+  background-color: red;
+}
+.slot-data-style {
+  background-color: green;
+}
+:v-deep(.style-1) {
+  /* height: 100px !important; */
+  background-color: rgb(215, 215, 44);
+}
+.style-2 {
+  background-color: rgb(114, 114, 67);
+}
 .add-button-style:hover {
   background-color: #7d002c;
   box-shadow: 0px 0px 8px #7d002c;

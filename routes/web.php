@@ -6,7 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\AffectationController;
-
+use App\Http\Controllers\MenuGestionController;
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -69,6 +69,10 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
         Route::resource('users', UserController::class);
     });
+    Route::get('menu-section-primaire', [MenuGestionController::class, 'indexPrimaire'])->name('indexPrimaire');
+    Route::get('menu-section-secondaire', [MenuGestionController::class, 'indexSecondaire'])->name('indexSecondaire');
+    Route::get('menu-section-superieure', [MenuGestionController::class, 'indexSuperieure'])->name('indexSuperieure');
+    Route::get('menu-section-universitaire', [MenuGestionController::class, 'indexUniversitaire'])->name('indexUniversitaire');
     Route::get('get-versements-by-classeAnnee-and-student/{classeAnnee}/{apprenant}', [UserController::class, 'getVersementsByClasseAnneeAndStudent'])->name('getVersementsByClasseAnneeAndStudent');
     Route::get('get-inscriptions-by-year-and-section/{year}/{section}/{niveau}', [UserController::class, 'getInscriptionsByYearAndSection'])->name('getInscriptionsByYearAndSection');
     Route::get('get-users-by-category/{params}', [UserController::class, 'getUsersByCategory'])->name('getUsersByCategory');

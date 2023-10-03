@@ -43,7 +43,7 @@ import {
     mdiCalendar,
     mdiPrinterPosStar,
     mdiAccountSchoolOutline,
-   mdiTimerStar,mdiTimerStarOutline, mdiTimerStopOutline,mdiTimerSyncOutline
+mdiTimerStarOutline,mdiTimerSyncOutline
 } from "@mdi/js";
 export function listMenus(page) {
      console.log('listNav:', page)
@@ -52,7 +52,7 @@ export function listMenus(page) {
     let tab,tab_s = [];
     let section_user = [];
     let MenuEvaluation;
-    let MenuAdmin;
+    let MenuAdmin,linkSection;
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
       { title: "Secondaire", icon: mdiSchool, link: "/enseignement/configuration/2" },
@@ -166,58 +166,62 @@ MenuGestion = {
 
     let listMenusSections = []
     let iconSection;
-    let childrenBySection = [
-      {
-                icon: mdiSquareMedium,
-                title: "Liste utilisateurs",
-                link: "/users",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiSquareMedium,
-                title: "Rôles",
-                link: "/enseignement/roles",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiSquareMedium,
-                title: "Permissions",
-                link: "/enseignement/permissions",
-                permissions: "manage_system",
-            },
-        {
-            title: "Inscription",
-            icon: mdiAccountSchool,
-            link: "/inscriptions",
-            permissions: "manage_system"},
-     {
-                icon: mdiSquareMedium,
-                title: "Emploi",
-                link: "/emploi/emplois",
-                permissions: "manage_system",
-            },
-            {
-                icon: mdiSquareMedium,
-                title: "Calendrier",
-                link: "/emploi/emplois/create",
-                permissions: "manage_system",
-            },
-]
+  let childrenBySection = [
+    {
+      icon: mdiSquareMedium,
+      title: "Liste utilisateurs",
+      link: "/users",
+      permissions: "manage_system",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Rôles",
+      link: "/enseignement/roles",
+      permissions: "manage_system",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Permissions",
+      link: "/enseignement/permissions",
+      permissions: "manage_system",
+    },
+    {
+      title: "Inscription",
+      icon: mdiAccountSchool,
+      link: "/inscriptions",
+      permissions: "manage_system"
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Emploi",
+      link: "/emploi/emplois",
+      permissions: "manage_system",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Calendrier",
+      link: "/emploi/emplois/create",
+      permissions: "manage_system",
+    },
+  ];
     if (pageSections) {
         pageSections.forEach((element, index) => {
             if (element) {
                 iconSection = element.id == 1 ? mdiAccountSchoolOutline : element.id == 2 ? mdiTimerStarOutline :
-                      element.id==3?mdiTimerSyncOutline:mdiOfficeBuilding
+                  element.id == 3 ? mdiTimerSyncOutline : mdiOfficeBuilding
+              linkSection = element.id == 1 ? 'gestion/primaire' : element.id == 2 ? 'gestion/secondaire' :
+                      element.id==3?'gestion/superieure':'gestion/universitaire'
                 listMenusSections.push({
                     icon: iconSection,
                     title: element.libelle,
-                    model: false,
- children:childrenBySection
+                  model: false,
+                    link:linkSection
+//  children:childrenBySection
                 })
             }
         })
     }
-console.log('listMenusSections:',listMenusSections)
+
     let singleItems = [
      {
             title: "Home",
@@ -268,6 +272,17 @@ console.log('listMenusSections:',listMenusSections)
         ],
     };
 
+
+    let gestionSections = {
+        icon: mdiAccountCogOutline,
+        title:pageSections.length>1?"Gestion des sections":'Gestion de la section',
+        "icon-alt": mdiChevronDown,
+        permissions: "manage_system",
+        model: false,
+        children: [
+      ...listMenusSections
+        ],
+    };
 let superAdminMenus=[]
 
     if (page?.roles[0] != "Super-administrateur") {
@@ -277,5 +292,5 @@ let superAdminMenus=[]
    superAdminMenus.push(usersMenu)
   }
 
-    return [singleItems,listMenusSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus]
+    return [singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus]
 }
