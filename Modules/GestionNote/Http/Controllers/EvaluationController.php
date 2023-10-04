@@ -182,7 +182,7 @@ class EvaluationController extends Controller
             JOIN etablissements e ON e.id = es.etablissement_id
             JOIN section_users su ON es.id = su.etablissement_section_id
             JOIN users u ON u.id = su.user_id
-            JOIN filiere_matiere_ues_ fmu ON m.id = fmu.matiere_id
+            JOIN filiere_matiere_ues fmu ON m.id = fmu.matiere_id
             JOIN niveau_matieres nm ON fmu.id = nm.filiere_matiere_ue_id
             JOIN enseignement_annees ea ON nm.id = ea.niveau_matiere_id
             JOIN enseignants en ON en.id = ea.enseignant_id

@@ -205,7 +205,7 @@ export default {
 
 <AuthenticatedLayout>
     <v-card>
-        <Toolbar :icon="icon.mdiTools" toolbarTitle="Gestion des Evaluations"></Toolbar>
+        <Toolbar :icon="icon.mdiTools" toolbarTitle="Gestion des Evaluation"></Toolbar>
         <v-card-text>
             <v-form ref="form">
                 <v-container>

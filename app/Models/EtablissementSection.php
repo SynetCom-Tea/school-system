@@ -25,7 +25,7 @@ class EtablissementSection extends Model
     {
         return $this->belongsTo(Etablissement::class);
     }
-    public function sections(): BelongsTo
+    public function section(): BelongsTo
     {
         return $this->belongsTo(Section::class);
     }
