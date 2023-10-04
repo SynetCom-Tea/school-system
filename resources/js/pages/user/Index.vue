@@ -15,7 +15,7 @@ export default {
     mdiPlus,
   },
   layout: AuthenticatedLayout,
-  props: ["users"],
+  props: ["users", "sectionID"],
   // Properties returned from data() become reactive state
   // and will be exposed on `this`.
   data() {
@@ -78,6 +78,22 @@ export default {
   },
 
   computed: {
+    getDatatableTitle() {
+      let title1 =
+        this.sectionID == 1
+          ? "Utilisateurs du Primaire"
+          : this.sectionID == 2
+          ? "Utilisateurs du Secondaire"
+          : null;
+      let title = title1
+        ? title1
+        : this.sectionID == 3
+        ? "Utilisateurs du Supérieur"
+        : this.sectionID == 4
+        ? "Utilisateurs de l'université"
+        : null;
+      return title;
+    },
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
@@ -85,18 +101,33 @@ export default {
       let list = this.users;
       let vlist = [],
         apprenant,
-        tuteur;
+        tuteur,
+        enseignant;
 
       if (list && list.length > 0) {
         list.forEach((element, index) => {
           if (element) {
             apprenant = element.apprenant ? element.apprenant : null;
             tuteur = element.tuteur ? element.tuteur : null;
+            enseignant = element.enseignant ? element.enseignant : null;
           }
+          console.log("enseignant:", enseignant);
           vlist.push({
-            type_user: apprenant ? "Apprenant" : tuteur ? "Tutueur" : "Administrateur",
+            type_user: apprenant
+              ? "Apprenant"
+              : tuteur
+              ? "Tuteur"
+              : enseignant
+              ? "Enseignant"
+              : "Administrateur",
             count: index + 1,
-            user: element.nom ? element : apprenant ? apprenant : tuteur,
+            user: element.nom
+              ? element
+              : apprenant
+              ? apprenant
+              : tuteur
+              ? tuteur
+              : enseignant,
             login: element.email,
           });
         });
@@ -135,6 +166,8 @@ export default {
     }
   },
   mounted() {
+    this.getDatatableTitle;
+
     this.customizedUsers;
   },
 };
@@ -149,7 +182,7 @@ export default {
 
     <v-card-text>
       <Datatable
-        titleDatatable="Utilisateurs du Primaire"
+        :titleDatatable="getDatatableTitle"
         :headers="headers"
         :items="dataUsers"
         :functionOnClickAddButton="goTo"

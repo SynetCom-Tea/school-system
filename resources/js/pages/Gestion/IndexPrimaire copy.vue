@@ -85,9 +85,8 @@ export default {
             max-width="250"
             :color="item.color"
             style="cursor: pointer"
-            @click="goToPage(item)"
           >
-            <v-card-text class="py-0" :key="i">
+            <v-card-text class="py-0" :key="i" @click="goToPage(item)">
               <v-card-title style="color: primary">{{ item.title }}</v-card-title>
 
               <!-- <v-icon color="secondary" :icon="item.icon"></v-icon> -->
@@ -98,6 +97,21 @@ export default {
                 </v-list-item>
               </div>
             </v-card-text>
+            <v-expand-transition>
+              <div v-if="expand[item.expand]" :key="i">
+                <span style="padding: 5px; font-size: 12px">{{ item.note }}</span>
+              </div>
+            </v-expand-transition>
+
+            <v-divider color="secondary"></v-divider>
+
+            <v-card-actions>
+              <v-btn @click="onClickExpland(item)">
+                <span style="font-size: 9px">{{
+                  !expand[item.expand] ? "Lire la note" : "Fermer la note"
+                }}</span>
+              </v-btn>
+            </v-card-actions>
           </v-card>
         </v-col>
       </v-row>

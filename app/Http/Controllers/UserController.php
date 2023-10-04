@@ -138,7 +138,7 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
-        // dd('request:', $request->all());
+        // dump('request:', $request->all());
         $authUser = Auth::user();
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
@@ -147,20 +147,27 @@ class UserController extends Controller
             ]);
         }
         $vUsers = User::where('users.etablissement_id', $authUser->etablissement_id)
+
+            ->join(
+                'section_users',
+                'users.id',
+                '=',
+                'section_users.user_id',
+            )
             ->join(
                 'etablissement_section',
-                'users.etablissement_id',
+                'section_users.etablissement_section_id',
                 '=',
-                'etablissement_section.etablissement_id',
-
-
-            )->where('etablissement_section.section_id', (int)$request->section_id)
+                'etablissement_section.id',
+            )
+            ->where('etablissement_section.section_id', (int)$request->section_id)
             ->selectRaw('users.*')
-            ->with('apprenant', 'tuteur')
+            ->with('apprenant', 'tuteur', 'enseignant')
             ->get();
 
         return Inertia::render('User/Index', [
             'users' => $vUsers ?? [],
+            'sectionID' => $request->section_id ?? null
         ]);
     }
 

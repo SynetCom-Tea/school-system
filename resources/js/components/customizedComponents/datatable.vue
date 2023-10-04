@@ -402,6 +402,14 @@ export default {
 </template>
 
 <style scoped>
+.style-table tbody tr:nth-of-type(even) {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+tbody tr:nth-of-type(even) {
+  /* 'deep-orange lighten-5' basides on material design color */
+  background-color: #fbe9e7;
+}
 .v-theme--light.v-data-table
   > .v-table__wrapper
   > table

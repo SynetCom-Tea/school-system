@@ -47,7 +47,7 @@ import {
 mdiTimerStarOutline,mdiTimerSyncOutline
 } from "@mdi/js";
 export function listMenus(page) {
-     console.log('listNav:', page)
+    //  console.log('listNav:', page)
     let tabs = [];
     let enfants = [];
     let tab,tab_s = [];
@@ -336,7 +336,7 @@ export function listMenusBySection(page, sectionID) {
       permissions: "manage_system"
     },
     {
-      icon: mdiSquareMedium,
+      icon:mdiBookOpenPageVariantOutline,
       title: "Emploi",
       link: "emplois",
       color: "rgb(75,0,130)",
@@ -347,7 +347,7 @@ export function listMenusBySection(page, sectionID) {
     {
       icon:  mdiCalendar,
       title: "Calendrier",
-      link: "/emploi/emplois/create",
+      link: "emploisCreate",
       color: "#795c9d",
       note: "Ce menu permet d'ajouter un nouvel emploi de temps",
       expand:false,
