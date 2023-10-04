@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\MenuGestion;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 
 class MenuGestionController extends Controller
@@ -16,6 +18,20 @@ class MenuGestionController extends Controller
 
     public function indexPrimaire(Request $request)
     {
+        $authUser = Auth::user();
+        $t = User::where('users.etablissement_id', $authUser->etablissement_id)
+            ->join(
+                'etablissement_section',
+                'users.etablissement_id',
+                '=',
+                'etablissement_section.etablissement_id',
+
+
+            )->where('etablissement_section.section_id', 1)
+            ->selectRaw('users.*')
+            ->get();
+        // dd('$terre:', $t);
+
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
                 'type' => 'error',

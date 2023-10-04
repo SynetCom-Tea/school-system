@@ -137,14 +137,29 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
+        // dd('request:', $request->all());
+        $authUser = Auth::user();
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
                 'type' => 'error',
                 'text' => 'Session expiré!',
             ]);
         }
+        $vUsers = User::where('users.etablissement_id', $authUser->etablissement_id)
+            ->join(
+                'etablissement_section',
+                'users.etablissement_id',
+                '=',
+                'etablissement_section.etablissement_id',
+
+
+            )->where('etablissement_section.section_id', (int)$request->section_id)
+            ->selectRaw('users.*')
+            ->with('apprenant', 'tuteur')
+            ->get();
+
         return Inertia::render('User/Index', [
-            'users' => User::where('user_id', Auth::user()->id)->get()
+            'users' => $vUsers ?? [],
         ]);
     }
 

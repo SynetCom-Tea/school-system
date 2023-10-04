@@ -2,6 +2,7 @@ import articlesIcon from "@iconify-icons/fluent-mdl2/articles";
 import formsAppsScriptOutlineRounded from "@iconify-icons/material-symbols/forms-apps-script-outline-rounded";
 import {
   mdiTimetable,
+  mdiAccountGroup,
   mdiAccount,
   mdiPurse,
   mdiHomeOutline,
@@ -133,7 +134,7 @@ export function listMenus(page) {
       { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/gestion/4' },
     ];
 
-    if (page?.roles == "Administrateur") {
+    if (page?.roles[0] == "Administrateur") {
 
       if (page?.sections[0]?.sections) {
         tab = page?.sections[0].sections.map(function (el) {
@@ -293,4 +294,67 @@ let superAdminMenus=[]
   }
 
     return [singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus]
+}
+
+export function listMenusBySection(page, sectionID) {
+  let result
+     let childrenBySection = [
+    {
+      icon: mdiAccountGroup,
+      title: "Liste utilisateurs",
+         link: "/users",
+         color: "rgb(205,92,92)",
+         note: "Ce menu permet d'accèder à la liste des utilisateurs de la section",
+      expand:false,
+      permissions: "manage_system",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Rôles",
+      link: "/enseignement/roles",
+      color: "rgb(139,0,0)",
+      note: "Ce menu permet d'accèder à la liste des rôles de la section",
+      expand:false,
+      permissions: "manage_system",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Permissions",
+      link: "/enseignement/permissions",
+      color: "rgb(210,105,30)",
+      note: "Ce menu permet d'accèder à la liste des permissions de la section",
+      expand:false,
+      permissions: "manage_system",
+    },
+    {
+      title: "Inscription",
+      icon: mdiAccountSchool,
+      link: "/subscribers",
+      color: "rgb(128,0,128)",
+      note: "Ce menu permet d'accèder à la liste des inscrits de la section",
+      expand:false,
+      permissions: "manage_system"
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Emploi",
+      link: "emplois",
+      color: "rgb(75,0,130)",
+      note: "Ce menu permet d'accèder à la liste des emplois de la section",
+      expand:false,
+      permissions: "manage_system",
+    },
+    {
+      icon:  mdiCalendar,
+      title: "Calendrier",
+      link: "/emploi/emplois/create",
+      color: "#795c9d",
+      note: "Ce menu permet d'ajouter un nouvel emploi de temps",
+      expand:false,
+      permissions: "manage_system",
+    },
+  ];
+  if (page?.roles[0] == "Administrateur") { result= [childrenBySection]}
+  return result??[]
+
 }

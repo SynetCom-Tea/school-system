@@ -76,7 +76,7 @@ class RoleSeeder extends Seeder
                 //*Apprenant1 */
 
                 $eleve3 = User::create([
-                        'email' => 'eleve1@gmail.com',
+                        'email' => 'eleve3@gmail.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 5,
@@ -91,7 +91,7 @@ class RoleSeeder extends Seeder
                 //*Apprenant4 */
 
                 $eleve4 = User::create([
-                        'email' => 'eleve2@gmail.com',
+                        'email' => 'eleve4@gmail.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 6,

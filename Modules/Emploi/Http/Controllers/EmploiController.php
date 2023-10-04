@@ -29,12 +29,12 @@ class EmploiController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
         // return view('emploi::index');
 
         //code...
-
+        // dump('r:', $request->all());
         $events = [];
         $emplois = Emploi::with('seances.horaire')->get();
         // dd('$emplois:', $emplois, $emplois->count());

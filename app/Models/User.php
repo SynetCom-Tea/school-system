@@ -12,7 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
+use Modules\Scolarite\Entities\Tuteur;
 
 class User extends Authenticatable
 {
@@ -62,6 +62,14 @@ class User extends Authenticatable
     public function etablissement(): BelongsTo
     {
         return $this->belongsTo(Etablissement::class);
+    }
+    public function tuteur(): BelongsTo
+    {
+        return $this->belongsTo(Tuteur::class);
+    }
+    public function apprenant(): BelongsTo
+    {
+        return $this->belongsTo(Apprenant::class);
     }
     public function section_etablissements(): BelongsToMany
     {

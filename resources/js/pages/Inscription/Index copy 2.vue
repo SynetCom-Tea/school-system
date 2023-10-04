@@ -40,7 +40,6 @@
               v-model="primaire"
               itemValue="id"
               itemTitle="libelle"
-              isRequired
               label="Niveau primaire"
               @update:modelValue="
                 onChangeModelValueNiveaux('primaire', primaire, section, year)
@@ -52,22 +51,22 @@
               :items="niveauxSecondaire"
               v-model="secondaire"
               itemValue="id"
+              class="mt-2"
               itemTitle="libelle"
-              isRequired
               label="Secondaire"
               @update:modelValue="
                 onChangeModelValueNiveaux('secondaire', secondaire, section, year)
               "
             ></Autocomplete>
           </v-col>
-          <v-col cols="2">
-            <v-btn
-              color="primary"
-              style="text-transform: none; font-size: 10px"
-              @click="reset()"
-            >
-              Réinitialiser</v-btn
-            ></v-col
+
+          <Button
+            color="primary"
+            sizeButton="x-large"
+            style="height=70px;text-transform: none; font-size: 10px"
+            @click="reset()"
+          >
+            Réinitialiser</Button
           >
         </v-row>
       </v-container>
@@ -106,12 +105,12 @@
             ></v-select>
             <v-spacer></v-spacer>
             <v-btn-toggle v-model="sortOrder" mandatory>
-              <v-btn color="blue" value="asc">
-                <v-icon :icon="icons.mdiArrowUp"></v-icon>
-              </v-btn>
-              <v-btn color="blue" value="desc">
+              <Button value="asc" color="primary" :appendIcon="icons.mdiArrowUp">
+                <!-- <v-icon :icon="icons.mdiArrowUp"></v-icon> -->
+              </Button>
+              <Button value="desc">
                 <v-icon :icon="icons.mdiArrowDown"></v-icon>
-              </v-btn>
+              </Button>
             </v-btn-toggle>
           </v-toolbar>
         </template>
@@ -150,59 +149,35 @@
                       }}</span>
 
                       <div class="text-center" :key="index" v-else>
-                        <v-expansion-panels>
-                          <v-expansion-panel>
-                            <v-expansion-panel-title
-                              :expand-icon="icons.mdiPlus"
-                              :collapse-icon="icons.mdiMinus"
+                        <v-row>
+                          <v-col cols="5">
+                            <a
+                              style="cursor: pointer"
+                              class="text-caption text-decoration-none text-primary"
+                              target="_blank"
                             >
-                              Documents
-                            </v-expansion-panel-title>
-                            <v-expansion-panel-text> Documents </v-expansion-panel-text>
-                          </v-expansion-panel>
-
-                          <v-expansion-panel>
-                            <v-expansion-panel-title @click="onclickFrais(item.raw)">
-                              Frais
-                              <template v-slot:actions="{ expanded }">
-                                <v-icon
-                                  :color="!expanded ? 'teal' : ''"
-                                  :icon="expanded ? icons.mdiPencil : icons.mdiCheck"
-                                ></v-icon>
-                              </template>
-                            </v-expansion-panel-title>
-                            <v-expansion-panel-text>
-                              <v-row v-for="(key, index) in dataVersements">
-                                <v-col>
-                                  <v-list-item
-                                    :key="index"
-                                    :title="key.title"
-                                    :subtitle="String(key.subtitle) ?? 'Non renseigné'"
-                                  ></v-list-item>
-                                </v-col>
-                              </v-row>
-                            </v-expansion-panel-text>
-                          </v-expansion-panel>
-
-                          <v-expansion-panel>
-                            <v-expansion-panel-title
-                              disable-icon-rotate
-                              @click="onclickTuteurs(item.raw)"
+                              Documents</a
+                            ></v-col
+                          >
+                          <v-col cols="3" @click="onclickFrais(item.raw)">
+                            <a
+                              style="cursor: pointer"
+                              class="text-caption text-decoration-none text-secondary"
+                              target="_blank"
                             >
-                              Tuteurs
-                              <template v-slot:actions>
-                                <v-icon color="error" :icon="icons.mdiAlertCircle">
-                                </v-icon>
-                              </template>
-                            </v-expansion-panel-title>
-                            <v-expansion-panel-text>
-                              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed
-                              do eiusmod tempor incididunt ut labore et dolore magna
-                              aliqua. Ut enim ad minim veniam, quis nostrud exercitation
-                              ullamco laboris nisi ut aliquip ex ea commodo consequat.
-                            </v-expansion-panel-text>
-                          </v-expansion-panel>
-                        </v-expansion-panels>
+                              Frais</a
+                            ></v-col
+                          >
+                          <v-col cols="4" @click="onclickTuteurs(item.raw)">
+                            <a
+                              style="cursor: pointer"
+                              class="text-caption text-decoration-none text-primary"
+                              target="_blank"
+                            >
+                              Tuteurs</a
+                            ></v-col
+                          >
+                        </v-row>
                       </div>
                     </v-list-item-subtitle>
                   </v-list-item>
@@ -249,17 +224,23 @@
           </div>
         </template>
       </v-data-iterator>
+      <div v-if="selectedFrais != null">
+        <FraisDetail :item="selectedFrais" />
+      </div>
     </div>
   </AuthenticatedLayout>
 </template>
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router, useForm } from "@inertiajs/vue3";
+import { inject, provide, computed } from "vue";
 import {
   getNiveauxPrimaire,
   getNiveauxSecondaire,
   getAcademicYears,
+  generateColorsForGraph,
 } from "../../utils/commonFunctions.js";
+import FraisDetail from "../../components/inscriptions/FraisDetail.vue";
 import {
   mdiChevronLeft,
   mdiChevronRight,
@@ -281,6 +262,7 @@ import {
 } from "@mdi/js";
 export default {
   components: {
+    FraisDetail,
     AuthenticatedLayout,
     mdiAccountCircle,
     mdiAccountSchool,
@@ -295,12 +277,11 @@ export default {
   },
   //*403#
   // layout: AuthenticatedLayout,
+  props: ["vSectionID"],
   data() {
     return {
-      fav: true,
-      menu: false,
-      message: false,
-      hints: true,
+      dialogFrais: false,
+      selectedFrais: null,
       itemsPerPageArray: [3, 6, 9],
       itemsPerPage: 3,
       page: 1,
@@ -371,8 +352,7 @@ export default {
       },
       dParams: {},
       academicYears: [],
-      onDetailUpdate: false,
-      dialogDetailUpdate: true,
+
       selectedItemForUpdate: "",
       listSections: [],
       dataVersements: [],
@@ -392,21 +372,25 @@ export default {
     };
   },
   async mounted() {
-    // console.log("page:", this.$page.props);
-
     this.academicYears = await this.getAcademicYears();
-
     this.getSections;
   },
   computed: {
+    modelValueDialogFrais: {
+      get() {
+        return this.dialogFrais;
+      },
+      set(newValue) {
+        this.$emit("value", newValue);
+      },
+    },
     numberOfPages() {
       if (this.subscribers.length > 0)
         return Math.ceil(this.subscribers.length / this.itemsPerPage);
     },
     filteredKeys() {
-      // return this.headers.filter((k) => console.log("key:", key));
       return this.headers.filter((key) => {
-        console.log("key:", key);
+        // console.log("key:", key);
         return key && key.title !== "Matricule";
       });
     },
@@ -431,66 +415,13 @@ export default {
     getNiveauxPrimaire,
     getNiveauxSecondaire,
     getAcademicYears,
-    onclickTuteurs(e) {
-      console.log("onclickTuteurs:", e);
-    },
+    generateColorsForGraph,
+
+    onclickTuteurs(e) {},
     async onclickFrais(e) {
-      console.log("onclickFrais:", e);
-      let axiosResult = [];
-      let idClasseAnnee, idApprenant;
-      if (e && e.more) {
-        idClasseAnnee = e.more.classeAnnee.id;
-        idApprenant = e.more.apprenant.id;
-      }
+      this.selectedFrais = e;
 
-      axiosResult = await axios
-        .get(
-          route("getVersementsByClasseAnneeAndStudent", {
-            classeAnnee: idClasseAnnee,
-            apprenant: idApprenant,
-          })
-        )
-        .then((res) => {
-          if (typeof res.data == "string" || typeof res.data == "undefined") {
-            this.$toast.error("Données non valides!");
-          } else {
-            return res.data;
-          }
-        });
-
-      let dataR = [];
-      let frais, student;
-      if (axiosResult && axiosResult.length > 0) {
-        axiosResult.forEach((element, index) => {
-          if (element) {
-            student = element.apprenant;
-            frais = element.frais;
-            dataR.push([
-              // {
-              //   title: "Nom complet",
-              //   subtitle: student ? student.nom + " " + student.prenom : null,
-              //   nomApprenant: student ? student.nom + " " + student.prenom : null,
-              // },
-              // { title: "idVersement", subtitle: element.id },
-              { title: "Type de frais", subtitle: frais.type_frais.libelle },
-              {
-                title: "Total  à verser",
-                subtitle: frais.montant
-                  ? parseFloat(frais.montant).toLocaleString()
-                  : null,
-              },
-              {
-                title: "Versement effectué",
-                subtitle: element.montant
-                  ? parseFloat(element.montant).toLocaleString()
-                  : null,
-              },
-            ]);
-          }
-        });
-        console.log("dataR:", dataR);
-        this.dataVersements = dataR.flat() ?? [];
-      }
+      this.dialogFrais = true;
     },
     nextPage() {
       if (this.page + 1 <= this.numberOfPages) this.page += 1;
@@ -498,11 +429,17 @@ export default {
     prevPage() {
       if (this.page - 1 >= 1) this.page -= 1;
     },
-    onClickRow(value) {
-      console.log("onClickRow:", value);
-    },
+    onClickRow(value) {},
     reset() {
       this.dParams = {};
+      this.subscribers = [];
+      this.year = null;
+      this.annee = null;
+      this.section = null;
+      this.primaire = null;
+      this.secondaire = null;
+      this.niveauxPrimaire = [];
+      this.niveauxSecondaire = [];
     },
     async onChangeModelValueNiveaux(classe, value, section, year) {
       let niveau;
@@ -521,14 +458,12 @@ export default {
       let getData = await this.getListUsers(this.dParams);
       this.subscribers = this.customizeData(getData);
     },
-    async onChangeModelValueYears(year) {
-      console.log("year from onChangeModelValueYears", year);
-    },
+    async onChangeModelValueYears(year) {},
     async onChangeModelValueSections(e, year) {
       let list;
       this.dParams = {
         idSection: e,
-        niveauSection: "niveau0",
+        niveauSection: this.vSectionID,
         academicYear: year,
       };
       let getData = await this.getListUsers(this.dParams);
@@ -559,7 +494,6 @@ export default {
             })
           )
           .then((res) => {
-            console.log("res:", res);
             if (typeof res.data == "string" || typeof res.data == "undefined") {
               this.$toast.error("Données non valides!");
             } else {
@@ -582,7 +516,6 @@ export default {
             columns.push({
               matricule: element.apprenant?.matricule,
               name: element.apprenant?.nom + " " + element.apprenant?.prenom,
-              // prenom: element.apprenant?.prenom,
               adresse: element.apprenant?.adresse,
               date_lieu_naissance:
                 element.apprenant?.date_naissance +
@@ -596,49 +529,26 @@ export default {
                 classeAnnee: element.classe_annee,
               },
             });
-            // columns.push({
-            //   apprenant: element.apprenant,
-            //   classe: element.classe_annee?.classe,
-            //   niveau: element.classe_annee?.classe?.niveau,
-            // });
           }
         });
       }
-      console.log("flattenedData", columns);
+
       return columns ?? [];
     },
     functionOnClickAddButton() {
       router.get(route("inscriptions.create"));
     },
-    submitNewLine() {
-      console.log("submitNewLine");
-    },
+    submitNewLine() {},
     editItem(item) {
-      console.log("item from editItem:", item);
       this.editedObject = Object.assign({}, item);
       if (item) {
         this.selectedItemForUpdate = item;
       }
-      if (this.dialogDetailUpdate) {
-        console.log("here");
-        this.onDetailUpdate = true;
-      }
-      // console.log("this.selectedItemForUpdate:", this.selectedItemForUpdate);
-      // console.log("this.dialogDetailUpdate:", this.dialogDetailUpdate);
     },
     deleteItem(item) {
       // console.log("item from deleteItem:", item);
     },
-    onConfirmDeleting() {
-      console.log("confirm deleting");
-    },
-    onClickCancelButtonOfMDU() {
-      this.onDetailUpdate = false;
-    },
-    onClickSaveButtonOfMDU() {
-      // console.log("enregistrer la mise à jour:");
-      this.onDetailUpdate = false;
-    },
+    onConfirmDeleting() {},
 
     addRow() {
       this.form.tuteurs.push({
@@ -653,6 +563,11 @@ export default {
     removeRow(p) {
       this.form.tuteurs = this.form.tuteurs.filter((product) => product !== p);
     },
+  },
+  provide() {
+    return {
+      vmodeldialogFrais: computed(() => this.dialogFrais),
+    };
   },
 };
 </script>

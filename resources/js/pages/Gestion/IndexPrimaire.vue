@@ -1,5 +1,7 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { listMenusBySection } from "../../utils/ListNavAppBar.js";
+import { router, usePage, useForm } from "@inertiajs/vue3";
 import {
   mdiAccountSchoolOutline,
   mdiWeatherHurricane,
@@ -11,6 +13,7 @@ export default {
   components: { AuthenticatedLayout },
   data() {
     return {
+      authPage: this.$page.props,
       listTitles: [{ name: "Forida" }, { name: "Niamey" }],
       icons: {
         mdiAccountSchoolOutline,
@@ -19,15 +22,44 @@ export default {
         mdiWeatherWindy,
         mdiAlert,
       },
-      labels: { 0: "SU", 1: "MO", 2: "TU", 3: "WED", 4: "TH", 5: "FR", 6: "SA" },
-      expand: false,
+      form: this.$inertia.form({
+        section_id: 1,
+      }),
+      expand: {},
       time: 0,
-      forecast: [
-        { day: "Tuesday", icon: "mdi-white-balance-sunny", temp: "24\xB0/12\xB0" },
-        { day: "Wednesday", icon: "mdi-white-balance-sunny", temp: "22\xB0/14\xB0" },
-        { day: "Thursday", icon: "mdi-cloud", temp: "25\xB0/15\xB0" },
-      ],
     };
+  },
+  mounted() {
+    this.getMenus;
+  },
+  computed: {
+    getMenus() {
+      let list = this.listMenusBySection(this.authPage, 1);
+      return list[0] ?? [];
+    },
+  },
+  methods: {
+    listMenusBySection,
+    goToPage(item) {
+      console.log("goToPage(item):", item);
+      if (item.link == "/users") {
+        this.form.get(route("users.index"));
+      }
+      if (item.link == "/subscribers") {
+        this.form.get(route("inscriptions.index"));
+      }
+      if (item.link == "emplois") {
+        this.form.get(route("emplois.index"));
+      }
+    },
+    onClickExpland(item) {
+      console.log("onClickExpland(item):", item);
+      let vExpand = item.expand;
+      // console.log(" vExpand:", vExpand);
+      this.expand[item.expand] = !vExpand;
+      // item.expand = this.expand[item.expand];
+      // console.log("expand:", this.expand[item.expand]);
+    },
   },
 };
 </script>
@@ -46,43 +78,37 @@ export default {
 
       <br />
       <v-row>
-        <v-col v-for="(item, i) in listTitles" :cols="12 / listTitles.length">
-          <v-card class="mx-auto" max-width="250">
-            <v-card-text class="py-0" :key="i">
-              <v-row align="center" no-gutters>
-                <v-col class="text-h6" cols="6"> Liste des utilisateurs</v-col>
+        <v-col v-for="(item, i) in getMenus" cols="4">
+          <v-card
+            :prepend-icon="item.icon"
+            class="mx-auto"
+            max-width="250"
+            :color="item.color"
+          >
+            <v-card-text class="py-0" :key="i" @click="goToPage(item)">
+              <v-card-title style="color: primary">{{ item.title }}</v-card-title>
 
-                <v-col cols="6" class="text-right">
-                  <v-icon
-                    color="error"
-                    :icon="icons.mdiWeatherHurricane"
-                    size="50"
-                  ></v-icon>
-                </v-col>
-              </v-row>
+              <!-- <v-icon color="secondary" :icon="item.icon"></v-icon> -->
+
+              <div class="d-flex py-3 justify-space-between">
+                <v-list-item density="compact" :prepend-icon="icons.mdiWeatherWindy">
+                  <v-list-item-subtitle>Section Primaire</v-list-item-subtitle>
+                </v-list-item>
+              </div>
             </v-card-text>
-
-            <div class="d-flex py-3 justify-space-between">
-              <v-list-item density="compact" :prepend-icon="icons.mdiWeatherWindy">
-                <v-list-item-subtitle>123 km/h</v-list-item-subtitle>
-              </v-list-item>
-
-              <v-list-item density="compact" :prepend-icon="icons.mdiWeatherPouring">
-                <v-list-item-subtitle>48%</v-list-item-subtitle>
-              </v-list-item>
-            </div>
-
             <v-expand-transition>
-              <div v-if="expand">
-                <p>Ce menu permet d'accèder à la liste des inscrits</p>
+              <div v-if="expand[item.expand]" :key="i">
+                <span style="padding: 5px; font-size: 12px">{{ item.note }}</span>
               </div>
             </v-expand-transition>
 
             <v-divider color="secondary"></v-divider>
 
             <v-card-actions>
-              <v-btn @click="expand = !expand">
-                {{ !expand ? "Lire illustration" : "Fermer la note" }}
+              <v-btn @click="onClickExpland(item)">
+                <span style="font-size: 9px">{{
+                  !expand[item.expand] ? "Lire la note" : "Fermer la note"
+                }}</span>
               </v-btn>
             </v-card-actions>
           </v-card>
