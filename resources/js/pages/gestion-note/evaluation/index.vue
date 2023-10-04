@@ -117,7 +117,7 @@ export default {
             this.dialog_title =  'Nouvelle Evaluation'
         },
         editItem(item) {
-            // console.log('code', item.enseignement_annee_id)
+            // console.log('code', item.code)
             this.form.id = item.id
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage
@@ -125,12 +125,12 @@ export default {
             this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
             this.dialog = true
-            this.dialog_title = 'Modifier Evaluation ' 
+            this.dialog_title = 'Modifier Evaluation' + ' ' + item.code
         },
         deleteItem(item) {
             this.$swal({
-                title: 'Es-tu sûr?',
-                text: "Vous ne pourrez pas revenir en arrière!",
+                title: 'Etes-vous sûr de vouloir supprimer evaluation de' + ' ' + item.code + '?',
+                text: "Vous ne pourrez pas revenir en arrière!!!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: 'orange',

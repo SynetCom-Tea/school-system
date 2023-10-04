@@ -93,7 +93,7 @@ class EvaluationController extends Controller
             WHERE e.id = :enseignant_id AND s.id = :section_id
         ",[
             'enseignant_id'=>$user->enseignant_id,
-           'section_id'=>2
+            'section_id'=>2
         ]);
         $evaluation_superieures = DB::select("
             SELECT m.nom matiere,c.code code,e.nom enseignant,ev.date,t.libelle type,p.libelle periode,
