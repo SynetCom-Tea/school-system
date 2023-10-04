@@ -106,7 +106,7 @@ export default {
 
 <template>
 <v-card>
-    <page-toolbar :icon="icon.mdiAccountGroup">Gestion des utilisateurs</page-toolbar>
+    <Toolbar :icon="icon.mdiSchool" toolbarTitle="Gestion des utilisateurs"></Toolbar>
     <v-card-text>
         <Datatable :headers="headers" :items="users" :functionOnClickAddButton="goTo">
         </Datatable>

@@ -70,7 +70,7 @@
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
-                        <v-list-group :value="getListMenus[1]?.title" v-if="$page.props?.role[0]" >
+                        <v-list-group :value="getListMenus[1]?.title" v-if="$page.props?.role && ($page.props?.role == 'Super-administrateur' || $page.props?.role == 'Administrateur')" >
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>
@@ -179,7 +179,6 @@ export default {
 
     data: () => {
         return {
-            longeur : null,
             MenuAdmin: [],
             open: ["getListMenus[1]"],
             drawer: true,
@@ -205,8 +204,6 @@ export default {
         listMenus(this.$page.props);
     },
     mounted() { 
-        this.longeur = this.$page?.props.sections[0].sections.map(el => el.libelle)
-        // console.log("sections", this.$page?.props.sections[0].sections.map(el => el.libelle));
         axios.interceptors.response.use(
             function (response) {
                 // console.log("response:", response);

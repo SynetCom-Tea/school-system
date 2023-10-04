@@ -114,6 +114,7 @@ export default {
     methods: {
         create() {
             this.dialog = true
+            this.dialog_title =  'Nouvelle Evaluation'
         },
         editItem(item) {
             // console.log('code', item.enseignement_annee_id)
