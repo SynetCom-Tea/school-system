@@ -340,6 +340,7 @@ export default {
     // listMenus(this.$page.props);
   },
   mounted() {
+    
     axios.interceptors.response.use(
       function (response) {
         return response;

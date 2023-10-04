@@ -26,6 +26,9 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        DB::statement("ALTER TABLE emplois ADD COLUMN tranche_date varchar(255)
+            GENERATED ALWAYS AS (CONCAT(date_debut,'-',date_fin));");
+
         DB::statement("ALTER TABLE emplois ADD COLUMN nom_classe varchar(255);");
 
         DB::statement("

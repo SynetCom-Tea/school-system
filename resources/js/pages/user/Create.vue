@@ -1,12 +1,16 @@
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { router, usePage, useForm } from "@inertiajs/vue3";
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import {
-  mdiAccountPlusOutline,
-  mdiEmailOutline,
-  mdiCancel,
-  mdiCheckCircle,
-} from "@mdi/js";
+    router,
+    usePage,
+    useForm
+} from '@inertiajs/vue3';
+import {
+    mdiAccountPlusOutline,
+    mdiEmailOutline,
+    mdiCancel,
+    mdiCheckCircle
+} from '@mdi/js'
 export default {
     components: {
         mdiAccountPlusOutline,
@@ -18,7 +22,6 @@ export default {
     props: ['roles', 'sections', 'etablissements', 'apprenants', 'enseignants','etablissement_sections'],
     data() {
         return {
-            role_p_a: null,
             role_p_u: null,
             icon: {
                 mdiAccountPlusOutline,
@@ -29,7 +32,7 @@ export default {
             form: useForm({
                 nom: '',
                 prenom: '',
-                roles: [],
+                roles: null,
                 etablissement_id: null,
                 sections: [],
                 apprenant_id: null,
@@ -74,40 +77,27 @@ export default {
     },
     created() {
         this.role_p_u = this.roles.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
-        this.role_p_a = this.roles.filter(el => el.name == 'Administrateur')
     }
 }
 </script>
 <template>
-  <v-card>
-    <Toolbar
-      :icon="icon.mdiAccountPlusOutline"
-      toolbarTitle="Nouvel utilisateur"
-    ></Toolbar>
-
+<v-card>
+    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Nouvel Utilisateur"></Toolbar>
     <v-card-text>
         <v-form>
             <v-row>
                 <v-col md="6">
                     <TextField name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true"></TextField>
                     <TextField name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom"></TextField>
-                    <Autocomplete v-if="$page.props.auth.user.id == 1" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="sections" multiple chips clearable v-model="form.sections">
-                    </Autocomplete>
-                    <Autocomplete v-if="$page.props.auth.user.id !== 1 && form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="etablissement_sections" chips clearable v-model="form.section">
-                    </Autocomplete>
-                </v-col>
-                <v-col md="6" v-if="$page.props.auth.user.id == 1">
-                    <Autocomplete label="Roles" :isRequired="true" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" multiple chips clearable v-model="form.roles">
-                    </Autocomplete>
-                    <Autocomplete label="Etablissement" :isRequired="true" item-title="name" item-value="id" variant="solo-filled" :items="etablissements" v-model="form.etablissement_id">
+                    <Autocomplete v-if="$page.props.auth.user.id !== 1 && form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="etablissement_sections" multiple chips clearable v-model="form.section">
                     </Autocomplete>
                 </v-col>
                 <v-col v-if="$page.props.auth.user.id !=1">
-                    <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" multiple chips clearable v-model="form.roles">
+                    <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" chips clearable v-model="form.roles">
                     </Autocomplete>
-                    <Autocomplete label="Enseignement" v-if="form.roles==2" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="apprenants" chips clearable>
+                    <Autocomplete label="Enseignant" v-if="form.roles==3" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="enseignants" chips clearable>
                     </Autocomplete>
-                    <Autocomplete label="Apprenants" v-if="form.roles==3" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="enseignants" chips clearable>
+                    <Autocomplete label="Apprenants" v-if="form.roles==4" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="apprenants" chips clearable>
                     </Autocomplete>
                 </v-col>
             </v-row>
@@ -122,5 +112,5 @@ export default {
             </v-card-actions>
         </v-form>
     </v-card-text>
-  </v-card>
+</v-card>
 </template>

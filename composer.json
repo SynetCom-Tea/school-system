@@ -34,7 +34,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/CountDayRepet.php"
+            "app/Helpers/CountDayRepet.php",
+            "app/Helpers/GetClasses.php"
         ]
     },
     "autoload-dev": {

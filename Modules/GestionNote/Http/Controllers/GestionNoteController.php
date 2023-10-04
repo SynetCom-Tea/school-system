@@ -23,7 +23,7 @@ class GestionNoteController extends Controller
      */
     public function create()
     {
-        return view('gestionnote::create');
+        
     }
 
     /**

@@ -74,6 +74,7 @@ InertiaProgress.init({ color: '#7d002c' });
     };
 const vuetify = createVuetify({
       theme: {
+        dark: false,
         defaultTheme: "myAllBlackTheme",
         themes: {
           myAllBlackTheme,

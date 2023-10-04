@@ -22,6 +22,7 @@ use App\Models\EtablissementSection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Inscription;
 use Modules\Scolarite\Entities\Versement;

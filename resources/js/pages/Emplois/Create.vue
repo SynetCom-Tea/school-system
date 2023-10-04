@@ -143,7 +143,7 @@ export default {
                       label="Section"
                       v-model="form.section"
                       :items="allSections"
-                      :onchangeModelValue="setNiveau(form.section)"
+                      @update:modelValue="setNiveau(form.section)"
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
@@ -153,7 +153,7 @@ export default {
                       label="Niveau"
                       v-model="form.niveau"
                       :items="niveaux"
-                      :onchangeModelValue="setClasse(form.niveau)"
+                      @update:modelValue="setClasse(form.niveau)"
                       :disabled="!form.section"
                       item-title="libelle"
                       item-value="id"
