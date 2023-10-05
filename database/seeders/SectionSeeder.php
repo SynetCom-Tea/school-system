@@ -15,45 +15,45 @@ class SectionSeeder extends Seeder
     public function run(): void
     {
         Section::create([
+            'id' => 1,
             'libelle' => 'Primaire'
         ]);
         Section::create([
+            'id' => 2,
             'libelle' => 'Secondaire'
         ]);
         Section::create([
-            'libelle' => 'Supérieur'
+            'id' => 3,
+            'libelle' => 'Supérieure'
         ]);
         Section::create([
+            'id' => 4,
             'libelle' => 'Universitaire'
         ]);
 
         Role::create([
-            'name' => 'Super-administrateur',
-            'guard_name'=>'web',
-        ]);
-        Role::create([
             'name' => 'Administrateur',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Enseignant',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Apprenant',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Proviseur',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'APT',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
         Role::create([
             'name' => 'Surveillant',
-            'guard_name'=>'web',
+            'guard_name' => 'web',
         ]);
     }
 }

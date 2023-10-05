@@ -14,7 +14,6 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             PermissionSeeder::class,
-            
             TypeEtablissementSeeder::class,
             SectionSeeder::class,
             NiveauTableSeeder::class,
@@ -23,13 +22,19 @@ class DatabaseSeeder extends Seeder
             ClasseSeeder::class,
             AnneeScolaireSeeder::class,
             ClasseAnneeSeeder::class,
+            TypeFraisSeeder::class,
+            TuteursSeeder::class,
             ApprenantSeeder::class,
-            EnseignantSeeder::class,
             RoleSeeder::class,
-            
+            EnseignantSeeder::class,
+            FraisSeeder::class,
+            VersementsSeeder::class,
+            ApprenantClasseAnneesSeeder::class,
             SalleSeeder::class,
-            MatiereTableSeeder::class
-
+            MatiereTableSeeder::class,
+            NiveauMatiereSeeder::class,
+            EnseignantSeeder::class,
+            EnseiggnementAnneeSeeder::class
             // EnseignementDatabaseSeeder::class,
         ]);
     }

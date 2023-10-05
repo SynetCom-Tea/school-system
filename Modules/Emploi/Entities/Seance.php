@@ -10,7 +10,7 @@ class Seance extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = ['date_seance', 'heure_debut', 'heure_fin', 'statut', 'horaire_id', 'salle_id', 'niveau_matiere_id', 'emploi_id'];
     
     protected static function newFactory()
     {

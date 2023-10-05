@@ -27,10 +27,11 @@ export default {
     heightResponsive: {
       type: Number,
       required: false,
+      default: 80,
     },
     classResponsive: {
       type: String,
-      default: "ml-2 py-2",
+      default: "py-1",
     },
     maxWidthResponsive: {
       type: Number,
@@ -107,13 +108,13 @@ export default {
   >
     <v-select
       :items="items"
+      :item-title="itemTitle"
+      :item-value="itemValue"
       :variant="variant"
       :hint="hint"
       :density="density"
       v-bind="$attrs"
       :custom-filter="customFilter"
-      :item-title="itemTitle"
-      :item-value="itemValue"
       :style="style"
       :placeholder="placeholder"
       :rules="rules"

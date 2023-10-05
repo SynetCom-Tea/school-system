@@ -105,14 +105,11 @@ export default {
         <v-spacer></v-spacer>
         <div style="width: 200px">
           <Autocomplete
-            :append-inner-icon="icons.mdiMicrophone"
             auto-select-first
             style="margin-top: 20px"
             density="comfortable"
-            itemTitle="name"
-            itemValue="abbr"
             placeholder="Rechercher"
-            :prepend-inner-icon="icons.mdiMagnify"
+            :icon="icons.mdiMagnify"
             rounded
             theme="light"
             variant="solo"

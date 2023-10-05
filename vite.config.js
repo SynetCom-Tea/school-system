@@ -35,7 +35,15 @@ export default defineConfig({
                             name: componentName,
                             from: "vuetify/labs/VDataTable",
                         };
+                     if (componentName === "VDataIterator")
+                         return {
+
+                            name: componentName,
+                            from: "vuetify/labs/VDataIterator",
+                         };
+
                 },
+
                 VuetifyResolver(),
             ],
         }),

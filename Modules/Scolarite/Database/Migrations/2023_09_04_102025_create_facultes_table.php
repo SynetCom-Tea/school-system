@@ -16,7 +16,11 @@ return new class extends Migration
         Schema::create('facultes', function (Blueprint $table) {
             $table->id();
             $table->string('code');
-            $table->string('libele');
+            $table->string('libelle');
+            $table->foreignIdFor(App\Models\Etablissement::class)
+                ->references('id')->on('etablissements')->constrained()
+                ->onUpdate('cascade')
+                ->onDelete('restrict');
             $table->timestamps();
         });
     }

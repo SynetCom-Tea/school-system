@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Etablissement;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
@@ -13,14 +14,11 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('departements', function (Blueprint $table) {
+        Schema::create('type_frais', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-            $table->string('libele');
-            $table->foreignIdFor(\Modules\Scolarite\Entities\Faculte::class)
-                ->references('id')->on('facultes')->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
+            $table->string('libelle')->unique();
+            $table->foreignIdFor(Etablissement::class);
+            $table->softDeletes();
             $table->timestamps();
         });
     }
@@ -32,6 +30,6 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('departements');
+        Schema::dropIfExists('type_frais');
     }
 };

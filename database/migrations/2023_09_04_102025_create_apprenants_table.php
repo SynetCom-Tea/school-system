@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('matricule');
             $table->string('nom');
             $table->string('prenom');
+            $table->string('adresse')->nullable();
             $table->string('sex')->nullable();
             $table->string('date_naissance')->nullable();
             $table->string('lieu_naissance')->nullable();
@@ -30,19 +31,9 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
-        Schema::create('apprenant_tuteur', function (Blueprint $table) {
-
-            $table->foreignIdFor(\App\Models\Apprenant::class)
-                ->index()
-                ->references('id')->on('apprenants');
-            $table->foreignIdFor(\Modules\Scolarite\Entities\Tuteur::class)
-                ->index()
-                ->references('id')->on('tuteurs');
-        });
     }
 
     /**
      * Reverse the migrations.
      */
-
 };

@@ -9,15 +9,13 @@ declare module 'vue' {
   export interface GlobalComponents {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    VAuto: typeof import('vuetify/lib')['VAuto']
-    VAutocomple: typeof import('vuetify/lib')['VAutocomple']
-    VCar: typeof import('vuetify/lib')['VCar']
-    VData: typeof import('vuetify/lib')['VData']
-    VDataTab: typeof import('vuetify/lib')['VDataTab']
+    VDataIterator: typeof import('vuetify/labs/VDataIterator')['VDataIterator']
     VDataTable: typeof import('vuetify/labs/VDataTable')['VDataTable']
-    VStepper: typeof import('vuetify/lib')['VStepper']
-    VStepperHeader: typeof import('vuetify/lib')['VStepperHeader']
-    VStepperItem: typeof import('vuetify/lib')['VStepperItem']
-    VUtocomplete: typeof import('vuetify/lib')['VUtocomplete']
+    VListTile: typeof import('vuetify/lib')['VListTile']
+    VListTileAction: typeof import('vuetify/lib')['VListTileAction']
+    VListTileAvatar: typeof import('vuetify/lib')['VListTileAvatar']
+    VListTileContent: typeof import('vuetify/lib')['VListTileContent']
+    VListTileSubTitle: typeof import('vuetify/lib')['VListTileSubTitle']
+    VListTileTitle: typeof import('vuetify/lib')['VListTileTitle']
   }
 }

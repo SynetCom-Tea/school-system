@@ -7,7 +7,7 @@ import {
   mdiPresentation,
   mdiGift,
 } from "@mdi/js";
-
+import { inject, provide, computed } from "vue";
 export default {
   components: {
     mdiAccount,
@@ -24,7 +24,7 @@ export default {
       type: String,
       default: "Titre de la modale",
     },
-    onCloseModale: { type: Function },
+    onCloseModale: { type: Function, required: false },
     heightDialog: {
       type: Number,
       default: 300,
@@ -63,6 +63,17 @@ export default {
       },
     },
   },
+  methods: {
+    isClose() {
+      // this.onCloseModale;
+      this.modelDialog = false;
+    },
+  },
+  provide() {
+    return {
+      vmodelDialog: computed(() => this.dialog),
+    };
+  },
 };
 </script>
 
@@ -71,19 +82,20 @@ export default {
     <v-dialog
       v-model="dialog"
       :fullscreen="isfullscreen"
+      persistent
       scrollable
       :scrim="false"
       :width="widthDialog"
       :height="heightDialog"
     >
       <v-card>
-        <v-toolbar dark color="primary">
-          <Button
+        <v-toolbar dark color="secondary">
+          <v-icon
             title="Icon de la modale"
-            variant="flat"
-            :prependIcon="iconHeaderModal"
+            style="margin: 10px"
+            :icon="iconHeaderModal"
             size="x-large"
-          ></Button>
+          ></v-icon>
 
           <v-toolbar-title
             style="
@@ -98,13 +110,7 @@ export default {
           </v-toolbar-title>
 
           <v-toolbar-items>
-            <Button
-              title="Fermer la modale"
-              fab
-              variant="flat"
-              :prependIcon="icons.mdiClose"
-              @click="onCloseModale"
-            ></Button>
+            <slot name="toolbars-items"></slot>
           </v-toolbar-items>
         </v-toolbar>
         <!-- content -->
@@ -132,7 +138,7 @@ export default {
               variant="text"
               color="red"
               nameButton="Quitter"
-              @click="onCloseModale"
+              @click="isClose()"
               style="float: right; margin: 10px; height: 30px"
             ></Button>
           </div>

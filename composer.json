@@ -32,7 +32,11 @@
             "Modules\\": "Modules/",
             "Database\\Factories\\": "database/factories/",
             "Database\\Seeders\\": "database/seeders/"
-        }
+        },
+        "files": [
+            "app/Helpers/CountDayRepet.php",
+            "app/Helpers/GetClasses.php"
+        ]
     },
     "autoload-dev": {
         "psr-4": {

@@ -29,18 +29,17 @@ class PermissionSeeder extends Seeder
     ];
     public function run(): void
     {
-        Permission::create(['name' => 'enseignant', 'description' => 'Permission Enseignant']);
-        Permission::create(['name' => 'etudiant', 'description' => 'Permission Etudiant']);
-        Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
-        Permission::create(['name' => 'manage_school', 'description' => 'Permission Administrateur']);
-        Permission::create(['name' => 'manage_welcome', 'description' => 'Paramètrage du welcome']);
-        Permission::create(['name' => 'manage_system', 'description' => 'Paramètre systeme']);
         foreach ($this->models as $k => $v) {
             Permission::create(['name' => $k . '.create', 'description' => 'Peut ajouter ' . $v]);
             Permission::create(['name' => $k . '.read', 'description' => 'Peut voir ' . $v]);
             Permission::create(['name' => $k . '.update', 'description' => 'Peut modifier ' . $v]);
             Permission::create(['name' => $k . '.delete', 'description' => 'Peut supprimer ' . $v]);
         }
-        
+        Permission::create(['name' => 'manage_welcome', 'description' => 'Paramètrage du welcome']);
+        Permission::create(['name' => 'manage_system', 'description' => 'Paramètre systeme']);
+        Permission::create(['name' => 'enseignant', 'description' => 'Permission Enseignant']);
+        Permission::create(['name' => 'etudiant', 'description' => 'Permission Etudiant']);
+        Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
+        Permission::create(['name' => 'manage_school', 'description' => 'Permission Administrateur']);
     }
 }

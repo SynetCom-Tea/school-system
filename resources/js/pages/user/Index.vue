@@ -1,18 +1,14 @@
 <script>
 import {
-    mdiAccountGroup,
-    mdiMagnify,
-    mdiLogout,
-    mdiPencil,
-    mdiDelete,
-    mdiPlus,
-} from '@mdi/js'
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import {
-    router,
-    usePage,
-    useForm
-} from '@inertiajs/vue3';
+  mdiAccountGroup,
+  mdiMagnify,
+  mdiLogout,
+  mdiPencil,
+  mdiDelete,
+  mdiPlus,
+} from "@mdi/js";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { router, usePage, useForm } from "@inertiajs/vue3";
 export default {
     components: {
         mdiAccountGroup,
@@ -37,7 +33,13 @@ export default {
             search: '',
             dialog: false,
             dialogDelete: false,
-            headers: [
+            headers: [{
+                    title: 'Id',
+                    align: 'start',
+                    key: 'id',
+                    sortable: false,
+                    key: "id",
+                },
                 {
                     title: "Nom",
                     align: "center",
@@ -47,6 +49,16 @@ export default {
                     title: "Prénom",
                     align: "center",
                     key: "prenom"
+                },
+                {
+                    title: "Sexe",
+                    align: "center",
+                    key: "sex"
+                },
+                {
+                    title: "Téléphone",
+                    align: "center",
+                    key: "telephone"
                 },
                 {
                     title: "Email",
@@ -64,52 +76,59 @@ export default {
         };
     },
 
-    computed: {
-        formTitle() {
-            return this.editedIndex === -1 ? 'New Item' : 'Edit Item'
-        },
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
+  },
 
-    watch: {
-        dialog(val) {
-            val || this.close()
-        },
-        dialogDelete(val) {
-            val || this.closeDelete()
-        },
+  watch: {
+    dialog(val) {
+      val || this.close();
     },
-    methods: {
-        initialize() {
-            this.users
-        },
-        goTo() {
-            router.get(route("users.create"));
-        },
+    dialogDelete(val) {
+      val || this.closeDelete();
     },
-    created() {
-        this.initialize()
-        if (this.$page.props.flash.message) {
-            this.$swal({
-                icon: 'success',
-                title: 'Creation',
-                text: this.$page.props.flash.message,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 5000,
-                timerProgressBar: true,
-            });
-        }
+  },
+  methods: {
+    initialize() {
+      this.users;
+    },
+    goTo() {
+      router.get(route("users.create"));
+    },
+  },
+  created() {
+    this.initialize();
+    if (this.$page.props.flash.message) {
+      this.$swal({
+        icon: "success",
+        title: "Creation",
+        text: this.$page.props.flash.message,
+        toast: true,
+        position: "top-end",
+        showConfirmButton: false,
+        timer: 5000,
+        timerProgressBar: true,
+      });
     }
+  },
 };
 </script>
 
 <template>
-<v-card>
-    <Toolbar :icon="icon.mdiSchool" toolbarTitle="Gestion des utilisateurs"></Toolbar>
+  <v-card>
+    <Toolbar
+      :icon="icon.mdiAccountGroup"
+      toolbarTitle="Gestion des utilisateurs"
+    ></Toolbar>
+
     <v-card-text>
         <Datatable :headers="headers" :items="users" :functionOnClickAddButton="goTo">
+
+            <template v-slot:item.actions="{item}">
+            </template>
         </Datatable>
     </v-card-text>
-</v-card>
+  </v-card>
 </template>

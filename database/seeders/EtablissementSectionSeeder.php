@@ -11,10 +11,7 @@ class EtablissementSectionSeeder extends Seeder
      * Run the database seeds.
      */
 
-    //     J'ai eu du mal avec le type Json de téléphone. j'ai donc modifier le type en string après la migration. Voir la requete ci-dessous:
 
-    //     ALTER TABLE etablissements
-    // modify telephone varchar(255) default null
 
     public function run(): void
     {
@@ -27,54 +24,80 @@ class EtablissementSectionSeeder extends Seeder
                 'etablissement_id' => 1,
                 'code' => NULL,
                 'section_id' => 1,
+                'systeme_lmd_id' => NULL,
             ),
             1 =>
             array(
                 'id' => 2,
+                'etablissement_id' => 1,
+                'code' => NULL,
+                'section_id' => 2,
+                'systeme_lmd_id' => NULL,
+            ),
+            2 =>
+            array(
+                'id' => 3,
+                'etablissement_id' => 1,
+                'code' => NULL,
+                'section_id' => 3,
+                'systeme_lmd_id' => NULL,
+            ),
+            3 =>
+            array(
+                'id' => 4,
+                'etablissement_id' => 1,
+                'code' => NULL,
+                'section_id' => 4,
+                'systeme_lmd_id' => NULL,
+            ),
+            4 =>
+            array(
+                'id' => 5,
                 'etablissement_id' => 2,
                 'code' => NULL,
                 'section_id' => 3,
+                'systeme_lmd_id' => NULL,
             ),
-            2 =>
+            // 2 =>
 
-            array(
-                'id' => 3,
-                'etablissement_id' => 3,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
-            3 =>
+            // array(
+            //     'id' => 3,
+            //     'etablissement_id' => 3,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
+            // 3 =>
 
-            array(
-                'id' => 4,
-                'etablissement_id' => 4,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
-            4 =>
+            // array(
+            //     'id' => 4,
+            //     'etablissement_id' => 4,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
+            // 4 =>
 
-            array(
-                'id' => 5,
-                'etablissement_id' => 4,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
-            5 =>
+            // array(
+            //     'id' => 5,
+            //     'etablissement_id' => 4,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
+            // 5 =>
 
-            array(
-                'id' => 6,
-                'etablissement_id' => 5,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
-            6 =>
+            // array(
+            //     'id' => 6,
+            //     'etablissement_id' => 5,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
+            // 6 =>
 
-            array(
-                'id' => 7,
-                'etablissement_id' => 6,
-                'code' => NULL,
-                'section_id' => 3,
-            ),
+            // array(
+            //     'id' => 7,
+            //     'etablissement_id' => 6,
+            //     'code' => NULL,
+            //     'section_id' => 3,
+            // ),
             // 7 =>
 
             // array(
@@ -182,29 +205,8 @@ class EtablissementSectionSeeder extends Seeder
             //     'code' => NULL,
             //     'section_id' => 2,
             // ),
-            // 20 =>
-            // array(
-            //     'id' => 21,
-            //     'etablissement_id' => 1,
-            //     'code' => NULL,
-            //     'section_id' => 2,
-            // ),
-            // 21 =>
-            // array(
-            //     'id' => 22,
-            //     'etablissement_id' => 1,
-            //     'code' => NULL,
-            //     'section_id' => 3,
-            // ),
-            // 22 =>
-            // array(
-            //     'id' => 23,
-            //     'etablissement_id' => 1,
-            //     'code' => NULL,
-            //     'section_id' => 4,
-            // ),
-        ));
 
+        ));
     }
     // public function run(): void
     // {

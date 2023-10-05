@@ -22,10 +22,6 @@
               Cette section vous permet de configurer les matieres enseignées dans cet
               établissement
             </li>
-            <li v-if="type == '3'">
-              Configurer également si l'établissement prend en charge le système
-              LMD(Licence Master Doctorat) et le régime d'évaluation
-            </li>
             <li>
               Le formulaire sera valide <strong>si et seulement si </strong>tous les
               champs obligatoires marqués par <span style="color: red">*</span> sont
@@ -47,61 +43,39 @@
         </div>
 
         <v-card-text style="margin: 10px">
-          <v-row v-if="type == '3'">
-            <v-col>
-              <v-switch
-                label="Souhaiterez-vous appliquez le système LMD ?"
-                v-model="form.lmd"
-                color="red"
-                inset
-              ></v-switch>
-            </v-col>
-            <v-col v-if="form.lmd">
-              <v-autocomplete
-                :items="['Type 1', 'Type 2']"
-                chips
-                closable-chips
-                :required="form.lmd"
-                color="blue-grey-lighten-2"
-                v-model="form.type_lmd"
-                label="Select"
-              ></v-autocomplete>
-            </v-col>
-            <v-col>
-              <v-switch
-                v-model="form.regime_evaluation"
-                color="indigo"
-                inset
-                :label="`Souhaiterez-vous appliquez le régime d'évaluation ?${
-                  !form.regime_evaluation ? 'Non' : 'Oui'
-                }`"
-              ></v-switch>
-            </v-col>
-          </v-row>
           <v-row>
             <v-col>
               <v-switch
-                @update:modelValue="resetForm(importation)"
                 v-model="importation"
+                @update:modelValue="submitForm(null)"
                 color="#004980"
                 inset
-                :label="`${
-                  !importation
-                    ? 'Renseignement des données par champs'
-                    : 'Importatation d\'un fichier pour alimenter les matières'
-                }`"
+                :label="'Importatation d\'un fichier pour alimenter les matières'"
               ></v-switch>
             </v-col>
             <v-col v-if="importation">
               <v-file-input
                 clearable
                 required
+                @change="handleFileUpload"
                 v-model="form.fichier_matiere"
-                label="File input"
+                @update:modelValue="submitForm(null)"
+                label="Charger le fichier des Matières"
                 variant="solo-inverted"
               ></v-file-input>
             </v-col>
-            <v-col></v-col>
+            <v-col v-if="importation"
+              ><v-btn
+                class="ma-2"
+                outlined
+                type="button"
+                color="primary"
+                href="../models/echantillons/fiche_echantillonage.ods"
+                download
+              >
+                Télécharger le Model
+              </v-btn></v-col
+            >
           </v-row>
         </v-card-text>
 
@@ -111,20 +85,18 @@
             <v-col cols="4">
               <TextField
                 label="Code matiere"
-                class="mt-2"
                 :isRequired="true"
                 placeholder="Code matiere"
-                @change="verify(matiere)"
+                @update:modelValue="submitForm(matiere)"
                 v-model="matiere.code"
               ></TextField>
             </v-col>
             <v-col cols="4">
               <TextField
-                class="mt-2"
                 label="Libelle matière"
                 :isRequired="true"
-                placeholder="Libelle matière"
-                required
+                @update:modelValue="submitForm(matiere)"
+                placeholder="Libelle matiere"
                 v-model="matiere.libelle"
               ></TextField>
             </v-col>
@@ -150,6 +122,7 @@
                 </div>
               </v-tooltip>
               <Button
+                type="button"
                 variant="outlined"
                 v-if="form.matieres.length >= 2"
                 icon
@@ -179,39 +152,23 @@
             </v-col>
           </v-row>
         </v-card-text>
-        <v-row class="text-center ml-3 mb-3"
-          ><v-col cols="auto">
-            <Button
-              type="submit"
-              title="Enregistrer cette étape"
-              nameButton="Enregistrer"
-              variant="flat"
-              @click="submitForm"
-              density="comfortable"
-              class="text-center"
-              block
-              size="large"
-              style="text-transform: none"
-            >
-            </Button> </v-col
-        ></v-row>
       </v-card>
     </v-container>
     <br />
   </form>
 </template>
 <script>
+// import XLSX from "xlsx/dist/xlsx.extendscript.js";
+import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
-import { XlsxRead, XlsxJson } from "vue3-xlsx/dist/vue3-xlsx.cjs.prod.js";
 export default {
   props: ["type"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
     mdiInformation,
-    XlsxRead,
-    XlsxJson,
+    XLSX,
   },
   data: () => ({
     tooltipModel: false,
@@ -220,6 +177,9 @@ export default {
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
     step: 1,
     file: null,
+    headers: [],
+    data: [],
+    contentType: ["code", "nom"],
     importation: false,
     section: null,
     form: useForm({
@@ -233,6 +193,98 @@ export default {
   }),
 
   methods: {
+    handleFileUpload(event) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const data = e.target.result;
+
+          // Utilisation de JavaScript natif pour lire le fichier Excel
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheet = workbook.Sheets[workbook.SheetNames[0]];
+
+          // Convertir les données de la feuille en tableau
+          const sheetData = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+
+          // La première ligne est généralement utilisée comme en-têtes de colonne
+          if (sheetData.length > 0) {
+            this.headers = sheetData[0];
+            this.data = sheetData.slice(1);
+
+            if (this.checkEntete(this.headers, this.contentType)) {
+              const missingDataIndex = this.donneesManquantes(this.data);
+
+              if (typeof missingDataIndex === "number") {
+                this.$swal.fire({
+                  title: "Valider",
+                  text: "Votre fichier est valide!",
+                  icon: "success",
+                  confirmButtonText: "OK",
+                });
+              } else {
+                this.form.fichier_matiere = null;
+                this.submitForm(null);
+                const ligne = missingDataIndex.rowIndex + 2;
+                const colonne = missingDataIndex.columnIndex + 1;
+                this.$swal.fire({
+                  title: "Erreur",
+                  text:
+                    "Données manquantes à la ligne " +
+                    ligne +
+                    " et colonne " +
+                    colonne +
+                    " Veuillez corriger!",
+                  icon: "warning",
+                  confirmButtonText: "OK",
+                });
+              }
+            } else {
+              this.form.fichier_matiere = null;
+              this.submitForm(null);
+              this.$swal.fire({
+                title: "Erreur",
+                text:
+                  "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaite veuillez corriger !",
+                icon: "warning",
+                confirmButtonText: "OK",
+              });
+            }
+          }
+        };
+        reader.readAsBinaryString(file);
+      }
+    },
+    checkEntete(arr1, arr2) {
+      if (arr1.length !== arr2.length) {
+        return false;
+      }
+      for (let i = 0; i < arr1.length; i++) {
+        if (arr1[i] !== arr2[i]) {
+          return false;
+        }
+      }
+      return true;
+    },
+
+    donneesManquantes(tableau) {
+      for (let rowIndex = 0; rowIndex < tableau.length; rowIndex++) {
+        const row = tableau[rowIndex];
+        if (typeof row === "undefined") {
+          return rowIndex; // Retourne l'indice de la ligne manquante
+        }
+        for (let columnIndex = 0; columnIndex < this.contentType.length; columnIndex++) {
+          if (typeof row[columnIndex] === "undefined") {
+            return {
+              rowIndex,
+              columnIndex,
+            }; // Retourne l'indice de la ligne et de la colonne où les données manquent
+          }
+        }
+      }
+      return -1; // Retourne -1 si toutes les données sont présentes
+    },
     onclickAlertButton(type) {
       if (type == "second") {
         this.alertSecond = true;
@@ -240,7 +292,6 @@ export default {
       if (type == "first") this.alertFirst = true;
     },
     getSection(type) {
-      console.log("type", type);
       if (type == "1") {
         return "Primaire";
       } else if (type == "2") {
@@ -257,43 +308,18 @@ export default {
         this.addRow();
       }
     },
-    submitForm() {
-      // Empêche l'envoi du formulaire par défaut
-      // console.log("e from submit:", e);
-      // e.preventDefault();
-      // Valide le formulaire avant de l'envoyer
-      if (this.isValid()) {
-        this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
-          (el) => el.libelle == this.section
-        );
-        this.$emit("formSubmitted", this.form);
-        this.$swal.fire({
-          title: "Réussi",
-          text: "Mise à jour réussie avec succès!",
-          icon: "success",
-          confirmButtonText: "OK",
-        });
-        // this.$swal("Enregistrement réussi avec succes!")
-      } else {
-        // this.$swal.fire("Le formulaire n\'est pas valide. Merci de renseigner correctement et de reessayer!")
-        this.$swal.fire({
-          title: "Erreur",
-          text:
-            "Le formulaire n'est pas valide. Merci de renseigner correctement et de reessayer!",
-          icon: "warning",
-          confirmButtonText: "OK",
-        });
-      }
+    async submitForm(element) {
+      await this.verify(element);
+      await this.isValid();
+      this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
+        (el) => el.libelle == this.section
+      );
+      this.$emit("formSubmitted", this.form);
+      this.$emit("matiereFormValid", this.isValid());
     },
-    isValid() {
-      let lmd = false;
+    async isValid() {
       let fichier = false;
       let valid = false;
-      if (this.form.lmd && this.form.type_lmd != null) {
-        lmd = true;
-      } else if (!this.form.lmd && this.form.type_lmd == null) {
-        lmd = true;
-      }
       if (this.importation && this.form.fichier_matiere != null) {
         fichier = true;
       } else if (
@@ -308,7 +334,7 @@ export default {
       ) {
         fichier = true;
       }
-      if (lmd && fichier) {
+      if (fichier) {
         valid = true;
       } else {
         valid = false;
@@ -317,11 +343,8 @@ export default {
     },
     goBack() {
       router.get(route("etablissements.index"));
-      console.log();
     },
     addRow() {
-      // console.log("e from addrom:", e);
-      // e.preventDefault();
       this.form.matieres.push({
         code: null,
         libelle: null,
@@ -333,14 +356,18 @@ export default {
       this.form.matieres = this.form.matieres.filter((el) => el !== id);
     },
     async verify(element) {
-      const array = this.form.matieres.filter(
-        (el) => el.code !== null && el.code == element.code
-      );
+      if (element) {
+        const array = this.form.matieres.filter(
+          (el) =>
+            (el.code !== null && el.code == element.code) ||
+            (element.code == "" && element.libelle == "")
+        );
 
-      if (array.length > 1) {
-        this.removeRow(element);
-        this.$swal("L'élément existe déjà !");
-        // this.$alert.error("L'élément existe déjà !");
+        if (array.length > 1) {
+          this.removeRow(element);
+          this.$swal("L'élément existe déjà !");
+          // this.$alert.error("L'élément existe déjà !");
+        }
       }
     },
   },

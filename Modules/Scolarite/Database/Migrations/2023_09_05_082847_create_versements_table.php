@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 return new class extends Migration
 {
@@ -15,6 +16,7 @@ return new class extends Migration
     {
         Schema::create('versements', function (Blueprint $table) {
             $table->id();
+            $table->date('libelle')->nullable();
             $table->date('date_versement');
             $table->double('montant');
             $table->foreignIdFor(\App\Models\Apprenant::class)
@@ -25,6 +27,7 @@ return new class extends Migration
                 ->references('id')->on('frais')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

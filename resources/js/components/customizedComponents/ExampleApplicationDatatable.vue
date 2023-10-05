@@ -120,20 +120,26 @@ export default {
     };
   },
 
-  mounted() {},
+  mounted() {
+    console.log("props:", this.$page.props);
+  },
   computed: {},
 
   methods: {
     functionOnClickAddButton() {
       router.get(route("users.index"));
     },
+    submitNewLine() {
+      console.log("submitNewLine");
+    },
     editItem(item) {
-      // console.log("item from editItem:", item);
+      console.log("item from editItem:", item);
       this.editedObject = Object.assign({}, item);
       if (item) {
         this.selectedItemForUpdate = item;
       }
       if (this.dialogDetailUpdate) {
+        console.log("here");
         this.onDetailUpdate = true;
       }
       // console.log("this.selectedItemForUpdate:", this.selectedItemForUpdate);
@@ -141,6 +147,9 @@ export default {
     },
     deleteItem(item) {
       // console.log("item from deleteItem:", item);
+    },
+    onConfirmDeleting() {
+      console.log("confirm deleting");
     },
     onClickCancelButtonOfMDU() {
       this.onDetailUpdate = false;
@@ -164,10 +173,12 @@ export default {
       :dialogDetailUpdate="dialogDetailUpdate"
       titleDatatable="Liste des items"
       :functionDeleteItem="deleteItem"
+      :functionOnConfirmDeleting="onConfirmDeleting"
       :editedObject="editedObject"
       :functionEditItem="editItem"
       :headers="headersH"
       :items="desserts"
+      :functionOnSaveAdding="submitNewLine"
       :functionOnClickAddButton="functionOnClickAddButton"
     >
       <template v-slot:addDialogContent
