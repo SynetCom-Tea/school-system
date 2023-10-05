@@ -65,7 +65,6 @@ export default {
         return this.dialogDetailUpdate;
       },
       set(newValue) {
-        console.log("newValue:", newValue);
         this.$emit("value", newValue);
       },
     },
