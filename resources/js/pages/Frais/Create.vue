@@ -57,7 +57,7 @@ export default {
             this.form.donnees = this.form.donnees.filter((product) => product !== p)
         },
         async verify(p) {
-            const array = this.form.donnees.filter(el => el.montant !== null && el.montant == p.montant )
+            const array = this.form.donnees.filter(el => el.niveau_id !== null && el.niveau_id == p.niveau_id && el.type_frais_id == p.type_frais_id )
             if (array.length > 1) {  
                 this.removeRow(p)
                 this.$swal({

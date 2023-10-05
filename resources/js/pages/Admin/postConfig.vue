@@ -1,5 +1,5 @@
 <template>
-  <AuthenticatedLayout>
+  <v-card>
     <Toolbar
       styleToolbar="background-color: white;"
       :icon="icons.mdiSchool"
@@ -7,7 +7,7 @@
     ></Toolbar>
 
     <!-- <br> -->
-    <v-container>
+    <v-card-text>
         <v-row>
             <v-alert v-model="alert" border="start" variant="tonal" color="primary" title="Mise à jour des données">
 
@@ -16,7 +16,7 @@
         </v-row>
         <v-row v-if="type == '1'">
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
 
@@ -27,7 +27,7 @@
 
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getMatieres">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('matieres.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/books.png'" class="text-white">
 
@@ -38,7 +38,7 @@
             </v-col>
 
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getAffectations">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
 
@@ -50,7 +50,7 @@
             </v-col>
 
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFrais">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('frais.index', type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
 
@@ -63,7 +63,7 @@
         </v-row>
         <v-row v-if="type == '1'">
         <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getSalles">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('salles.index')">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/salle.jpg'" class="text-white">
 
@@ -76,7 +76,7 @@
           </v-row>
         <v-row v-if="type == '2'">
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index', type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
 
@@ -87,7 +87,7 @@
 
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getMatieres">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('matieres.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/books.png'" class="text-white">
 
@@ -97,7 +97,7 @@
                 </v-card>
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getAffectations">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
 
@@ -109,7 +109,7 @@
             </v-col>
 
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFrais">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('frais.index', type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
 
@@ -122,7 +122,7 @@
         </v-row>
         <v-row v-if="type == '3'">
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFilieres">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('filieres.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/filieres.jpg'" class="text-white">
 
@@ -132,7 +132,7 @@
                 </v-card>
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getSalles">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('salles.index')">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
 
@@ -143,7 +143,7 @@
 
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getMatieres">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('matieres.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/books.png'" class="text-white">
 
@@ -154,7 +154,7 @@
             </v-col>
 
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
 
@@ -167,7 +167,7 @@
         </v-row>
             <v-row v-if="type == '3'">
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFrais">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('frais.index', type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
 
@@ -180,7 +180,7 @@
         </v-row>
         <v-row v-if="type == '4'">
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFacultes">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('facultes.index')">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/faculte.png'" class="text-white">
 
@@ -191,7 +191,7 @@
 
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getDepartements">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('departements.index')">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/department.png'" class="text-white">
 
@@ -203,7 +203,7 @@
             </v-col>
             
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getFilieres">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('filieres.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/filieres.jpg'" class="text-white">
 
@@ -214,7 +214,7 @@
 
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getSalles">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('salles.index')">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
 
@@ -227,7 +227,7 @@
             </v-row>
             <v-row v-if="type == '4'">
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
 
@@ -238,7 +238,7 @@
 
             </v-col>
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getMatieres">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('matieres.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/books.png'" class="text-white">
 
@@ -250,7 +250,7 @@
 
             
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
 
@@ -262,7 +262,7 @@
             </v-col>
 
             <v-col cols="auto" md="3">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="getClasses">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('frais.index', type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
 
@@ -273,14 +273,13 @@
 
             </v-col>
         </v-row>
-    </v-container>
-  </AuthenticatedLayout>
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
 import { router, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import Toolbar from "@/components/customizedComponents/Toolbar.vue";
 import {
   mdiGoogleClassroom,
   mdiBookOpenVariant,
@@ -296,10 +295,9 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
+  layout: AuthenticatedLayout,
   props: ["type", "niveaux", "lmd"],
   components: {
-    Toolbar,
-    AuthenticatedLayout,
     mdiAccount,
     mdiCogOutline,
     mdiInformation,
@@ -340,30 +338,13 @@ export default {
       router.get(route("etablissements.index"));
       console.log();
     },
-    getMatieres() {
-      router.get(route("matieres.index", this.type));
+    go(chemin){
+      router.get(route(chemin));
     },
-    getAffectations() {
-      router.get(route("affectations.index", this.type));
+    goto(chemin,param){
+      router.get(route(chemin,param));
     },
-    getClasses() {
-      router.get(route("classes.index", this.type));
-    },
-    getSalles() {
-      router.get(route("salles.index"));
-    },
-    getFrais() {
-      router.get(route("frais.index", this.type));
-    },
-    getFacultes() {
-      router.get(route("facultes.index"));
-    },
-    getDepartements() {
-      router.get(route("departements.index"));
-    },
-    getFilieres() {
-      router.get(route("filieres.index", this.type));
-    },
+  
   },
   computed: {
     Title() {

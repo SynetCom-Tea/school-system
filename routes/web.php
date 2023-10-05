@@ -80,8 +80,9 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('etudiants', EtudiantsController::class);
 Route::resource('annees', AnneeController::class);
-Route::resource('classes', ClasseController::class)->only(['create', 'update', 'destroy']);
+Route::resource('classes', ClasseController::class)->only(['update', 'destroy']);
 Route::get('classes/{type}', [ClasseController::class, 'index'])->name('classes.index');
+Route::get('Classes/{type}', [ClasseController::class, 'create'])->name('classes.create');
 Route::post('classes/{type}', [ClasseController::class, 'store'])->name('classes.store');
 Route::resource('promotions', AnneeClasseController::class);
 Route::resource('tuteurs', TuteurController::class);
