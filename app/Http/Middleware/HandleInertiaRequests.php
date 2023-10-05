@@ -36,14 +36,20 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $vSuperAdmin = $request->user()->etablissement_id == null
-            ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null;
-        $vTuteur = $request->user()->tuteur_id ? User::where('id', auth()->user()->id)->with('tuteur')->first() : null;
-        $vApprenant = $request->user()->apprenant_id ? User::where('id', auth()->user()->id)->with('apprenant')->first() : null;
-        $vEnseignant = $request->user()->enseignant_id ? User::where('id', auth()->user()->id)->with('enseignant')->first() : null;
-        $isA = isset($vTuteur)  ? $vTuteur  : $vApprenant;
-        $isB = isset($vEnseignant) ? $vEnseignant : $isA;
+        $vSuperAdmin = null;
+        $isB = null;
 
+        if ($request->user()) {
+            $vSuperAdmin = $request->user()->etablissement_id == null
+                ? User::where('id', auth()->user()->id)->with('etablissement')->first() : $request->user();
+            $vTuteur = $request->user()->tuteur_id ? User::where('id', auth()->user()->id)->with('tuteur')->first() : null;
+            $vApprenant = $request->user()->apprenant_id ? User::where('id', auth()->user()->id)->with('apprenant')->first() : null;
+            $vEnseignant = $request->user()->enseignant_id ? User::where('id', auth()->user()->id)->with('enseignant')->first() : null;
+            $isA = isset($vTuteur)  ? $vTuteur  : $vApprenant;
+            $isB = isset($vEnseignant) ? $vEnseignant : $isA;
+        }
+
+        // dd('$request->user():', isset($isB) ? $isB : $vSuperAdmin);
         return array_merge(parent::share($request), [
             'flashd' => [
                 'messages' => fn () => $request->session()->get('messages')
@@ -52,7 +58,8 @@ class HandleInertiaRequests extends Middleware
                 'message' => fn () => $request->session()->get('message')
             ],
             'auth' => [
-                'user' => ($vSuperAdmin ? $vSuperAdmin : $isB) ? $isB : $request->user(),
+                // 'user' => $request->user(),
+                'user' => isset($isB) ? $isB : $vSuperAdmin,
 
             ],
             'roles' => fn () => auth()->user()
