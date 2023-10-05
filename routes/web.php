@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\AffectationController;
+use App\Http\Controllers\CalendrierscolaireController;
 
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
@@ -102,6 +103,12 @@ Route::resource('affectations', AffectationController::class)->only(['update', '
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
 Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
 Route::post('affectations/{type}', [AffectationController::class, 'store'])->name('affectations.store');
+// Route::resource('calendrierscolaire/{parameter}', CalendrierscolaireController::class);
+Route::prefix('calendrierscolaire')->group(function () {
+    Route::resource('{type}', CalendrierscolaireController::class)->only(['create', 'store', 'index']);
+});
+// Route::resource('calendrierscolaire/{type}', CalendrierscolaireController::class)->parameters(['type' => 'type']);
+
 Route::resource('salles', SalleController::class);
 
 require __DIR__ . '/auth.php';

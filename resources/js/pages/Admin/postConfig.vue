@@ -95,6 +95,25 @@
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
           </v-card>
         </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
+          </v-card>
+        </v-col>
       </v-row>
       <v-row v-if="type == '2'">
         <v-col cols="3">
@@ -172,6 +191,25 @@
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
           </v-card>
         </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
+          </v-card>
+        </v-col>
       </v-row>
       <v-row v-if="type == '3'">
         <v-col cols="3">
@@ -247,6 +285,25 @@
             <p class="text-h6" style="text-align: center">
               Affectation des matières aux niveaux
             </p>
+          </v-card>
+        </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
           </v-card>
         </v-col>
       </v-row>
@@ -342,6 +399,24 @@
             >
             </v-img>
             <p class="text-h6" style="text-align: center">Gestion des salles</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
           </v-card>
         </v-col>
       </v-row>
@@ -514,6 +589,15 @@ export default {
     getFilieres() {
       router.get(route("filieres.index", this.type));
     },
+    getCalendierScolaire() {
+      let type = this.type;  // Assurez-vous que this.type contient la valeur que vous souhaitez
+
+      // Construire l'URL en concaténant le type
+      let url = `/calendrierscolaire/${type}`;
+
+      // Utilisez 'url' comme vous le souhaitez, par exemple, dans votre router
+      router.get(url);
+  }
   },
   computed: {
     Title() {
