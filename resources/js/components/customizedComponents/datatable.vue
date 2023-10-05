@@ -140,14 +140,6 @@ export default {
   },
 
   methods: {
-    // itemRowBackground(items, search, filter) {
-    itemRowBackground: function (item) {
-      return item.protein > 4.2 ? "style-1" : "style-2";
-      // }
-      // console.log("itemE:", items);
-      // console.log("search:", search);
-      // return item ? "style-1" : "style-2";
-    },
     //Fonction en ecoute lorsqu'on clique sur le bouton 'Ajouter'
     onClickAddButton() {
       if (this.addDialog) {
@@ -206,9 +198,6 @@ export default {
     item-key="id"
     :pagination.sync="pagination"
     class="style-table"
-    v-model="selected"
-    item-class="style-2"
-    :row-height="20"
   >
     <template v-slot:top>
       <v-toolbar flat color="white">
@@ -246,6 +235,7 @@ export default {
         <Button
           v-if="displayAddButton == true"
           variant="flat"
+          style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c"
           class="add-button-style"
           nameButton="Ajouter"
           title="Ajouter une nouvelle ligne"
@@ -401,39 +391,30 @@ export default {
   </v-data-table>
 </template>
 
-<style scoped>
-.style-table tbody tr:nth-of-type(even) {
-  background-color: rgba(0, 0, 0, 0.03);
+<style>
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > td,
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > th {
+  /* background: #7d002c; */
+  background: #808080;
+  /* background: #bfdfff; */
+}
+
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(even) > td,
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(even) > th {
+  /* background: #004980; */
+  background: #5a5a5a;
+  /* background: #003f7d; */
+}
+tbody tr:nth-of-type(odd) {
+  /* 'teal lighten-5' basides on material design color */
+  color: white;
 }
 
 tbody tr:nth-of-type(even) {
   /* 'deep-orange lighten-5' basides on material design color */
-  background-color: #fbe9e7;
+  color: white;
 }
-.v-theme--light.v-data-table
-  > .v-table__wrapper
-  > table
-  > tbody
-  > tr:hover:not(.v-data-table__expanded__content):not(.v-data-table__empty-wrapper)
-  > td {
-  background: red;
-}
-:slotted(tr.v-data-table__tr) {
-  background-color: green;
-}
-.slot-style {
-  background-color: red;
-}
-.slot-data-style {
-  background-color: green;
-}
-:v-deep(.style-1) {
-  /* height: 100px !important; */
-  background-color: rgb(215, 215, 44);
-}
-.style-2 {
-  background-color: rgb(114, 114, 67);
-}
+
 .add-button-style:hover {
   background-color: #7d002c;
   box-shadow: 0px 0px 8px #7d002c;
@@ -441,13 +422,11 @@ tbody tr:nth-of-type(even) {
   cursor: pointer;
 }
 
-.add-button-style {
+/* .add-button-style {
   height: 30px;
-  /* background-color: #7d002c; */
   text-transform: none;
   box-shadow: 10px 5px 5px #7d002c;
-  /* 0px 0px 5px #7d002c; */
-}
+} */
 
 .search-field {
   border: 1px solid #7d002c;
@@ -458,10 +437,6 @@ tbody tr:nth-of-type(even) {
   border: 2px solid #7d002c;
   padding: 10px;
   border-radius: 25px;
-
-  /* border: 2px solid #7d002c;
-  /* border: 1px solid #004980; */
-  /*border-radius: 15px 50px 30px; */
   margin-left: 10px;
   width: 98%;
 }

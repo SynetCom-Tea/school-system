@@ -57,9 +57,12 @@ InertiaProgress.init({ color: '#7d002c' });
 
  const myAllBlackTheme: ThemeDefinition = {
      dark: false,
-      light: true,
+   light: true,
+       options: {
+      customProperties: true
+    },
       colors: {
-        // background: "white",
+         'background': '#fff',
         // surface: "white",
         primary: '#004980',
         "primary-darken-1": "#000000",
