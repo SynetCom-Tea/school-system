@@ -91,7 +91,7 @@ export default {
         ? "Utilisateurs du Supérieur"
         : this.sectionID == 4
         ? "Utilisateurs de l'université"
-        : null;
+        : "Liste des utilisateurs";
       return title;
     },
     formTitle() {
@@ -102,6 +102,7 @@ export default {
       let vlist = [],
         apprenant,
         tuteur,
+        superadmin,
         enseignant;
 
       if (list && list.length > 0) {
@@ -110,8 +111,8 @@ export default {
             apprenant = element.apprenant ? element.apprenant : null;
             tuteur = element.tuteur ? element.tuteur : null;
             enseignant = element.enseignant ? element.enseignant : null;
+            superadmin = element.etablissement_id == null ? element : null;
           }
-          console.log("enseignant:", enseignant);
           vlist.push({
             type_user: apprenant
               ? "Apprenant"
@@ -119,6 +120,8 @@ export default {
               ? "Tuteur"
               : enseignant
               ? "Enseignant"
+              : superadmin
+              ? "Super-Administrateur"
               : "Administrateur",
             count: index + 1,
             user: element.nom
@@ -166,6 +169,7 @@ export default {
     }
   },
   mounted() {
+    console.log("section:", this.sectionID);
     this.getDatatableTitle;
 
     this.customizedUsers;
