@@ -51,7 +51,7 @@ export default {
                 after: null
             });
             let donnees = this.form.donnees[this.form.donnees.length - 1];
-            this.addRow(donnees);
+            this.addChild(donnees);
         },
         addChild(donnee) {
             donnee.enfants.push({
@@ -126,10 +126,10 @@ export default {
                     <v-card outlined class="mb-md-2">
                         <v-card-text>
                             <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                                <v-card class="mx-auto" width="700" style="border-color: #004980; margin-bottom:6px;" rounded="lg" variant="outlined">
+                                <v-card class="mx-auto" width="800" style="border-color: #004980; margin-bottom:6px;" rounded="lg" variant="outlined">
                                     <v-card-text>
                                 <v-row>
-                                <v-col md="5" class="mx-auto">
+                                <v-col md="5">
                                      <Select
                                         label="Niveau"
                                         :items="niveaux"
@@ -142,9 +142,15 @@ export default {
                                         >
                                     ></Select>
                                 </v-col>
+                                
+                                <v-col md="2">
+                                    <v-btn title="supprimer le niveau et ses classes" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
+                                        <v-icon :icon="icon.mdiCloseCircle"></v-icon>
+                                    </v-btn>
+                                </v-col>
                                 </v-row>
                                 <v-row :key="enfant.id" v-for="(enfant, j) in donnee.enfants">
-                                    <v-col md="4">
+                                    <v-col md="5">
                                                 <TextField
                                                     label="Code"
                                                     placeholder="Code"
@@ -153,7 +159,7 @@ export default {
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                 ></TextField>
                                             </v-col>
-                                            <v-col md="4">
+                                            <v-col md="5">
                                                 <TextField
                                                     label="Libellé"
                                                     placeholder="Libellé"
@@ -163,34 +169,25 @@ export default {
                                                 ></TextField>
                                             </v-col>
                                             <v-col md="2">
-                                                <v-btn title="supprimer la classe" variant="outlined" :disabled="!(donnee.enfants.length > 1)" icon @click="removeChild(donnee,enfant)" fab small color="error">
+                                                <v-btn title="supprimer la classe" variant="outlined" :disabled="!(donnee.enfants.length > 1)" icon @click="removeChild(donnee,enfant)" fab small color="orange">
                                                     <v-icon :icon="icon.mdiCloseCircle"></v-icon>
                                                 </v-btn>
                                             </v-col>
                                 </v-row>
                                 <v-row>
-                                    <v-col md="8">
+                                    <v-col md="10">
                                   </v-col> 
                                             <v-col md="2">
-                                                <v-btn title="ajouter une classe" variant="outlined" icon @click="addChild(donnee)" fab small color="primary">
+                                                <v-btn title="ajouter une classe" variant="outlined" icon @click="addChild(donnee)" fab small color="blue">
                                                     <v-icon :icon="icon.mdiPlusCircle"></v-icon>
                                                 </v-btn>
                                             </v-col>
                                             </v-row>
-                                <v-row>
-                                  <v-col md="10">
-                                  </v-col> 
-                                <v-col md="2">
-                                    <v-btn title="supprimer le niveau" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
-                                        <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                    </v-btn>
-                                </v-col>
-                                </v-row>
                                 </v-card-text>
                                 </v-card>
                             </v-row>
                             <v-row>
-                                <v-col md="9">
+                                <v-col md="10">
                                 </v-col>
                                 <v-col md="2">
                                     <v-btn title="ajouter un niveau" variant="outlined" icon @click="addRow()" fab small color="primary">
