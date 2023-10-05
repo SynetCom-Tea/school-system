@@ -68,7 +68,7 @@ export default {
             p.enfants = p.enfants.filter((product) => product !== enfant)
         },
         async verify(p) {
-            const array = this.form.donnees.filter(el => el.niveau_id !== null && el.niveau_id == p.niveau_id )
+            const array = this.form.donnees.filter((el) => el.niveau_id !== null && el.niveau_id === p.niveau_id )
             if (array.length > 1) {  
                 this.removeRow(p)
                 this.$swal({
