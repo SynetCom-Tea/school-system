@@ -13,8 +13,8 @@ class EnseignementAnnee extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
-    
+    protected $fillable = ['code','enseignant_id','niveau_matiere_id','classe_annee_id'];
+
     protected static function newFactory()
     {
         return \Modules\Enseignement\Database\factories\EnseignementAnneeFactory::new();

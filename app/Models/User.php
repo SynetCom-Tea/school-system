@@ -32,7 +32,7 @@ class User extends Authenticatable
         'etablissement_id',
         'tuteur_id',
         'etablissement_section_id',
-        'enseignemant_id',
+        'enseignant_id',
         'password',
     ];
 

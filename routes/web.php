@@ -6,11 +6,12 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\AffectationController;
-
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use Modules\Enseignement\Http\Controllers\AffectationEnseignantController;
+use Modules\Enseignement\Http\Controllers\EnseignantController;
 use Modules\Scolarite\Http\Controllers\EtudiantsController;
 use Modules\Scolarite\Http\Controllers\AnneeController;
 use Modules\Scolarite\Http\Controllers\ClasseController;
@@ -103,5 +104,12 @@ Route::get('affectation/{type}', [AffectationController::class, 'create'])->name
 Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
 Route::post('affectations/{type}', [AffectationController::class, 'store'])->name('affectations.store');
 Route::resource('salles', SalleController::class);
+Route::resource('enseignants', EnseignantController::class)->only(['create', 'update', 'destroy']);
+Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');
+Route::post('enseignants/{type}', [EnseignantController::class, 'store'])->name('enseignants.store');
 
+
+Route::resource('AffectationEnseignants', AffectationEnseignantController::class)->only(['create', 'update', 'destroy']);
+Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'index'])->name('AffectationEnseignants.index');
+Route::post('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'store'])->name('AffectationEnseignants.store');
 require __DIR__ . '/auth.php';
