@@ -295,7 +295,7 @@ let superAdminMenus=[]
 
     return [singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus]
 }
-
+//Menu par section
 export function listMenusBySection(page, sectionID) {
   let result
      let childrenBySection = [
@@ -356,5 +356,67 @@ export function listMenusBySection(page, sectionID) {
   ];
   if (page?.roles[0] == "Administrateur") { result= [childrenBySection]}
   return result??[]
+
+}
+
+
+///Menu du tuteur
+
+export function menusTuteur(page, sectionID) {
+  let result
+     let childrenBySection = [
+    {
+      icon: mdiAccountGroup,
+      title: "Mes enfants",
+         link: "children",
+         color: "rgb(205,92,92)",
+         note: "Ce menu permet d'accèder à la liste des apprenants sous tutelle",
+      expand:false,
+      permissions: "tuteur",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Alertes/Avertissements",
+      link: "alertes",
+      color: "rgb(139,0,0)",
+      note: "Ce menu permet d'accèder à la liste des alertes et avertissements de ses enfants",
+      expand:false,
+      permissions: "tuteur",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Réunions",
+      link: "meetings",
+      color: "rgb(210,105,30)",
+      note: "Ce menu permet d'accèder à la liste des reunions",
+      expand:false,
+      permissions: "tuteur",
+    },
+    {
+      title: "Messagerie",
+      icon: mdiAccountSchool,
+      link: "mailBox",
+      color: "rgb(128,0,128)",
+      note: "Ce menu permet d'accèder aux mails envoyés par l'école",
+      expand:false,
+      permissions: "tuteur"
+    },
+
+     ];
+
+
+      let MTuteur = {
+        icon: mdiAccountCogOutline,
+        title:"Espace Tuteurs",
+        "icon-alt": mdiChevronDown,
+        permissions: "tuteur",
+        model: false,
+        children: [
+      ...childrenBySection
+        ],
+      };
+   //if (page?.roles[0] == "Tuteur" && (sectionID==1 || sectionID==2)) { result= MTuteur}
+  if (page?.roles[0] == "Tuteur") { result= MTuteur}
+  return result??{}
 
 }

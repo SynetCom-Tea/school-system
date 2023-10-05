@@ -268,6 +268,42 @@
               </v-list-group>
               <!-- Fin Menu Gestion -->
 
+              <!-- Début menu Tuteur -->
+
+              <v-list-group
+                :value="menuTuteur.title"
+                v-if="$page.props.roles[0] == 'Tuteur'"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon :title="menuTuteur.title" :icon="menuTuteur.icon"></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="menuTuteur.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
+
+                <v-list-item
+                  class="sub-list-group"
+                  v-for="(item, i) in menuTuteur.children"
+                  :key="i"
+                  @click="pageTuteur(item.link)"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  </template>
+
+                  <v-list-item-title
+                    class="text-wrap"
+                    v-text="item.title"
+                  ></v-list-item-title>
+                </v-list-item>
+              </v-list-group>
+              <!-- Fin Menu Tuteur -->
+
               <!-- Déconnexion doit etre le dernier menu -->
               <v-list-item class="list-case" @click="logout" key="logout">
                 <template v-slot:prepend>
@@ -293,7 +329,7 @@ import {
   mdiLogout,
   mdiMenu,
 } from "@mdi/js";
-import { listMenus } from "../../utils/ListNavAppBar.js";
+import { listMenus, menusTuteur } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
 import { getTypeEtablissementById } from "../../utils/commonFunctions.js";
 import SiteWebButton from "./SiteWebButton.vue";
@@ -314,6 +350,7 @@ export default {
   data: () => {
     return {
       MenuAdmin: [],
+      menuTuteur: null,
       MenuGestion: [],
       menusBySection: [],
       superAdminMenus: [],
@@ -340,7 +377,6 @@ export default {
     // listMenus(this.$page.props);
   },
   mounted() {
-    
     axios.interceptors.response.use(
       function (response) {
         return response;
@@ -402,9 +438,22 @@ export default {
       return item;
     },
     getUserProfile() {
+
       let fullName, firstname, lastname;
       let organization;
-      let user = this.$page.props.auth ? this.$page.props.auth.user : null;
+      let apprenant, enseignant, tuteur;
+      if (this.$page.props.auth && this.$page.props.auth.user) {
+        apprenant = this.$page.props.auth.user.apprenant;
+        enseignant = this.$page.props.auth.user.enseignant;
+        tuteur = this.$page.props.auth.user.tuteur;
+      }
+      let user = apprenant
+        ? apprenant
+        : enseignant
+        ? enseignant
+        : tuteur
+        ? tuteur
+        : this.$page.props.auth.user;
 
       let roles = this.$page.props.roles ? this.$page.props.roles[0] : null;
       let vRoles = this.$page.props.roles.length > 1 ? "Profil" : roles;
@@ -423,18 +472,41 @@ export default {
     },
     getListMenus() {
       let list = listMenus(this.$page.props);
+
+      let sectionUser = this.$page.props.section_users[0];
+
       let role = this.$page.props.roles ? this.$page.props?.roles[0] : null;
       this.menusBySection = list[1] ?? [];
       this.MenuAdmin = list[2];
       this.MenuGestion = list[3];
       this.superAdminMenus = list[5];
 
+      this.menuTuteur = menusTuteur(this.$page.props);
+      console.log("Terre:", this.menuTuteur);
+
       return list;
     },
   },
   methods: {
     listMenus,
+    menusTuteur,
     getTypeEtablissementById,
+    pageTuteur(item) {
+      console.log("pageTuteur(item.link):", item);
+      if (item == "children") {
+        router.get(route("tuteurs.index"));
+      }
+      if (item == "alertes") {
+        router.get(route("tuteurs.listWarnings"));
+      }
+      if (item == "meetings") {
+        router.get(route("tuteurs.meetings"));
+      }
+
+      if (item == "mailBox") {
+        router.get(route("tuteurs.mailBox"));
+      }
+    },
     goToProfilePage() {
       router.get("/profile");
     },

@@ -69,6 +69,11 @@ Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
         Route::resource('users', UserController::class);
     });
+    // Début routes tuteurs
+    Route::get('tuteurs/list-warnings', [TuteurController::class, 'listWarnings'])->name('tuteurs.listWarnings');
+    Route::get('tuteurs/meetings', [TuteurController::class, 'listWarnings'])->name('tuteurs.meetings');
+    Route::get('tuteurs/mail-box', [TuteurController::class, 'mailBox'])->name('tuteurs.mailBox');
+    // Fin routes tuteurs
     Route::get('menu-section-primaire', [MenuGestionController::class, 'indexPrimaire'])->name('indexPrimaire');
     Route::get('menu-section-secondaire', [MenuGestionController::class, 'indexSecondaire'])->name('indexSecondaire');
     Route::get('menu-section-superieure', [MenuGestionController::class, 'indexSuperieure'])->name('indexSuperieure');

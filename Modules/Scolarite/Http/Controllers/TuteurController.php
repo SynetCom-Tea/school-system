@@ -15,10 +15,23 @@ class TuteurController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
+
+    public function listWarnings()
+    {
+        return Inertia::render('Tuteurs/ListWarnings', []);
+    }
+    public function meetings()
+    {
+        return Inertia::render('Tuteurs/Meetings', []);
+    }
+    public function mailBox()
+    {
+        return Inertia::render('Tuteurs/MailBox', []);
+    }
     public function index()
     {
-        return Inertia::render('Tuteur/Index', [
-            'tuteurs' => Tuteur::all()
+        return Inertia::render('Tuteurs/ListChildren', [
+            'children' => Tuteur::all()
         ]);
     }
 
@@ -28,7 +41,6 @@ class TuteurController extends Controller
      */
     public function create()
     {
-        
     }
 
     /**
@@ -58,7 +70,6 @@ class TuteurController extends Controller
      */
     public function show($id)
     {
-        
     }
 
     /**
@@ -93,18 +104,16 @@ class TuteurController extends Controller
      */
     public function destroy($id)
     {
-        try{
+        try {
             $tuteur = Tuteur::find($id);
             $tuteur->delete();
-        }
-        catch(\Illuminate\Database\QueryException $e){
-            if($e->getCode() == "23000"){
+        } catch (\Illuminate\Database\QueryException $e) {
+            if ($e->getCode() == "23000") {
                 //dd($e->getCode());
                 return redirect()->route('tuteurs.index')->with('message', [
                     'type' => 'error',
                     'text' => "Désolé, vous ne pouvez pas supprimer ce tuteur!",
                 ]);
-
             }
         }
         return redirect()->route('tuteurs.index')->with('message', [
