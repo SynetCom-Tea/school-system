@@ -62,7 +62,7 @@
                         sortable: false,
                         key: 'matricule',
                     },
-                    { title: 'Enseignants', align: 'center', key: 'NomComplet' },
+                    { title: 'Nom et Prénom', align: 'center', key: 'NomComplet' },
                     { title: 'Matières', align: 'center', key: 'matiere' },
                     { title: 'Classes', align: 'center', key: 'classes' },
                     { title: 'Année scolaire', align: 'center', key: 'annee' },
@@ -88,15 +88,15 @@
         methods:{
             create() {
                 this.dialog = true;
-                this.dialog_title = 'Affectation des enseignants'
+                this.dialog_title = 'Affecter un enseignant'
             },
             editItem(item){
-                //console.log('edit',item)
-                this.dialog_title = 'Modifier Affectation des enseignants'
+                // console.log('edit',item)
+                this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.NomComplet
                 this.form.id = item.id
-                this.form.niveau_matiere = item.niveau_matiere
-                this.form.classe = item.classe
-                this.form.enseignant= item.enseignant
+                this.form.niveau_matiere = item.matiere
+                this.form.classe = item.classes
+                this.form.enseignant= item.NomComplet
                 this.dialog = true
             },
             deleteItem(item){
@@ -209,11 +209,20 @@
       toolbarTitle="Affectation des enseignants aux classes"
     ></Toolbar>
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="700px">
-                        <template v-slot:default="{ isActive }">
+            <template v-slot:default="{ isActive }">
                 <v-card>
                     <v-toolbar dense style="background-color: #7d002c">
-                        <v-toolbar-title style="color:white">
-                        <v-icon left :icon="icons.mdiPencil"></v-icon> {{ dialog_title }}
+                        <v-toolbar-title style="
+                        font-size: 1em;
+                        width: auto;
+                        word-wrap: break-word;
+                        white-space: pre-wrap;
+                        word-break: break-word;
+                        color:white"
+
+                        ><p class="text-wrap">
+                            <v-icon left :icon="icons.mdiPencil"  style=" font-size: 1.5em;"></v-icon>{{ dialog_title }}
+                        </p>
                     </v-toolbar-title>
                     <v-spacer></v-spacer>
                     <v-icon :icon="icons.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close"></v-icon>
@@ -223,7 +232,7 @@
                                         <v-row>
                                             <v-col cols="12" md="12">
                                                 <Autocomplete
-                                                    v-model="form.sex"
+                                                    v-model="form.enseignant"
                                                     isRequired
                                                     itemValue="id"
                                                     itemTitle="NomComplet"
@@ -238,7 +247,7 @@
                                             </v-col>
                                             <v-col cols="12" md="12">
                                                 <Autocomplete
-                                                    v-model="form.sex"
+                                                    v-model="form.niveau_matiere"
                                                     isRequired
                                                     itemValue="id"
                                                     itemTitle="code"
@@ -255,7 +264,7 @@
 
                                             <v-col cols="12" md="12">
                                                 <Autocomplete
-                                                    v-model="form.sex"
+                                                    v-model="form.classe"
                                                     isRequired
                                                     itemValue="id"
                                                     itemTitle="libelle"

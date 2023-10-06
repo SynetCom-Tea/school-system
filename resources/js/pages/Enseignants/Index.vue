@@ -94,7 +94,7 @@ export default {
   methods: {
     create() {
       this.dialog = true;
-      this.dialog_title = "Création d'enseignant";
+      this.dialog_title = "Ajouter un enseignant";
     },
     editItem(item) {
       //   console.log("edit", item);
@@ -166,7 +166,7 @@ export default {
               iconColor: "#004980",
               color: "#004980",
               title: "Enregistrement",
-              text: "Enseignant créée avec succès!",
+              text: "Enseignant enregistrer avec succès!",
               toast: true,
               position: "top-end",
               showConfirmButton: false,
@@ -186,7 +186,7 @@ export default {
               iconColor: "#004980",
               color: "#004980",
               title: "Modification",
-              text: "Enseignant modifiée avec succès!",
+              text: "Mise à jour effectuer avec succès!",
               toast: true,
               position: "top-end",
               showConfirmButton: false,
@@ -239,7 +239,7 @@ export default {
                 color: white;
               "
               ><p class="text-wrap">
-                <v-icon left :icon="icons.mdiPencil"></v-icon>{{ dialog_title }}
+                <v-icon left :icon="icons.mdiPencil"  style=" font-size: 1.5em;"></v-icon>{{ dialog_title }}
               </p>
             </v-toolbar-title>
             <v-spacer></v-spacer>

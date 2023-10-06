@@ -45,7 +45,7 @@ class AffectationEnseignantController extends Controller
         ->join('matieres as m', 'nm.matiere_id', '=', 'm.id')
         ->join('annees as a', 'ca.annee_id', '=', 'a.id')
         ->where('c.etablissement_section_id', $type)
-        ->select('ea.id', 'e.NomComplet', 'c.libelle as classes', 'm.nom as matiere', 'a.libelle as annee')
+        ->select('ea.id', 'e.NomComplet', 'c.libelle as classes', 'm.nom as matiere', 'a.libelle as annee','e.matricule')
         ->get();
         // dd($classes);
         $niveauMat = NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
@@ -79,6 +79,7 @@ class AffectationEnseignantController extends Controller
     public function store(Request $request)
     {
         //
+        dd($request);
     }
 
     /**
