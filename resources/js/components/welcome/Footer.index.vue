@@ -103,7 +103,7 @@ export default {
   },
   data() {
     return {
-      links: ["Acceuil", "A propos", "Equipe", "Services", "Blog", "Contacts"],
+      links: ["Accueil", "À propos", "Équipe", "Services", "Blog", "Contacts"],
       iconsVidoeo: [
         { icon: "mdi-rewind" },
         { icon: "mdi-play" },
