@@ -92,8 +92,9 @@ Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->na
 Route::resource('inscriptions', InscriptionController::class);
 Route::resource('facultes', FaculteController::class);
 Route::resource('departements', DepartementController::class);
-Route::resource('matieres', MatiereController::class)->only(['create', 'update', 'destroy']);
+Route::resource('matieres', MatiereController::class)->only(['update', 'destroy']);
 Route::get('matieres/{type}', [MatiereController::class, 'index'])->name('matieres.index');
+Route::get('Matieres/{type}', [MatiereController::class, 'create'])->name('matieres.create');
 Route::post('matieres/{type}', [MatiereController::class, 'store'])->name('matieres.store');
 Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
 Route::resource('frais', FraisController::class)->only(['update', 'destroy']);

@@ -25,7 +25,7 @@ class SalleController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Salles/Create');
     }
 
     /**
@@ -34,13 +34,19 @@ class SalleController extends Controller
     public function store(Request $request)
     {
         $ets_id = Auth::user()->etablissement_id;
-        request()->validate([
-            'code' => 'required|string',
-            'libelle' => 'required|string',
-        ]);
-        $data = $request->all();
-        $data['etablissement_id'] = $ets_id;
-        Salle::create($data);
+        foreach($request->donnees as $donnee){
+            
+                Salle::updateOrInsert([
+                    'libelle' => $donnee['libelle']
+                ],
+                [
+                'code' => $donnee['code'],
+                'etablissement_id' => $ets_id
+                ]
+                );
+            
+        }
+        
         return redirect()->route('salles.index')->with('message', [
             'type' => 'success',
             'text' => "La salle a été créée avec succès !",
