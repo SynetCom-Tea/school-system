@@ -91,8 +91,9 @@ Route::middleware('auth')->group(function () {
 
 Route::resource('etudiants', EtudiantsController::class);
 Route::resource('annees', AnneeController::class);
-Route::resource('classes', ClasseController::class)->only(['create', 'update', 'destroy']);
+Route::resource('classes', ClasseController::class)->only(['update', 'destroy']);
 Route::get('classes/{type}', [ClasseController::class, 'index'])->name('classes.index');
+Route::get('Classes/{type}', [ClasseController::class, 'create'])->name('classes.create');
 Route::post('classes/{type}', [ClasseController::class, 'store'])->name('classes.store');
 Route::resource('promotions', AnneeClasseController::class);
 Route::resource('tuteurs', TuteurController::class);
@@ -102,12 +103,14 @@ Route::post('/activation/{id}', [EtablissementController::class, 'activer'])->na
 Route::resource('inscriptions', InscriptionController::class);
 Route::resource('facultes', FaculteController::class);
 Route::resource('departements', DepartementController::class);
-Route::resource('matieres', MatiereController::class)->only(['create', 'update', 'destroy']);
+Route::resource('matieres', MatiereController::class)->only(['update', 'destroy']);
 Route::get('matieres/{type}', [MatiereController::class, 'index'])->name('matieres.index');
+Route::get('Matieres/{type}', [MatiereController::class, 'create'])->name('matieres.create');
 Route::post('matieres/{type}', [MatiereController::class, 'store'])->name('matieres.store');
 Route::get('/NotFoud', [UserController::class, 'NotFoud'])->name('NotFoud');
-Route::resource('frais', FraisController::class)->only(['create', 'update', 'destroy']);
+Route::resource('frais', FraisController::class)->only(['update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
+Route::get('Frais/{type}', [FraisController::class, 'create'])->name('frais.create');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
 Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');

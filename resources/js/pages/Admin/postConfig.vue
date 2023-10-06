@@ -1,5 +1,5 @@
 <template>
-  <AuthenticatedLayout>
+  <v-card>
     <Toolbar
       styleToolbar="background-color: white;"
       :icon="icons.mdiSchool"
@@ -7,102 +7,67 @@
     ></Toolbar>
 
     <!-- <br> -->
-    <v-container>
-      <v-row>
-        <v-alert
-          v-model="alert"
-          border="start"
-          variant="tonal"
-          color="primary"
-          title="Mise à jour des données"
-        >
-        </v-alert>
-      </v-row>
-      <v-row v-if="type == '1'">
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getClasses"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/classe.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des classes</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getMatieres"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/books.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des matières</p>
-          </v-card>
-        </v-col>
+    <v-card-text class="mx-auto">
+        <v-row>
+            <v-alert v-model="alert" border="start" variant="tonal" color="primary" title="Mise à jour des données">
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getAffectations"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 80px"
-              :src="'/assets/affectation.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">
-              Affectation des matières aux niveaux
-            </p>
-          </v-card>
-        </v-col>
+            </v-alert>
 
-        <v-col cols="3">
+        </v-row>
+        <v-row>
+          <v-col cols="auto" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('salles.index')">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/salle.jpg'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des salles</p>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="auto" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('matieres.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/books.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des matières</p>
+
+                </v-card>
+            </v-col>
+
+            <v-col cols="auto" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Affectation des matières aux niveaux</p>
+
+                </v-card>
+
+            </v-col>
+
+            <v-col cols="auto" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('frais.index', type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/argent.jpg'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des frais</p>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="auto" style="margin-left:18px;">
           <v-card
             elevation="6"
             width="210"
             style="border-color: blue"
             variant="outlined"
             rounded="shaped"
-            @click="getFrais"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/argent.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des frais</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getEnseignants"
+            @click="goto('enseignants.index')"
           >
             <v-img
               style="object-fit: fill; width: 210px; height: 110px"
@@ -113,17 +78,17 @@
             <p class="text-h6" style="text-align: center">Gestion des Enseignants</p>
           </v-card>
         </v-col>
-        <v-col cols="3">
+        <v-col cols="auto" style="margin-left:18px;">
           <v-card
             elevation="6"
             width="210"
             style="border-color: blue"
             variant="outlined"
             rounded="shaped"
-            @click="getAffectationEnseignants"
+            @click="goto('AffectationEnseignants.index',type)"
           >
             <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
+              style="object-fit: fill; width: 210px; height: 90px"
               :src="'/assets/filieres.jpg'"
               class="text-white"
             >
@@ -131,397 +96,70 @@
             <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
           </v-card>
         </v-col>
-      </v-row>
-      <v-row v-if="type == '2'">
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getClasses"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/classe.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des classes</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getMatieres"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/books.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des matières</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getAffectations"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 80px"
-              :src="'/assets/affectation.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">
-              Affectation des matières aux niveaux
-            </p>
-          </v-card>
-        </v-col>
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getFrais"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/argent.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des frais</p>
-          </v-card>
-        </v-col>
-       
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getAffectationEnseignants"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="type == '3'">
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getFilieres"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des filières</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getSalles"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/classe.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des salles</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getMatieres"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/books.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des matières</p>
-          </v-card>
-        </v-col>
+        <v-col cols="auto" v-if="type == '1' || type == '2'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getClasses"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 80px"
-              :src="'/assets/affectation.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">
-              Affectation des matières aux niveaux
-            </p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getClasses"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/argent.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des frais</p>
-          </v-card>
-        </v-col>
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getAffectationEnseignants"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="type == '4'">
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getFacultes"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/faculte.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des facultés</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getDepartements"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/department.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion Départements</p>
-          </v-card>
-        </v-col>
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des classes</p>
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getFilieres"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des filières</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getSalles"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/classe.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des salles</p>
-          </v-card>
-        </v-col>
-      </v-row>
-      <v-row v-if="type == '4'">
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getClasses"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/ue.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des Ues</p>
-          </v-card>
-        </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getMatieres"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/books.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des matières</p>
-          </v-card>
-        </v-col>
+                </v-card>
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getClasses"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 80px"
-              :src="'/assets/affectation.png'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">
-              Affectation des matières aux niveaux
-            </p>
-          </v-card>
-        </v-col>
+            </v-col>
+          <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('facultes.index')">
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getClasses"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/argent.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des frais</p>
-          </v-card>
-        </v-col>
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/faculte.png'" class="text-white">
 
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getAffectationEnseignants"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
-          </v-card>
-        </v-col>
-      </v-row>
-    </v-container>
-  </AuthenticatedLayout>
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des facultés</p>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('departements.index')">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/department.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion Départements</p>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('filieres.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/filieres.jpg'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des filières</p>
+
+                </v-card>
+            </v-col>
+            <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des Ues</p>
+
+                </v-card>
+
+            </v-col>
+          </v-row>
+
+    </v-card-text>
+  </v-card>
 </template>
 
 <script>
 import { router, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import Toolbar from "@/components/customizedComponents/Toolbar.vue";
 import {
   mdiGoogleClassroom,
   mdiBookOpenVariant,
@@ -537,10 +175,9 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
+  layout: AuthenticatedLayout,
   props: ["type", "niveaux", "lmd"],
   components: {
-    Toolbar,
-    AuthenticatedLayout,
     mdiAccount,
     mdiCogOutline,
     mdiInformation,
@@ -581,36 +218,11 @@ export default {
       router.get(route("etablissements.index"));
       console.log();
     },
-    getMatieres() {
-      router.get(route("matieres.index", this.type));
+    go(chemin){
+      router.get(route(chemin));
     },
-    getAffectations() {
-      router.get(route("affectations.index", this.type));
-    },
-    getClasses() {
-      router.get(route("classes.index", this.type));
-    },
-    getSalles() {
-      router.get(route("salles.index"));
-    },
-    getFrais() {
-      router.get(route("frais.index", this.type));
-    },
-    getFacultes() {
-      router.get(route("facultes.index"));
-    },
-    getDepartements() {
-      router.get(route("departements.index"));
-    },
-    getFilieres() {
-      router.get(route("filieres.index", this.type));
-    },
-    getEnseignants() {
-      router.get(route("enseignants.index", this.type));
-    },
-
-    getAffectationEnseignants() {
-      router.get(route("AffectationEnseignants.index", this.type));
+    goto(chemin,param){
+      router.get(route(chemin,param));
     },
 
   },

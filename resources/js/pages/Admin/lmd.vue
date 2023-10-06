@@ -257,5 +257,5 @@ export default {
     //     }
     //   },
   },
-};
+}
 </script>

@@ -47,6 +47,11 @@ class Etablissement extends Model
         return $this->hasMany(Faculte::class);
     }
 
+    public function filieres(): HasMany
+    {
+        return $this->hasMany(Filiere::class);
+    }
+
     public function frais(): HasMany
     {
         return $this->hasMany(Frais::class);
