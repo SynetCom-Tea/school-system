@@ -11,6 +11,7 @@
       <!-- Application de stepper -->
       <form-wizard
         color="#004980"
+        step-size="sm"
         back-button-text="Retour"
         next-button-text="Suivant"
         finish-button-text="Enregistrer"
@@ -73,6 +74,7 @@
                 :type="type"
                 :niveaux="niveaux"
                 :filieres="formFiliere"
+                :typeFrais="typeFrais"
                 @fraisFormValid="fraisFormValid"
               />
             </v-card-text>
@@ -88,6 +90,7 @@
                 @formSubmitted="getFraisForm"
                 :type="type"
                 :niveaux="niveaux"
+                :typeFrais="typeFrais"
                 :filieres="formFiliere"
               />
             </v-card-text>
@@ -123,6 +126,7 @@
                 :type="type"
                 :niveaux="niveaux"
                 :filieres="formFiliere"
+                :typeFrais="typeFrais"
                 @fraisFormValid="fraisFormValid"
               />
             </v-card-text>
@@ -224,7 +228,7 @@ import faculteForm from "@/components/admin/faculte.vue";
 import ueForm from "@/components/admin/ue.vue";
 import fraisForm from "@/components/admin/frais.vue";
 import { router, useForm } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Toolbar from "@/components/customizedComponents/Toolbar.vue";
 // import Datatable from "@/components/customizedComponents/datatable.vue";
 import Loader from "@/components/customizedComponents/Loader.vue";
@@ -240,7 +244,7 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
-  props: ["type", "niveaux", "lmd"],
+  props: ["type", "niveaux", "lmd", "typeFrais"],
   components: {
     FormWizard,
     TabContent,

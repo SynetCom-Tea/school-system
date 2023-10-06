@@ -95,6 +95,42 @@
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
           </v-card>
         </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getEnseignants"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/filieres.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des Enseignants</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getAffectationEnseignants"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/filieres.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
+          </v-card>
+        </v-col>
       </v-row>
       <v-row v-if="type == '2'">
         <v-col cols="3">
@@ -170,6 +206,25 @@
             >
             </v-img>
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
+          </v-card>
+        </v-col>
+       
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getAffectationEnseignants"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/filieres.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
           </v-card>
         </v-col>
       </v-row>
@@ -249,8 +304,6 @@
             </p>
           </v-card>
         </v-col>
-      </v-row>
-      <v-row v-if="type == '3'">
         <v-col cols="3">
           <v-card
             elevation="6"
@@ -267,6 +320,25 @@
             >
             </v-img>
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
+          </v-card>
+        </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getAffectationEnseignants"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/filieres.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
           </v-card>
         </v-col>
       </v-row>
@@ -422,6 +494,25 @@
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
           </v-card>
         </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getAffectationEnseignants"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/filieres.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
+          </v-card>
+        </v-col>
       </v-row>
     </v-container>
   </AuthenticatedLayout>
@@ -429,7 +520,7 @@
 
 <script>
 import { router, useForm } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Toolbar from "@/components/customizedComponents/Toolbar.vue";
 import {
   mdiGoogleClassroom,
@@ -514,6 +605,14 @@ export default {
     getFilieres() {
       router.get(route("filieres.index", this.type));
     },
+    getEnseignants() {
+      router.get(route("enseignants.index", this.type));
+    },
+
+    getAffectationEnseignants() {
+      router.get(route("AffectationEnseignants.index", this.type));
+    },
+
   },
   computed: {
     Title() {
