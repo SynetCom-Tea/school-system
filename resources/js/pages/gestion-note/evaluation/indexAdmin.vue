@@ -86,6 +86,7 @@ export default {
             ],
             dialog_title: 'Nouvelle Evaluation',
             dialog: false,
+            dialogEdit: false,
             dialogDetail: false,
             date: '',
             pourcentage: null,
@@ -113,15 +114,24 @@ export default {
             this.dialog_title = 'Nouvelle Evaluation'
         },
         editItem(item) {
-            // console.log('code', item.code)
+            // console.log('code', item)
+            
             this.form.id = item.id
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage
             this.form.periode_id = item.periode_id
             this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
-            this.dialog = true
-            this.dialog_title = 'Modifier Evaluation' + ' ' + item.code
+            this.form.section_id = item.section_id
+            this.form.enseignant_id = item.enseignant_id
+            this.dialogEdit = true
+            this.dialog_title = 'Modifier Evaluation' + item.code
+            this.$inertia.replace(this.$page.url,{
+                data : {
+                    section_id : item.section_id,
+                    enseignant_id : item.enseignant_id
+                }
+            }) 
         },
         deleteItem(item) {
             this.$swal({
@@ -196,10 +206,11 @@ export default {
                     type_evaluation_id,
                     enseignement_annee_id
                 } = this.form
-
+                // console.log(this.form)
                 this.form.put(route('evaluation.update', this.form.id), {
                     onFinish: () => {
                         this.close()
+                        this.closeEdit()
                         this.$swal({
                             icon: 'success',
                             title: 'Enregistrement',
@@ -223,6 +234,15 @@ export default {
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
             this.dialog = false
+        },
+        closeEdit() {
+            this.form.id = null
+            this.form.date = null
+            this.form.pourcentage = null
+            this.form.periode_id = null
+            this.form.type_evaluation_id = null
+            this.form.enseignement_annee_id = null
+            this.dialogEdit = false
         },
         detail(item) {
             
@@ -316,7 +336,7 @@ export default {
                 <v-card>
                     <v-toolbar dense color="secondary" dark>
                         <v-toolbar-title>
-                            <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
+                            <v-icon left>{{  icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
                         </v-toolbar-title>
                         <v-spacer></v-spacer>
                         <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close()"></v-icon>
@@ -347,6 +367,58 @@ export default {
                                     </v-col>
                                     <v-col cols="6">
                                         <Autocomplete v-if="form.section_id && form.enseignant_id" label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                        </Autocomplete> 
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <TextField v-if="form.section_id >= 3" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                        </TextField>
+                                    </v-col>
+                                </v-row>
+                            </v-container>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions class="justify-end">
+                        <v-spacer></v-spacer>
+                        <Button class="mb-2" style="height: 30px" nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">
+                        </Button>
+                    </v-card-actions>
+                </v-card>
+            </v-dialog>
+            <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="900px">
+                <v-card>
+                    <v-toolbar dense color="secondary" dark>
+                        <v-toolbar-title>
+                            <v-icon left>{{  icon.mdiPencil}}</v-icon> {{ dialog_title }}
+                        </v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="closeEdit()"></v-icon>
+                    </v-toolbar>
+                    <v-card-text>
+                        <v-form ref="form">
+                            <v-container>
+                                <v-row>
+                                    <v-col cols="6">
+                                        <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                        </TextField>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <Autocomplete v-model="form.section_id"  @update:modelValue="setPeriode(form.section_id)" label="Sections" itemTitle="libelle" itemValue="id" :items="section" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                        </Autocomplete>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        </Autocomplete> 
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setMatiere(form.enseignant_id)"   variant="outlined" item-title="matricule" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        </Autocomplete>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <Autocomplete v-if="form.section_id" label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        </Autocomplete>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <Autocomplete label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="6">
