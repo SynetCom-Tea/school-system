@@ -138,14 +138,15 @@ class UserController extends Controller
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
                 'type' => 'error',
-                'text' => 'Session expiré!',
+                'text' => 'Session expirée!',
             ]);
         }
         $vUsers = null;
         // dump('T:', $request->section_id);
         if ($request->section_id != null) {
-            $vUsers = User::where('users.etablissement_id', $authUser->etablissement_id)
-
+            $vUsers = User::where('users.etablissement_id', (int)$authUser->etablissement_id)
+                ->where('users.user_id', (int)$authUser->id)
+                // ->where('users.id', '<>', (int)$authUser->id)
                 ->join(
                     'section_users',
                     'users.id',
@@ -163,12 +164,12 @@ class UserController extends Controller
                 ->with('apprenant', 'tuteur', 'enseignant')
                 ->get();
         }
-        // dump('$vUsers22:', $vUsers);
         if ($request->section_id == null) {
-            $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')->with('etablissement')->get();
+            $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
+                ->where('users.user_id', (int)$authUser->id)
+                ->with('etablissement')->get();
         }
-        // dd('$vUsers:', $vUsers);
-        // dd(' $vUsers:', $vUsers);
+
         return Inertia::render('User/Index', [
             'users' => $vUsers ?? [],
             'sectionID' => $request->section_id ?? null

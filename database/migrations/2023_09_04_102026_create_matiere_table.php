@@ -44,7 +44,7 @@ return new class extends Migration
             END;
         ');
 
-        Schema::create('filiere_matiere_ues_', function (Blueprint $table) {
+        Schema::create('filiere_matiere_ues', function (Blueprint $table) {
             $table->id();
             $table->string('volume_horaire')->nullable();
             $table->string('coefficient')->nullable();
@@ -71,7 +71,7 @@ return new class extends Migration
                 ->references('id')->on('matieres');
             $table->foreignIdFor(\Modules\Enseignement\Entities\FiliereMatiereUe::class)->nullable()
                 ->index()
-                ->references('id')->on('filiere_matiere_ues_');
+                ->references('id')->on('filiere_matiere_ues');
             $table->timestamps();
         });
         DB::statement("ALTER TABLE niveau_matieres ADD COLUMN code varchar(255);");

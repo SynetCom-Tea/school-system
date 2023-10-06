@@ -393,7 +393,7 @@ export default {
 .v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > td,
 .v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > th {
   /* background: #7d002c; */
-  background: #808080;
+  background: #bfbfbf;
   /* background: #bfdfff; */
 }
 
@@ -403,10 +403,10 @@ export default {
   background: #5a5a5a;
   /* background: #003f7d; */
 }
-tbody tr:nth-of-type(odd) {
-  /* 'teal lighten-5' basides on material design color */
+/* tbody tr:nth-of-type(odd) {
+
   color: white;
-}
+} */
 
 tbody tr:nth-of-type(even) {
   /* 'deep-orange lighten-5' basides on material design color */

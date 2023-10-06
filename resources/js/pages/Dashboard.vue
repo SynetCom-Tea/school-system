@@ -185,12 +185,8 @@ export default {
     },
     onChangeTitle(e) {},
 
-    editItem(item) {
-      console.log("item from editItem:", item);
-    },
-    deleteItem(item) {
-      console.log("item from deleteItem:", item);
-    },
+    editItem(item) {},
+    deleteItem(item) {},
   },
 };
 </script>
