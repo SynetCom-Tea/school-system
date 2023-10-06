@@ -208,24 +208,7 @@
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
           </v-card>
         </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getEnseignants"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des Enseignants</p>
-          </v-card>
-        </v-col>
+       
         <v-col cols="3">
           <v-card
             elevation="6"
@@ -339,24 +322,7 @@
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
           </v-card>
         </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getEnseignants"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des Enseignants</p>
-          </v-card>
-        </v-col>
+
         <v-col cols="3">
           <v-card
             elevation="6"
@@ -528,24 +494,7 @@
             <p class="text-h6" style="text-align: center">Gestion des frais</p>
           </v-card>
         </v-col>
-        <v-col cols="3">
-          <v-card
-            elevation="6"
-            width="210"
-            style="border-color: blue"
-            variant="outlined"
-            rounded="shaped"
-            @click="getEnseignants"
-          >
-            <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
-              class="text-white"
-            >
-            </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des Enseignants</p>
-          </v-card>
-        </v-col>
+
         <v-col cols="3">
           <v-card
             elevation="6"
