@@ -2,12 +2,15 @@
 
 namespace Modules\Scolarite\Http\Controllers;
 
+use App\Models\ApprenantClasseAnnee;
+use App\Models\ApprenantTuteur;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Modules\Scolarite\Entities\Tuteur;
+use Illuminate\Support\Facades\Auth;
 
 class TuteurController extends Controller
 {
@@ -30,8 +33,39 @@ class TuteurController extends Controller
     }
     public function index()
     {
+        $authUser = Auth::user();
+        $vChildren = ApprenantTuteur::where('tuteur_id', (int) $authUser->tuteur_id)->with('apprenant')->get();
+        $tabVChildren =
+            $vChildren->map(function ($arg) {
+                return
+                    ApprenantClasseAnnee::whereHas(
+                        'apprenant',
+                        function ($query) use ($arg) {
+                            $query->where('apprenant_id', (int)$arg->apprenant_id);
+                        }
+                    )->with('classe_annee', 'classe_annee.classe',  'classe_annee.classe.niveau', 'classe_annee.annee', 'apprenant')
+                    ->get();
+            });
+
+        $Child =  $tabVChildren->map(
+            function ($query) {
+                return  $query->map(
+                    function ($q) {
+
+                        return [
+                            "apprenant" => $q["apprenant"],
+                            'annee' => $q["classe_annee"]["annee"],
+                            'classe' => $q["classe_annee"]["classe"],
+                        ];
+                    }
+                );
+            }
+        );
+        $Children
+            = $Child ? $Child[0] : [];
+
         return Inertia::render('Tuteurs/ListChildren', [
-            'children' => Tuteur::all()
+            'children' => $Children
         ]);
     }
 

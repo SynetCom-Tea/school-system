@@ -276,7 +276,7 @@ MenuGestion = {
 
     let gestionSections = {
         icon: mdiAccountCogOutline,
-        title:pageSections.length>1?"Gestion des sections":'Gestion de la section',
+        title:pageSections?.length>1?"Gestion des sections":'Gestion de la section',
         "icon-alt": mdiChevronDown,
         permissions: "manage_system",
         model: false,

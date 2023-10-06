@@ -101,9 +101,7 @@ export default {
     };
   },
 
-  mounted() {
-    console.log("$slots:", this.items);
-  },
+  mounted() {},
   computed: {
     scopedSlots() {
       return this.$slots;

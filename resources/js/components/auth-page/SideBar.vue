@@ -196,8 +196,8 @@
               <!-- Debut du menu preconfig -->
 
               <v-list-group
-                :value="getListMenus[2].title"
                 v-if="$page.props.roles[0] == 'Administrateur'"
+                :value="getListMenus[2].title"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
@@ -402,7 +402,7 @@ export default {
       let sections, allSections;
       if (this.$page.props && this.$page.props.admin_etablissement) {
         organization = this.$page.props.admin_etablissement.etablissement;
-        if (this.$page.props?.sections[0] && this.$page.props?.sections[0].sections) {
+        if (this.$page.props.sections[0] && this.$page.props.sections[0].sections) {
           sections = this.$page.props.sections[0].sections;
         }
       }
@@ -438,7 +438,6 @@ export default {
       return item;
     },
     getUserProfile() {
-
       let fullName, firstname, lastname;
       let organization;
       let apprenant, enseignant, tuteur;
@@ -473,8 +472,6 @@ export default {
     getListMenus() {
       let list = listMenus(this.$page.props);
 
-      let sectionUser = this.$page.props.section_users[0];
-
       let role = this.$page.props.roles ? this.$page.props?.roles[0] : null;
       this.menusBySection = list[1] ?? [];
       this.MenuAdmin = list[2];
@@ -482,9 +479,8 @@ export default {
       this.superAdminMenus = list[5];
 
       this.menuTuteur = menusTuteur(this.$page.props);
-      console.log("Terre:", this.menuTuteur);
 
-      return list;
+      return list ?? null;
     },
   },
   methods: {
@@ -492,7 +488,6 @@ export default {
     menusTuteur,
     getTypeEtablissementById,
     pageTuteur(item) {
-      console.log("pageTuteur(item.link):", item);
       if (item == "children") {
         router.get(route("tuteurs.index"));
       }
