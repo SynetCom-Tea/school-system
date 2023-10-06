@@ -16,22 +16,21 @@ use Modules\Enseignement\Entities\Enseignant;
 
 class EnseignantController extends Controller
 {
-    public $section;
+
     /**
      * Display a listing of the resource.
      * @return Renderable
      */
 
-    public function index($type)
+    public function index()
     {
         // dd('salut');
         $ets_id = Auth::user()->etablissement_id;
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
-        View::share('type',$type);
+        // View::share('type',$type);
         // dd($enseignants[0]['matricule']);
         return Inertia::render('Enseignants/Index', [
-            'enseignants' => $enseignants,
-            'section_id' => $type,]);
+            'enseignants' => $enseignants,]);
     }
 
     /**
@@ -48,7 +47,7 @@ class EnseignantController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request,$type)
+    public function store(Request $request)
     {
 
         //
@@ -83,7 +82,7 @@ class EnseignantController extends Controller
             $users->syncPermissions($permis);
         }
 
-        return redirect()->route('enseignants.index', $type)->with('message', [
+        return redirect()->route('enseignants.index')->with('message', [
             'type' => 'success',
             'text' => "L'enseignant a été créé avec succès !",
         ]);

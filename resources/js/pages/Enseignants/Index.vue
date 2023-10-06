@@ -36,7 +36,7 @@
             mdiContentSave
         },
         layout: AuthenticatedLayout,
-        props: ["enseignants","section_id"],
+        props: ["enseignants"],
         data() {
             return {
                 icons: {
@@ -157,7 +157,7 @@
             async submit() {
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
-                    this.form.post(route('enseignants.store',this.section_id), {
+                    this.form.post(route('enseignants.store'), {
                         onFinish: () => {
                             //console.log(this.form)
                             this.close()
