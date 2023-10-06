@@ -1,28 +1,6 @@
 <template>
   <div>
     <LoginComponent />
-    <div>
-      <v-snackbar
-        v-model="snackbar"
-        :multi-line="mode === 'multi-line'"
-        :timeout="timeout"
-        :vertical="mode === 'vertical'"
-        :right="x === 'right'"
-        :top="y === 'top'"
-      >
-        {{ errorMessage }}
-        <v-btn
-          style="right: 0; margin-left: 10px"
-          icon
-          fab
-          small
-          color="error"
-          @click="snackbar = false"
-        >
-          <v-icon :icon="icons.mdiCloseCircle"></v-icon>
-        </v-btn>
-      </v-snackbar>
-    </div>
   </div>
 </template>
 
