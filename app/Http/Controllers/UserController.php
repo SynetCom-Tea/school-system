@@ -142,7 +142,8 @@ class UserController extends Controller
             ]);
         }
         $vUsers = null;
-        if ($request->section_id) {
+        // dump('T:', $request->section_id);
+        if ($request->section_id != null) {
             $vUsers = User::where('users.etablissement_id', $authUser->etablissement_id)
 
                 ->join(
@@ -162,8 +163,11 @@ class UserController extends Controller
                 ->with('apprenant', 'tuteur', 'enseignant')
                 ->get();
         }
-        $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')->with('etablissement')->get();
-
+        // dump('$vUsers22:', $vUsers);
+        if ($request->section_id == null) {
+            $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')->with('etablissement')->get();
+        }
+        // dd('$vUsers:', $vUsers);
         // dd(' $vUsers:', $vUsers);
         return Inertia::render('User/Index', [
             'users' => $vUsers ?? [],

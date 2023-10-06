@@ -137,6 +137,7 @@ export default {
       }
 
       this.dataUsers = vlist ?? [];
+
       return vlist;
     },
   },
@@ -169,7 +170,6 @@ export default {
     }
   },
   mounted() {
-    console.log("section:", this.sectionID);
     this.getDatatableTitle;
 
     this.customizedUsers;
