@@ -135,12 +135,9 @@
                         </v-col> -->
               <v-col md="3">
                 <Autocomplete
-                  :items="[
-                    'Frais d\inscription',
-                    'Frais de formation',
-                    'Frais de cantine',
-                    'Frais de transport',
-                  ]"
+                  item-value="id"
+                  item-title="libelle"
+                  :items="typeFrais"
                   class="mt-2"
                   v-model="frais.type_frais"
                   @update:modelValue="submitForm(frais)"
@@ -228,7 +225,7 @@ import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {
-  props: ["type", "niveaux", "filieres"],
+  props: ["type", "niveaux", "filieres", "typeFrais"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,

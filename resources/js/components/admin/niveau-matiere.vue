@@ -53,7 +53,7 @@
                 item-title="code_libelle"
                 item-value="id"
                 :isRequired="true"
-                :items="niveaux"
+                :items="setNiveaux"
                 v-model="form.niveau"
                 @update:modelValue="submitForm(any)"
                 chips
@@ -168,7 +168,6 @@ export default {
   computed: {
     setNiveaux() {
       let list = [];
-
       if (this.niveaux) {
         this.niveaux.forEach((element) => {
           if (element) {

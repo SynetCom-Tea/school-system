@@ -23,7 +23,7 @@ class RoleSeeder extends Seeder
                         'id' => 1,
                         'nom' => 'Tondi',
                         'prenom' => 'Bouli',
-                        'email' => 'super-admin@gmail.com',
+                        'email' => 'super-admin@univers-school.com',
                         'password' => Hash::make('password'),
                         'nom' => 'super',
                         'prenom' => 'Administrateur',
@@ -36,7 +36,7 @@ class RoleSeeder extends Seeder
                 // Admin
                 $admin = User::create([
                         'id' => 2,
-                        'email' => 'admin@gmail.com',
+                        'email' => 'admin@univers-school.com',
                         'password' => Hash::make('password'),
                         'nom' => 'Admin',
                         'etablissement_id' => 1,
@@ -52,7 +52,7 @@ class RoleSeeder extends Seeder
 
                 $eleve1 = User::create([
                         'id' => 3,
-                        'email' => 'eleve1@gmail.com',
+                        'email' => 'eleve1@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 3,
@@ -68,7 +68,7 @@ class RoleSeeder extends Seeder
 
                 $eleve2 = User::create([
                         'id' => 4,
-                        'email' => 'eleve2@gmail.com',
+                        'email' => 'eleve2@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 4,
@@ -82,7 +82,7 @@ class RoleSeeder extends Seeder
 
                 $eleve3 = User::create([
                         'id' => 5,
-                        'email' => 'eleve3@gmail.com',
+                        'email' => 'eleve3@univers-school.comm',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 5,
@@ -98,7 +98,7 @@ class RoleSeeder extends Seeder
 
                 $eleve4 = User::create([
                         'id' => 6,
-                        'email' => 'eleve4@gmail.com',
+                        'email' => 'eleve4@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 6,
