@@ -10,75 +10,131 @@ import {
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import { router, usePage, useForm } from "@inertiajs/vue3";
 export default {
-    components: {
+  components: {
+    mdiAccountGroup,
+    mdiPlus,
+  },
+  layout: AuthenticatedLayout,
+  props: ["users", "sectionID"],
+  // Properties returned from data() become reactive state
+  // and will be exposed on `this`.
+  data() {
+    return {
+      form: this.$inertia.form({
+        nom: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+      }),
+      dataUsers: [],
+      icon: {
         mdiAccountGroup,
         mdiPlus,
-    },
-    layout: AuthenticatedLayout,
-    props: ["users"],
-    // Properties returned from data() become reactive state
-    // and will be exposed on `this`.
-    data() {
-        return {
-            form: this.$inertia.form({
-                nom: '',
-                email: '',
-                password: '',
-                password_confirmation: '',
-            }),
-            icon: {
-                mdiAccountGroup,
-                mdiPlus,
-            },
-            search: '',
-            dialog: false,
-            dialogDelete: false,
-            headers: [{
-                    title: 'Id',
-                    align: 'start',
-                    key: 'id',
-                    sortable: false,
-                    key: "id",
-                },
-                {
-                    title: "Nom",
-                    align: "center",
-                    key: "nom"
-                },
-                {
-                    title: "Prénom",
-                    align: "center",
-                    key: "prenom"
-                },
-                {
-                    title: "Sexe",
-                    align: "center",
-                    key: "sex"
-                },
-                {
-                    title: "Téléphone",
-                    align: "center",
-                    key: "telephone"
-                },
-                {
-                    title: "Email",
-                    align: "center",
-                    key: "email"
-                },
-                {
-                    title: "Actions",
-                    align: "center",
-                    key: "actions"
-                },
-            ],
-            searchQuery: "",
-            isLoading: false,
-        };
-    },
+      },
+      search: "",
+      dialog: false,
+      dialogDelete: false,
+      headers: [
+        {
+          title: "N°",
+          align: "start",
+          sortable: false,
+          key: "count",
+        },
+        {
+          title: "Nom",
+          align: "center",
+          key: "user.nom",
+        },
+        {
+          title: "Prénom",
+          align: "center",
+          key: "user.prenom",
+        },
+        {
+          title: "Type",
+          align: "center",
+          key: "type_user",
+        },
+        {
+          title: "Téléphone",
+          align: "center",
+          key: "user.telephone",
+        },
+        {
+          title: "Login",
+          align: "center",
+          key: "login",
+        },
+        {
+          title: "Actions",
+          align: "center",
+          key: "actions",
+        },
+      ],
+      searchQuery: "",
+      isLoading: false,
+    };
+  },
 
   computed: {
+    getDatatableTitle() {
+      let title1 =
+        this.sectionID == 1
+          ? "Utilisateurs du Primaire"
+          : this.sectionID == 2
+          ? "Utilisateurs du Secondaire"
+          : null;
+      let title = title1
+        ? title1
+        : this.sectionID == 3
+        ? "Utilisateurs du Supérieur"
+        : this.sectionID == 4
+        ? "Utilisateurs de l'université"
+        : null;
+      return title;
+    },
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    },
+    customizedUsers() {
+      let list = this.users;
+      let vlist = [],
+        apprenant,
+        tuteur,
+        enseignant;
+
+      if (list && list.length > 0) {
+        list.forEach((element, index) => {
+          if (element) {
+            apprenant = element.apprenant ? element.apprenant : null;
+            tuteur = element.tuteur ? element.tuteur : null;
+            enseignant = element.enseignant ? element.enseignant : null;
+          }
+          console.log("enseignant:", enseignant);
+          vlist.push({
+            type_user: apprenant
+              ? "Apprenant"
+              : tuteur
+              ? "Tuteur"
+              : enseignant
+              ? "Enseignant"
+              : "Administrateur",
+            count: index + 1,
+            user: element.nom
+              ? element
+              : apprenant
+              ? apprenant
+              : tuteur
+              ? tuteur
+              : enseignant,
+            login: element.email,
+          });
+        });
+      }
+
+      this.dataUsers = vlist ?? [];
+      return vlist;
     },
   },
 
@@ -91,15 +147,11 @@ export default {
     },
   },
   methods: {
-    initialize() {
-      this.users;
-    },
     goTo() {
       router.get(route("users.create"));
     },
   },
   created() {
-    this.initialize();
     if (this.$page.props.flash.message) {
       this.$swal({
         icon: "success",
@@ -113,6 +165,11 @@ export default {
       });
     }
   },
+  mounted() {
+    this.getDatatableTitle;
+
+    this.customizedUsers;
+  },
 };
 </script>
 
@@ -124,11 +181,14 @@ export default {
     ></Toolbar>
 
     <v-card-text>
-        <Datatable :headers="headers" :items="users" :functionOnClickAddButton="goTo">
-
-            <template v-slot:item.actions="{item}">
-            </template>
-        </Datatable>
+      <Datatable
+        :titleDatatable="getDatatableTitle"
+        :headers="headers"
+        :items="dataUsers"
+        :functionOnClickAddButton="goTo"
+      >
+        <template v-slot:item.actions="{ item }"> </template>
+      </Datatable>
     </v-card-text>
   </v-card>
 </template>

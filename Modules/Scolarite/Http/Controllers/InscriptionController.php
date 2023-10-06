@@ -17,8 +17,9 @@ class InscriptionController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        // dd('r:', $request->all());
         try {
             //code...
 
@@ -30,7 +31,9 @@ class InscriptionController extends Controller
                 ]);
             }
 
-            return Inertia::render('Inscription/Index', []);
+            return Inertia::render('Inscription/Index', [
+                'vSectionID' => (int)$request->section_id
+            ]);
         } catch (\Throwable $th) {
             //throw $th;
             return redirect()->back()->with('message', [

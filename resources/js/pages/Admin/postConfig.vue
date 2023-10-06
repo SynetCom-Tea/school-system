@@ -34,135 +34,386 @@
                 </v-card>
             </v-col>
 
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getFrais">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/argent.jpg'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des frais</p>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row v-if="type == '2'">
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getClasses">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/classe.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des classes</p>
-                </v-card>
-            </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getMatieres">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/books.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des matières</p>
-                </v-card>
-            </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getAffectations">
-                    <v-img style="object-fit: fill; width: 210px; height: 80px" :src="'/assets/affectation.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">
-                        Affectation des matières aux niveaux
-                    </p>
-                </v-card>
-            </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getFrais"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/argent.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des frais</p>
+          </v-card>
+        </v-col>
 
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getFrais">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/argent.jpg'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des frais</p>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row v-if="type == '3'">
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getFilieres">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/filieres.jpg'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des filières</p>
-                </v-card>
-            </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getSalles">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/classe.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des salles</p>
-                </v-card>
-            </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getMatieres">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/books.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des matières</p>
-                </v-card>
-            </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row v-if="type == '2'">
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getClasses"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/classe.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des classes</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getMatieres"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/books.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des matières</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getAffectations"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 80px"
+              :src="'/assets/affectation.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">
+              Affectation des matières aux niveaux
+            </p>
+          </v-card>
+        </v-col>
 
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getClasses">
-                    <v-img style="object-fit: fill; width: 210px; height: 80px" :src="'/assets/affectation.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">
-                        Affectation des matières aux niveaux
-                    </p>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row v-if="type == '3'">
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getClasses">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/argent.jpg'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des frais</p>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row v-if="type == '4'">
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getFacultes">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/faculte.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des facultés</p>
-                </v-card>
-            </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getDepartements">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/department.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion Départements</p>
-                </v-card>
-            </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getFrais"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/argent.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des frais</p>
+          </v-card>
+        </v-col>
 
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getFilieres">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/filieres.jpg'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des filières</p>
-                </v-card>
-            </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getSalles">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/classe.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des salles</p>
-                </v-card>
-            </v-col>
-        </v-row>
-        <v-row v-if="type == '4'">
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getClasses">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/ue.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des Ues</p>
-                </v-card>
-            </v-col>
-            <v-col cols="3">
-                <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getMatieres">
-                    <v-img style="object-fit: fill; width: 210px; height: 110px" :src="'/assets/books.png'" class="text-white">
-                    </v-img>
-                    <p class="text-h6" style="text-align: center">Gestion des matières</p>
-                </v-card>
-            </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row v-if="type == '3'">
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getFilieres"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/filieres.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des filières</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getSalles"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/classe.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des salles</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getMatieres"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/books.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des matières</p>
+          </v-card>
+        </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getClasses"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 80px"
+              :src="'/assets/affectation.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">
+              Affectation des matières aux niveaux
+            </p>
+          </v-card>
+        </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row v-if="type == '3'">
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getClasses"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/argent.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des frais</p>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row v-if="type == '4'">
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getFacultes"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/faculte.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des facultés</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getDepartements"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/department.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion Départements</p>
+          </v-card>
+        </v-col>
+
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getFilieres"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/filieres.jpg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des filières</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getSalles"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/classe.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des salles</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getCalendierScolaire"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/CS.jpeg'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Calendrier scolaire</p>
+          </v-card>
+        </v-col>
+      </v-row>
+      <v-row v-if="type == '4'">
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getClasses"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/ue.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des Ues</p>
+          </v-card>
+        </v-col>
+        <v-col cols="3">
+          <v-card
+            elevation="6"
+            width="210"
+            style="border-color: blue"
+            variant="outlined"
+            rounded="shaped"
+            @click="getMatieres"
+          >
+            <v-img
+              style="object-fit: fill; width: 210px; height: 110px"
+              :src="'/assets/books.png'"
+              class="text-white"
+            >
+            </v-img>
+            <p class="text-h6" style="text-align: center">Gestion des matières</p>
+          </v-card>
+        </v-col>
 
             <v-col cols="3">
                 <v-card elevation="6" width="210" style="border-color: blue" variant="outlined" rounded="shaped" @click="getClasses">
@@ -247,50 +498,59 @@ export default {
         }),
     }),
 
-    methods: {
-        goBack() {
-            router.get(route("etablissements.index"));
-            console.log();
-        },
-        getMatieres() {
-            router.get(route("matieres.index", this.type));
-        },
-        getAffectations() {
-            router.get(route("affectations.index", this.type));
-        },
-        getClasses() {
-            router.get(route("classes.index", this.type));
-        },
-        getSalles() {
-            router.get(route("salles.index"));
-        },
-        getFrais() {
-            router.get(route("frais.index", this.type));
-        },
-        getFacultes() {
-            router.get(route("facultes.index"));
-        },
-        getDepartements() {
-            router.get(route("departements.index"));
-        },
-        getFilieres() {
-            router.get(route("filieres.index", this.type));
-        },
+  methods: {
+    goBack() {
+      router.get(route("etablissements.index"));
+      console.log();
     },
-    computed: {
-        Title() {
-            switch (this.type) {
-                case "1":
-                    return "SECTION PRIMAIRE";
-                case "2":
-                    return "SECTION SECONDAIRE";
-                case "3":
-                    return "SECTION SUPERIEUR";
-                default:
-                    return "SECTION UNIVERSITAIRE";
-            }
-        },
+    getMatieres() {
+      router.get(route("matieres.index", this.type));
     },
+    getAffectations() {
+      router.get(route("affectations.index", this.type));
+    },
+    getClasses() {
+      router.get(route("classes.index", this.type));
+    },
+    getSalles() {
+      router.get(route("salles.index"));
+    },
+    getFrais() {
+      router.get(route("frais.index", this.type));
+    },
+    getFacultes() {
+      router.get(route("facultes.index"));
+    },
+    getDepartements() {
+      router.get(route("departements.index"));
+    },
+    getFilieres() {
+      router.get(route("filieres.index", this.type));
+    },
+    getCalendierScolaire() {
+      let type = this.type;  // Assurez-vous que this.type contient la valeur que vous souhaitez
+
+      // Construire l'URL en concaténant le type
+      let url = `/calendrierscolaire/${type}`;
+
+      // Utilisez 'url' comme vous le souhaitez, par exemple, dans votre router
+      router.get(url);
+  }
+  },
+  computed: {
+    Title() {
+      switch (this.type) {
+        case "1":
+          return "SECTION PRIMAIRE";
+        case "2":
+          return "SECTION SECONDAIRE";
+        case "3":
+          return "SECTION SUPERIEUR";
+        default:
+          return "SECTION UNIVERSITAIRE";
+      }
+    },
+  },
 };
 </script>
 

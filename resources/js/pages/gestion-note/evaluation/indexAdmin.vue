@@ -39,7 +39,7 @@ export default {
         mdiEye,
     },
     layout: AuthenticatedLayout,
-    props: ["evaluations", "types", "details", "periodes", "type_evaluation", "enseignements",'section','enseignants'],
+    props: ["evaluations", "types", "evaluation_id", "details", "periodes", "type_evaluation", "enseignements",'section','enseignants'],
     data() {
         return {
             icon: {
@@ -79,6 +79,11 @@ export default {
                     key: 'libelle'
                 },
                 {
+                    title: 'Sections',
+                    align: 'center',
+                    key: 'section'
+                },
+                {
                     title: 'Actions',
                     align: 'center',
                     key: 'actions'
@@ -109,13 +114,10 @@ export default {
 
     methods: {
         create() {
-            // console.log(this.enseignants)
             this.dialog = true
             this.dialog_title = 'Nouvelle Evaluation'
         },
         editItem(item) {
-            // console.log('code', item)
-            
             this.form.id = item.id
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage
@@ -125,7 +127,7 @@ export default {
             this.form.section_id = item.section_id
             this.form.enseignant_id = item.enseignant_id
             this.dialogEdit = true
-            this.dialog_title = 'Modifier Evaluation' + item.code
+            this.dialog_title = 'Modifier Evaluation' + ' ' + item.code
             this.$inertia.replace(this.$page.url,{
                 data : {
                     section_id : item.section_id,
@@ -145,9 +147,7 @@ export default {
                 cancelButtonText: 'Non, annulez!',
             }).then((result) => {
                 if (result.isConfirmed) {
-
                     this.form.delete(route('evaluation.destroy', item.id), {
-
                         onFinish: () => {
                             if (this.$page.props.flash ?.message ?.type == 'error') {
                                 this.$swal({
@@ -245,22 +245,24 @@ export default {
             this.dialogEdit = false
         },
         detail(item) {
-            
             this.$inertia.replace(this.$page.url, {
                 data: {
                     evaluation_id: item.id,
                 },
+                
             })
-            if (item.id){
-                this.dialogDetail = true
-            this.date = item.date
-            this.pourcentage = item.pourcentage
-            this.periode = item.libelle
-            this.type = item.type
-            this.enseignant = item.nom
-            this.code = item.code
-            this.matiere = this.details[0].nom
-            }
+            console.log(this.details[0].nom)
+            
+            // if (this.evaluation_id ){
+            //     this.dialogDetail = true
+            //     this.date = item.date
+            //     this.pourcentage = item.pourcentage
+            //     this.periode = item.libelle
+            //     this.type = item.type
+            //     this.enseignant = item.nom
+            //     this.code = item.code
+            //     this.matiere = this.details[0].nom
+            // }
         },
         setPeriode(s){
             this.form.periode_id = null,

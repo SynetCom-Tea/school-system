@@ -36,6 +36,14 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
+        $vSuperAdmin = $request->user()->etablissement_id == null
+            ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null;
+        $vTuteur = $request->user()->tuteur_id ? User::where('id', auth()->user()->id)->with('tuteur')->first() : null;
+        $vApprenant = $request->user()->apprenant_id ? User::where('id', auth()->user()->id)->with('apprenant')->first() : null;
+        $vEnseignant = $request->user()->enseignant_id ? User::where('id', auth()->user()->id)->with('enseignant')->first() : null;
+        $isA = isset($vTuteur)  ? $vTuteur  : $vApprenant;
+        $isB = isset($vEnseignant) ? $vEnseignant : $isA;
+
         return array_merge(parent::share($request), [
             'flashd' => [
                 'messages' => fn () => $request->session()->get('messages')
@@ -44,7 +52,8 @@ class HandleInertiaRequests extends Middleware
                 'message' => fn () => $request->session()->get('message')
             ],
             'auth' => [
-                'user' => $request->user(),
+                'user' => ($vSuperAdmin ? $vSuperAdmin : $isB) ? $isB : $request->user(),
+
             ],
             'roles' => fn () => auth()->user()
                 ? auth()->user()->getRoleNames()
@@ -55,8 +64,8 @@ class HandleInertiaRequests extends Middleware
             auth()->user() ? $etablissement = User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
 
             'sections' => fn () => isset(auth()->user()->etablissement_id)
-            ? Etablissement::where('id', $etablissement->etablissement->id)->with('sections')->get()
-            : null,
+                ? Etablissement::where('id', $etablissement->etablissement->id)->with('sections')->get()
+                : null,
             'section_users' => fn () => isset(auth()->user()->etablissement_id) ? DB::select("
                 SELECT s.libelle FROM sections s
                 JOIN etablissement_section es ON s.id = es.section_id
@@ -64,10 +73,10 @@ class HandleInertiaRequests extends Middleware
                 JOIN section_users su ON es.id = su.etablissement_section_id
                 JOIN users u ON u.id = su.user_id
                 WHERE u.id = :user_id and e.id = :etablissement_id
-            ",[
-                'etablissement_id'=>Auth::user()->etablissement_id,
-                'user_id'=>Auth::user()->id
-            ]): null,
+            ", [
+                'etablissement_id' => Auth::user()->etablissement_id,
+                'user_id' => Auth::user()->id
+            ]) : null,
             'admin_etablissement' => fn () => isset(auth()->user()->etablissement_id) ? User::where('id', auth()->user()->id)->with('etablissement')->first() : null,
             'ziggy' => function () use ($request) {
                 return array_merge((new Ziggy)->toArray(), [

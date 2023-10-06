@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-
+use Modules\Enseignement\Entities\Enseignant;
+use Modules\Scolarite\Entities\Tuteur;
 
 class User extends Authenticatable
 {
@@ -32,7 +33,7 @@ class User extends Authenticatable
         'etablissement_id',
         'tuteur_id',
         'etablissement_section_id',
-        'enseignemant_id',
+        'enseignant_id',
         'password',
     ];
 
@@ -62,6 +63,18 @@ class User extends Authenticatable
     public function etablissement(): BelongsTo
     {
         return $this->belongsTo(Etablissement::class);
+    }
+    public function enseignant(): BelongsTo
+    {
+        return $this->belongsTo(Enseignant::class);
+    }
+    public function tuteur(): BelongsTo
+    {
+        return $this->belongsTo(Tuteur::class);
+    }
+    public function apprenant(): BelongsTo
+    {
+        return $this->belongsTo(Apprenant::class);
     }
     public function section_etablissements(): BelongsToMany
     {

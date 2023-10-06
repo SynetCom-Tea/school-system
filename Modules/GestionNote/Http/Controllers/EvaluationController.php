@@ -148,6 +148,7 @@ class EvaluationController extends Controller
 
     public function indexAdmin(Request $request)
     {
+        $evaluation_id  = null;
         $detail = [];
         $user = Auth::user();
         $sections = Section::whereHas('etablissements.users', function ($q) use ($user) {
@@ -182,16 +183,17 @@ class EvaluationController extends Controller
         $typeEvaluations = TypeEvaluation::all();
         // dd(Evaluation::getDetailEvaluationInferiere(3,1)->get());
         if ($request->evaluation_id){
+            $evaluation_id = $request->evaluation_id;
             if(Evaluation::getDetailEvaluationInferiere(Auth::user()->etablissement_id,$request->evaluation_id)->get()){
                 $detail = Evaluation::getDetailEvaluationInferiere(Auth::user()->etablissement_id,$request->evaluation_id)->get();
             }else{
                 $detail = Evaluation::getDetailEvaluationSuperieur(Auth::user()->etablissement_id,$request->evaluation_id)->get();
             }
         } 
-        // dd($detail);
+        // dd($evaluation_id);
         $enseignants = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get();    
         $evaluations = DB::select("
-        SELECT ev.id,p.libelle,en.nom,ev.date,t.libelle type,ea.code,s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id
+        SELECT s.libelle section,ev.id,p.libelle,en.nom,ev.date,t.libelle type,ea.code,s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id
         FROM evaluations ev
         JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
         JOIN enseignants en ON en.id = ea.enseignant_id
@@ -214,6 +216,7 @@ class EvaluationController extends Controller
             'enseignements'=>$enseigements,
             'section'=>$sections,
             'enseignants'=>$enseignants,
+            'evaluation_id'=> $evaluation_id
         ]);
     }
     public function create(Request $request)

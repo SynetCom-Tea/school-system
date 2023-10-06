@@ -24,6 +24,7 @@ export default {
           align: "start",
           sortable: false,
           key: "name",
+          class: "blue lighten-5",
         },
         { title: "Calories", key: "calories" },
         { title: "Fat (g)", key: "fat" },
@@ -39,6 +40,7 @@ export default {
           fat: 6.0,
           carbs: 24,
           protein: 4.0,
+          color: "red-line",
         },
         {
           name: "Ice cream sandwich",
@@ -46,6 +48,7 @@ export default {
           fat: 9.0,
           carbs: 37,
           protein: 4.3,
+          color: "blue-line",
         },
         {
           name: "Eclair",
@@ -167,9 +170,11 @@ export default {
  d'ajouter le props " :addDialog='true' " >> pour l'activer  et definir le contenu de la modale en utilisant le slot "addDialogContent".
  Pour faire une redirection vers une nouvelle page (Ajout de nouvelle ligne), il suffit d'ajouter le props "functionOnClickAddButton"
  -->
+
   <div>
     <Datatable
       :addDialog="true"
+      :displayAddButton="false"
       :dialogDetailUpdate="dialogDetailUpdate"
       titleDatatable="Liste des items"
       :functionDeleteItem="deleteItem"
@@ -184,6 +189,7 @@ export default {
       <template v-slot:addDialogContent
         ><div>Ici le contenu de la modal ajout d'une nouvelle ligne</div></template
       >
+
       <template v-slot:contentDialogUpdateDetail>
         <ModalDetailUpdate
           :dialogDetailUpdate="onDetailUpdate"
@@ -198,4 +204,12 @@ export default {
     </Datatable>
   </div>
 </template>
-<style scoped></style>
+<style>
+.blue-line td {
+  color: green;
+}
+
+.red-line td {
+  color: red;
+}
+</style>

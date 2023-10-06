@@ -31,12 +31,13 @@ class EmploiController extends Controller
      */
     public function index(Request $request)
     {
+        // dd('r:', $request->all());
         $classes = getClasses(Annee::find(2)->id, Auth::user()->etablissement_id, 1);
-        $niveaux = Niveau::where('section_id', 1)->get();
+        $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $events = [];
-        $emplois = Emploi::getEmploisBySectionAndEtablissement(1, Auth::user()->etablissement_id);
+        $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id);
         if ($request->classe) {
-            $emplois = Emploi::getEmploisBySectionAndEtablissement(1, Auth::user()->etablissement_id);
+            $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id);
             $seances = $request->emploi ? Emploi::getEmploiwhitClasse(4, $request->emploi) : Emploi::getEmploiwhitClasse(4, 1);
             foreach ($seances as $seance) {
                 // Extraire les heures et les minutes de heure_debut et heure_fin
@@ -44,7 +45,7 @@ class EmploiController extends Controller
                 $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
                 $event = [
                     'title' => $seance->nom_matiere,
-                    'with' => $seance->enseignant_nom .' ' . $seance->enseignant_prenom,
+                    'with' => $seance->enseignant_nom . ' ' . $seance->enseignant_prenom,
                     'time' => [
                         'start' => $seance->date_seance . ' ' . $heureDebut,
                         'end' => $seance->date_seance . ' ' . $heureFin
@@ -70,18 +71,20 @@ class EmploiController extends Controller
      */
     public function create(Request $request)
     {
+        // dump('r:', $request->all());
         $anneeScolaireId = Annee::find(2)->id;
         $etablissement = Etablissement::with('sections')->find(Auth::user()->etablissement_id);
         // Récupérer les IDs des sections
         $sectionIds = $etablissement->sections->pluck('id');
+        // dd('$sectionIds:', $sectionIds);
         // Récupérer les niveaux pour toutes les sections
         $sectionEtablissement = DB::table('etablissement_section')
             ->where('etablissement_id', Auth::user()->etablissement_id)
-            ->whereIn('section_id', $sectionIds)
+            ->where('section_id', $request->section_id)
             ->pluck('id');
         $classeAnnees = ClasseAnnee::where('annee_id', $anneeScolaireId)->pluck('classe_id');
         $classes = Classe::whereIn('id', $classeAnnees)->whereIn('etablissement_section_id', $sectionEtablissement)->get();
-        $niveaux = Niveau::whereIn('section_id', $sectionIds)->get();
+        $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $matieres = Matiere::whereIn('etablissement_section_id', $sectionEtablissement)->get();
         $niveauMatiere = DB::table('niveau_matieres')
             ->whereIn('niveau_id', $niveaux->pluck('id'))
