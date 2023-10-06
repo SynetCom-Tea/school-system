@@ -23,7 +23,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 use Modules\Enseignement\Entities\Enseignant;
-use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Inscription;
 use Modules\Scolarite\Entities\Versement;
@@ -200,7 +199,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->roles);
+
         $user = Auth::user();
         $permis = [];
         $etat = null;

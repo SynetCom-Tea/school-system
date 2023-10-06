@@ -377,14 +377,14 @@ export default {
       </div>
     </template>
     <template class="slot-style" v-for="(index, name) in $slots" v-slot:[name]>
-      <div style="background-color: red"><slot :name="name"></slot></div>
+      <div><slot :name="name"></slot></div>
     </template>
     <template
       class="slot-data-style"
       v-for="(index, name) of $slots"
       v-slot:[name]="data"
     >
-      <div style="background-color: red"><slot :name="name" v-bind="data"></slot></div>
+      <div><slot :name="name" v-bind="data"></slot></div>
     </template>
   </v-data-table>
 </template>

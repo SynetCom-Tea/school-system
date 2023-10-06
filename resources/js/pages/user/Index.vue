@@ -156,6 +156,9 @@ export default {
     },
   },
   created() {
+    if (this.$page.props.flash?.message?.type == "error") {
+      this.$toast.error(this.$page.props.flash.message.text);
+    }
     if (this.$page.props.flash.message) {
       this.$swal({
         icon: "success",
