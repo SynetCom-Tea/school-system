@@ -60,8 +60,9 @@ class FraisController extends Controller
      */
     public function store(Request $request,$type)
     {
+        dd($request);
         $ets_id = Auth::user()->etablissement_id;
-        
+
         foreach($request->donnees as $donnee){
             foreach($donnee['niveau_id'] as $niv){
                 Frais::updateOrInsert([
@@ -143,5 +144,5 @@ class FraisController extends Controller
             'text' => "Le frais a été supprimé avec succès !",
         ]);
     }
-    
+
 }

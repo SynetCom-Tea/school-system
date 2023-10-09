@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Modules\Enseignement\Entities\Enseignant;
+use Modules\Enseignement\Entities\EnseignementAnnee;
 use Modules\Enseignement\Entities\NiveauMatiere;
 
 class AffectationEnseignantController extends Controller
@@ -28,26 +29,20 @@ class AffectationEnseignantController extends Controller
 
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
-        $classes = DB::table('classes')
-        ->join('classe_annees', 'classe_annees.classe_id', '=', 'classes.id')
-        ->where('classe_annees.annee_id', '=', $annee->id)
-        ->where('classes.etablissement_section_id', '=', $table->id)
-        ->select('classes.libelle','classes.code','classe_annees.id')
-        ->get();
 
 
-        $enseignement_annee = DB::table('enseignement_annees as ea')
-        ->join('enseignants as e', 'ea.enseignant_id', '=', 'e.id')
-        ->join('niveau_matieres as nm', 'ea.niveau_matiere_id', '=', 'nm.id')
-        ->join('classe_annees as ca', 'ea.classe_annee_id', '=', 'ca.id')
-        ->join('classes as c', 'ca.classe_id', '=', 'c.id')
-        ->join('niveaux as n', 'nm.niveau_id', '=', 'n.id')
-        ->join('matieres as m', 'nm.matiere_id', '=', 'm.id')
-        ->join('annees as a', 'ca.annee_id', '=', 'a.id')
-        ->where('c.etablissement_section_id', $type)
-        ->select('ea.id', 'e.NomComplet', 'c.libelle as classes', 'm.nom as matiere', 'a.libelle as annee','e.matricule')
-        ->get();
+        $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($table){
+            $classe->where('etablissement_section_id',$table->id);
+        })->whereHas('annee',function($anne) use ($annee){
+            $anne->where('annee_id',$annee->id);
+        })->get();
+
         // dd($classes);
+        $enseignement_annee=EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
+            $classe->where('etablissement_section_id',$table->id);
+        })->with('niveau_matiere.matiere','classe_annee.classe','classe_annee.annee','enseignant')->get();
+
+        // dd( $enseignement_annee);
         $niveauMat = NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
 
             $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
@@ -80,6 +75,13 @@ class AffectationEnseignantController extends Controller
     {
         //
         dd($request);
+        $ets_id = Auth::user()->etablissement_id;
+
+        foreach($request->donnees as $donnee){
+            foreach($request->donnees as $donnee){
+
+            }
+        }
     }
 
     /**

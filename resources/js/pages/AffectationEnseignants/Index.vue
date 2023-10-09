@@ -60,21 +60,22 @@
                         title: 'Matricule',
                         align: 'start',
                         sortable: false,
-                        key: 'matricule',
+                        key: 'enseignant.matricule',
                     },
-                    { title: 'Nom et Prénom', align: 'center', key: 'NomComplet' },
-                    { title: 'Matières', align: 'center', key: 'matiere' },
-                    { title: 'Classes', align: 'center', key: 'classes' },
-                    { title: 'Année scolaire', align: 'center', key: 'annee' },
+                    { title: 'Nom et Prénom', align: 'center', key: 'enseignant.NomComplet' },
+                    { title: 'Matières', align: 'center', key: 'niveau_matiere.matiere.nom' },
+                    { title: 'Classes', align: 'center', key: 'classe_annee.classe.libelle' },
+                    { title: 'Année scolaire', align: 'center', key: 'classe_annee.annee.libelle' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
                 dialog_title: 'Affectation des enseignants',
                 dialog: false,
 
                 form: useForm({
-                    niveau_matiere:'',
-                    classe: '',
-                    enseignant: '',
+                    id:null,
+                    niveau_matiere:null,
+                    classe: null,
+                    enseignant: null,
 
                 }),
                 rules: [
@@ -92,11 +93,11 @@
             },
             editItem(item){
                 // console.log('edit',item)
-                this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.NomComplet
+                this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.enseignant.NomComplet
                 this.form.id = item.id
-                this.form.niveau_matiere = item.matiere
-                this.form.classe = item.classes
-                this.form.enseignant= item.NomComplet
+                this.form.niveau_matiere = item.niveau_matiere.matiere.nom
+                this.form.classe = item.classe_annee.classe.libelle
+                this.form.enseignant= item.enseignant.NomComplet
                 this.dialog = true
             },
             deleteItem(item){
@@ -192,10 +193,10 @@
 
             },
             close() {
-                this.form.id = ""
-                this.form.niveau_matiere = ""
-                this.form.enseignant = ""
-                this.form.classe = ""
+                this.form.id =null
+                this.form.niveau_matiere =null
+                this.form.enseignant = null
+                this.form.classe = null
                 this.dialog = false
             }
         }
@@ -238,14 +239,14 @@
                                                     itemTitle="NomComplet"
                                                     placeholder="Enseignant"
                                                     label="Enseignant"
-                                                    ships
+                                                    chips
                                                     :items="enseignants"
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
                                                 </Autocomplete>
-                                                <!-- <text-field label="Nom" placeholder="Nom" v-model="form.nom" isRequired :rules="rules"></text-field> -->
+
                                             </v-col>
-                                            <v-col cols="12" md="12">
+                                            <v-col cols="12" md="12" v-if="form.id ==null">
                                                 <Autocomplete
                                                     v-model="form.niveau_matiere"
                                                     isRequired
@@ -254,7 +255,22 @@
                                                     placeholder="Niveau/Matiere"
                                                     label="Niveau/Matiere"
                                                     multiple
-                                                    ships
+                                                    chips
+                                                    :items="niveauMatieres"
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    >
+                                                </Autocomplete>
+
+                                            </v-col>
+                                            <v-col cols="12" md="12" v-if="form.id !=null">
+                                                <Autocomplete
+                                                    v-model="form.niveau_matiere"
+                                                    isRequired
+                                                    itemValue="id"
+                                                    itemTitle="code"
+                                                    placeholder="Niveau/Matiere"
+                                                    label="Niveau/Matiere"
+                                                    chips
                                                     :items="niveauMatieres"
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
@@ -262,7 +278,23 @@
 
                                             </v-col>
 
-                                            <v-col cols="12" md="12">
+                                            <v-col cols="12" md="12" v-if="form.id ==null">
+                                                <Autocomplete
+                                                    v-model="form.classe"
+                                                    isRequired
+                                                    itemValue="id"
+                                                    itemTitle="classe.libelle"
+                                                    placeholder="Classes"
+                                                    label="Classes"
+                                                    multiple
+                                                    chips
+                                                    :items="classes"
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    >
+                                                </Autocomplete>
+
+                                            </v-col>
+                                            <v-col cols="12" md="12" v-if="form.id !=null">
                                                 <Autocomplete
                                                     v-model="form.classe"
                                                     isRequired
@@ -270,29 +302,32 @@
                                                     itemTitle="libelle"
                                                     placeholder="Classes"
                                                     label="Classes"
-                                                    multiple
-                                                    ships
+                                                    chips
                                                     :items="classes"
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
                                                 </Autocomplete>
-                                                <!-- <text-field label="Prénom" placeholder="Prénom" v-model="form.prenom" isRequired :rules="rules"></text-field> -->
-                                            </v-col>
+                                                </v-col>
 
 
                                         </v-row>
 
                                     </v-form>
                                     </v-card-text>
+
+
+
                     <v-card-actions class="justify-end">
                         <v-spacer></v-spacer>
                         <Button color="red" variant="outlined" class="mb-2" nameButton="Annuler" title="Annuler" style="height: 30px" :prependIcon="icons.mdiCancel" @click="close"></Button>
                         <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icons.mdiContentSave" @click="submit"></Button>
                     </v-card-actions>
                 </v-card>
+
+
             </template>
 
-                    </v-dialog>
+                </v-dialog>
         <v-card-text>
             <Datatable titleDatatable="Liste des enseignants " :headers="headers" :items="enseignements" :functionOnClickAddButton="create" >
 
