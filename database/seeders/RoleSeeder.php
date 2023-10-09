@@ -41,6 +41,7 @@ class RoleSeeder extends Seeder
                         'nom' => 'Admin',
                         'etablissement_id' => 1,
                         'prenom' => 'Etablissement',
+                        'user_id' => 1
                 ]);
 
                 $role_admin = Role::firstOrcreate(['name' => 'Administrateur']);
@@ -56,6 +57,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 3,
+                        'user_id' => 2
 
 
                 ]);
@@ -72,7 +74,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 4,
-
+                        'user_id' => 2,
                 ]);
 
                 $eleve2Role = Role::firstOrcreate(['name' => 'Apprenant']);
@@ -86,7 +88,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 5,
-
+                        'user_id' => 2,
 
                 ]);
 
@@ -102,6 +104,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 6,
+                        'user_id' => 2,
 
                 ]);
 
@@ -121,6 +124,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 1,
+                        'user_id' => 2,
                 ]);
                 $tuteur1Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur1->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -133,6 +137,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 2,
+                        'user_id' => 2,
                 ]);
                 $tuteur2Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur2->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -145,6 +150,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 3,
+                        'user_id' => 2,
                 ]);
                 $tuteur3Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur3->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -157,6 +163,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 4,
+                        'user_id' => 2,
                 ]);
                 $tuteur4Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur4->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -169,6 +176,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 5,
+                        'user_id' => 2,
                 ]);
                 $tuteur5Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur5->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -181,6 +189,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 6,
+                        'user_id' => 2,
                 ]);
                 $tuteur6Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur6->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -196,6 +205,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'enseignant_id' => 1,
+                        'user_id' => 2,
                 ]);
                 $enseignant1Role = Role::firstOrcreate(['name' => 'Enseignant']);
                 $enseignant1->givePermissionTo(Permission::where('name', 'enseignant')->get());
@@ -208,6 +218,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'enseignant_id' => 2,
+                        'user_id' => 2,
                 ]);
                 $enseignant2Role = Role::firstOrcreate(['name' => 'Enseignant']);
                 $enseignant2->givePermissionTo(Permission::where('name', 'enseignant')->get());
@@ -220,6 +231,7 @@ class RoleSeeder extends Seeder
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'enseignant_id' => 3,
+                        'user_id' => 2,
                 ]);
                 $enseignant3Role = Role::firstOrcreate(['name' => 'Enseignant']);
                 $enseignant3->givePermissionTo(Permission::where('name', 'enseignant')->get());

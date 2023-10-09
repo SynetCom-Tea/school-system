@@ -2,6 +2,7 @@ import articlesIcon from "@iconify-icons/fluent-mdl2/articles";
 import formsAppsScriptOutlineRounded from "@iconify-icons/material-symbols/forms-apps-script-outline-rounded";
 import {
   mdiTimetable,
+  mdiBarn,
   mdiAccountGroup,
   mdiAccount,
   mdiPurse,
@@ -28,6 +29,7 @@ import {
   mdiAccountCogOutline,
   mdiCog,
   mdiSchool,
+  mdiHumanMaleBoard ,
     mdiWalletMembership,
   mdiChevronLeft,
   mdiAccountSchool,
@@ -47,7 +49,7 @@ import {
 mdiTimerStarOutline,mdiTimerSyncOutline
 } from "@mdi/js";
 export function listMenus(page) {
-    //  console.log('listNav:', page)
+
     let tabs = [];
     let enfants = [];
     let tab,tab_s = [];
@@ -117,7 +119,8 @@ export function listMenus(page) {
         icon: mdiCogOutline,
         title: "Evaluations",
         "icon-alt": mdiChevronLeft,
-        model: false,
+      model: false,
+         permissions:"enseignant",
         children: section_user,
   }
 
@@ -167,50 +170,6 @@ MenuGestion = {
 
     let listMenusSections = []
     let iconSection;
-  let childrenBySection = [
-    {
-      icon: mdiSquareMedium,
-      title: "Liste utilisateurs",
-      link: "/users",
-      permissions: "manage_system",
-    },
-    {
-      icon: mdiSquareMedium,
-      title: "Rôles",
-      link: "/enseignement/roles",
-      permissions: "manage_system",
-    },
-    {
-      icon: mdiSquareMedium,
-      title: "Permissions",
-      link: "/enseignement/permissions",
-      permissions: "manage_system",
-    },
-    {
-      title: "Inscription",
-      icon: mdiAccountSchool,
-      link: "/inscriptions",
-      permissions: "manage_system"
-    },
-    {
-      icon: mdiSquareMedium,
-      title: "Emploi",
-      link: "/emploi/emplois",
-      permissions: "manage_system",
-    },
-    {
-      icon: mdiSquareMedium,
-      title: "Calendrier",
-      link: "/emploi/emplois/create",
-      permissions: "manage_system",
-    },
-            {
-                icon: mdiSquareMedium,
-                title: "Evaluation",
-                link: "/gestionnote/admin",
-                permissions: "manage_system",
-            },
-  ];
     if (pageSections) {
         pageSections.forEach((element, index) => {
             if (element) {
@@ -247,7 +206,16 @@ MenuGestion = {
             title: "Établissements",
             link: "/etablissements",
             permissions : "manage_system",
-        },
+      },
+      {
+      icon:mdiBarn,
+      title: "Rôles/Permissions",
+      link: "/enseignement/roles",
+      color: "rgb(139,0,0)",
+      note: "Ce menu permet d'accèder à la liste des rôles  et permissions",
+      expand:false,
+      permissions: "manage_system",
+    }
     ];
 
 
@@ -295,15 +263,58 @@ let superAdminMenus=[]
     if (page?.roles[0] != "Super-administrateur") {
            singleItems = singleItems.filter(el => el.title != "Établissements")
     }
+    if ( page?.roles[0] != "Administrateur") {
+           singleItems = singleItems.filter(el => el.title != "Rôles/Permissions")
+    }
   if (page?.roles[0] == "Super-administrateur") {
    superAdminMenus.push(usersMenu)
   }
 
-    return [singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus]
+  /********************* Menu Gestion des enseignants  ************************ */
+
+  let menuTeachers, childrenTeachers;
+  childrenTeachers=[
+    {
+      icon: mdiAccountGroup,
+      title: "Liste des enseignants",
+         link: "teachers",
+         color: "rgb(205,92,92)",
+         note: "Ce menu permet d'accèder à la liste des enseignants de l'établissement",
+      expand:false,
+      permissions: "enseignant",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Affectations des enseignants aux classes",
+      link: "matching",
+      color: "rgb(139,0,0)",
+      note: "Ce menu permet d'accèder à la liste des rôles de la section",
+      expand:false,
+      permissions: "enseignant",
+    }]
+
+  menuTeachers= {
+        icon: mdiHumanMaleBoard,
+        title:"Gestion des enseignants",
+        "icon-alt": mdiChevronDown,
+        permissions: "enseignant",
+        model: false,
+        children: [
+      ...childrenTeachers
+        ],
+    };
+
+
+    /*********************Fin  Menu Gestion des enseignants  ************************ */
+
+    return{singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers}
 }
 //Menu par section
 export function listMenusBySection(page, sectionID) {
   let result
+
+
+
      let childrenBySection = [
     {
       icon: mdiAccountGroup,
@@ -314,24 +325,7 @@ export function listMenusBySection(page, sectionID) {
       expand:false,
       permissions: "manage_system",
     },
-    {
-      icon: mdiSquareMedium,
-      title: "Rôles",
-      link: "/enseignement/roles",
-      color: "rgb(139,0,0)",
-      note: "Ce menu permet d'accèder à la liste des rôles de la section",
-      expand:false,
-      permissions: "manage_system",
-    },
-    {
-      icon: mdiSquareMedium,
-      title: "Permissions",
-      link: "/enseignement/permissions",
-      color: "rgb(210,105,30)",
-      note: "Ce menu permet d'accèder à la liste des permissions de la section",
-      expand:false,
-      permissions: "manage_system",
-    },
+
     {
       title: "Inscription",
       icon: mdiAccountSchool,
@@ -358,6 +352,15 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'ajouter un nouvel emploi de temps",
       expand:false,
       permissions: "manage_system",
+       },
+      {
+      title: "Évaluations",
+      icon: mdiAccountSchool,
+      link: "evaluation",
+      color: "#363600",
+      note: "Ce menu permet d'accèder aux évaluations  section",
+      expand:false,
+      permissions: "manage_system"
     },
   ];
   if (page?.roles[0] == "Administrateur") { result= [childrenBySection]}

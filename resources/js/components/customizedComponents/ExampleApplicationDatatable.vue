@@ -123,42 +123,29 @@ export default {
     };
   },
 
-  mounted() {
-    console.log("props:", this.$page.props);
-  },
+  mounted() {},
   computed: {},
 
   methods: {
     functionOnClickAddButton() {
       router.get(route("users.index"));
     },
-    submitNewLine() {
-      console.log("submitNewLine");
-    },
+    submitNewLine() {},
     editItem(item) {
-      console.log("item from editItem:", item);
       this.editedObject = Object.assign({}, item);
       if (item) {
         this.selectedItemForUpdate = item;
       }
       if (this.dialogDetailUpdate) {
-        console.log("here");
         this.onDetailUpdate = true;
       }
-      // console.log("this.selectedItemForUpdate:", this.selectedItemForUpdate);
-      // console.log("this.dialogDetailUpdate:", this.dialogDetailUpdate);
     },
-    deleteItem(item) {
-      // console.log("item from deleteItem:", item);
-    },
-    onConfirmDeleting() {
-      console.log("confirm deleting");
-    },
+    deleteItem(item) {},
+    onConfirmDeleting() {},
     onClickCancelButtonOfMDU() {
       this.onDetailUpdate = false;
     },
     onClickSaveButtonOfMDU() {
-      // console.log("enregistrer la mise à jour:");
       this.onDetailUpdate = false;
     },
   },
@@ -173,6 +160,8 @@ export default {
 
   <div>
     <Datatable
+      fixed-header
+      height="420"
       :addDialog="true"
       :displayAddButton="false"
       :dialogDetailUpdate="dialogDetailUpdate"

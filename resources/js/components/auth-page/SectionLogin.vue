@@ -121,21 +121,19 @@
         </v-card-text>
       </v-col>
     </v-row>
-    <div class="text-center">
-      <v-snackbar
-        v-model="snackbar"
-        vertical
-        :timeout="timeout"
-        location="top"
-        color="white"
-        variant="outlined"
-      >
-        <div class="text-subtitle-1 pb-2">Message d'erreur</div>
-
-        <p>{{ getErrors }}</p>
+    <div class="text-center ma-2">
+      <v-snackbar v-model="snackbar" location="top">
+        {{ getErrors }}
 
         <template v-slot:actions>
-          <v-btn color="error" variant="text" @click="snackbar = false"> Fermer </v-btn>
+          <v-btn
+            color="red"
+            variant="text"
+            @click="snackbar = false"
+            title="Fermer la modale d'alerte"
+            :append-icon="icons.mdiCloseCircle"
+          >
+          </v-btn>
         </template>
       </v-snackbar>
     </div>
