@@ -64,14 +64,14 @@ export default {
                 this.$swal({
                     icon: 'error',
                     title: 'Erreur',
-                    text: 'Cet élément existe déjà!',
+                    text: 'Cette salle existe déjà!',
                     toast: true,
                     position: 'top-end',
                     showConfirmButton: false,
-                    timer: 3000,
+                    timer: 5000,
                     timerProgressBar: true,
                 });
-                //return 'Cette ligne est déjà sélectionnée!'
+                
             }
         },
         async submit() {
@@ -122,7 +122,7 @@ export default {
                                             <TextField label="Code" placeholder="Code" v-model="donnee.code" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
                                         </v-col>
                                         <v-col md="5">
-                                            <TextField label="Libellé" placeholder="Libellé" v-model="donnee.libelle" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
+                                            <TextField label="Libellé" placeholder="Libellé" v-model="donnee.libelle" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
                                         </v-col>
 
                                         <v-col md="2">

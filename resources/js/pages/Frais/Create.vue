@@ -57,7 +57,7 @@ export default {
             this.form.donnees = this.form.donnees.filter((product) => product !== p)
         },
         async verify(p) {
-            const array = this.form.donnees.filter(el => el.niveau_id !== null && el.niveau_id == p.niveau_id && el.type_frais_id == p.type_frais_id )
+            const array = this.form.donnees.filter(el => el !== p)
             if (array.length > 1) {  
                 this.removeRow(p)
                 this.$swal({
@@ -70,7 +70,6 @@ export default {
                                 timer: 3000,
                                 timerProgressBar: true,
                         });
-                //return 'Cette ligne est déjà sélectionnée!'
             }
         },
         async submit() {
