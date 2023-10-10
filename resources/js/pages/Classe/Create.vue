@@ -50,8 +50,8 @@ export default {
                 before: null,
                 after: null
             });
-            let donnees = this.form.donnees[this.form.donnees.length - 1];
-            this.addChild(donnees);
+            let data = this.form.donnees[this.form.donnees.length - 1];
+            this.addChild(data);
         },
         addChild(donnee) {
             donnee.enfants.push({
@@ -68,20 +68,39 @@ export default {
             p.enfants = p.enfants.filter((product) => product !== enfant)
         },
         async verify(p) {
-            const array = this.form.donnees.filter((el) => el.niveau_id !== null && el.niveau_id === p.niveau_id )
-            if (array.length > 1) {  
-                this.removeRow(p)
+            const array = this.form.donnees.filter((el) => el.niveau_id !== null && el.niveau_id == p.niveau_id)
+            if (array.length > 1) {
+               this.removeRow(p)
                 this.$swal({
-                            icon: 'error',
+                                icon: 'error',
                                 title: 'Erreur',
-                                text: 'Cet élément existe déjà!',
+                                text: 'Ce niveau existe déjà!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
-                                timer: 3000,
+                                timer: 5000,
                                 timerProgressBar: true,
-                        });
-                //return 'Cette ligne est déjà sélectionnée!'
+                            });
+            } else {
+                return true
+            }
+        },
+        async verifyChild(p,enfant) {
+            const array = p.enfants.filter((el) => el.libelle !== null && el.libelle == enfant.libelle || el.code == enfant.code)
+            if (array.length > 1) {
+               this.removeChild(p,enfant)
+                this.$swal({
+                                icon: 'error',
+                                title: 'Erreur',
+                                text: 'Cette classe existe déjà!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+            } else {
+                return true
             }
         },
         async submit() {
@@ -138,7 +157,7 @@ export default {
                                         item-title="libelle"
                                         v-model="donnee.niveau_id"
                                         isRequired
-                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                        :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
                                         >
                                     ></Select>
                                 </v-col>
@@ -156,7 +175,7 @@ export default {
                                                     placeholder="Code"
                                                     v-model="enfant.code"
                                                     isRequired
-                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!', verifyChild(donnee,enfant)]"
                                                 ></TextField>
                                             </v-col>
                                             <v-col md="5">
@@ -165,7 +184,7 @@ export default {
                                                     placeholder="Libellé"
                                                     v-model="enfant.libelle"
                                                     isRequired
-                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!', verifyChild(donnee,enfant)]"
                                                 ></TextField>
                                             </v-col>
                                             <v-col md="2">
