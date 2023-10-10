@@ -198,16 +198,37 @@
                 this.form.classe = null
                 this.dialog = false
             }
+        },
+    computed: {
+        Title() {
+        switch (this.section_id) {
+            case "1":
+            return "SECTION PRIMAIRE";
+            case "2":
+            return "SECTION SECONDAIRE";
+            case "3":
+            return "SECTION SUPERIEUR";
+            default:
+            return "SECTION UNIVERSITAIRE";
         }
+        },
+    },
     }
+
 </script>
 <template>
-    <v-card>
-    <Toolbar
+   <Toolbar
       styleToolbar="background-color: white;"
-      :icon="icons.mdiBookOpenVariant"
-      toolbarTitle="Affectation des enseignants aux classes"
+      :icon="icons.mdiSchool"
+      :toolbarTitle="Title"
     ></Toolbar>
+    <v-container fluid>
+    <v-card variant="outlined" style="border: 2px solid #7d002c">
+        <v-card-title style="color: white; background-color: #7d002c"
+            >AFFECTATION DES MATIÈRES ET CLASSES AUX ENSEIGNANTS</v-card-title
+          >
+          <v-divider></v-divider>
+        <br>
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="700px">
             <template v-slot:default="{ isActive }">
                 <v-card>
@@ -339,6 +360,7 @@
         </Datatable>
         </v-card-text>
     </v-card>
+</v-container>
 </template>
 <style>
 

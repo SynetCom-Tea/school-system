@@ -64,10 +64,20 @@ class AffectationEnseignantController extends Controller
      */
     public function create($type)
     {
+        $dernierId=Annee::max('id');
+        $annee = Annee::where('id', $dernierId)->first();
         $ets_id = Auth::user()->etablissement_id;
+        $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($table){
+            $classe->where('etablissement_section_id',$table->id);
+        })->whereHas('annee',function($anne) use ($annee){
+            $anne->where('annee_id',$annee->id);
+        })->get();
         return Inertia::render('AffectationEnseignants/Create', [
             'section_id' => $type,
+            'classes'=>$classes,
+            'enseignants' => $enseignants,
             'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
         ]);
         // return view('enseignement::create');
@@ -78,17 +88,18 @@ class AffectationEnseignantController extends Controller
      * @param Request $request
      * @return Renderable
      */
-    public function store(Request $request)
+    public function store(Request $request,$type)
     {
         //
-        dd($request);
-        $ets_id = Auth::user()->etablissement_id;
+        // dd($request);
+        // $ets_id = Auth::user()->etablissement_id;
 
-        foreach($request->donnees as $donnee){
-            foreach($request->donnees as $donnee){
+        // foreach($request->donnees as $donnee){
+        //     foreach($request->donnees as $donnee){
 
-            }
-        }
+        //     }
+        // }
+        return redirect()->back();
     }
 
     /**

@@ -1,93 +1,279 @@
-<script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import {
-    router,
-    useForm
-} from "@inertiajs/vue3";
-import {
-    mdiPlus,
-    mdiSchool,
-    mdiAccountSchool,
-    mdiCheckCircle,
-    mdiCancel,
-   mdiCurrencyUsd,
-    mdiPlusCircle,
-    mdiCloseCircle
-} from '@mdi/js'
-export default {
+<template>
+     <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icons.mdiSchool"
+      :toolbarTitle="Title"
+    ></Toolbar>
+    <form @submit.prevent="submitForm" novalidate>
+      <v-container fluid>
+        <v-card variant="outlined" style="border: 2px solid #7d002c">
+          <v-card-title style="color: white; background-color: #7d002c"
+            >AFFECTATION DES MATIÈRES ET CLASSES AUX ENSEIGNANTS</v-card-title
+          >
+          <v-divider></v-divider>
+          <br />
+          <div style="margin: 10px">
+            <v-alert
+              v-model="alertFirst"
+              border="start"
+              variant="tonal"
+              closable
+              close-label="Close Alert"
+              color="primary"
+              type="info"
+              title="Note"
+            >
+              <li>
+                Cette section vous permet d'attribuer les matières et classes aux enseignants
+              </li>
+              <li>
+                Le formulaire sera valide si et seulement si tous les champs obligatoires
+                marqués par <span style="color: red">*</span> sont renseignés
+              </li>
+            </v-alert>
+
+            <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+              <Button
+                style="height: 30px"
+                title="Plier la note"
+                @click="onclickAlertButton('first')"
+                variant="outlined"
+                color="primary"
+                nameButton="Relire la note"
+              >
+              </Button>
+            </div>
+          </div>
+
+          <v-divider></v-divider>
+          <v-card-text>
+            <v-row>
+              <v-col md="4"></v-col>
+              <v-col md="4">
+                <Autocomplete
+                  label="Enseignant"
+                  class="mt-2"
+                  item-title="NomComplet"
+                  placeholder="Enseignant"
+                  item-value="id"
+                  isRequired
+                  :items="enseignants"
+                  v-model="form.enseignant"
+                  :rules="[(v) => !!v || 'Ce champ est requis!']"
+                  @update:modelValue="submitForm(any)"
+                  chips
+                >
+                </Autocomplete>
+              </v-col>
+            </v-row>
+            <!-- <v-divider></v-divider> -->
+            <v-card class="mx-auto" max-width="1000">
+              <v-card-text>
+                <!-- <v-divider></v-divider> -->
+
+                <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
+                  <v-col md="1"></v-col>
+                  <v-col md="4">
+                    <Autocomplete
+                      label="Matière"
+                      placeholder="Matière"
+                      class="mt-2"
+                      item-title="nom"
+                      item-value="id"
+                      isRequired
+                      :items="matieres"
+                      chips
+                      v-model="matiere.matiere"
+                      :rules="[(v) => !!v || 'Ce champ est requis!']"
+                      @update:modelValue="submitForm(matiere)"
+                    >
+                    </Autocomplete>
+                  </v-col>
+
+                  <v-col md="4">
+                    <Autocomplete
+                        v-model="matiere.classes"
+                        isRequired
+                        itemValue="id"
+                        class="mt-2"
+                        itemTitle="classe.libelle"
+                        placeholder="Classes"
+                        label="Classes"
+                        multiple
+                        chips
+                        :items="classes"
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        @update:modelValue="submitForm(matiere)"
+                        >
+                    </Autocomplete>
+                  </v-col>
+                  <v-col md="1">
+                    <br />
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      :disabled="!(form.matieres.length > 1)"
+                      icon
+                      @click="removeRow(matiere)"
+                      size="large"
+                      small
+                      color="error"
+                    >
+                      <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                    </Button>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col offset-md="11" cols="4">
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      @click="addRow"
+                      icon
+                      size="large"
+                      color="primary"
+                    >
+                      <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                    </Button>
+                  </v-col>
+                </v-row>
+              </v-card-text>
+            </v-card>
+          </v-card-text>
+          <v-card-actions class="justify-end">
+      <v-spacer></v-spacer>
+      <v-btn dark small type="button" color="red" @click="goBack">
+        <v-icon :icon="icons.mdiCancel" left></v-icon> Annuler
+      </v-btn>
+      <v-btn small color="primary" @click="submit">
+        <v-icon :icon="icons.mdiCheckCircle" left></v-icon> Enregistrer
+      </v-btn>
+    </v-card-actions>
+        </v-card>
+      </v-container>
+    </form>
+  </template>
+  <script>
+  import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+  import { router, useForm } from "@inertiajs/vue3";
+  import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle } from "@mdi/js";
+  export default {
     layout: AuthenticatedLayout,
-    props: ["typefrais","section_id", "niveaux","annees"],
-    data() {
-        return {
-            icon: {
-                mdiPlus,
-                mdiSchool,
-                mdiAccountSchool,
-                mdiCheckCircle,
-                mdiCancel,
-                mdiCurrencyUsd,
-                mdiPlusCircle,
-                mdiCloseCircle
-            },
+    props: ["matieres","section_id", "classes", 'enseignants'],
+    components: {
+      mdiPlusCircle,
+      mdiCloseCircle,
+      mdiInformation,
+      mdiCancel,
+      mdiCheckCircle
+    },
+    data: () => ({
+      alertFirst: true,
+      alertSecond: true,
+      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle},
+      step: 1,
+      importation: false,
+      section: null,
+      uetabs: [],
+      form: useForm({
+        enseignant: null,
+        matieres: [],
+      }),
+    }),
 
-            form: useForm({
-                annee_id: '',
-                donnees: []
-            }),
-        }
-    },
-    mounted() {
-        this.addRow()
-    },
     methods: {
-
         goBack() {
-            router.get(route('frais.index', this.section_id))
+            router.get(route('AffectationEnseignants.index', this.section_id))
         },
-        addRow() {
-            this.form.donnees.push({
-                niveau_id: [],
-                type_frais_id: null,
-                montant: null,
-                before: null,
-                after: null
-            })
-        },
-        removeRow(p) {
-            this.form.donnees = this.form.donnees.filter((product) => product !== p)
-        },
-        async verify(p) {
-            const array = this.form.donnees.filter(el => el.niveau_id !== null && el.niveau_id == p.niveau_id && el.type_frais_id == p.type_frais_id )
-            if (array.length > 1) {
-                this.removeRow(p)
-                this.$swal({
-                            icon: 'error',
-                                title: 'Erreur',
-                                text: 'Cet élément existe déjà!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 3000,
-                                timerProgressBar: true,
-                        });
-                //return 'Cette ligne est déjà sélectionnée!'
-            }
-        },
-        async submit() {
-            const {
-                valid
-            } = await this.$refs.form.validate()
-            if (valid) {
+      onclickAlertButton(type) {
+        if (type == "second") {
+          this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
+      },
+      formatNiveauLabel(item) {
+        if (item) {
+          return `${item?.code} - ${item?.libelle}`;
+        }
+      },
+      getSection(type) {
+        if (type == "1") {
+          return "Primaire";
+        } else if (type == "2") {
+          return "Secondaire";
+        } else {
+          return "Supérieur";
+        }
+      },
+      resetForm(check) {
+        if (check) {
+          this.form.matieres = [];
+          this.addRow();
+        }
+      },
+      async submitForm(element) {
+        await this.verify(element);
+        await this.isValid();
+
+        this.form.etablissement_section_id = this.$page.props.sections.find(
+          (el) => el.section == this.section
+        );
+        this.$emit("formSubmitted", this.form);
+        this.$emit("niveauMatiereFormValid", this.isValid());
+      },
+      async isValid() {
+        let valid = false;
+       if (
+          !this.form.matieres.find(
+            (el) =>
+              this.form.enseignant == null ||
+              this.form.enseignant == "" ||
+              this.form.matieres == null ||
+              this.form.matieres == "" ||
+              el.matiere == null ||
+              el.matiere == "" ||
+              el.classes == "" ||
+              el.classes == null
+          )
+        ) {
+            valid = true;
+        }
+
+        return valid;
+      },
+      addRow() {
+        this.form.matieres.push({
+          etablissement_section_id: this.$page.props.admin_etablissement.etablissement_id,
+          matiere: null,
+          classes: [],
+          after: null,
+        });
+      },
+      removeRow(matiere) {
+        this.form.matieres = this.form.matieres.filter((el) => el !== matiere);
+      },
+      async verify(matiere) {
+        const array = this.form.matieres.filter(
+          (el) => el.matiere !== null && el.matiere == matiere.matiere
+        );
+        if (array.length > 1) {
+          this.removeRow(matiere);
+          this.$swal("L'élément existe déjà !");
+        }
+      },
+
+      async submit() {
+            console.log('enseignant',this.form.enseignant,'matiere', this.form.matieres);
+            if (await this.isValid()) {
                 console.log(this.form)
-                this.form.post(route('frais.store',this.section_id), {
+                this.form.post(route('AffectationEnseignants.store',this.section_id), {
                     onFinish: () => {
-                        this.close()
                         this.$swal({
                             icon: 'success',
                                 iconColor: '#004980',
                                 color: '#004980',
                                 title: 'Enregistrement',
-                                text: 'Frais créé avec succès!',
+                                text: 'Affectation a été enrégistré avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -96,100 +282,38 @@ export default {
                         });
                     },
                 });
+            }else{
+                this.$swal.fire({
+                title: "Erreur",
+                text:
+                  "Veuillez remplir tous les champs du formulaire !",
+                icon: "warning",
+                confirmButtonText: "OK",
+              });
+
             }
         },
-        close() {
-                this.form.reset()
-            }
-    }
-}
-</script>
-<template>
-<v-card>
-    <Toolbar :icon="icon.mdiCurrencyUsd" toolbarTitle="Affectations des matières et classes aux enseignant"></Toolbar>
+    },
+    created() {},
+    mounted() {
+      this.addRow();
+      this.section = this.getSection(this.section_id);
+    //   console.log("setNiveaux:", this.setNiveaux);
+    },
 
-    <v-card-text>
-        <v-form ref="form">
-            <v-row>
-                <v-col cols="4" md="4">
-                </v-col>
-                <v-col cols="4" md="4">
-                    <Select
-                        label="Eseignant"
-                        :items="annees"
-                        variant="outlined"
-                        item-value="id"
-                        item-title="libelle"
-                        v-model="form.annee_id"
-                        isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                        >
-                    </Select>
-                    </v-col>
-            </v-row>
-
-            <v-card-text>
-                    <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des matières et classes</v-chip>
-                    <v-card outlined class="mb-md-4" offset-md="2" max-width="600">
-                        <v-card-text>
-                            <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                                <v-col md="4">
-                                    <Select
-                                        label="Matières"
-                                        :items="Matières"
-                                        variant="outlined"
-                                        item-value="id"
-                                        item-title="libelle"
-                                        v-model="donnee.type_frais_id"
-                                        isRequired
-                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                                        >
-                                    </Select>
-                                </v-col>
-                                <v-col md="4">
-                                     <Select
-                                        label="Classes"
-                                        :items="niveaux"
-                                        variant="outlined"
-                                        item-value="id"
-                                        item-title="code"
-                                        v-model="donnee.niveau_id"
-                                        multiple
-                                        isRequired
-                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                                        >
-                                    ></Select>
-                                </v-col>
-
-
-                                <v-col md="1">
-                                    <v-btn variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
-                                        <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row>
-                                <v-col md="11">
-                                </v-col>
-                                <v-col offset-md="11" md="1">
-                                    <v-btn variant="outlined" icon @click="addRow()" fab small color="primary">
-                                        <v-icon :icon="icon.mdiPlusCircle"></v-icon>
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                        </v-card-text>
-                    </v-card>
-                </v-card-text>
-        </v-form>
-        </v-card-text>
-        <v-card-actions class="justify-end">
-      <v-spacer></v-spacer>
-      <v-btn dark small type="button" color="red" @click="goBack">
-        <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-      </v-btn>
-      <v-btn small color="primary" @click="submit">
-        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-      </v-btn>
-    </v-card-actions>
-</v-card>
-</template>
+    computed: {
+        Title() {
+        switch (this.section_id) {
+            case "1":
+            return "SECTION PRIMAIRE";
+            case "2":
+            return "SECTION SECONDAIRE";
+            case "3":
+            return "SECTION SUPERIEUR";
+            default:
+            return "SECTION UNIVERSITAIRE";
+        }
+        },
+    },
+  };
+  </script>
