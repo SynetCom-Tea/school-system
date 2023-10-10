@@ -122,7 +122,8 @@ Route::get('enseignants', [EnseignantController::class, 'index'])->name('enseign
 Route::post('enseignants', [EnseignantController::class, 'store'])->name('enseignants.store');
 
 
-Route::resource('AffectationEnseignants', AffectationEnseignantController::class)->only(['create', 'update', 'destroy']);
+Route::resource('AffectationEnseignants', AffectationEnseignantController::class)->only(['update', 'destroy']);
+Route::get('affectationEnseignants/{type}', [AffectationEnseignantController::class, 'create'])->name('affectationEnseignants.create');
 Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'index'])->name('AffectationEnseignants.index');
 Route::post('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'store'])->name('AffectationEnseignants.store');
 require __DIR__ . '/auth.php';

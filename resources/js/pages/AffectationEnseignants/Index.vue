@@ -1,6 +1,6 @@
 <script>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { useForm } from '@inertiajs/vue3';
+    import { useForm,router } from '@inertiajs/vue3';
 
     import {
         mdiAccountSchool,
@@ -88,8 +88,7 @@
         },
         methods:{
             create() {
-                this.dialog = true;
-                this.dialog_title = 'Affecter un enseignant'
+                router.get(route('affectationEnseignants.create', this.section_id));
             },
             editItem(item){
                 // console.log('edit',item)

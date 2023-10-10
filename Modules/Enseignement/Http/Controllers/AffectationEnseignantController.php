@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\EnseignementAnnee;
+use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\NiveauMatiere;
 
 class AffectationEnseignantController extends Controller
@@ -61,9 +62,15 @@ class AffectationEnseignantController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create($type)
     {
-        return view('enseignement::create');
+        $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        return Inertia::render('AffectationEnseignants/Create', [
+            'section_id' => $type,
+            'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+        ]);
+        // return view('enseignement::create');
     }
 
     /**
