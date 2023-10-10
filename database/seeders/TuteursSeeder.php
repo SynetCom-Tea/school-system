@@ -23,21 +23,23 @@ class TuteursSeeder extends Seeder
         /****************************************  2 Tuteurs  du primaire******************************************************/
         //*Tuteur1 */
         Tuteur::create([
-            'mail' => 'tchimba@gmail.com',
+            'email' => 'tchimba@gmail.com',
             'nom' => 'tuteur1',
             'prenom' => 'Tchimba',
             'adresse' => "Saga",
-            'telephone' => "80808080"
+            'telephone' => "80808080",
+            'sexe' => 'Masculin'
 
         ]);
 
         //**Tuteur2 */
         Tuteur::create([
-            'mail' => 'fanta@yahoo.com',
+            'email' => 'fanta@yahoo.com',
             'nom' => 'tuteur2',
             'prenom' => 'Fanta',
             'adresse' => "Plateau",
-            'telephone' => "82808080"
+            'telephone' => "82808080",
+            'sexe' => 'Féminin'
         ]);
 
         /****************************************  Fin  Tuteurs  du primaire******************************************************/
@@ -47,20 +49,22 @@ class TuteursSeeder extends Seeder
         //*Tuteur3 */
 
         Tuteur::create([
-            'mail' => 'ahmed@gmail.com',
+            'email' => 'ahmed@gmail.com',
             'nom' => 'tuteur3',
             'prenom' => 'Ahmed',
             'adresse' => "Yantala",
-            'telephone' => "88808080"
+            'telephone' => "88808080",
+            'sexe' => 'Masculin'
 
         ]);
         //**Tuteur4 */
         Tuteur::create([
-            'mail' => 'maimouna@gmail.com',
+            'email' => 'maimouna@gmail.com',
             'nom' => 'tuteur4',
             'prenom' => 'Maimouna',
             'adresse' => "Lakouroussou",
-            'telephone' => "94808080"
+            'telephone' => "94808080",
+            'sexe' => 'Féminin'
         ]);
 
 
@@ -71,20 +75,22 @@ class TuteursSeeder extends Seeder
         //*Tuteur5 */
 
         Tuteur::create([
-            'mail' => 'mamoudou@gmail.com',
+            'email' => 'mamoudou@gmail.com',
             'nom' => 'tuteur5',
             'prenom' => 'Mamoudou',
             'adresse' => "Yantala",
-            'telephone' => "90808080"
+            'telephone' => "90808080",
+            'sexe' => 'Masculin'
 
         ]);
         //**Tuteur6 */
         Tuteur::create([
-            'mail' => 'mouna@gmail.com',
+            'email' => 'mouna@gmail.com',
             'nom' => 'tuteur6',
             'prenom' => 'Mouna',
             'adresse' => "Goudel",
-            'telephone' => "92808080"
+            'telephone' => "92808080",
+            'sexe' => 'Féminin'
         ]);
 
 

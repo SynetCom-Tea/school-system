@@ -17,13 +17,17 @@ return new class extends Migration
             $table->id();
             $table->date('date_inscription');
             $table->foreignIdFor(\App\Models\Apprenant::class)
-                ->references('id')->on('apprenants')->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
-            /* $table->foreignIdFor(\Modules\Scolarite\Entities\Filiere::class)
-                ->references('id')->on('filieres')->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('restrict'); */
+                ->index()
+                ->references('id')->on('apprenants');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Filiere::class)->nullable()
+                ->index()
+                ->references('id')->on('filieres');
+            $table->foreignIdFor(\App\Models\Annee::class)
+                ->index()
+                ->references('id')->on('annees');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
+                ->index()
+                ->references('id')->on('niveauX');
             $table->timestamps();
         });
     }

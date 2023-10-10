@@ -19,7 +19,8 @@ return new class extends Migration
             $table->string('prenom')->nullable();
             $table->string('telephone')->nullable();
             $table->string('adresse')->nullable();
-            $table->string('mail')->nullable();
+            $table->string('email')->nullable();
+            $table->string('sexe')->nullable();
             $table->timestamps();
             $table->SoftDeletes();
         });

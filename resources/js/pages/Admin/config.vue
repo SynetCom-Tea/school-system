@@ -215,7 +215,7 @@
   </AuthenticatedLayout>
 </template>
 <script>
-import { FormWizard, TabContent } from "vue3-form-wizard";
+import { FormWizard, TabContent } from "vue3-form-wizard"; 
 import "vue3-form-wizard/dist/style.css";
 import MatiereForm from "@/components/admin/matiere.vue";
 import NiveauMatiereSansUeForm from "@/components/admin/niveau-matiere-sans-ue.vue";

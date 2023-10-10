@@ -19,14 +19,13 @@ return new class extends Migration
             $table->date('libelle')->nullable();
             $table->date('date_versement');
             $table->double('montant');
-            $table->foreignIdFor(\App\Models\Apprenant::class)
-                ->references('id')->on('apprenants')->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
+            $table->foreignIdFor(\Modules\Scolarite\Entities\Inscription::class)
+                ->index()
+                ->references('id')->on('inscriptions');
+           
             $table->foreignIdFor(\Modules\Scolarite\Entities\Frais::class)
-                ->references('id')->on('frais')->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
+                ->index()
+                ->references('id')->on('frais');
             $table->softDeletes();
             $table->timestamps();
         });

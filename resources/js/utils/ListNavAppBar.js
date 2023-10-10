@@ -188,7 +188,7 @@ MenuGestion = {
         {
             title: "Inscription",
             icon: mdiAccountSchool,
-            link: "/inscriptions",
+            link: "/scolarite/inscriptions",
             permissions: "manage_system"},
      {
                 icon: mdiSquareMedium,

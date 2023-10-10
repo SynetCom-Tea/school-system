@@ -116,7 +116,18 @@
         </template>
 
         <template v-slot:no-data>
-          <span color="primary">Aucune donnée</span>
+          <!-- <span color="primary">Aucune donnée</span> -->
+          <v-row>
+            <v-col></v-col>
+            <v-col>
+              <v-btn
+          @click="addNewInscription(null)"
+          variant="text"
+          >Nouvel inscription?</v-btn>
+            </v-col>
+            <v-col></v-col>
+          </v-row>
+          
         </template>
 
         <template v-slot:default="props">
@@ -168,13 +179,25 @@
                               Frais</a
                             ></v-col
                           >
-                          <v-col cols="4" @click="onclickTuteurs(item.raw)">
+                          <v-col cols="3" @click="onclickTuteurs(item.raw)">
                             <a
                               style="cursor: pointer"
                               class="text-caption text-decoration-none text-primary"
                               target="_blank"
                             >
                               Tuteurs</a
+                            ></v-col
+                          >
+                        </v-row>
+                        <v-row>
+                          <v-col cols="4"></v-col>
+                          <v-col cols="4" @click="addNewInscription(item.raw)">
+                            <a
+                              style="cursor: pointer"
+                              class="text-caption text-decoration-none text-warning"
+                              target="_blank"
+                            >
+                              Réinscription</a
                             ></v-col
                           >
                         </v-row>
@@ -410,12 +433,18 @@ export default {
       return list ?? [];
     },
   },
+  created(){
+  },
   methods: {
     getNiveauxPrimaire,
     getNiveauxSecondaire,
     getAcademicYears,
     generateColorsForGraph,
-
+    addNewInscription(item){
+      console.log('apprenant',item)
+      // router.post('/scolarite/inscription/page/',{apprenant:item});
+      router.get(route("inscriptionPage", {apprenant: JSON.stringify(item)}))
+    },
     onclickTuteurs(e) {},
     async onclickFrais(e) {
       this.selectedFrais = e;
@@ -534,9 +563,9 @@ export default {
 
       return columns ?? [];
     },
-    functionOnClickAddButton() {
-      router.get(route("inscriptions.create"));
-    },
+    // functionOnClickAddButton() {
+    //   router.get(route("inscriptions.create"));
+    // },
     submitNewLine() {},
     editItem(item) {
       this.editedObject = Object.assign({}, item);
