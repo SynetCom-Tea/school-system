@@ -90,15 +90,16 @@ class AffectationEnseignantController extends Controller
      */
     public function store(Request $request,$type)
     {
-        //
-        // dd($request);
-        // $ets_id = Auth::user()->etablissement_id;
 
-        // foreach($request->donnees as $donnee){
-        //     foreach($request->donnees as $donnee){
+        // dd($request->matieres);
+        $ets_id = Auth::user()->etablissement_id;
 
-        //     }
-        // }
+        foreach($request->matieres as $matiere){
+             dd($matiere['matiere']);
+            foreach($matiere['classes'] as $classe){
+                // dd($classe);
+            }
+        }
         return redirect()->back();
     }
 
