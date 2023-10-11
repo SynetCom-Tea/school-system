@@ -91,10 +91,9 @@
                 @update:modelValue="submitForm()"
                 placeholder="Libelle matiere"
                 v-model="form.telephone"
+                :rules="[(v) => !!v || 'Ce champ est requis!']"
               ></TextField>
             </v-col>
-        
-            
           </v-row>
         </v-card-text>
       </v-card>
@@ -127,6 +126,12 @@ export default {
     contentType: ["code", "nom"],
     importation: false,
     section: null,
+    rules: [
+      value => {
+          if (value) return true
+          return 'Ce champ est requis!'
+      },
+    ],
     form: useForm({
       nom: '',
       prenom: '',
