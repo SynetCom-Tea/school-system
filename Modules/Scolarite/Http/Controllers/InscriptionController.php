@@ -29,8 +29,9 @@ class InscriptionController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
+        // dd('r:', $request->all());
         try {
             //code...
 
@@ -42,7 +43,9 @@ class InscriptionController extends Controller
                 ]);
             }
 
-            return Inertia::render('Inscription/Index');
+            return Inertia::render('Inscription/Index', [
+                'vSectionID' => (int)$request->section_id
+            ]);
         } catch (\Throwable $th) {
             //throw $th;
             return redirect()->back()->with('message', [
@@ -54,12 +57,14 @@ class InscriptionController extends Controller
 
     public function addPage(Request $request)
     {
+        // dd($request);
         $apprenant = json_decode($request->query('apprenant'));
-        // dd($apprenant);
+        $section = json_decode($request->query('section'));
+        // dd($apprenant,$section);
         // dd($request->apprenant);
         return Inertia::render('Inscription/Create', [
-            'type' => '1',
-            'niveaux' => Niveau::where('section_id', 1)->get(),
+            'type' => $section,
+            'niveaux' => Niveau::where('section_id', $section)->get(),
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
@@ -174,7 +179,7 @@ class InscriptionController extends Controller
             ]);
             $classe = $cl->id;
         }else{
-            $classe = $request->annees['niveau'];
+            $classe = $request->annees['classe'];
         }
 
 
@@ -207,7 +212,7 @@ class InscriptionController extends Controller
 
         // Tuteur
         if($request->tuteurs){
-            if($request->tuteurs['selection'] == '0'){
+            if($request->tuteurs['selection'] !== '1'){
                 foreach($request->tuteurs['tuteurs'] as $tuteur){
                     $item_tuteur = Tuteur::create([
                         'nom' => $tuteur['nom'],

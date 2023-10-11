@@ -8,7 +8,7 @@ import {
   mdiMagnify,
   mdiContentSaveEditOutline,
 } from "@mdi/js";
-import TextFieldC from "./TextFieldC.vue";
+
 import ModalDetailUpdate from "./ModalDetailUpdate.vue";
 // import { provide, reactive, ref } from "vue";
 export default {
@@ -72,11 +72,11 @@ export default {
     mdiPlus,
     mdiCancel,
     mdiContentSaveEditOutline,
-    TextFieldC,
   },
 
   data() {
     return {
+      selected: [],
       pagination: null,
       dialog: false,
       status: false,
@@ -193,7 +193,7 @@ export default {
     :headers="headers"
     :items="items"
     :search="searchQuery"
-    :sort-by="[{ key: 'calories', order: 'asc' }]"
+    item-key="id"
     :pagination.sync="pagination"
     class="style-table"
   >
@@ -230,9 +230,18 @@ export default {
 
         <v-spacer></v-spacer>
 
-            <Button variant="flat" class="add-button-style" nameButton="Ajouter" title="Ajouter une nouvelle ligne" :prependIcon="icons.mdiPlus" @click="onClickAddButton">
-            </Button>
-            <!-- <ModalDetailUpdate
+        <Button
+          v-if="displayAddButton == true"
+          variant="flat"
+          style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c"
+          class="add-button-style"
+          nameButton="Ajouter"
+          title="Ajouter une nouvelle ligne"
+          :prependIcon="icons.mdiPlus"
+          @click="onClickAddButton"
+        >
+        </Button>
+        <!-- <ModalDetailUpdate
           :onClickCancelButton="onClickCancelButtonForEditing"
           :toolbarTitle="toolbarTitle"
           :dialogDetailUpdate="dialogDetailUpdate"
@@ -240,8 +249,8 @@ export default {
           :iconValueDetail="icons.mdiPencil"
           :iconUpdate="icons.mdiAccount"
         ></ModalDetailUpdate> -->
-            <v-dialog v-model="dialog" max-width="900px" persistent>
-                <!-- <template v-slot:activator="{ props }">
+        <v-dialog v-model="dialog" max-width="900px" persistent>
+          <!-- <template v-slot:activator="{ props }">
             <Button
               variant="flat"
               class="mb-2"
@@ -253,10 +262,10 @@ export default {
             >
             </Button>
           </template> -->
-                <v-card>
-                    <v-card-title style="background-color: #7d002c">
-                        <span class="text-h5 text-white">{{ formTitle }}</span>
-                    </v-card-title>
+          <v-card>
+            <v-card-title style="background-color: #7d002c">
+              <span class="text-h5 text-white">{{ formTitle }}</span>
+            </v-card-title>
 
             <slot name="addDialogContent" />
             <v-card-actions class="card-actions-style">
@@ -316,7 +325,13 @@ export default {
       </v-toolbar>
       <v-card outlined height="3px" color="secondary"></v-card>
     </template>
+
+    <!-- <template v-slot:item="{ item }">
+      {{ itemRowBackground(item) }}
+      </slot>
+    </template> -->
     <template v-slot:item.actions="{ item }">
+      <!-- <div style="background-color: red"> -->
       <v-icon
         size="small"
         class="me-2"
@@ -334,6 +349,7 @@ export default {
         :icon="icons.mdiDelete"
       >
       </v-icon>
+      <!-- </div> -->
     </template>
     <template v-slot:no-data>
       <div>
@@ -360,16 +376,43 @@ export default {
         </div>
       </div>
     </template>
-    <template v-for="(index, name) in $slots" v-slot:[name]>
-      <slot :name="name"></slot>
+    <template class="slot-style" v-for="(index, name) in $slots" v-slot:[name]>
+      <div><slot :name="name"></slot></div>
     </template>
-    <template v-for="(index, name) of $slots" v-slot:[name]="data">
-      <slot :name="name" v-bind="data"></slot>
+    <template
+      class="slot-data-style"
+      v-for="(index, name) of $slots"
+      v-slot:[name]="data"
+    >
+      <div><slot :name="name" v-bind="data"></slot></div>
     </template>
   </v-data-table>
 </template>
 
-<style scoped>
+<style>
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > td,
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > th {
+  /* background: #7d002c; */
+  background: #bfbfbf;
+  /* background: #bfdfff; */
+}
+
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(even) > td,
+.v-table .v-table__wrapper > table > tbody > tr:nth-of-type(even) > th {
+  /* background: #004980; */
+  background: #5a5a5a;
+  /* background: #003f7d; */
+}
+/* tbody tr:nth-of-type(odd) {
+
+  color: white;
+} */
+
+tbody tr:nth-of-type(even) {
+  /* 'deep-orange lighten-5' basides on material design color */
+  color: white;
+}
+
 .add-button-style:hover {
   background-color: #7d002c;
   box-shadow: 0px 0px 8px #7d002c;
@@ -377,13 +420,11 @@ export default {
   cursor: pointer;
 }
 
-.add-button-style {
+/* .add-button-style {
   height: 30px;
-  /* background-color: #7d002c; */
   text-transform: none;
   box-shadow: 10px 5px 5px #7d002c;
-  /* 0px 0px 5px #7d002c; */
-}
+} */
 
 .search-field {
   border: 1px solid #7d002c;
@@ -394,10 +435,6 @@ export default {
   border: 2px solid #7d002c;
   padding: 10px;
   border-radius: 25px;
-
-  /* border: 2px solid #7d002c;
-  /* border: 1px solid #004980; */
-  /*border-radius: 15px 50px 30px; */
   margin-left: 10px;
   width: 98%;
 }

@@ -20,7 +20,7 @@
               @update:modelValue="onChangeModelValueYears(year)"
             ></Autocomplete>
           </v-col>
-          <v-col cols="3">
+          <!-- <v-col cols="3">
             <Autocomplete
               :items="getSections"
               v-model="section"
@@ -31,7 +31,7 @@
               label="Section"
               @update:modelValue="onChangeModelValueSections(section, year)"
             ></Autocomplete>
-          </v-col>
+          </v-col> -->
           <v-col cols="4">
             <Autocomplete
               v-if="section == 1"
@@ -300,6 +300,7 @@ export default {
   },
   //*403#
   // layout: AuthenticatedLayout,
+  props: ["vSectionID"],
   data() {
     return {
       dialogFrais: false,
@@ -314,7 +315,7 @@ export default {
       // FIN
       year: null,
       annee: null,
-      section: null,
+      section: this.vSectionID,
       primaire: null,
       secondaire: null,
       niveauxPrimaire: [],
@@ -412,7 +413,6 @@ export default {
     },
     filteredKeys() {
       return this.headers.filter((key) => {
-        // console.log("key:", key);
         return key && key.title !== "Matricule";
       });
     },
@@ -441,9 +441,8 @@ export default {
     getAcademicYears,
     generateColorsForGraph,
     addNewInscription(item){
-      console.log('apprenant',item)
       // router.post('/scolarite/inscription/page/',{apprenant:item});
-      router.get(route("inscriptionPage", {apprenant: JSON.stringify(item)}))
+      router.get(route("inscriptionPage", {apprenant: JSON.stringify(item), section: JSON.stringify(this.vSectionID)}))
     },
     onclickTuteurs(e) {},
     async onclickFrais(e) {
@@ -486,27 +485,26 @@ export default {
       let getData = await this.getListUsers(this.dParams);
       this.subscribers = this.customizeData(getData);
     },
-    async onChangeModelValueYears(year) {},
-    async onChangeModelValueSections(e, year) {
+    async onChangeModelValueYears(year) {
       let list;
       this.dParams = {
-        idSection: e,
+        idSection: this.vSectionID,
         niveauSection: "niveau0",
         academicYear: year,
       };
       let getData = await this.getListUsers(this.dParams);
       this.subscribers = this.customizeData(getData);
 
-      if (e && e == 1) {
+      if (this.vSectionID && this.vSectionID == 1) {
         list = await this.getNiveauxPrimaire();
         this.niveauxPrimaire = list;
       }
-      if (e && e == 2) {
+      if (this.vSectionID && this.vSectionID == 2) {
         list = await this.getNiveauxSecondaire();
         this.niveauxSecondaire = list;
       }
     },
-
+    async onChangeModelValueSections(e, year) {},
     async getListUsers(params) {
       let axiosResult = [];
       let items = [];

@@ -63,12 +63,8 @@ export default {
     };
   },
   methods: {
-    onChangeSearch(e) {
-      console.log("e search:", e);
-    },
-    onClickSearch() {
-      console.log("search");
-    },
+    onChangeSearch(e) {},
+    onClickSearch() {},
     goBack() {
       return router.get(route("dashboard"));
     },

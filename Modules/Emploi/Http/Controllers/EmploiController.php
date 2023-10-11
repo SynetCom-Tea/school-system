@@ -29,30 +29,23 @@ class EmploiController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index()
+    public function index(Request $request)
     {
-        // return view('emploi::index');
-
-        //code...
-
+        // dd('r:', $request->all());
+        $classes = getClasses(Annee::find(2)->id, Auth::user()->etablissement_id, 1);
+        $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $events = [];
-        $emplois = Emploi::with('seances.horaire')->get();
-        // dd('$emplois:', $emplois, $emplois->count());
-
-        if ($emplois->count() != 0) {
-
-
-
-
-            foreach ($emplois[0]->seances as $seance) {
-
+        $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id);
+        if ($request->classe) {
+            $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id);
+            $seances = $request->emploi ? Emploi::getEmploiwhitClasse(4, $request->emploi) : Emploi::getEmploiwhitClasse(4, 1);
+            foreach ($seances as $seance) {
                 // Extraire les heures et les minutes de heure_debut et heure_fin
                 $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
                 $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
-
                 $event = [
                     'title' => $seance->nom_matiere,
-                    'with' => 'Chandler Bing', // Modifier selon vos besoins
+                    'with' => $seance->enseignant_nom . ' ' . $seance->enseignant_prenom,
                     'time' => [
                         'start' => $seance->date_seance . ' ' . $heureDebut,
                         'end' => $seance->date_seance . ' ' . $heureFin
@@ -60,15 +53,14 @@ class EmploiController extends Controller
                     'isEditable' => true,
                     'id' => uniqid(), // Générer un identifiant unique pour l'événement
                     'colorScheme' => 'meetings',
-                    'description' => 'Lorem ipsum dolor sit amet, consectetur adipisicing elit. Asperiores assumenda corporis doloremque et expedita molestias necessitatibus quam quas temporibus veritatis. Deserunt excepturi illum nobis perferendis praesentium repudiandae saepe sapiente voluptatem!'
                 ];
-
                 $events[] = $event;
             }
         }
-        // dd($events);
         return Inertia::render('Emplois/Index', [
             'emplois' => $emplois,
+            'AllClasses' => $classes,
+            'niveaux' => $niveaux,
             'events' => $events
         ]);
     }
@@ -79,18 +71,20 @@ class EmploiController extends Controller
      */
     public function create(Request $request)
     {
+        // dump('r:', $request->all());
         $anneeScolaireId = Annee::find(2)->id;
         $etablissement = Etablissement::with('sections')->find(Auth::user()->etablissement_id);
         // Récupérer les IDs des sections
         $sectionIds = $etablissement->sections->pluck('id');
+        // dd('$sectionIds:', $sectionIds);
         // Récupérer les niveaux pour toutes les sections
         $sectionEtablissement = DB::table('etablissement_section')
             ->where('etablissement_id', Auth::user()->etablissement_id)
-            ->whereIn('section_id', $sectionIds)
+            ->where('section_id', $request->section_id)
             ->pluck('id');
         $classeAnnees = ClasseAnnee::where('annee_id', $anneeScolaireId)->pluck('classe_id');
         $classes = Classe::whereIn('id', $classeAnnees)->whereIn('etablissement_section_id', $sectionEtablissement)->get();
-        $niveaux = Niveau::whereIn('section_id', $sectionIds)->get();
+        $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $matieres = Matiere::whereIn('etablissement_section_id', $sectionEtablissement)->get();
         $niveauMatiere = DB::table('niveau_matieres')
             ->whereIn('niveau_id', $niveaux->pluck('id'))

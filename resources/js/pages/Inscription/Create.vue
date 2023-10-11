@@ -306,7 +306,7 @@ export default {
               title: "Réussie",
             }).then((result) => {
               if(result.isConfirmed){
-                router.get(route('inscriptions.index'))
+                router.get(route('inscriptions.index',{section_id: JSON.stringify(this.type)}))
               }
             })
           }

@@ -228,7 +228,7 @@ import faculteForm from "@/components/admin/faculte.vue";
 import ueForm from "@/components/admin/ue.vue";
 import fraisForm from "@/components/admin/frais.vue";
 import { router, useForm } from "@inertiajs/vue3";
-import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
+import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import Toolbar from "@/components/customizedComponents/Toolbar.vue";
 // import Datatable from "@/components/customizedComponents/datatable.vue";
 import Loader from "@/components/customizedComponents/Loader.vue";

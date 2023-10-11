@@ -26,17 +26,18 @@ class DatabaseSeeder extends Seeder
             TypeFraisSeeder::class,
             TuteursSeeder::class,
             ApprenantSeeder::class,
-            RoleSeeder::class,
             EnseignantSeeder::class,
+            RoleSeeder::class,
             FraisSeeder::class,
             // VersementsSeeder::class,
             ApprenantClasseAnneesSeeder::class,
             SalleSeeder::class,
             MatiereTableSeeder::class,
             NiveauMatiereSeeder::class,
-            NiveauMatiereSeeder::class
-            // SalleSeeder::class,
-
+            PeriodeTableSeeder::class,
+            TypeEvaluationTableSeeder::class,
+            // EnseignantSeeder::class,
+            EnseiggnementAnneeSeeder::class
             // EnseignementDatabaseSeeder::class,
         ]);
     }

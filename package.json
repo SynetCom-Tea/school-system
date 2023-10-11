@@ -6,6 +6,7 @@
         "build": "vite build && vite build --ssr"
     },
     "devDependencies": {
+        "@iconify/icons-material-symbols": "^1.2.56",
         "@inertiajs/vue3": "^1.0.0",
         "@tailwindcss/forms": "^0.5.3",
         "@vitejs/plugin-vue": "^4.0.0",
@@ -35,6 +36,7 @@
         "@vuelidate/core": "^2.0.3",
         "@vuelidate/validators": "^2.0.4",
         "@vuepic/vue-datepicker": "^6.0.1",
+        "@vueuse/core": "^10.4.1",
         "bootstrap": "^5.3.1",
         "bootstrap-vue": "^2.23.1",
         "core-js": "^3.32.1",
@@ -48,7 +50,7 @@
         "vue-echarts": "^6.6.1",
         "vue-gates": "^2.1.2",
         "vue-loader": "^17.0.1",
-        "vue-router": "^4.0.13",
+        "vue-router": "^4.2.4",
         "vue-sweetalert2": "^5.0.5",
         "vue3-form-wizard": "^0.2.1",
         "vue3-marquee": "^4.0.0",

@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -28,22 +29,22 @@ return new class extends Migration
             BEGIN
                 DECLARE etablissement_name VARCHAR(255);
                 DECLARE section_libelle VARCHAR(255);
-        
+
                 SELECT etablissements.name INTO etablissement_name
                 FROM etablissements
                 JOIN etablissement_section ON etablissements.id = etablissement_section.etablissement_id
                 WHERE etablissement_section.id = NEW.etablissement_section_id;
-        
+
                 SELECT sections.libelle INTO section_libelle
                 FROM sections
                 JOIN etablissement_section ON sections.id = etablissement_section.section_id
                 WHERE etablissement_section.id = NEW.etablissement_section_id;
-        
+
                 SET NEW.code = CONCAT(etablissement_name, "/", section_libelle, "/", NEW.nom);
             END;
         ');
 
-        Schema::create('filiere_matiere_ues_', function (Blueprint $table) {
+        Schema::create('filiere_matiere_ues', function (Blueprint $table) {
             $table->id();
             $table->string('volume_horaire')->nullable();
             $table->string('coefficient')->nullable();
@@ -70,9 +71,29 @@ return new class extends Migration
                 ->references('id')->on('matieres');
             $table->foreignIdFor(\Modules\Enseignement\Entities\FiliereMatiereUe::class)->nullable()
                 ->index()
-                ->references('id')->on('filiere_matiere_ues_');
+                ->references('id')->on('filiere_matiere_ues');
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE niveau_matieres ADD COLUMN code varchar(255);");
+
+        DB::unprepared('
+            CREATE TRIGGER niveau_matieres_before_insert BEFORE INSERT ON niveau_matieres
+            FOR EACH ROW
+            BEGIN
+                DECLARE matiere VARCHAR(255);
+                DECLARE niveau VARCHAR(255);
+
+                SELECT matieres.nom INTO matiere
+                FROM matieres
+                WHERE matieres.id = NEW.matiere_id;
+
+                SELECT niveaux.code INTO niveau
+                FROM niveaux
+                WHERE niveaux.id = NEW.niveau_id;
+
+                SET NEW.code = CONCAT(matiere, "/", niveau);
+            END;
+        ');
     }
 
     /**

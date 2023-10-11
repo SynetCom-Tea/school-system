@@ -22,6 +22,7 @@ use App\Models\EtablissementSection;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
+use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Inscription;
 use Modules\Scolarite\Entities\Versement;
@@ -105,12 +106,7 @@ class UserController extends Controller
         $list = [];
         $authUser =  Auth::user();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
-        // if (Auth::user() == null || Auth::user()->type_user == null) {
-        //     return redirect('/login')->with('message', [
-        //         'type' => 'error',
-        //         'text' => 'Session expiré!',
-        //     ]);
-        // }
+
         if ($nameRole == 'Administrateur') {
             if ($params == "allyears") {
 
@@ -137,14 +133,46 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
+        // dump('request:', $request->all());
+        $authUser = Auth::user();
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
                 'type' => 'error',
-                'text' => 'Session expiré!',
+                'text' => 'Session expirée!',
             ]);
         }
+        $vUsers = null;
+        // dump('T:', $request->section_id);
+        if ($request->section_id != null) {
+            $vUsers = User::where('users.etablissement_id', (int)$authUser->etablissement_id)
+                ->where('users.user_id', (int)$authUser->id)
+                // ->where('users.id', '<>', (int)$authUser->id)
+                ->join(
+                    'section_users',
+                    'users.id',
+                    '=',
+                    'section_users.user_id',
+                )
+                ->join(
+                    'etablissement_section',
+                    'section_users.etablissement_section_id',
+                    '=',
+                    'etablissement_section.id',
+                )
+                ->where('etablissement_section.section_id', (int)$request->section_id)
+                ->selectRaw('users.*')
+                ->with('apprenant', 'tuteur', 'enseignant')
+                ->get();
+        }
+        if ($request->section_id == null) {
+            $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
+                ->where('users.user_id', (int)$authUser->id)
+                ->with('etablissement')->get();
+        }
+
         return Inertia::render('User/Index', [
-            'users' => User::where('user_id', Auth::user()->id)->get()
+            'users' => $vUsers ?? [],
+            'sectionID' => $request->section_id ?? null
         ]);
     }
 

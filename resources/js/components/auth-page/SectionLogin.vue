@@ -121,6 +121,22 @@
         </v-card-text>
       </v-col>
     </v-row>
+    <div class="text-center ma-2">
+      <v-snackbar v-model="snackbar" location="top">
+        {{ getErrors }}
+
+        <template v-slot:actions>
+          <v-btn
+            color="red"
+            variant="text"
+            @click="snackbar = false"
+            title="Fermer la modale d'alerte"
+            :append-icon="icons.mdiCloseCircle"
+          >
+          </v-btn>
+        </template>
+      </v-snackbar>
+    </div>
   </div>
 </template>
 
@@ -167,6 +183,11 @@ export default {
     marker: true,
     iconIndex: 0,
     getErrors: "",
+    snackbar: false,
+    y: "top",
+    x: null,
+    mode: "",
+    timeout: 6000,
     showPassword: false,
     icons: {
       mdiGoogle,
@@ -206,9 +227,7 @@ export default {
     }
   },
   methods: {
-    onChangeRememberMe(remember) {
-      console.log("remember:", remember);
-    },
+    onChangeRememberMe(remember) {},
     togglePassword() {
       this.showPassword = !this.showPassword;
     },
@@ -221,8 +240,14 @@ export default {
     },
     goToLogin(e) {
       e.preventDefault();
+
       this.form.post(route("login"), {
-        onSuccess: (e) => {},
+        onSuccess: (e) => {
+          if (e.props.flash?.message?.type == "error") {
+            this.snackbar = true;
+            this.getErrors = e.props.flash.message.text;
+          }
+        },
         onError: (e) => {
           if (e.email == "These credentials do not match our records.") {
             this.errors.text = "Identifiant ou mot de passe incorrect";

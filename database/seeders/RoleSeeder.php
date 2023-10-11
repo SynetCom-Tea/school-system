@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use App\Models\ApprenantTuteur;
+use App\Models\SectionUser;
 use Illuminate\Support\Facades\Hash;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -19,9 +20,10 @@ class RoleSeeder extends Seeder
         {
 
                 $super_admin = User::create([
+                        'id' => 1,
                         'nom' => 'Tondi',
                         'prenom' => 'Bouli',
-                        'email' => 'super-admin@gmail.com',
+                        'email' => 'super-admin@univers-school.com',
                         'password' => Hash::make('password'),
                         'nom' => 'super',
                         'prenom' => 'Administrateur',
@@ -33,11 +35,13 @@ class RoleSeeder extends Seeder
 
                 // Admin
                 $admin = User::create([
-                        'email' => 'admin@gmail.com',
+                        'id' => 2,
+                        'email' => 'admin@univers-school.com',
                         'password' => Hash::make('password'),
                         'nom' => 'Admin',
                         'etablissement_id' => 1,
                         'prenom' => 'Etablissement',
+                        'user_id' => 1
                 ]);
 
                 $role_admin = Role::firstOrcreate(['name' => 'Administrateur']);
@@ -48,10 +52,12 @@ class RoleSeeder extends Seeder
                 //*Apprenant1 */
 
                 $eleve1 = User::create([
-                        'email' => 'eleve1@gmail.com',
+                        'id' => 3,
+                        'email' => 'eleve1@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 3,
+                        'user_id' => 2
 
 
                 ]);
@@ -63,11 +69,12 @@ class RoleSeeder extends Seeder
                 //*Apprenant2 */
 
                 $eleve2 = User::create([
-                        'email' => 'eleve2@gmail.com',
+                        'id' => 4,
+                        'email' => 'eleve2@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 4,
-
+                        'user_id' => 2,
                 ]);
 
                 $eleve2Role = Role::firstOrcreate(['name' => 'Apprenant']);
@@ -76,11 +83,12 @@ class RoleSeeder extends Seeder
                 //*Apprenant1 */
 
                 $eleve3 = User::create([
-                        'email' => 'eleve1@gmail.com',
+                        'id' => 5,
+                        'email' => 'eleve3@univers-school.comm',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 5,
-
+                        'user_id' => 2,
 
                 ]);
 
@@ -91,10 +99,12 @@ class RoleSeeder extends Seeder
                 //*Apprenant4 */
 
                 $eleve4 = User::create([
-                        'email' => 'eleve2@gmail.com',
+                        'id' => 6,
+                        'email' => 'eleve4@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'apprenant_id' => 6,
+                        'user_id' => 2,
 
                 ]);
 
@@ -109,10 +119,12 @@ class RoleSeeder extends Seeder
                 /****************************************  6 Tuteurs ******************************************************/
                 //*Tuteur1 Primaire */
                 $tuteur1 = User::create([
+                        'id' => 7,
                         'email' => 'tuteurp1@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 1,
+                        'user_id' => 2,
                 ]);
                 $tuteur1Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur1->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -120,10 +132,12 @@ class RoleSeeder extends Seeder
 
                 //**Tuteur2 Primaire*/
                 $tuteur2 = User::create([
+                        'id' => 8,
                         'email' => 'tuteurp2@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 2,
+                        'user_id' => 2,
                 ]);
                 $tuteur2Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur2->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -131,10 +145,12 @@ class RoleSeeder extends Seeder
 
                 //*Tuteur1 Collège*/
                 $tuteur3 = User::create([
+                        'id' => 9,
                         'email' => 'tuteurc1@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 3,
+                        'user_id' => 2,
                 ]);
                 $tuteur3Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur3->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -142,10 +158,12 @@ class RoleSeeder extends Seeder
 
                 //**Tuteur2 Collège*/
                 $tuteur4 = User::create([
+                        'id' => 10,
                         'email' => 'tuteur2@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 4,
+                        'user_id' => 2,
                 ]);
                 $tuteur4Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur4->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -153,10 +171,12 @@ class RoleSeeder extends Seeder
 
                 //*Tuteur1 Lycée*/
                 $tuteur5 = User::create([
+                        'id' => 11,
                         'email' => 'tuteurl1@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 5,
+                        'user_id' => 2,
                 ]);
                 $tuteur5Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur5->givePermissionTo(Permission::where('name', 'tuteur')->get());
@@ -164,16 +184,114 @@ class RoleSeeder extends Seeder
 
                 //**Tuteur2 Lycée*/
                 $tuteur6 = User::create([
+                        'id' => 12,
                         'email' => 'tuteurl2@univers-school.com',
                         'password' => Hash::make('password'),
                         'etablissement_id' => 1,
                         'tuteur_id' => 6,
+                        'user_id' => 2,
                 ]);
                 $tuteur6Role = Role::firstOrcreate(['name' => 'Tuteur']);
                 $tuteur6->givePermissionTo(Permission::where('name', 'tuteur')->get());
                 $tuteur6->assignRole($tuteur6Role);
                 /****************************************  Fin tuteurs******************************************************/
 
+                /****************************************  Début 3 Enseignants*****************************************************/
+
+                //**Enseignant1 Primaire et secondaire*/
+                $enseignant1 = User::create([
+                        'id' => 13,
+                        'email' => 'enseignant1@univers-school.com',
+                        'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
+                        'enseignant_id' => 1,
+                        'user_id' => 2,
+                ]);
+                $enseignant1Role = Role::firstOrcreate(['name' => 'Enseignant']);
+                $enseignant1->givePermissionTo(Permission::where('name', 'enseignant')->get());
+                $enseignant1->assignRole($enseignant1Role);
+
+                //**Enseignant2 Collège*/
+                $enseignant2 = User::create([
+                        'id' => 14,
+                        'email' => 'enseignant2@univers-school.com',
+                        'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
+                        'enseignant_id' => 2,
+                        'user_id' => 2,
+                ]);
+                $enseignant2Role = Role::firstOrcreate(['name' => 'Enseignant']);
+                $enseignant2->givePermissionTo(Permission::where('name', 'enseignant')->get());
+                $enseignant2->assignRole($enseignant2Role);
+
+                //**Enseignant3 Lycée*/
+                $enseignant3 = User::create([
+                        'id' => 15,
+                        'email' => 'enseignant3@univers-school.com',
+                        'password' => Hash::make('password'),
+                        'etablissement_id' => 1,
+                        'enseignant_id' => 3,
+                        'user_id' => 2,
+                ]);
+                $enseignant3Role = Role::firstOrcreate(['name' => 'Enseignant']);
+                $enseignant3->givePermissionTo(Permission::where('name', 'enseignant')->get());
+                $enseignant3->assignRole($enseignant3Role);
+                /****************************************  Fin Enseignants*****************************************************/
+
+                /****************************************  6 section_users ******************************************************/
+
+                SectionUser::create([
+                        'user_id' => 3, 'etablissement_section_id' => 2,
+                ]);
+                SectionUser::create([
+                        'user_id' => 4, 'etablissement_section_id' => 2,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 5, 'etablissement_section_id' => 2,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 6, 'etablissement_section_id' => 2,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 7, 'etablissement_section_id' => 1,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 8, 'etablissement_section_id' => 1,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 9, 'etablissement_section_id' => 2,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 10, 'etablissement_section_id' => 2,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 11, 'etablissement_section_id' => 2,
+                ]);
+                SectionUser::create([
+                        'user_id' => 12, 'etablissement_section_id' => 2,
+                ]);
+                SectionUser::create([
+                        'user_id' => 13, 'etablissement_section_id' => 1,
+                ]);
+                SectionUser::create([
+                        'user_id' => 13, 'etablissement_section_id' => 2,
+                ]);
+
+                SectionUser::create([
+                        'user_id' => 14, 'etablissement_section_id' => 2,
+                ]);
+                SectionUser::create([
+                        'user_id' => 15, 'etablissement_section_id' => 2,
+                ]);
+
+                /****************************************  Fin section_users ******************************************************/
 
                 /****************************************  6 Apprenant-Tuteurs ******************************************************/
                 \DB::table('apprenant_tuteurs')->insert(array(

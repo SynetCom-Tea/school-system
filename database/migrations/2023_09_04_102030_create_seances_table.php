@@ -44,6 +44,7 @@ return new class extends Migration
             BEFORE INSERT ON seances
             FOR EACH ROW
             BEGIN
+
                 SET @niveau_id = (SELECT niveau_id FROM niveau_matieres WHERE id = NEW.niveau_matiere_id);
 
                 SET @matiere_id = (SELECT matiere_id FROM niveau_matieres WHERE id = NEW.niveau_matiere_id);

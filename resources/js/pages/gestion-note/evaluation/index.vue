@@ -1,7 +1,8 @@
 <script>
 import AuthenticatedLayout from '@/layouts/AuthenticatedLayout.vue';
 import {
-    useForm
+    useForm,
+    router
 } from '@inertiajs/vue3';
 // import Datatable from "@/components/customizedComponents/datatable.vue";
 
@@ -29,6 +30,11 @@ export default {
         mdiPlusCircle,
         mdiClipboardEditOutline,
         mdiTools,
+        mdiCloseCircle,
+        mdiCheckCircle,
+        mdiPercentOutline,
+        mdiTimelineAlert,
+        mdiContentSaveEditOutline
     },
     layout: AuthenticatedLayout,
     props: ["evaluation_primaires","evaluation_secondaires","evaluation_superieures","evaluation_universites","types","periodes","type_evaluation","regime","enseignements"],
@@ -42,6 +48,11 @@ export default {
                 mdiPlusCircle,
                 mdiClipboardEditOutline,
                 mdiTools,
+                mdiCloseCircle,
+                mdiCheckCircle,
+                mdiPercentOutline,
+                mdiTimelineAlert,
+                mdiContentSaveEditOutline
             },
 
             headers: [
@@ -92,11 +103,10 @@ export default {
 
             form: useForm({
                 date: '',
-                pourcentage: '',
-                type_evaluation_id: '',
-                periode_id: '',
-                enseignement_annee_id: '',
-
+                pourcentage: null,
+                type_evaluation_id: null,
+                periode_id: null,
+                enseignement_annee_id: null,
             }),
         }
     },
@@ -104,6 +114,7 @@ export default {
     methods: {
         create() {
             this.dialog = true
+            this.dialog_title =  'Nouvelle Evaluation'
         },
         editItem(item) {
             // console.log('code', item.enseignement_annee_id)
@@ -114,7 +125,7 @@ export default {
             this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
             this.dialog = true
-            this.dialog_title = 'Modifier Evaluation '
+            this.dialog_title = 'Modifier Evaluation ' 
         },
         deleteItem(item) {
             this.$swal({
@@ -147,7 +158,7 @@ export default {
                                 this.$swal({
                                     icon: 'success',
                                     title: 'Suppression',
-                                    text: this.$page.props.flash?.message ?.text,
+                                    text: this.$page.props.flash ?.message ?.text,
                                     toast: true,
                                     position: 'top-end',
                                     showConfirmButton: false,
@@ -222,27 +233,19 @@ export default {
 </script>
 
 <template>
-  <Head title="Dashboard" />
+<Head title="Dashboard" />
 
-  <AuthenticatedLayout>
+<AuthenticatedLayout>
+    <template #header>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Evaluation</h2>
+    </template>
+
     <v-card>
-      <Toolbar :icon="icon.mdiTools" toolbarTitle="Gestion des Evaluations"></Toolbar>
-      <v-card-text>
-        <br />
+        <page-toolbar :icon="icon.mdiTools">Gestion des Evaluations</page-toolbar>
+        <v-card-text>
 
             <br>
-
-            <Datatable titleDatatable="Listes des evaluations " :headers="headers" :items="evaluations">
-                <template v-slot:addBtn>
-                    <br><br>
-                    <v-row justify="center">
-
-                        <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
-                            <template v-slot:activator="{ props }">
-                                <div class="custom-add-button">
-                                    <Button @click="create" x-small variant="outlined" color="primary" v-bind="props"> Ajouter
-                                    </Button>
-                                </div>
+            <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
 
 <v-card>
     <!-- <v-card-title dense color="orange" dark> -->
@@ -284,7 +287,7 @@ export default {
     </v-card-text>
     <v-card-actions class="justify-end">
         <v-spacer></v-spacer>
-        <Button  class="mb-2" style="height: 30px"  nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">
+        <Button  class="mb-2" style="height: 30px"  nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">    
         </Button>
     </v-card-actions>
 </v-card>
@@ -323,5 +326,5 @@ export default {
             </Datatable>
         </v-card-text>
     </v-card>
-  </AuthenticatedLayout>
+</AuthenticatedLayout>
 </template>
