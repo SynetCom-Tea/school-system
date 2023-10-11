@@ -82,7 +82,7 @@ export default {
         </v-row>
         <v-row style="margin-top: 5px; height: 90px">
           <v-col cols="6" md="6">
-            <Select
+            <Autocomplete
               label="Type"
               :items="types"
               variant="outlined"
@@ -93,10 +93,10 @@ export default {
               isRequired
               :rules="[(v) => !!v || 'Ce champ est requis!']"
             >
-            </Select>
+            </Autocomplete>
           </v-col>
           <v-col cols="6" md="6">
-            <Select
+            <Autocomplete
               class="mt-1"
               label="Section"
               :items="sections"
@@ -104,9 +104,10 @@ export default {
               item-value="id"
               item-title="libelle"
               v-model="form.section"
-              isMultiple
+              multiple
+              chips
               v-if="form.type_etablissement_id == 2"
-            ></Select>
+            ></Autocomplete>
           </v-col>
         </v-row>
         <v-row style="margin-top: 5px; height: 90px">
@@ -245,10 +246,10 @@ export default {
     </v-card-text>
     <v-card-actions class="justify-end">
       <v-spacer></v-spacer>
-      <v-btn dark small type="button" color="red" @click="goBack">
+      <v-btn dark small type="button" variant="outlined" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </v-btn>
-      <v-btn small color="primary" @click="submit">
+      <v-btn small color="primary" variant="outlined" @click="submit">
         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
       </v-btn>
     </v-card-actions>

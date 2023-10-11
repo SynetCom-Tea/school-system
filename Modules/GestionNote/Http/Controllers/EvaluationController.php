@@ -148,6 +148,7 @@ class EvaluationController extends Controller
 
     public function indexAdmin(Request $request)
     {
+        $evaluations = [];
         $evaluation_id  = null;
         $detail = [];
         $user = Auth::user();
@@ -155,7 +156,7 @@ class EvaluationController extends Controller
             $q->where('id', $user->id);
         })->get(); 
         // dd($sections);
-        $enseigements = $request->enseignant_id && $request->section_id ?  DB::select("
+        $enseigements = $request->enseignant_id ?  DB::select("
         SELECT ea.id,ea.code FROM enseignement_annees ea
         JOIN enseignants en ON en.id = ea.enseignant_id 
         JOIN classe_annees ca ON ca.id = ea.classe_annee_id
@@ -173,15 +174,12 @@ class EvaluationController extends Controller
         
         // dd($enseigements);
         $periodes = [];
-        if($request->section_id==1){
+        if($request->section_id == 1){
             $periodes = Periode::where('type',"Trimestre")->get();
         }else{
             $periodes =  Periode::where('type',"Semestre")->get();
         }
-        // $regime = $request->section_id ==3? DB::table("etablissement_section")->where('etablissement_id',$user->etablissement_id)->where('section_id',$request->section_id)->get() :collect();
-        // dd($regime);
         $typeEvaluations = TypeEvaluation::all();
-        // dd(Evaluation::getDetailEvaluationInferiere(3,1)->get());
         if ($request->evaluation_id){
             $evaluation_id = $request->evaluation_id;
             if(Evaluation::getDetailEvaluationInferiere(Auth::user()->etablissement_id,$request->evaluation_id)->get()){
@@ -190,24 +188,54 @@ class EvaluationController extends Controller
                 $detail = Evaluation::getDetailEvaluationSuperieur(Auth::user()->etablissement_id,$request->evaluation_id)->get();
             }
         } 
-        // dd($evaluation_id);
         $enseignants = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get();    
+        if ($request->section_id >=3){
         $evaluations = DB::select("
-        SELECT s.libelle section,ev.id,p.libelle,en.nom,ev.date,t.libelle type,ea.code,s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id
-        FROM evaluations ev
-        JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
-        JOIN enseignants en ON en.id = ea.enseignant_id
-        JOIN classe_annees ca ON ca.id = ea.classe_annee_id
-        JOIN classes c ON c.id = ca.classe_id
-        JOIN etablissement_section es ON es.id = c.etablissement_section_id
-        JOIN etablissements e ON e.id = es.etablissement_id
-        JOIN sections s ON s.id = es.section_id
-        JOIN type_evaluations t ON t.id = ev.type_evaluation_id
-        JOIN periodes p ON p.id = ev.periode_id
-        WHERE e.id = :etablissement_id
-        ",[
-            'etablissement_id' => Auth::user()->etablissement_id
+            SELECT m.nom,s.libelle section,ev.id,p.libelle,en.nom,ev.date,t.libelle type,ea.code,
+            s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id
+            FROM evaluations ev
+            JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
+            JOIN enseignants en ON en.id = ea.enseignant_id
+            JOIN classe_annees ca ON ca.id = ea.classe_annee_id
+            JOIN classes c ON c.id = ca.classe_id
+            JOIN etablissement_section es ON es.id = c.etablissement_section_id
+            JOIN etablissements e ON e.id = es.etablissement_id
+            JOIN sections s ON s.id = es.section_id
+            JOIN type_evaluations t ON t.id = ev.type_evaluation_id
+            JOIN periodes p ON p.id = ev.periode_id
+            JOIN niveau_matieres nm ON nm.id = ea.niveau_matiere_id
+            JOIN filiere_matiere_ues fmu ON fmu.id = nm.filiere_matiere_ue_id
+            JOIN matieres m ON m.id = fmu.matiere_id
+            WHERE e.id = :etablissement_id AND s.id = :section_id
+            ",[
+                'etablissement_id' => Auth::user()->etablissement_id,
+                'section_id'=>$request->section_id
         ]);
+        // dd('sup');
+        }else{
+        $evaluations = DB::select("
+            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom,ev.date,t.libelle type,ea.code,
+            s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id
+            FROM evaluations ev
+            JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
+            JOIN enseignants en ON en.id = ea.enseignant_id
+            JOIN classe_annees ca ON ca.id = ea.classe_annee_id
+            JOIN classes c ON c.id = ca.classe_id
+            JOIN etablissement_section es ON es.id = c.etablissement_section_id
+            JOIN etablissements e ON e.id = es.etablissement_id
+            JOIN sections s ON s.id = es.section_id
+            JOIN type_evaluations t ON t.id = ev.type_evaluation_id
+            JOIN periodes p ON p.id = ev.periode_id
+            JOIN niveau_matieres nm ON nm.id = ea.niveau_matiere_id
+            JOIN matieres m ON m.id = nm.matiere_id
+            WHERE e.id = :etablissement_id AND s.id = :section_id
+            ",[
+                'etablissement_id' => Auth::user()->etablissement_id,
+                'section_id'=>$request->section_id
+            ]);
+            // dd('in');
+        }
+        // dd($evaluations);
         return Inertia::render('gestion-note/evaluation/indexAdmin',[
             'evaluations'=> $evaluations,
             'details'=>$detail,
@@ -216,7 +244,8 @@ class EvaluationController extends Controller
             'enseignements'=>$enseigements,
             'section'=>$sections,
             'enseignants'=>$enseignants,
-            'evaluation_id'=> $evaluation_id
+            'evaluation_id'=> $evaluation_id,
+            'section_id'=>$request->section_id
         ]);
     }
     public function create(Request $request)

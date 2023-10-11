@@ -227,6 +227,9 @@ export default {
             this.form.enseignement_annee_id = null
             this.dialog = false
         },
+        getItemText(item) {
+    return `${item.id} ${item.libelle}`;
+}
     },
 }
 </script>
@@ -236,13 +239,10 @@ export default {
 
 <AuthenticatedLayout>
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des evaluations"></Toolbar>
-    <!-- <v-card-title dense color="orange" dark> -->
     <br>
-    <!-- </v-card-title> -->
     <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
 
         <v-card>
-            <!-- <v-card-title dense color="orange" dark> -->
             <v-toolbar dense color="secondary" dark>
                 <v-toolbar-title>
                     <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
@@ -250,7 +250,6 @@ export default {
                 <v-spacer></v-spacer>
                 <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close()"></v-icon>
             </v-toolbar>
-            <!-- </v-card-title> -->
             <v-card-text>
                 <v-form ref="form">
                     <v-container>

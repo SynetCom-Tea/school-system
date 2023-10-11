@@ -2,19 +2,21 @@
 
 namespace Modules\GestionNote\Http\Controllers;
 
-use App\Models\Apprenant;
-use App\Models\Classe;
-use Modules\GestionNote\Entities\Note;
+use Inertia\Inertia;
 use App\Models\Annee;
+use App\Models\Classe;
+use App\Models\Section;
+use App\Models\Apprenant;
+use Illuminate\Http\Request;
+use App\Models\ApprenantClasseAnnee;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use Modules\GestionNote\Entities\Note;
+
+use Illuminate\Contracts\Support\Renderable;
 use Modules\GestionNote\Entities\Evaluation;
 use Modules\Enseignement\Entities\EnseignementAnnee;
-use App\Models\ApprenantClasse;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-
-use Inertia\Inertia;
 
 class NoteController extends Controller
 {
@@ -22,24 +24,33 @@ class NoteController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index(Request $request)
+    public function index(Request $request,$type)
     {
         $annee = Annee::find(1);
-        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)
-        ->with('apprenant','evaluation.type_evaluation','evaluation.periode')->get() : []; 
-        // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
-        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$annee) {
-            $query->where('enseignant_id',1)->whereHas('classe_annee', function ($query1) use ($request,$annee) { 
-                $query1->where('classe_id',$request->classe)->where('annee_id', $annee->id); 
+        $user = Auth::user();
+        $evaluations = [];
+        $notes = [];
+        $section_id = Section::where('id',$type)->get()[0]->id;
+        $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
+        // dd($etat_section_id);
+        $classes = EnseignementAnnee::where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee.classe',function($classe) use ($etat_section_id){
+            $classe->where('etablissement_section_id',$etat_section_id);
+        })->with('classe_annee.classe')->get();
+        $evaluations = $request->classe ?  Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$user) {
+            $query->where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee', function ($query1) use ($request) { 
+                $query1->where('classe_id',$request->classe); 
             });
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere')->get() : collect();
-        //  dd($evaluations);
+        // dd($evaluations);
+        // dump($classes);
+        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.periode')->get() : []; 
+        // dd($notes);
+        // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
         return Inertia::render('gestion-note/note/index',[
-            'classes' => EnseignementAnnee::whereHas('classe_annee', function ($query) use ($annee) {
-                $query->where('annee_id', $annee->id);
-            })->where('enseignant_id',1)->with('classe_annee.classe')->get(),
-            'evaluations' => $evaluations ? $evaluations : null,
-            'notes' => $notes ? $notes : null
+            'type'=>$type,
+            'classes' => $classes,
+            'evaluations' => $evaluations,
+            'notes' => $notes
         ]);
     }
 
@@ -49,39 +60,48 @@ class NoteController extends Controller
      */
     public function attribution(Request $request)
     {
-        // dd('ok');
+        // dd($request->section_id);
+        $evaluations = [];
         $annee = Annee::find(1);
+        $user = Auth::user();
+        $section_id = Section::where('id',$request->section_id)->get()[0]->id;
+        $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
+        // dd($etat_section_id);
+        $classes = EnseignementAnnee::where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee.classe',function($classe) use ($etat_section_id){
+            $classe->where('etablissement_section_id',$etat_section_id);
+        })->with('classe_annee.classe')->get();
+        // dd($classes);
+        
 
-        $eleves = $request->evaluation ? ApprenantClasse::whereHas('classe_annee', function ($query) use ($request,$annee) { 
-            $query->where('classe_id',$request->classe)->where('annee_id', $annee->id); 
+        $evaluations = $request->classe ?  Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$user) {
+            $query->where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee', function ($query1) use ($request) { 
+                $query1->where('classe_id',$request->classe); 
+            });
+        })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere')->get() : collect();
+        // dd($evaluations);
+        $eleves = $request->evaluation ? ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request,$annee) { 
+            $query->where('classe_id',$request->classe); 
         })->with('apprenant')->get() : collect();
-
+        // dd($eleves);
         $customizingEleves = $eleves->map(
             function ($value) {
                 return [
                     'id' => $value->id,
-                    "nom" => $value->apprenant->nom,
-                    "prenom" => $value->apprenant->prenom,
-                    "nom_complete" => $value->apprenant->nom_complete,
+                    "matricule"=>$value->apprenant->matricule,
+                    "nom_complete" => $value->apprenant->nom . ' ' .  $value->apprenant->prenom,
                     "note" => 0,
                 ];
             }
         );
+        // dd($customizingEleves);
         
        // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
        
         // dd($customizingEleves);
 
         return Inertia::render('gestion-note/note/attribution',[
-            'classes' => EnseignementAnnee::whereHas('classe_annee', function ($query) use ($annee) {
-                $query->where('annee_id', $annee->id);
-            })->where('enseignant_id',1)->with('classe_annee.classe')->get(),
-            'evaluations' => $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$annee) {
-                $query->where('enseignant_id',1)->whereHas('classe_annee', function ($query1) use ($request,$annee) { 
-                    $query1->where('classe_id',$request->classe)->where('annee_id', $annee->id); 
-                });
-            })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere')->get() : []
-            ,
+            'classes' => $classes,
+            'evaluations'=>$evaluations,
             'eleves' => $customizingEleves ? $customizingEleves : null
             // 'eleves' => $eleves ? $eleves : null
         ]);
@@ -103,11 +123,6 @@ class NoteController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->notes);
-        // $data = $this->validate($request, [
-        //     'evaluation' => 'required',
-        //     'notes' => 'required',
-        // ]);
         if (empty($request->notes)) {
             return redirect()->back()->with('message', [
                 'type' => 'error',
@@ -115,21 +130,16 @@ class NoteController extends Controller
             ]);
         }
         foreach ($request->notes as $key => $value) {
-            
-            // die();
             if($value != null){
-            //     dump('key',$key);
-            // dump('value',$value);
-                # code...
-                $item = ApprenantClasse::where('id',$key)->with('apprenant')->first();
-                // dump($item);
-                $verif = Note::where('evaluation_id',1)->where('apprenant_id',$item->apprenant->id)->get();
-                // dd($verif,$verif->count());
+                $item = ApprenantClasseAnnee::where('id',$key)->with('apprenant')->get();
+                // dump($item[0]);
+                $verif = Note::where('evaluation_id',$request->evaluation)->where('apprenant_id',$item[0]->apprenant->id)->get();
+                // dump($verif);
                 if($verif->count() == 0){
                     $note = Note::create([
-                        'apprenant_id' => $item->apprenant->id,
+                        'apprenant_id' => $item[0]->apprenant->id,
                         'date' => date('Y-m-d'),
-                        'evaluation_id' => 1,
+                        'evaluation_id' => $request->evaluation,
                         // 'evaluation_id' => $request->evaluation,
                         'note' => (double)$value,
                         'statut' => 1,
@@ -145,7 +155,7 @@ class NoteController extends Controller
         // die();
         return redirect()->back()->with('message', [
             'type' => 'success',
-            'text' => 'Sauvegarde de notes réussie avec succès!',
+            'text' => 'Attribution des notes bien effectué!',
         ]);
     }
 

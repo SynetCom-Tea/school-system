@@ -2,11 +2,13 @@
 
 namespace Modules\GestionNote\Entities;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Apprenant;
 use Illuminate\Database\Eloquent\Model;
+use Modules\GestionNote\Entities\Evaluation;
 use Illuminate\Database\Eloquent\SoftDeletes;
-use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Note extends Model
 {

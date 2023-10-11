@@ -39,7 +39,7 @@ export default {
         mdiEye,
     },
     layout: AuthenticatedLayout,
-    props: ["evaluations", "types", "evaluation_id", "details", "periodes", "type_evaluation", "enseignements",'section','enseignants'],
+    props: ["evaluations", "types", "evaluation_id", "details", "periodes", "type_evaluation", "enseignements",'section','enseignants','section_id'],
     data() {
         return {
             icon: {
@@ -58,7 +58,13 @@ export default {
                 mdiEye,
             },
 
-            headers: [{
+            headers: [
+                {
+                    title: 'Matiere',
+                    align: 'center',
+                    key: 'matiere'
+                },
+                {
                     title: 'Enseignant',
                     align: 'center',
                     key: 'nom'
@@ -77,11 +83,6 @@ export default {
                     title: 'periodes',
                     align: 'center',
                     key: 'libelle'
-                },
-                {
-                    title: 'Sections',
-                    align: 'center',
-                    key: 'section'
                 },
                 {
                     title: 'Actions',
@@ -106,7 +107,6 @@ export default {
                 type_evaluation_id: null,
                 periode_id: null,
                 enseignement_annee_id: null,
-                section_id : null,
                 enseignant_id : null
             }),
         }
@@ -124,13 +124,11 @@ export default {
             this.form.periode_id = item.periode_id
             this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
-            this.form.section_id = item.section_id
             this.form.enseignant_id = item.enseignant_id
             this.dialogEdit = true
             this.dialog_title = 'Modifier Evaluation' + ' ' + item.code
             this.$inertia.replace(this.$page.url,{
                 data : {
-                    section_id : item.section_id,
                     enseignant_id : item.enseignant_id
                 }
             }) 
@@ -233,6 +231,7 @@ export default {
             this.form.periode_id = null
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
+            this.form.enseignant_id = null
             this.dialog = false
         },
         closeEdit() {
@@ -242,38 +241,22 @@ export default {
             this.form.periode_id = null
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
+            this.form.enseignant_id = null
             this.dialogEdit = false
         },
         detail(item) {
-            this.$inertia.replace(this.$page.url, {
-                data: {
-                    evaluation_id: item.id,
-                },
-                
-            })
-            console.log(this.details[0].nom)
+                this.dialogDetail = true
+                this.date = item.date
+                this.pourcentage = item.pourcentage
+                this.periode = item.libelle
+                this.type = item.type
+                this.enseignant = item.nom
+                this.code = item.code
+                this.matiere = item.matiere
             
-            // if (this.evaluation_id ){
-            //     this.dialogDetail = true
-            //     this.date = item.date
-            //     this.pourcentage = item.pourcentage
-            //     this.periode = item.libelle
-            //     this.type = item.type
-            //     this.enseignant = item.nom
-            //     this.code = item.code
-            //     this.matiere = this.details[0].nom
-            // }
-        },
-        setPeriode(s){
-            this.form.periode_id = null,
-            this.form.enseignement_annee_id = null
-            this.$inertia.replace(this.$page.url,{
-                data : {
-                    section_id : s
-                }
-            })
         },
         setMatiere(e){
+            this.form.enseignement_annee_id = null
             this.$inertia.replace(this.$page.url,{
                 data : {
                     enseignant_id : e
@@ -330,7 +313,7 @@ export default {
                         </v-card>
                     </v-card-text>
                     <v-card-actions class="justify-end" id="actions">
-                        <v-btn color="danger" variant="text" @click="dialogDetail = false"> Fermer </v-btn>
+                        <v-btn color="danger"  variant="outlined" @click="dialogDetail = false"> Fermer </v-btn>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
@@ -352,10 +335,6 @@ export default {
                                         </TextField>
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete v-model="form.section_id" label="Sections" @update:modelValue="setPeriode(form.section_id)" itemTitle="libelle" itemValue="id" :items="section" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
-                                        </Autocomplete>
-                                    </v-col>
-                                    <v-col cols="6">
                                         <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete> 
                                     </v-col>
@@ -364,15 +343,15 @@ export default {
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete v-if="form.section_id" label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete v-if="form.section_id && form.enseignant_id" label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                        <Autocomplete v-if="form.enseignant_id" label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="6">
-                                        <TextField v-if="form.section_id >= 3" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                        <TextField v-if="section_id >= 3" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                         </TextField>
                                     </v-col>
                                 </v-row>
@@ -404,10 +383,6 @@ export default {
                                         </TextField>
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete v-model="form.section_id"  @update:modelValue="setPeriode(form.section_id)" label="Sections" itemTitle="libelle" itemValue="id" :items="section" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
-                                        </Autocomplete>
-                                    </v-col>
-                                    <v-col cols="6">
                                         <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete> 
                                     </v-col>
@@ -416,7 +391,7 @@ export default {
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete v-if="form.section_id" label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete  label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
@@ -424,7 +399,7 @@ export default {
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="6">
-                                        <TextField v-if="form.section_id >= 3" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                        <TextField v-if="section_id >= 3" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                         </TextField>
                                     </v-col>
                                 </v-row>

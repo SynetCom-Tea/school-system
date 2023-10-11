@@ -174,6 +174,38 @@
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
+              <v-list-group
+                :value="getListMenus.MenuNote && getListMenus.MenuNote.title"
+                v-if="$page.props.roles[0] == 'Enseignant'"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon
+                        :title="getListMenus.MenuNote.title"
+                        :icon="getListMenus.MenuNote.icon"
+                      ></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="getListMenus.MenuNote.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
+
+                <v-list-item
+                  class="sub-list-group"
+                  v-for="(item, i) in getListMenus.MenuNote.children"
+                  :key="i"
+                  @click="page(item.link)"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  </template>
+
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
 
                         <!-- Fin evaluation -->
 
@@ -362,6 +394,7 @@ export default {
     );
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
+    // console.log()
   },
   computed: {
     getOrganizationProfile() {
@@ -446,6 +479,7 @@ export default {
         MenuAdmin,
         MenuGestion,
         MenuEvaluation,
+        MenuNote,
         superAdminMenus,
         menuTeachers,
         menuRolePermission,
@@ -458,7 +492,6 @@ export default {
       this.superAdminMenus = superAdminMenus;
 
       this.menuTuteur = menusTuteur(this.$page.props);
-
       return list ?? null;
     },
   },
