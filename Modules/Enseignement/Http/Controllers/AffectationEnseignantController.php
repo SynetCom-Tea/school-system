@@ -11,8 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Modules\Enseignement\Entities\Enseignant;
+use Modules\Enseignement\Entities\EnseignantMatiere;
 use Modules\Enseignement\Entities\EnseignementAnnee;
 use Modules\Enseignement\Entities\Matiere;
+use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\NiveauMatiere;
 
 class AffectationEnseignantController extends Controller
@@ -62,23 +64,33 @@ class AffectationEnseignantController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create($type)
+    public function create($type,Request $request)
     {
+        // dd($request->matiere ?? 3);
         $dernierId=Annee::max('id');
         $annee = Annee::where('id', $dernierId)->first();
         $ets_id = Auth::user()->etablissement_id;
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
-        $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($table){
-            $classe->where('etablissement_section_id',$table->id);
-        })->whereHas('annee',function($anne) use ($annee){
-            $anne->where('annee_id',$annee->id);
-        })->get();
+        $classes = collect();
+        $niveaux = $request->matiere ? NiveauMatiere::where('matiere_id',$request->matiere)->get() : [];
+        foreach($niveaux as $element){
+            $tabs = $request->matiere? ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($table,$element){
+                $classe->where('etablissement_section_id',$table->id)->where('niveau_id',$element->niveau_id);
+            })->whereHas('annee',function($anne) use ($annee){
+                $anne->where('annee_id',$annee->id);
+            })->get() : [];
+            $classes->push($tabs);
+        }
+        // dd($classes);
+
         return Inertia::render('AffectationEnseignants/Create', [
             'section_id' => $type,
             'classes'=>$classes,
             'enseignants' => $enseignants,
-            'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+            'matieres' => $request->enseignant ? EnseignantMatiere::with('matiere')->whereHas('matiere',function($matiere) use ($table){
+                $matiere-> where('etablissement_section_id',$table->id);
+            })-> where('enseignant_id',$request->enseignant)->get():[],
         ]);
         // return view('enseignement::create');
     }
@@ -90,15 +102,40 @@ class AffectationEnseignantController extends Controller
      */
     public function store(Request $request,$type)
     {
-        //
-        // dd($request);
-        // $ets_id = Auth::user()->etablissement_id;
 
-        // foreach($request->donnees as $donnee){
-        //     foreach($request->donnees as $donnee){
+        // dd($request->matieres);
+        $ets_id = Auth::user()->etablissement_id;
 
-        //     }
-        // }
+        foreach($request->matieres as $matiere){
+
+             $Niveau_matieres=NiveauMatiere::where('matiere_id',$matiere['matiere'])->get();
+            //  dd($Niveau_matieres);
+            foreach($matiere['classes'] as $classe){
+
+                $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
+                // dd($classe_annee->classe->niveau_id);
+                foreach($Niveau_matieres as $Niveau_matiere){
+                    if($classe_annee->classe->niveau_id == $Niveau_matiere->niveau_id){
+                        EnseignementAnnee::updateOrInsert([
+                            'niveau_matiere_id' => $Niveau_matiere->id,
+                            'classe_annee_id' => $classe_annee->id,
+                            'enseignant_id' => $request->enseignant,
+
+                        ],
+                        [
+                            'created_at' => now(), // Remplissez le champ created_at
+                            'updated_at' => now() // Remplissez le champ updated_at
+                        ]
+                        );
+
+                    }
+
+                    // dd($classe);
+                }
+
+                // dd($classe);
+            }
+        }
         return redirect()->back();
     }
 

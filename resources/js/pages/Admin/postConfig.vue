@@ -67,33 +67,34 @@
             style="border-color: blue"
             variant="outlined"
             rounded="shaped"
-            @click="goto('enseignants.index')"
+            @click="goto('enseignants.index',type)"
           >
             <v-img
-              style="object-fit: fill; width: 210px; height: 110px"
-              :src="'/assets/filieres.jpg'"
+              style="object-fit: fill; width: 210px; height: 70px"
+              :src="'/assets/enseignant.jpg'"
               class="text-white"
             >
             </v-img>
-            <p class="text-h6" style="text-align: center">Gestion des Enseignants</p>
+            <p class="text-h6" style="text-align: center">Gestion des enseignants</p>
           </v-card>
         </v-col>
         <v-col cols="auto" style="margin-left:18px;">
           <v-card
             elevation="6"
             width="210"
-            style="border-color: blue"
+
+            style="height: 100%; border-color: blue "
             variant="outlined"
             rounded="shaped"
             @click="goto('AffectationEnseignants.index',type)"
           >
             <v-img
-              style="object-fit: fill; width: 210px; height: 90px"
-              :src="'/assets/filieres.jpg'"
+              style="object-fit: fill; width: 210px; height: 60px"
+              :src="'/assets/affectation.png'"
               class="text-white"
             >
             </v-img>
-            <p class="text-h6" style="text-align: center">Affectations des enseignants aux classes</p>
+            <p class="text-h6" style="text-align: center">Affectation des enseignants aux classes</p>
           </v-card>
         </v-col>
 

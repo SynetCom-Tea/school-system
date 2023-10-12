@@ -36,7 +36,7 @@ export default {
     mdiContentSave,
   },
   layout: AuthenticatedLayout,
-  props: ["enseignants"],
+  props: ["enseignants","matieres"],
   data() {
     return {
       icons: {
@@ -74,6 +74,7 @@ export default {
       form: useForm({
         id: "",
         matricule: "",
+        matieres: [],
         nom: "",
         prenom: "",
         sex: "",
@@ -101,6 +102,7 @@ export default {
       this.dialog_title = "Mise à jour de l'enseignant" + " " + item.NomComplet;
       this.form.id = item.id;
       this.form.matricule = item.matricule;
+      this.form.matieres=[];
       this.form.nom = item.nom;
       this.form.prenom = item.prenom;
       this.form.sex = item.sex;
@@ -200,6 +202,7 @@ export default {
     close() {
       this.form.id = "";
       this.form.matricule = "";
+      this.form.matieres=[];
       this.form.nom = "";
       this.form.prenom = "";
       this.form.sex = "";
@@ -328,6 +331,22 @@ export default {
                     isRequired
                     :rules="rules"
                   ></text-field>
+                </v-col>
+                <v-col cols="6" md="6"  style="height: 80px">
+                    <Autocomplete
+                        v-model="form.matieres"
+                        isRequired
+                        itemValue="id"
+                        itemTitle="code"
+                        placeholder="Matières"
+                        label="Matières"
+                        multiple
+                        chips
+                        :items="matieres"
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        >
+                    </Autocomplete>
+
                 </v-col>
                 <v-col cols="6" md="6" v-if="form.id == ''" style="height: 80px">
                   <v-switch
