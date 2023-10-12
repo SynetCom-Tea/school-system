@@ -11,17 +11,17 @@ class Inscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date_inscription', 'apprenant_id', 'filiere_id', 'niveau_id', 'annee_id'];
+    protected $fillable = ['date_inscription', 'apprenant_id', 'niveau_id','cycle_filiere_id', 'annee_id'];
 
-    public function apprenant(): BelongsTo
+    public function apprenant()
     {
         return $this->belongsTo(Apprenant::class);
     }
-    public function filiere(): BelongsTo
+    public function cycleFiliere()
     {
-        return $this->belongsTo(Filiere::class);
+        return $this->belongsTo(CycleFiliere::class);
     }
-    public function annee(): BelongsTo
+    public function annee()
     {
         return $this->belongsTo(Annee::class);
     }
@@ -31,7 +31,7 @@ class Inscription extends Model
         return $this->belongsTo(Filiere::class);
     } */
 
-    public function niveau(): BelongsTo
+    public function niveau()
     {
         return $this->belongsTo(Niveau::class);
     }

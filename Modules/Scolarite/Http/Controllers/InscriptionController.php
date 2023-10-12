@@ -12,6 +12,8 @@ use App\Models\Annee;
 use App\Models\Apprenant;
 use App\Models\Classe;
 use App\Models\ClasseAnnee;
+use App\Models\Cycle;
+use Modules\Enseignement\Entities\CycleFiliere;
 use App\Models\TypeDocument;
 use App\Models\Document;
 use App\Models\ApprenantClasseAnnee;
@@ -65,6 +67,8 @@ class InscriptionController extends Controller
         return Inertia::render('Inscription/Create', [
             'type' => $section,
             'niveaux' => Niveau::where('section_id', $section)->get(),
+            'cycles' => Cycle::all(),
+            'cycleFilieres' => CycleFiliere::whereHas('filiere', function($query){$query->where('etablissement_id',Auth::user()->etablissement_id);})->where('cycle_id',$request->cycle_id ? $request->cycle_id : 1)->with('filiere','cycle')->get(),
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
@@ -115,7 +119,7 @@ class InscriptionController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        // dd($request->all(),gettype($request->section));
         // Apprenant
         $id_apprenant = null;
 
@@ -153,14 +157,27 @@ class InscriptionController extends Controller
         // dd($id_apprenant);
 
         // Inscription
+        
+        
         $check = Inscription::where('annee_id',$request->annees['annee'])->where('apprenant_id',$id_apprenant)->get();
+        
         if($check->count() == 0){
-            $inscription = Inscription::create([
-                'date_inscription' => date('Y-m-d'),
-                'annee_id' => $request->annees['annee'],
-                'niveau_id' => $request->annees['niveau'],
-                'apprenant_id' => $id_apprenant
-            ]);
+            if($request->section == '1' || $request->section == '2'){
+                $inscription = Inscription::create([
+                    'date_inscription' => date('Y-m-d'),
+                    'annee_id' => $request->annees['annee'],
+                    'niveau_id' => $request->annees['niveau'],
+                    'apprenant_id' => $id_apprenant
+                ]);
+            }elseif($request->section == '3' || $request->section == '4'){
+                $inscription = Inscription::create([
+                    'date_inscription' => date('Y-m-d'),
+                    'annee_id' => $request->annees['annee'],
+                    'niveau_id' => $request->annees['niveau'],
+                    'cycle_filiere_id' => $request->annees['cycle_filiere'],
+                    'apprenant_id' => $id_apprenant
+                ]);
+            }
         }else{
             return redirect()->back()->with('message', [
                 'type' => 'error',
@@ -168,37 +185,39 @@ class InscriptionController extends Controller
             ]);
         }
 
-        $classe = null;
-        if($request->annees['classe'] == null){
-            $niv = Niveau::find($request->annees['niveau'])->code;
-            $cl = Classe::create([
-                'code' => $niv.' A',
-                'libelle' => $niv.' A',
-                'niveau_id' => $request->annees['niveau'],
-                'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
+        if($request->section == '1' || $request->section == '2'){
+            $classe = null;
+            if($request->annees['classe'] == null){
+                $niv = Niveau::find($request->annees['niveau'])->code;
+                $cl = Classe::create([
+                    'code' => $niv.' A',
+                    'libelle' => $niv.' A',
+                    'niveau_id' => $request->annees['niveau'],
+                    'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
+                ]);
+                $classe = $cl->id;
+            }else{
+                $classe = $request->annees['classe'];
+            }
+
+
+            $checkAnneeClasse = ClasseAnnee::where('annee_id',$request->annees['annee'])->where('classe_id',$classe)->first();
+            $classe_annee = null;
+            if($checkAnneeClasse == null){
+                $classe_annee = ClasseAnnee::create([
+                    'annee_id' => $request->annees['annee'],
+                    'classe_id' => $classe
+                ]);
+            }else{
+                $classe_annee = $checkAnneeClasse;
+            }
+
+
+            ApprenantClasseAnnee::create([
+                'classe_annee_id' => $classe_annee->id,
+                'apprenant_id' => $id_apprenant
             ]);
-            $classe = $cl->id;
-        }else{
-            $classe = $request->annees['classe'];
         }
-
-
-        $checkAnneeClasse = ClasseAnnee::where('annee_id',$request->annees['annee'])->where('classe_id',$classe)->first();
-        $classe_annee = null;
-        if($checkAnneeClasse == null){
-            $classe_annee = ClasseAnnee::create([
-                'annee_id' => $request->annees['annee'],
-                'classe_id' => $classe
-            ]);
-        }else{
-            $classe_annee = $checkAnneeClasse;
-        }
-
-
-        ApprenantClasseAnnee::create([
-            'classe_annee_id' => $classe_annee->id,
-            'apprenant_id' => $id_apprenant
-        ]);
 
         // Versement
 

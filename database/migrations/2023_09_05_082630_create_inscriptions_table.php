@@ -19,9 +19,9 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Apprenant::class)
                 ->index()
                 ->references('id')->on('apprenants');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\Filiere::class)->nullable()
+            $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)->nullable()
                 ->index()
-                ->references('id')->on('filieres');
+                ->references('id')->on('cycle_filieres');
             $table->foreignIdFor(\App\Models\Annee::class)
                 ->index()
                 ->references('id')->on('annees');

@@ -36,6 +36,8 @@
             <annee-form
               @formSubmitted="getAnneeForm"
               :type="type"
+              :cycles="cycles"
+              :cycleFilieres="cycleFilieres"
               :niveaux="niveaux"
               :apprenant="apprenant"
               :annees="annees"
@@ -49,6 +51,8 @@
             <annee-form
               @formSubmitted="getAnneeForm"
               :type="type"
+              :cycles="cycles"
+              :cycleFilieres="cycleFilieres"
               :niveaux="niveaux"
               :formapprenant="formApprenant"
               :annees="annees"
@@ -172,7 +176,7 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
-  props: ["type", "niveaux", "typeFrais","apprenant","annees","typeDocuments","tuteurs"],
+  props: ["type", "niveaux", "typeFrais","apprenant","annees","typeDocuments","tuteurs","cycleFilieres","cycles"],
   components: {
     FormWizard,
     TabContent,
@@ -235,32 +239,6 @@ export default {
   }),
   created() {
     this.onChange();
-    // if(this.$page.props && this.$page.props.flash?.message?.type == 'error'){
-    //    this.$swal({
-    //           icon: "error",
-    //           title: "Echec",
-    //           text: this.$page.props.flash.message.text,
-    //           toast: true,
-    //           position: "top-end",
-    //           showConfirmButton: false,
-    //           timer: 5000,
-    //           timerProgressBar: true,
-    //         });
-    //   // this.$toast.error(this.$page.props.flash.message.text)
-    // }
-    // if(this.$page.props && this.$page.props.flash?.message?.type == 'success'){
-    //    this.$swal({
-    //           icon: "success",
-    //           title: "Enregistrement",
-    //           text: this.$page.props.flash.message.text,
-    //           toast: true,
-    //           position: "top-end",
-    //           showConfirmButton: false,
-    //           timer: 5000,
-    //           timerProgressBar: true,
-    //         });
-    //   // this.$toast.success(this.$page.props.flash.message.text)
-    // }
   },
   mounted() {},
   methods: {
@@ -431,13 +409,13 @@ export default {
     },
     Title() {
       switch (this.type) {
-        case "1":
+        case 1:
           return "SECTION PRIMAIRE";
-        case "2":
+        case 2:
           return "SECTION SECONDAIRE";
-        case "3":
+        case 3:
           return "SECTION SUPERIEURE";
-        default:
+        case 4:
           return "SECTION UNIVERSITAIRE";
       }
     },

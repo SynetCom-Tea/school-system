@@ -76,8 +76,8 @@
             <v-col md="7">
               <v-row >
             <!-- <v-col md="2"></v-col> -->
-                <v-col cols="2"></v-col>
-                <v-col cols="4">
+                <v-col cols="1"></v-col>
+                <v-col :cols="mdAnnee">
                   <Autocomplete
                     label="Année academique"
                     :isRequired="true"
@@ -89,7 +89,7 @@
                     @update:modelValue="submitForm()"
                   ></Autocomplete>
                 </v-col>
-                <v-col cols="4">
+                <v-col :cols="mdNiveau">
                   <Autocomplete
                     label="Niveaux"
                     :isRequired="true"
@@ -98,13 +98,37 @@
                     item-value="id"
                     class="mt-3"
                     v-model="form.niveau"
-                    @update:modelValue="checkClasseExist(form.niveau)"
+                    @update:modelValue="type == '1' || type == '2' ? checkClasseExist(form.niveau) : ''"
                   ></Autocomplete>
                 </v-col>
+                <v-col :cols="mdCycle" v-if="type == '3' || type == '4'">
+                  <Autocomplete 
+                    label="Cycles"
+                    :isRequired="true"
+                    :items="cycles"
+                    item-title="name"
+                    item-value="id"
+                    class="mt-3"
+                    v-model="vCycle"
+                    @update:modelValue="requete()"
+                  ></Autocomplete>
+                </v-col>
+                <v-col cols="1"></v-col>
               </v-row>
               <v-row>
-                <v-col cols="2"></v-col>
-                <v-col cols="4" v-if="resultClasse.length != 0">
+                <v-col cols="1"></v-col>
+                <v-col :cols="mdCycleFiliere" v-if="type == '3' || type == '4'">
+                  <Autocomplete
+                    label="Filieres"
+                    :isRequired="true"
+                    
+                    item-title="code_libelle"
+                    item-value="id"
+                    v-model="form.cycle_filiere"
+                    :items="setCycleFilieres"
+                  ></Autocomplete>
+                </v-col>
+                <v-col :cols="mdClasse" v-if="resultClasse.length != 0">
                   <v-autocomplete
                     label="Classes"
                     :isRequired="true"
@@ -124,7 +148,7 @@
                     </template>
                   </v-autocomplete>
                 </v-col>
-                <v-col :cols="colVersement">
+                <v-col :cols="mdVersement">
                   <TextField
                     label="1er versement"
                     :isRequired="true"
@@ -133,7 +157,7 @@
                     :hint="hint"
                   ></TextField>
                 </v-col>
-                <v-col cols="2"></v-col>
+                <v-col cols="1"></v-col>
               </v-row>
             </v-col>
             </v-row>
@@ -156,7 +180,7 @@ import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 export default {
-  props: ["type","niveaux","apprenant","annees","formapprenant"],
+  props: ["type","niveaux","apprenant","annees","formapprenant","cycleFilieres","cycles"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
@@ -169,20 +193,51 @@ export default {
     alertSecond: true,
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
     step: 1,
+    mdAnnee: null,
+    mdNiveau: null,
+    mdCycle: null,
+    mdCycleFiliere: null,
+    mdClasse: null,
+    mdVersement: null,
     section: null,
+    vCycle: null,
     resultClasse: [],
     hint:'',
     form: useForm({
       apprenant: null,
       annee: null,
       classe: null,
+      cycle_filiere: null,
       niveau: null,
       versement: 0,
       etablissement_section_id: null,
     }),
   }),
+  computed:{
+    setCycleFilieres() {
+          
+        let list = [];
 
+        if (this.cycleFilieres) {
+            this.cycleFilieres.forEach((element) => {
+            if (element) {
+                list.push({
+                ...element,
+                code_libelle: element.cycle.name + " - " + element.filiere.name,
+                });
+            }
+            });
+        }
+        return list ?? [];
+        },
+    },
+    created(){
+    },
   methods: {
+    requete(){
+      this.$emit('input',this.vCycle)
+          router.replace(this.$page.url,{data:{cycle_id:this.vCycle}});
+    },
     setHint(){
       let frais = 0
       this.$emit('input',this.form.versement)
@@ -225,9 +280,9 @@ export default {
           });
       }
       if(this.resultClasse.length == 0){
-        this.colVersement = 8
+        this.mdVersement = 8
       }else{
-        this.colVersement = 4
+        this.mdVersement = 4
       }
     },
     onclickAlertButton(type) {
@@ -242,9 +297,9 @@ export default {
       } else if (type == "2") {
         return "Secondaire";
       } else if (type == "3") {
-        return "Supérieur";
+        return "Supérieure";
       } else {
-        return "Université";
+        return "Universitaire";
       }
     },
     resetForm(check) {
@@ -280,6 +335,22 @@ export default {
     this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
         (el) => el.libelle == this.section
       );
+      console.log('hhhhhh',this.$page.props.sections[0],this.form.etablissement_section_id);
+      this.mdVersement = 8
+    if(this.type == '1' || this.type == '2'){
+      this.mdAnnee = 4
+      this.mdNiveau = 4
+      this.mdClasse = 4
+    }else if(this.type == '3'){
+      this.mdAnnee = 3
+      this.mdNiveau = 3
+      this.mdCycle = 3
+      this.mdCycleFiliere = 4
+      this.mdVersement = 5
+    }else if(this.type == '4'){
+
+    }
+    
   },
 };
 </script>

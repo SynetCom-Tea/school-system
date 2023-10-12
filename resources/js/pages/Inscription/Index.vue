@@ -58,6 +58,19 @@
                 onChangeModelValueNiveaux('secondaire', secondaire, section, year)
               "
             ></Autocomplete>
+
+            <Autocomplete
+              v-if="section == 3"
+              :items="niveauxSuperieur"
+              v-model="superieur"
+              itemValue="id"
+              class="mt-2"
+              itemTitle="libelle"
+              label="Supérieur"
+              @update:modelValue="
+                onChangeModelValueNiveaux('Supérieure', superieur, section, year)
+              "
+            ></Autocomplete>
           </v-col>
 
           <Button
@@ -260,6 +273,7 @@ import { inject, provide, computed } from "vue";
 import {
   getNiveauxPrimaire,
   getNiveauxSecondaire,
+  getNiveauxSuperieur,
   getAcademicYears,
   generateColorsForGraph,
 } from "../../utils/commonFunctions.js";
@@ -318,8 +332,10 @@ export default {
       section: this.vSectionID,
       primaire: null,
       secondaire: null,
+      superieur: null,
       niveauxPrimaire: [],
       niveauxSecondaire: [],
+      niveauxSuperieur: [],
       headers: [
         {
           title: "Matricule",
@@ -438,6 +454,7 @@ export default {
   methods: {
     getNiveauxPrimaire,
     getNiveauxSecondaire,
+    getNiveauxSuperieur,
     getAcademicYears,
     generateColorsForGraph,
     addNewInscription(item){
@@ -465,8 +482,10 @@ export default {
       this.section = null;
       this.primaire = null;
       this.secondaire = null;
+      this.superieur = null;
       this.niveauxPrimaire = [];
       this.niveauxSecondaire = [];
+      this.niveauxSuperieur = [];
     },
     async onChangeModelValueNiveaux(classe, value, section, year) {
       let niveau;
@@ -475,6 +494,9 @@ export default {
       }
       if (classe == "secondaire" && value) {
         niveau = this.niveauxSecondaire.find((el) => el.id == value);
+      }
+      if (classe == "Supérieure" && value) {
+        niveau = this.niveauxSuperieur.find((el) => el.id == value);
       }
       this.dParams = {
         section: classe,
@@ -503,6 +525,10 @@ export default {
         list = await this.getNiveauxSecondaire();
         this.niveauxSecondaire = list;
       }
+      if (this.vSectionID && this.vSectionID == 3) {
+        list = await this.getNiveauxSuperieur();
+        this.niveauxSuperieur = list;
+      }
     },
     async onChangeModelValueSections(e, year) {},
     async getListUsers(params) {
@@ -521,7 +547,7 @@ export default {
           )
           .then((res) => {
             if (typeof res.data == "string" || typeof res.data == "undefined") {
-              this.$toast.error("Données non valides!");
+              // this.$toast.error("Données non valides!");
             } else {
               return res.data;
             }
@@ -553,6 +579,8 @@ export default {
               more: {
                 apprenant: element.apprenant,
                 classeAnnee: element.classe_annee,
+                cycle: element.cycleFiliere?.cycle,
+                filiere: element.cycleFiliere?.filiere
               },
             });
           }
