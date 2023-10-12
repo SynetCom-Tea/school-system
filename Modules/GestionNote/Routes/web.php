@@ -26,4 +26,5 @@ Route::prefix('gestionnote')->group(function() {
     Route::get('/note/{type}',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'index'])->name('note.affichage');
     Route::get('/attribution/note',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attribution'])->name('note.attribution');
     Route::post('/enregistrer/note',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'store'])->name('note.save');
+    Route::put('/update/note/{id}',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'update'])->name('note.update');
 });

@@ -21,10 +21,12 @@ import {
     mdiPercentOutline,
     mdiTimelineAlert,
     mdiContentSaveEditOutline,
+    mdiSearchWeb
 } from '@mdi/js'
 export default {
-  components: {
+    components: {
         mdiAccountSchool,
+        mdiSearchWeb,
         mdiPlus,
         mdiPencil,
         mdiDelete,
@@ -41,7 +43,7 @@ export default {
     layout: AuthenticatedLayout,
     data() {
         return {
-          icon: {
+            icon: {
                 mdiAccountSchool,
                 mdiPlus,
                 mdiPencil,
@@ -53,7 +55,8 @@ export default {
                 mdiCheckCircle,
                 mdiPercentOutline,
                 mdiTimelineAlert,
-                mdiContentSaveEditOutline
+                mdiContentSaveEditOutline,
+                mdiSearchWeb
             },
             tabs: [],
             valid: null,
@@ -88,6 +91,7 @@ export default {
                 evaluation: null,
                 classe: null,
             }),
+            info : ''
         }
     },
     created() {
@@ -124,7 +128,7 @@ export default {
             }
         },
         rechercher() {
-      // console.log(this.eleves)
+            // console.log(this.eleves)
             router.replace(this.$page.url, {
                 data: {
                     classe: this.selectedClasse,
@@ -186,6 +190,23 @@ export default {
 
             });
         },
+        dialog(){
+            // this.info = this.evaluations.filter(el => el.id = this.selectedEvaluation)
+            this.$swal({
+                title: "Es-tu sûr?",
+                text: "Êtes-vous sûr de vouloir sauvegarder ces notes" ,
+                icon: "info",
+                showCancelButton: true,
+                confirmButtonColor: "orange",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Oui, supprimez-le!",
+                cancelButtonText: "Non, annulez !",
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.submit();
+                }
+            });
+        },
     },
 }
 </script>
@@ -194,85 +215,57 @@ export default {
 <Head title="Notes" />
 
 <AuthenticatedLayout>
-  <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes"></Toolbar>
+    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
 
-    <template #header>
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight"></h2>
-    </template>
-
-    <v-card style="margin: 20px">
+    <v-card style="margin: 20px" >
         <v-card-title>
             <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">Attribution de notes</div>
+                    <v-chip class="primary">Attribution de notes</v-chip>
                 </div>
             </div>
         </v-card-title>
     </v-card>
     <v-form v-model="valid">
 
-        <v-card style="margin: 20px">
-            <v-card-title>
-                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <v-chip class="primary">Choisissez les criteres</v-chip>
-                    </div>
-                </div>
-            </v-card-title>
+        <v-card style="border: 2px solid #7d002c;margin: 20px">
+            <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
+            <v-divider></v-divider>
+            <br />
             <v-row>
-                <v-col md="2"></v-col>
-                <v-col md="3">
+                <v-col md="1"></v-col>
+                <v-col md="4">
                     <Autocomplete v-model="selectedClasse" :items="classes" item-title="classe_annee.classe.libelle" item-value="classe_annee.classe.id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
                 </v-col>
-                <v-col md="3" >
+                <v-col md="4">
                     <Autocomplete v-model="selectedEvaluation" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
                 </v-col>
-                <v-col md="2">
-                    <v-btn color="primary" @click="rechercher()" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation">
-                        Rechercher
-                    </v-btn>
+                <v-col md="3" >
+                    <!-- <br> -->
+                    <Button  color="secondary" variant="outlined" class="mb-3" @click="rechercher()"  nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
                 </v-col>
                 <v-col md="2"></v-col>
             </v-row>
         </v-card>
 
-        <v-card style="margin: 20px" v-if="eleves">
-            <v-card-title>
-                <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                    <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                        <div class="p-6 text-gray-900">Saisissez les notes</div>
-                    </div>
-                </div>
-            </v-card-title>
-            <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false" >
+        <v-card style="border: 2px solid #7d002c;margin: 20px" v-if="eleves">
+            <v-card-title style="color: white; background-color: #7d002c">Saisissez les notes</v-card-title>
+            <v-divider></v-divider>
+            <br />
+            <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
                 <template v-slot:item.note="{ item, index }">
-                    <TextField  label="" v-model="item.note" @update:modelValue="setNote(item)"  outlined  dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
+                    <TextField label="" v-model="item.note" @update:modelValue="setNote(item)" outlined dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
                 </template>
             </Datatable>
             <v-card-actions>
                 <v-spacer />
-                <v-btn :disabled="form.processing" color="error" @click="dialogConfirmation = false">
-                    Annuler
+                <v-btn :disabled="form.processing" variant="outlined" color="error" @click="dialogConfirmation = false">
+                    <v-icon :icon="icon.mdiCheckCircle" ></v-icon>Annuler
                 </v-btn>
-                <v-btn :loading="form.processing"  :disabled="!valid" color="green" @click="dialogConfirmation = true">
-                    Valider
+                <v-btn :loading="form.processing" variant="outlined" :disabled="!valid" color="green" @click="dialog">
+                    <v-icon :icon="icon.mdiCheckCircle" ></v-icon> Valider
                 </v-btn>
             </v-card-actions>
-            <v-dialog v-model="dialogConfirmation" max-width="500px" height="700px">
-                <v-card>
-                    <v-card-title class="text-h6">Confirmation</v-card-title>
-                    <v-card-text class="text-h6">Êtes-vous sûr de vouloir sauvegarder ces notes de:<strong> test </strong> ?</v-card-text>
-                    <v-card-actions>
-                        <v-spacer />
-                        <v-btn :disabled="form.processing" text color="error" @click="dialogConfirmation = false">
-                            Non
-                        </v-btn>
-                        <v-btn :loading="form.processing" text color="#8D6E63" @click="submit">
-                            Oui
-                        </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
         </v-card>
     </v-form>
 </AuthenticatedLayout>

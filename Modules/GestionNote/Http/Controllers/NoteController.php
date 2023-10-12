@@ -43,7 +43,7 @@ class NoteController extends Controller
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere')->get() : collect();
         // dd($evaluations);
         // dump($classes);
-        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.periode')->get() : []; 
+        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.periode')->get() : []; 
         // dd($notes);
         // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
         return Inertia::render('gestion-note/note/index',[
@@ -72,7 +72,6 @@ class NoteController extends Controller
         })->with('classe_annee.classe')->get();
         // dd($classes);
         
-
         $evaluations = $request->classe ?  Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$user) {
             $query->where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee', function ($query1) use ($request) { 
                 $query1->where('classe_id',$request->classe); 
@@ -147,7 +146,7 @@ class NoteController extends Controller
                 }else{
                     return redirect()->back()->with('message', [
                         'type' => 'error',
-                        'text' => 'Merci de renseigner toutes les notes!',
+                        'text' => 'Vous avez déjâ attribué des notes à ces eleves!',
                     ]);
                 } 
             } 
@@ -168,33 +167,17 @@ class NoteController extends Controller
     {
         return view('gestionnote::show');
     }
-
-    /**
-     * Show the form for editing the specified resource.
-     * @param int $id
-     * @return Renderable
-     */
-    public function edit($id)
-    {
-        return view('gestionnote::edit');
-    }
-
-    /**
-     * Update the specified resource in storage.
-     * @param Request $request
-     * @param int $id
-     * @return Renderable
-     */
     public function update(Request $request, $id)
     {
-        //
+        $note = Note::find($id);
+        $note->update([
+            'note'=>(double) $request->note
+        ]);
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => 'Note modifiée avec success!',
+        ]);
     }
-
-    /**
-     * Remove the specified resource from storage.
-     * @param int $id
-     * @return Renderable
-     */
     public function destroy($id)
     {
         //

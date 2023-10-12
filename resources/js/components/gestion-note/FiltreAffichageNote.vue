@@ -1,17 +1,15 @@
 <template>
 <v-row>
-    <v-col md="2"></v-col>
-    <v-col md="3">
+    <v-col md="1"></v-col>
+    <v-col md="4">
         <Autocomplete v-model="selectedClasse" :items="classes" item-title="classe_annee.classe.libelle" item-value="classe_annee.classe.id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
     </v-col>
-    <v-col md="3" v-if="$page.props.evaluations != null">
+    <v-col md="4" v-if="$page.props.evaluations != null">
         <Autocomplete v-model="selectedEvaluation" :items="$page.props.evaluations ? $page.props.evaluations : null" :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
     </v-col>
-    <v-col md="2">
-        <v-btn color="primary" @click="rechercher()" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation">
-            Rechercher
-        </v-btn>
-    </v-col>
+    <v-col md="3" >
+        <Button  color="secondary" variant="outlined" class="mb-3" @click="rechercher()"  nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
+     </v-col>
     <v-col md="2"></v-col>
 </v-row>
 </template>
@@ -25,10 +23,19 @@ import {
 import {
     provide
 } from 'vue';
+import {
+    mdiSearchWeb
+} from '@mdi/js'
 export default {
+    components: {
+        mdiSearchWeb
+    },
     props: ["classes","evaluations"],
     data() {
         return {
+            icon: {
+                mdiSearchWeb
+            },
             selectedClasse: null,
             selectedTypeExamen: null,
             selectedEvaluation: null,

@@ -21,6 +21,7 @@ declare module 'vue' {
     VListTileContent: typeof import('vuetify/lib')['VListTileContent']
     VListTileSubTitle: typeof import('vuetify/lib')['VListTileSubTitle']
     VListTileTitle: typeof import('vuetify/lib')['VListTileTitle']
+    VRox: typeof import('vuetify/lib')['VRox']
     VSimpleCheckbox: typeof import('vuetify/lib')['VSimpleCheckbox']
     VStepper: typeof import('vuetify/labs/VStepper')['VStepper']
     VUtocomplete: typeof import('vuetify/lib')['VUtocomplete']
