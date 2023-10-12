@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Enseignement\Database\Seeders\EnseignantMatiereSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -36,8 +37,8 @@ class DatabaseSeeder extends Seeder
             PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
             // EnseignantSeeder::class,
-            EnseiggnementAnneeSeeder::class
-            // EnseignementDatabaseSeeder::class,
+            EnseiggnementAnneeSeeder::class,
+            EnseignantMatiereSeeder::class,
         ]);
     }
 }

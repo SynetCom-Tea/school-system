@@ -60,7 +60,7 @@
                   :items="enseignants"
                   v-model="form.enseignant"
                   :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  @update:modelValue="submitForm(any)"
+                  @update:modelValue="submitForm(any),setmatiere()"
                   chips
                 >
                 </Autocomplete>
@@ -78,14 +78,14 @@
                       label="Matière"
                       placeholder="Matière"
                       class="mt-2"
-                      item-title="nom"
-                      item-value="id"
+                      item-title="matiere.nom"
+                      item-value="matiere.id"
                       isRequired
                       :items="matieres"
                       chips
                       v-model="matiere.matiere"
                       :rules="[(v) => !!v || 'Ce champ est requis!']"
-                      @update:modelValue="submitForm(matiere)"
+                      @update:modelValue="submitForm(matiere),setclasses(i)"
                     >
                     </Autocomplete>
                   </v-col>
@@ -96,12 +96,12 @@
                         isRequired
                         itemValue="id"
                         class="mt-2"
-                        itemTitle="classe.libelle"
+                        itemTitle="code_libelle"
                         placeholder="Classes"
                         label="Classes"
                         multiple
                         chips
-                        :items="classes"
+                        :items="itemsClasses"
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         @update:modelValue="submitForm(matiere)"
                         >
@@ -157,6 +157,7 @@
   import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
   import { router, useForm } from "@inertiajs/vue3";
   import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle } from "@mdi/js";
+import axios from "axios";
   export default {
     layout: AuthenticatedLayout,
     props: ["matieres","section_id", "classes", 'enseignants'],
@@ -182,6 +183,25 @@
     }),
 
     methods: {
+
+        setmatiere(){
+            console.log('enseignant',this.form.enseignant);
+            this.$emit('input',this.form.enseignant)
+            let eng=this.form.enseignant;
+            router.replace(this.$page.url,{data:{enseignant:eng}});
+            console.log('fdgfggg',this.matieres);
+
+
+            },
+        setclasses(i){
+
+            this.$emit('input',this.form.matieres[i].matiere)
+            let mat=this.form.matieres[i].matiere;
+            router.replace(this.$page.url,{data:{matiere:mat}});
+            console.log('fdgfggg',this.classes);
+
+
+        },
         goBack() {
             router.get(route('AffectationEnseignants.index', this.section_id))
         },
@@ -298,10 +318,30 @@
     mounted() {
       this.addRow();
       this.section = this.getSection(this.section_id);
-    //   console.log("setNiveaux:", this.setNiveaux);
     },
 
     computed: {
+        itemsClasses() {
+      let list = [];
+
+      if (this.classes) {
+        this.classes.forEach((element) => {
+          if (element) {
+            element.forEach((element2) => {
+                if(element2){
+                    console.log('element',element2);
+                    list.push({
+                    ...element2,
+                    code_libelle: element2.classe.libelle,
+                    });
+                }
+            })
+
+          }
+        });
+      }
+      return list ?? [];
+    },
         Title() {
         switch (this.section_id) {
             case "1":
