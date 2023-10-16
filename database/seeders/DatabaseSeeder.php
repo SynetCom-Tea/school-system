@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Modules\Enseignement\Database\Seeders\EnseignantMatiereSeeder;
 
 class DatabaseSeeder extends Seeder
 {
@@ -13,9 +14,11 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
         $this->call([
+            CycleSeeder::class,
             PermissionSeeder::class,
             TypeEtablissementSeeder::class,
             SectionSeeder::class,
+            TypeDocumentSeeder::class,
             NiveauTableSeeder::class,
             EtablissementsTableSeeder::class,
             EtablissementSectionSeeder::class,
@@ -27,16 +30,17 @@ class DatabaseSeeder extends Seeder
             ApprenantSeeder::class,
             EnseignantSeeder::class,
             RoleSeeder::class,
-
             FraisSeeder::class,
-            VersementsSeeder::class,
+            // VersementsSeeder::class,
             ApprenantClasseAnneesSeeder::class,
             SalleSeeder::class,
             MatiereTableSeeder::class,
             NiveauMatiereSeeder::class,
+            PeriodeTableSeeder::class,
+            TypeEvaluationTableSeeder::class,
             // EnseignantSeeder::class,
-            EnseiggnementAnneeSeeder::class
-            // EnseignementDatabaseSeeder::class,
+            EnseiggnementAnneeSeeder::class,
+            EnseignantMatiereSeeder::class,
         ]);
     }
 }

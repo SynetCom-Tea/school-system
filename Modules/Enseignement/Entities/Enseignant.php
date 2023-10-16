@@ -10,8 +10,8 @@ class Enseignant extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
-    
+    protected $fillable = ['matricule','nom','compte', 'prenom','NomComplet','sex','date_naissance','lieu_naissance','date_lieu_nais','telephone','etablissement_id'];
+
     protected static function newFactory()
     {
         return \Modules\Enseignement\Database\factories\EnseignantFactory::new();

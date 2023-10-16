@@ -21,12 +21,16 @@ class EnseignantTableSeeder extends Seeder
             'matricule' => 'Mat/En/09',
             'nom' => 'Rahim Larwan',
             'prenom' => 'Narwa',
+            'date_naissance'=>'2023-10-19',
+            'lieu_naissance'=>'MARADI',
             'etablissement_id' => 1
         ]);
         Enseignant::create([
             'matricule' => 'Mat/En/04',
             'nom' => 'Hamissou Maïga',
             'prenom' => 'Ibrahim',
+            'date_naissance'=>'2023-10-19',
+            'lieu_naissance'=>'MARADI',
             'etablissement_id' => 1
         ]);
 

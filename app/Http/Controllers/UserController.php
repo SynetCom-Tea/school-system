@@ -52,52 +52,64 @@ class UserController extends Controller
     public function getInscriptionsByYearAndSection($year, $section, $niveau)
     {
 
-
+        // dd($year);
         $list = [];
         $authUser =  Auth::user();
         $collection = collect();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
         $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
-
+       
+        if($section == '1' || $section == '2'){
+            $p = null;
+        }elseif($section == '3' || $section == '4'){
+           $p = '<>,null';
+        }
+        // dd($p);
+       
         if ($nameRole == 'Administrateur') {
-
-            $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
+            $list = Inscription::where('cycle_filiere_id',$p)->where('annee_id',$year)->whereHas('apprenant', function ($query) use ($authUser) {
                 $query->where('etablissement_id', (int)$authUser->etablissement_id);
-            })->with('apprenant', 'apprenant.etablissement', 'apprenant.etablissement')->get();
+            })->with('apprenant','apprenant.etablissement','cycleFiliere.cycle','cycleFiliere.filiere','niveau','annee')->get();
+            // dd($list);
+            if($section == '1' || $section == '2'){
+                $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first();
 
-            $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first();
-
-            $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
-                ->whereHas('classe_annee', function ($query) use ($year, $niveau, $findNiveau, $findEtabSection) {
-                    $query->whereHas('annee', function ($query) use ($year) {
-                        $query->where('libelle', $year);
-                    })->whereHas('classe', function ($query) use ($niveau, $findNiveau, $findEtabSection) {
-                        if ($findNiveau->count() != 0) {
-                            return $query->where('niveau_id', $niveau)->where(
+                $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
+                    ->whereHas('classe_annee', function ($query) use ($year, $niveau, $findNiveau, $findEtabSection) {
+                        $query->whereHas('annee', function ($query) use ($year) {
+                            $query->where('id', $year);
+                        })->whereHas('classe', function ($query) use ($niveau, $findNiveau, $findEtabSection) {
+                            if ($findNiveau->count() != 0) {
+                                return $query->where('niveau_id', $niveau)->where(
+                                    'etablissement_section_id',
+                                    $findEtabSection->id
+                                );
+                            }
+                            return $query->where(
                                 'etablissement_section_id',
                                 $findEtabSection->id
                             );
-                        }
-                        return $query->where(
-                            'etablissement_section_id',
-                            $findEtabSection->id
-                        );
+                        });
+                    })
+                    ->get();
+
+                    dd($apprenantsCABySection,$list);
+                $list->map(function ($element) use ($apprenantsCABySection, $collection) {
+                    $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
+                        return $el['apprenant_id'] == $element['apprenant_id'];
                     });
-                })
-                ->get();
-
-
-            $list->map(function ($element) use ($apprenantsCABySection, $collection) {
-                $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
-                    return $el['apprenant_id'] == $element['apprenant_id'];
+                    return $collection->push($vTerre->filter()->all());
                 });
-                return $collection->push($vTerre->filter()->all());
-            });
+            }
         }
-
-        $flattened = $collection->flatten()->unique()->filter();
-        $flattened->all();
-        return $flattened ?? [];
+        if($section == '1' || $section == '2'){
+            $flattened = $collection->flatten()->unique()->filter();
+            $flattened->all();
+            dd($flattened);
+            return $flattened ?? [];
+        }elseif($section == '3' || $section == '4'){
+            return $list ?? []; 
+        }
     }
     public function getUsersByCategory($params)
     {
@@ -121,6 +133,11 @@ class UserController extends Controller
 
                 $list = Niveau::where('section_id', 2)->get();
             }
+            if ($params == "superieurClasses") {
+
+                $list = Niveau::where('section_id', 3)->get();
+            }
+            
             if ($params == "organizationStudents") {
                 $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
                     $query->where('etablissement_id', (int)$authUser->etablissement_id);
@@ -138,13 +155,15 @@ class UserController extends Controller
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
                 'type' => 'error',
-                'text' => 'Session expiré!',
+                'text' => 'Session expirée!',
             ]);
         }
         $vUsers = null;
-        if ($request->section_id) {
-            $vUsers = User::where('users.etablissement_id', $authUser->etablissement_id)
-
+        // dump('T:', $request->section_id);
+        if ($request->section_id != null) {
+            $vUsers = User::where('users.etablissement_id', (int)$authUser->etablissement_id)
+                ->where('users.user_id', (int)$authUser->id)
+                // ->where('users.id', '<>', (int)$authUser->id)
                 ->join(
                     'section_users',
                     'users.id',
@@ -162,10 +181,13 @@ class UserController extends Controller
                 ->with('apprenant', 'tuteur', 'enseignant')
                 ->get();
         }
-        $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')->with('etablissement')->get();
+        if ($request->section_id == null) {
+            $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
+                ->where('users.user_id', (int)$authUser->id)
+                ->with('etablissement')->get();
+        }
 
-        // dd(' $vUsers:', $vUsers);
-        return Inertia::render('User/Index', [
+        return Inertia::render('user/Index', [
             'users' => $vUsers ?? [],
             'sectionID' => $request->section_id ?? null
         ]);
@@ -177,10 +199,21 @@ class UserController extends Controller
     public function create()
     {
         $user = Auth::user();
-        return Inertia::render('User/Create', [
+        $sections = DB::select("
+            SELECT s.id,s.libelle FROM sections s
+            JOIN etablissement_section es ON s.id = es.section_id
+            JOIN etablissements e ON e.id = es.etablissement_id
+            JOIN users u ON e.id = u.etablissement_id
+            WHERE e.id = :etablissement_id 
+        ",
+        [
+            'etablissement_id' => $user->etablissement_id,
+            
+        ]); 
+        return Inertia::render('user/Create', [
             'etablissements' => Etablissement::all(),
             'roles' => Role::all(),
-            'sections' => Section::all(),
+            'sections' => $sections,
             'permissions' => Permission::all(),
             'enseignants' => Enseignant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
             'apprenants' => Apprenant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
@@ -240,7 +273,7 @@ class UserController extends Controller
 
             return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
         } else {
-            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoille rouge!');
+            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoile rouge!');
 
             return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
         }

@@ -1,6 +1,6 @@
 <script>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { useForm } from '@inertiajs/vue3';
+    import { useForm, router } from '@inertiajs/vue3';
     
     import {
         mdiAccountSchool,
@@ -65,7 +65,7 @@
                     { title: 'Libellé', align: 'center', key: 'libelle' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                dialog_title: 'Création Matière',
+                dialog_title: 'Modifier la salle',
                 dialog: false,
                 
                 form: useForm({
@@ -82,8 +82,7 @@
         },
         methods:{
             create() {
-                this.dialog = true;
-                this.dialog_title = 'Création Salle'
+                router.get(route('salles.create'))
             },
             editItem(item){
                 //console.log('edit',item) 
@@ -140,28 +139,7 @@
             },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
-                if(!this.form.id && valid) {
-                    this.form.post(route('salles.store'), {
-                        onFinish: () => {
-                            //console.log(this.form)
-                            this.close()
-                            
-                            this.$swal({
-                                icon: 'success',
-                                iconColor: '#004980',
-                                color: '#004980',
-                                title: 'Enregistrement',
-                                text: 'Salle créée avec succès!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-                        },
-                    });
-                    
-                }else if(this.form.id && valid) {
+                if(this.form.id && valid) {
                     
                      const {id,code,libelle} = this.form
                     

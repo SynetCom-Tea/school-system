@@ -43,7 +43,17 @@ class AuthenticatedSessionController extends Controller
             return redirect()->intended(RouteServiceProvider::HOME);
         } catch (\Throwable $th) {
             //throw $th;
-            dd('error:', $th);
+            // dd('error:', $th, $th->getMessage());
+            if ($th->getMessage() == "These credentials do not match our records.") {
+                return redirect('/login')->with('message', [
+                    'type' => 'error',
+                    'text' => 'Identifiants incorrects!',
+                ]);
+            }
+            return redirect('/login')->with('message', [
+                'type' => 'error',
+                'text' => 'Erreur.Données invalides ou erronées!',
+            ]);
         }
     }
 

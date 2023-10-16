@@ -1,6 +1,6 @@
 <script>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { useForm } from '@inertiajs/vue3';
+    import { useForm, router } from '@inertiajs/vue3';
     
     import {
         mdiAccountSchool,
@@ -36,7 +36,7 @@
             mdiContentSave
         },
         layout: AuthenticatedLayout,
-        props: ["matieres"],
+        props: ["matieres","section_id"],
         data() {
             return {
                 icons: {
@@ -65,7 +65,7 @@
                     { title: 'Libellé', align: 'center', key: 'nom' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
-                dialog_title: 'Création Matière',
+                dialog_title: 'Modifier la matière',
                 dialog: false,
                 
                 form: useForm({
@@ -82,12 +82,11 @@
         },
         methods:{
             create() {
-                this.dialog = true;
-                this.dialog_title = 'Création Matière'
+                router.get(route('matieres.create', this.section_id))
             },
             editItem(item){
                 //console.log('edit',item) 
-                this.dialog_title = 'Modifier la matière' 
+                this.dialog_title = 'Modifier la matière '+ item.nom
                 this.form.id = item.id
                 this.form.code = item.code
                 this.form.nom = item.nom
@@ -141,7 +140,7 @@
             async submit() {
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
-                    this.form.post(route('matieres.store'), {
+                    this.form.post(route('matieres.store', this.section_id), {
                         onFinish: () => {
                             //console.log(this.form)
                             this.close()

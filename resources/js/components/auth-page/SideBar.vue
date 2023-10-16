@@ -1,27 +1,22 @@
 <template>
-  <div style="height: 100%">
+<div style="height: 100%">
     <v-app-bar color="rgb(0, 73, 128)" prominent>
-      <div class="app-bar-content">
-        <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
-        <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
-        <div class="d-flex align-center ml-auto" id="profile-bar">
-          <v-list-item
-            @click="goToProfilePage()"
-            lines="two"
-            :title="getUserProfile.name"
-            :subtitle="getUserProfile.typeUser"
-          >
-            <template v-slot:prepend>
-              <v-icon size="22" :icon="icons.mdiAccount"></v-icon>
-            </template>
-          </v-list-item>
+        <div class="app-bar-content">
+            <div class="text-white text-h5">Bienvenue sur Système Scolaire!</div>
+            <!-- <div class="transition-default">Bienvenue sur Système scolaire!</div> -->
+            <div class="d-flex align-center ml-auto" id="profile-bar">
+                <v-list-item @click="goToProfilePage()" lines="two" :title="getUserProfile.name" :subtitle="getUserProfile.typeUser">
+                    <template v-slot:prepend>
+                        <v-icon size="22" :icon="icons.mdiAccount"></v-icon>
+                    </template>
+                </v-list-item>
+            </div>
+            &nbsp; &nbsp;
+            <div class="d-flex">
+                <SiteWebButton />
+                <MenuTopButton />
+            </div>
         </div>
-        &nbsp; &nbsp;
-        <div class="d-flex">
-          <SiteWebButton />
-          <MenuTopButton />
-        </div>
-      </div>
     </v-app-bar>
 
     <v-navigation-drawer
@@ -66,7 +61,7 @@
             <v-list density="compact">
               <v-list-item
                 class="list-case"
-                v-for="link in getListMenus[0]"
+                v-for="link in getListMenus.singleItems"
                 :key="link.title"
                 @click="page(link.link)"
               >
@@ -99,23 +94,15 @@
                     </v-list-item>
                   </template>
 
-                  <v-list-item
-                    class="sub-list-group"
-                    v-for="(item, i) in itemSection.children"
-                    :key="i"
-                    @click="page(item.link)"
-                  >
-                    <template v-slot:prepend>
-                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                    </template>
+                                <v-list-item class="sub-list-group" v-for="(item, i) in itemSection.children" :key="i" @click="page(item.link)">
+                                    <template v-slot:prepend>
+                                        <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                                    </template>
 
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="item.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </v-list-group>
-              </div>
+                                    <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                                </v-list-item>
+                            </v-list-group>
+                        </div>
 
               <!-- Fin Super-Admin -->
               <!--Debut des menu sections -->
@@ -156,27 +143,27 @@
               </v-list-group>
               <!-- Debut evaluation  -->
               <v-list-group
-                :value="getListMenus[4] && getListMenus[4].title"
-                v-if="$page.props.roles[0] == 'Administrateur'"
+                :value="getListMenus.MenuEvaluation && getListMenus.MenuEvaluation.title"
+                v-if="$page.props.roles[0] == 'Enseignant'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
                     <template v-slot:prepend>
                       <v-icon
-                        :title="getListMenus[4].title"
-                        :icon="getListMenus[4].icon"
+                        :title="getListMenus.MenuEvaluation.title"
+                        :icon="getListMenus.MenuEvaluation.icon"
                       ></v-icon>
                     </template>
                     <v-list-item-title
                       class="text-wrap"
-                      v-text="getListMenus[4].title"
+                      v-text="getListMenus.MenuEvaluation.title"
                     ></v-list-item-title>
                   </v-list-item>
                 </template>
 
                 <v-list-item
                   class="sub-list-group"
-                  v-for="(item, i) in getListMenus[4].children"
+                  v-for="(item, i) in getListMenus.MenuEvaluation.children"
                   :key="i"
                   @click="page(item.link)"
                 >
@@ -184,39 +171,68 @@
                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                   </template>
 
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
+              <v-list-group
+                :value="getListMenus.MenuNote && getListMenus.MenuNote.title"
+                v-if="$page.props.roles[0] == 'Enseignant'"
+              >
+                <template v-slot:activator="{ props }">
+                  <v-list-item class="group-title" v-bind="props">
+                    <template v-slot:prepend>
+                      <v-icon
+                        :title="getListMenus.MenuNote.title"
+                        :icon="getListMenus.MenuNote.icon"
+                      ></v-icon>
+                    </template>
+                    <v-list-item-title
+                      class="text-wrap"
+                      v-text="getListMenus.MenuNote.title"
+                    ></v-list-item-title>
+                  </v-list-item>
+                </template>
 
-              <!-- Fin evaluation -->
+                <v-list-item
+                  class="sub-list-group"
+                  v-for="(item, i) in getListMenus.MenuNote.children"
+                  :key="i"
+                  @click="page(item.link)"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  </template>
 
-              <!-- Debut du menu preconfig -->
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
+
+                        <!-- Fin evaluation -->
+
+                        <!-- Debut du menu preconfig -->
 
               <v-list-group
                 v-if="$page.props.roles[0] == 'Administrateur'"
-                :value="getListMenus[2].title"
+                :value="getListMenus.MenuAdmin.title"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
                     <template v-slot:prepend>
                       <v-icon
-                        :title="getListMenus[2].title"
-                        :icon="getListMenus[2].icon"
+                        :title="getListMenus.MenuAdmin.title"
+                        :icon="getListMenus.MenuAdmin.icon"
                       ></v-icon>
                     </template>
                     <v-list-item-title
                       class="text-wrap"
-                      v-text="getListMenus[2].title"
+                      v-text="getListMenus.MenuAdmin.title"
                     ></v-list-item-title>
                   </v-list-item>
                 </template>
 
                 <v-list-item
                   class="sub-list-group"
-                  v-for="(item, i) in getListMenus[2].children"
+                  v-for="(item, i) in getListMenus.MenuAdmin.children"
                   :key="i"
                   @click="page(item.link)"
                 >
@@ -224,41 +240,24 @@
                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                   </template>
 
-                  <v-list-item-title
-                    class="text-wrap"
-                    v-text="item.title"
-                  ></v-list-item-title>
-                </v-list-item>
-              </v-list-group>
-              <!-- Menu Gestion -->
-              <v-list-group
-                :value="MenuGestion.title"
-                v-if="$page.props.roles[0] == 'Administrateur'"
-              >
-                <template v-slot:activator="{ props }">
-                  <v-list-item class="group-title" v-bind="props">
-                    <template v-slot:prepend>
-                      <v-icon
-                        :title="MenuGestion.title"
-                        :icon="MenuGestion.icon"
-                      ></v-icon>
-                    </template>
-                    <v-list-item-title
-                      class="text-wrap"
-                      v-text="MenuGestion.title"
-                    ></v-list-item-title>
-                  </v-list-item>
-                </template>
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
+                        <!-- Menu Gestion -->
+                        <v-list-group :value="MenuGestion.title" v-if="$page.props.roles[0] == 'Administrateur'">
+                            <template v-slot:activator="{ props }">
+                                <v-list-item class="group-title" v-bind="props">
+                                    <template v-slot:prepend>
+                                        <v-icon :title="MenuGestion.title" :icon="MenuGestion.icon"></v-icon>
+                                    </template>
+                                    <v-list-item-title class="text-wrap" v-text="MenuGestion.title"></v-list-item-title>
+                                </v-list-item>
+                            </template>
 
-                <v-list-item
-                  class="sub-list-group"
-                  v-for="(item, i) in MenuGestion.children"
-                  :key="i"
-                  @click="page(item.link)"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                  </template>
+                            <v-list-item class="sub-list-group" v-for="(item, i) in MenuGestion.children" :key="i" @click="page(item.link)">
+                                <template v-slot:prepend>
+                                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                                </template>
 
                   <v-list-item-title
                     class="text-wrap"
@@ -304,30 +303,32 @@
               </v-list-group>
               <!-- Fin Menu Tuteur -->
 
-              <!-- Déconnexion doit etre le dernier menu -->
-              <v-list-item class="list-case" @click="logout" key="logout">
-                <template v-slot:prepend>
-                  <v-icon title="logout" :icon="icons.mdiLogout"></v-icon>
-                </template>
-                <v-list-item-title class="text-wrap">Déconnexion</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </div>
+                        <!-- Déconnexion doit etre le dernier menu -->
+                        <v-list-item class="list-case" @click="logout" key="logout">
+                            <template v-slot:prepend>
+                                <v-icon title="logout" :icon="icons.mdiLogout"></v-icon>
+                            </template>
+                            <v-list-item-title class="text-wrap">Déconnexion</v-list-item-title>
+                        </v-list-item>
+                    </v-list>
+                </div>
+            </div>
         </div>
-      </div>
     </v-navigation-drawer>
-  </div>
+</div>
 </template>
 
 <script>
-import { router } from "@inertiajs/vue3";
 import {
-  mdiChevronLeft,
-  mdiAccount,
-  mdiSchool,
-  mdiCogOutline,
-  mdiLogout,
-  mdiMenu,
+    router
+} from "@inertiajs/vue3";
+import {
+    mdiChevronLeft,
+    mdiAccount,
+    mdiSchool,
+    mdiCogOutline,
+    mdiLogout,
+    mdiMenu,
 } from "@mdi/js";
 import { listMenus, menusTuteur } from "../../utils/ListNavAppBar.js";
 import { Vue3Marquee } from "vue3-marquee";
@@ -335,24 +336,24 @@ import { getTypeEtablissementById } from "../../utils/commonFunctions.js";
 import SiteWebButton from "./SiteWebButton.vue";
 import MenuTopButton from "./MenuTopButton.vue";
 export default {
-  name: "Sidebar",
-  components: {
-    mdiAccount,
-    mdiChevronLeft,
-    mdiCogOutline,
-    mdiLogout,
-    mdiMenu,
-    mdiSchool,
-    MenuTopButton,
-    SiteWebButton,
-  },
+    name: "Sidebar",
+    components: {
+        mdiAccount,
+        mdiChevronLeft,
+        mdiCogOutline,
+        mdiLogout,
+        mdiMenu,
+        mdiSchool,
+        MenuTopButton,
+        SiteWebButton,
+    },
 
   data: () => {
     return {
-      MenuAdmin: [],
       menuTuteur: null,
       MenuGestion: [],
       menusBySection: [],
+      menuTeachers: [],
       superAdminMenus: [],
       open: null,
       drawer: true,
@@ -393,6 +394,7 @@ export default {
     );
     this.$gates.setRoles(this.$page.props.roles);
     this.$gates.setPermissions(this.$page.props.permissions);
+    // console.log()
   },
   computed: {
     getOrganizationProfile() {
@@ -407,33 +409,33 @@ export default {
         }
       }
 
-      if (sections && sections.length == 4) {
-        allSections = "Toutes les Sections";
-      }
+            if (sections && sections.length == 4) {
+                allSections = "Toutes les Sections";
+            }
 
-      if (this.$page.props.admin_etablissement == null) {
-        organization = {
-          name: "Concepteur logiciel",
-          type: "Super-Admin",
-        };
-      }
-      let roles = this.$page.props?.roles ? this.$page.props?.roles[0] : null;
-      let organizationName = allSections
-        ? allSections
-        : getTypeEtablissementById(organization.type_etablissement_id);
+            if (this.$page.props.admin_etablissement == null) {
+                organization = {
+                    name: "Concepteur logiciel",
+                    type: "Super-Admin",
+                };
+            }
+            let roles = this.$page.props ?.roles ? this.$page.props ?.roles[0] : null;
+            let organizationName = allSections ?
+                allSections :
+                getTypeEtablissementById(organization.type_etablissement_id);
 
-      fullName = user?.nom + " " + user?.prenom;
-      let item = {
-        typeUser: roles,
-        organization: {
-          name: organization.name,
-          type: organizationName ?? organization.type,
-        },
-        photo: {
-          file: organization.logo ?? "team.png",
-          title: "photo de l'établissement",
-        },
-      };
+            fullName = user ?.nom + " " + user ?.prenom;
+            let item = {
+                typeUser: roles,
+                organization: {
+                    name: organization.name,
+                    type: organizationName ??organization.type,
+                },
+                photo: {
+                    file: organization.logo ?? "team.png",
+                    title: "photo de l'établissement",
+                },
+            };
 
       return item;
     },
@@ -471,15 +473,25 @@ export default {
     },
     getListMenus() {
       let list = listMenus(this.$page.props);
+      let {
+        singleItems,
+        gestionSections,
+        MenuAdmin,
+        MenuGestion,
+        MenuEvaluation,
+        MenuNote,
+        superAdminMenus,
+        menuTeachers,
+        menuRolePermission,
+      } = list;
 
       let role = this.$page.props.roles ? this.$page.props?.roles[0] : null;
-      this.menusBySection = list[1] ?? [];
-      this.MenuAdmin = list[2];
-      this.MenuGestion = list[3];
-      this.superAdminMenus = list[5];
+      this.menusBySection = gestionSections ?? [];
+
+      this.MenuGestion = MenuGestion;
+      this.superAdminMenus = superAdminMenus;
 
       this.menuTuteur = menusTuteur(this.$page.props);
-
       return list ?? null;
     },
   },
@@ -537,14 +549,14 @@ export default {
       let btnToggleIcon = document.getElementById("btn-toggle-icon");
       this.menuCompact.hidden = !this.menuCompact.hidden;
 
-      if (this.menuCompact.hidden) {
-        return (btnToggleIcon.style.transform = "rotateY(0deg)");
-      } else {
-        return (btnToggleIcon.style.transform = "rotateY(180deg)");
-      }
-      this.rail = !this.rail;
+            if (this.menuCompact.hidden) {
+                return (btnToggleIcon.style.transform = "rotateY(0deg)");
+            } else {
+                return (btnToggleIcon.style.transform = "rotateY(180deg)");
+            }
+            this.rail = !this.rail;
+        },
     },
-  },
 };
 // <v-list density="compact" v-model:opened="open">
 </script>

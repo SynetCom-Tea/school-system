@@ -377,14 +377,14 @@ export default {
       </div>
     </template>
     <template class="slot-style" v-for="(index, name) in $slots" v-slot:[name]>
-      <div style="background-color: red"><slot :name="name"></slot></div>
+      <div><slot :name="name"></slot></div>
     </template>
     <template
       class="slot-data-style"
       v-for="(index, name) of $slots"
       v-slot:[name]="data"
     >
-      <div style="background-color: red"><slot :name="name" v-bind="data"></slot></div>
+      <div><slot :name="name" v-bind="data"></slot></div>
     </template>
   </v-data-table>
 </template>
@@ -393,7 +393,7 @@ export default {
 .v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > td,
 .v-table .v-table__wrapper > table > tbody > tr:nth-of-type(odd) > th {
   /* background: #7d002c; */
-  background: #808080;
+  background: #bfbfbf;
   /* background: #bfdfff; */
 }
 
@@ -403,10 +403,10 @@ export default {
   background: #5a5a5a;
   /* background: #003f7d; */
 }
-tbody tr:nth-of-type(odd) {
-  /* 'teal lighten-5' basides on material design color */
+/* tbody tr:nth-of-type(odd) {
+
   color: white;
-}
+} */
 
 tbody tr:nth-of-type(even) {
   /* 'deep-orange lighten-5' basides on material design color */

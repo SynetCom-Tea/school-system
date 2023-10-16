@@ -50,6 +50,23 @@ export async function  getNiveauxSecondaire() {
         });
       return axiosResult ?? [];
     }
+export async function  getNiveauxSuperieur() {
+  let axiosResult = [];
+  axiosResult = await axios
+    .get(
+      route("getUsersByCategory", {
+        params: "superieurClasses",
+      })
+    )
+    .then((res) => {
+      if (typeof res.data == "string" || typeof res.data == "undefined") {
+        this.$toast.error("Données non valides!");
+      } else {
+        return res.data;
+      }
+    });
+  return axiosResult ?? [];
+}
 
 export function getTypeEtablissementById(vId) {
   let formatVId = vId ? parseInt(vId) : null

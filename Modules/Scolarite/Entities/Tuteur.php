@@ -12,7 +12,7 @@ class Tuteur extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['nom', 'prenom', 'telephone', 'adresse', 'mail'];
+    protected $fillable = ['nom', 'prenom', 'telephone', 'adresse', 'email','sexe'];
     public function apprenantTuteurs(): HasMany
     {
         return $this->hasMany(ApprenantTuteur::class);

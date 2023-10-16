@@ -23,4 +23,14 @@ class Filiere extends Model
     {
         return $this->hasMany(CycleFiliere::class);
     }
+
+    public function etablissement(): BelongsTo
+    {
+        return $this->belongsTo(Etablissement::class);
+    }
+
+    public function departement(): BelongsTo
+    {
+        return $this->belongsTo(Departement::class);
+    }
 }
