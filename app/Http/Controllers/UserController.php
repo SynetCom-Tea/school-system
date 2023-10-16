@@ -52,26 +52,32 @@ class UserController extends Controller
     public function getInscriptionsByYearAndSection($year, $section, $niveau)
     {
 
-
+        // dd($year);
         $list = [];
         $authUser =  Auth::user();
         $collection = collect();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
         $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
-
+       
+        if($section == '1' || $section == '2'){
+            $p = null;
+        }elseif($section == '3' || $section == '4'){
+           $p = '<>,null';
+        }
+        // dd($p);
+       
         if ($nameRole == 'Administrateur') {
-
-            $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
+            $list = Inscription::where('cycle_filiere_id',$p)->where('annee_id',$year)->whereHas('apprenant', function ($query) use ($authUser) {
                 $query->where('etablissement_id', (int)$authUser->etablissement_id);
-            })->with('apprenant','apprenant.etablissement')->get();
-
+            })->with('apprenant','apprenant.etablissement','cycleFiliere.cycle','cycleFiliere.filiere','niveau','annee')->get();
+            // dd($list);
             if($section == '1' || $section == '2'){
                 $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first();
 
                 $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
                     ->whereHas('classe_annee', function ($query) use ($year, $niveau, $findNiveau, $findEtabSection) {
                         $query->whereHas('annee', function ($query) use ($year) {
-                            $query->where('libelle', $year);
+                            $query->where('id', $year);
                         })->whereHas('classe', function ($query) use ($niveau, $findNiveau, $findEtabSection) {
                             if ($findNiveau->count() != 0) {
                                 return $query->where('niveau_id', $niveau)->where(
@@ -87,7 +93,7 @@ class UserController extends Controller
                     })
                     ->get();
 
-
+                    dd($apprenantsCABySection,$list);
                 $list->map(function ($element) use ($apprenantsCABySection, $collection) {
                     $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
                         return $el['apprenant_id'] == $element['apprenant_id'];
@@ -99,6 +105,7 @@ class UserController extends Controller
         if($section == '1' || $section == '2'){
             $flattened = $collection->flatten()->unique()->filter();
             $flattened->all();
+            dd($flattened);
             return $flattened ?? [];
         }elseif($section == '3' || $section == '4'){
             return $list ?? []; 
@@ -180,7 +187,7 @@ class UserController extends Controller
                 ->with('etablissement')->get();
         }
 
-        return Inertia::render('User/Index', [
+        return Inertia::render('user/Index', [
             'users' => $vUsers ?? [],
             'sectionID' => $request->section_id ?? null
         ]);
@@ -192,10 +199,21 @@ class UserController extends Controller
     public function create()
     {
         $user = Auth::user();
-        return Inertia::render('User/Create', [
+        $sections = DB::select("
+            SELECT s.id,s.libelle FROM sections s
+            JOIN etablissement_section es ON s.id = es.section_id
+            JOIN etablissements e ON e.id = es.etablissement_id
+            JOIN users u ON e.id = u.etablissement_id
+            WHERE e.id = :etablissement_id 
+        ",
+        [
+            'etablissement_id' => $user->etablissement_id,
+            
+        ]); 
+        return Inertia::render('user/Create', [
             'etablissements' => Etablissement::all(),
             'roles' => Role::all(),
-            'sections' => Section::all(),
+            'sections' => $sections,
             'permissions' => Permission::all(),
             'enseignants' => Enseignant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
             'apprenants' => Apprenant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
@@ -255,7 +273,7 @@ class UserController extends Controller
 
             return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
         } else {
-            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoille rouge!');
+            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoile rouge!');
 
             return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
         }

@@ -177,42 +177,42 @@ import {
 } from "@mdi/js";
 export default {
   layout: AuthenticatedLayout,
-  props: ["type", "niveaux", "lmd"],
-  components: {
-    mdiAccount,
-    mdiCogOutline,
-    mdiInformation,
-    mdiSchool,
-    mdiHomeOutline,
-    mdiPlusCircle,
-    mdiPresentation,
-    mdiCloseCircle,
-    mdiGift,
-    mdiCheckCircle,
-    mdiBookOpenVariant,
-    mdiGoogleClassroom,
-  },
-  data: () => ({
-    alert: true,
-    icons: {
-      mdiGoogleClassroom,
-      mdiBookOpenVariant,
-      mdiAccount,
-      mdiPlusCircle,
-      mdiCheckCircle,
-      mdiCloseCircle,
-      mdiSchool,
-      mdiInformation,
-      mdiHomeOutline,
-      mdiPresentation,
-      mdiGift,
-      mdiCogOutline,
+    props: ["type", "niveaux", "lmd"],
+    components: {
+        mdiAccount,
+        mdiCogOutline,
+        mdiInformation,
+        mdiSchool,
+        mdiHomeOutline,
+        mdiPlusCircle,
+        mdiPresentation,
+        mdiCloseCircle,
+        mdiGift,
+        mdiCheckCircle,
+        mdiBookOpenVariant,
+        mdiGoogleClassroom,
     },
+    data: () => ({
+        alert: true,
+        icons: {
+            mdiGoogleClassroom,
+            mdiBookOpenVariant,
+            mdiAccount,
+            mdiPlusCircle,
+            mdiCheckCircle,
+            mdiCloseCircle,
+            mdiSchool,
+            mdiInformation,
+            mdiHomeOutline,
+            mdiPresentation,
+            mdiGift,
+            mdiCogOutline,
+        },
 
-    form: useForm({
-      matieres: [],
+        form: useForm({
+            matieres: [],
+        }),
     }),
-  }),
 
   methods: {
     goBack() {

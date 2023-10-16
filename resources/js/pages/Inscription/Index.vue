@@ -13,7 +13,7 @@
               :items="academicYears"
               v-model="year"
               class="mt-2"
-              itemValue="libelle"
+              itemValue="id"
               itemTitle="libelle"
               isRequired
               label="Année"
@@ -161,7 +161,7 @@
                 <v-divider></v-divider>
 
                 <v-list density="compact">
-                  <v-list-item
+                  <v-list-item 
                     v-for="(key, index) in filteredKeys"
                     :key="index"
                     :title="key.title"
@@ -356,6 +356,28 @@ export default {
           sortable: false,
         },
       ],
+      headers_sup: [
+        {
+          title: "Matricule",
+          align: "start",
+          key: "matricule",
+          sortable: false,
+        },
+        { title: "Nom & Prénom", align: "center", key: "name" },
+        // { title: "Prénom", align: "center", key: "prenom" },
+        { title: "Année", align: "center", key: "annee" },
+        { title: "Cycle/Niveau", align: "center", key: "cycle_niveau" },
+        { title: "Filière", align: "center", key: "filiere" },
+        { title: "Date & Lieu Naissance", align: "center", key: "date_lieu_naissance" },
+        // { title: "Lieu Naissance", align: "center", key: "lieu_naissance" },
+        // { title: "Classe", align: "center", key: "classe_code" },
+
+        {
+          title: "Détails",
+          key: "actions",
+          sortable: false,
+        },
+      ],
       subscribers: [],
       editedObject: {
         matricule: "",
@@ -428,9 +450,15 @@ export default {
         return Math.ceil(this.subscribers.length / this.itemsPerPage);
     },
     filteredKeys() {
-      return this.headers.filter((key) => {
-        return key && key.title !== "Matricule";
-      });
+      if(this.vSectionID == 1 || this.vSectionID == 2){
+        return this.headers.filter((key) => {
+          return key && key.title !== "Matricule";
+        });
+      }else if(this.vSectionID == 3 || this.vSectionID == 4){
+        return this.headers_sup.filter((key) => {
+          return key && key.title !== "Matricule";
+        });
+      }
     },
     sortBy() {
       return [
@@ -546,10 +574,12 @@ export default {
             })
           )
           .then((res) => {
+            console.log('response',res.data);
             if (typeof res.data == "string" || typeof res.data == "undefined") {
               // this.$toast.error("Données non valides!");
             } else {
               return res.data;
+              
             }
           });
       }
@@ -564,7 +594,11 @@ export default {
           if (element) {
             apprenant = element.apprenant;
             classe = element.classe_annee?.classe;
-            niveau = element.classe_annee?.classe?.niveau;
+            if(element.cycle_filiere_id == null){
+              niveau = element.classe_annee?.classe?.niveau;
+            }else{
+              niveau = element.niveau;
+            }
             columns.push({
               matricule: element.apprenant?.matricule,
               name: element.apprenant?.nom + " " + element.apprenant?.prenom,
@@ -576,11 +610,14 @@ export default {
               lieu_naissance: element.apprenant?.lieu_naissance,
               telephone: element.apprenant?.telephone,
               classe_code: element.classe_annee?.classe?.code,
+              cycle_niveau: element.cycle_filiere.cycle.name + ' / ' + element.niveau.libelle,
+              filiere: element.cycle_filiere.filiere.name,
+              annee: element.annee.libelle,
               more: {
                 apprenant: element.apprenant,
                 classeAnnee: element.classe_annee,
-                cycle: element.cycleFiliere?.cycle,
-                filiere: element.cycleFiliere?.filiere
+                // cycle: element.cycleFiliere?.cycle,
+                // filiere: element.cycleFiliere?.filiere
               },
             });
           }

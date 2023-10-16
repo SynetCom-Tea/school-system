@@ -66,8 +66,8 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
                 ->references('id')->on('niveaux');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)
-                ->nullable()->index()
+            $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)->nullable()
+                ->index()
                 ->references('id')->on('matieres');
             $table->foreignIdFor(\Modules\Enseignement\Entities\FiliereMatiereUe::class)->nullable()
                 ->index()

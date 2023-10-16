@@ -6,6 +6,9 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Apprenant;
+use App\Models\Annee;
+use Modules\Enseignement\Entities\CycleFiliere;
+use Modules\Enseignement\Entities\Niveau;
 
 class Inscription extends Model
 {

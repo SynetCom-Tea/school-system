@@ -1,62 +1,201 @@
-<script setup>
+<script >
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import FiltreAffichageNote from "@/Components/Gestion-note/FiltreAffichageNote.vue";
 import TableauDeNote from "@/Components/Gestion-note/TableauDeNote.vue";
-import { Head } from "@inertiajs/vue3";
-
-const props = defineProps(['classes','evaluations','notes'])
-const search = ''
-const headers = [
-                {
+import {
+    Head,
+    router,
+    useForm
+} from "@inertiajs/vue3";
+import {
+    mdiAccountSchool,
+    mdiPlus,
+    mdiPencil,
+    mdiDelete,
+    mdiPlusCircle,
+    mdiClipboardEditOutline,
+    mdiTools,
+    mdiCloseCircle,
+    mdiCheckCircle,
+    mdiPercentOutline,
+    mdiTimelineAlert,
+    mdiContentSaveEditOutline,
+} from '@mdi/js'
+export default {
+    components: {
+      FiltreAffichageNote,
+      FiltreAffichageNote,
+        // Datatable,
+        mdiAccountSchool,
+        mdiPlus,
+        mdiPencil,
+        mdiDelete,
+        mdiPlusCircle,
+        mdiClipboardEditOutline,
+        mdiTools,
+        mdiCloseCircle,
+        mdiCheckCircle,
+        mdiPercentOutline,
+        mdiTimelineAlert,
+        mdiContentSaveEditOutline
+    },
+    layout: AuthenticatedLayout,
+    props: ['classes', 'evaluations', 'notes','type'],
+    data() {
+        return {
+            icon: {
+                mdiAccountSchool,
+                mdiPlus,
+                mdiPencil,
+                mdiDelete,
+                mdiPlusCircle,
+                mdiClipboardEditOutline,
+                mdiTools,
+                mdiCloseCircle,
+                mdiCheckCircle,
+                mdiPercentOutline,
+                mdiTimelineAlert,
+                mdiContentSaveEditOutline
+            },
+            dialogEdit : false,
+            headers : [{
                     title: '#',
                     align: 'start',
-                    key: 'id',
+                    key: 'apprenant.matricule',
                     sortable: false,
                 },
-                { title: "Nom", align: "center", key: "apprenant.nom_complete" },
-                { title: "Note", align: "center", key: "note" },
-            ]
+                {
+                    title: "Nom",
+                    align: "center",
+                    key: "apprenant"
+                },
+                {
+                    title: "Note",
+                    align: "center",
+                    key: "note"
+                },
+                {
+                    title: "Action",
+                    align: "center",
+                    key: "action"
+                },
+            ],
+            form: useForm({
+                section_id : null,
+                type_matiere : null,
+                nom_prenom : null,
+                id_note : null,
+                note :null
+            }),
+            
+        }
+    },
+    methods:{
+      create(){
+        this.form.section_id = this.type
+        this.form.get(route('note.attribution'))
+      },
+      edit(item){
+        this.dialogEdit = true
+        this.form.id_note = item.id
+        this.form.note = item.note
+        this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
+        this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
+      },
+      closeEdit(){
+        this.dialogEdit = false
+      },
+      update(){
+        this.form.put(route("note.update",this.form.id_note),{
+            onSuccess: () => {
+                    this.isLoading = false;
+                    this.dialogEdit = false;
+                    if (this.$page.props.flash ?.message ?.type == 'success') {
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Modification',
+                            text: this.$page.props.flash ?.message ?.text,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 10000,
+                            timerProgressBar: true,
+                        });
+                    }
+
+                },
+        })
+      }
+    }
+}
 </script>
 
 <template>
-  <Head title="Notes" />
-
-  <AuthenticatedLayout>
-    <template #header>
-      <h2 class="font-semibold text-xl text-gray-800 leading-tight">Attribution de notes</h2>
-    </template>
-
-    <v-card style="margin: 20px">
-      <v-card-title>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">Affichage de notes</div>
-          </div>
-        </div>
-      </v-card-title>
+<Head title="Notes" />
+<AuthenticatedLayout>
+    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
+<br>
+<div style="margin: 20px">
+    <Button class="mb-2" style="height: 40px" nameButton="Ajouter" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiPlus" @click="create">
+</Button>
+</div>
+  
+    <v-card  variant="outlined" style="border: 2px solid #7d002c;margin: 20px">
+        <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
+            <v-divider></v-divider>
+            <br />
+        <FiltreAffichageNote :classes="classes" :evaluations="evaluations"></FiltreAffichageNote>
     </v-card>
-
-    <v-card style="margin: 20px">
-      <v-card-title>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">Choisissez les criteres</div>
-          </div>
-        </div>
-      </v-card-title>
-      <FiltreAffichageNote :classes="props.classes" :evaluations="props.evaluations"></FiltreAffichageNote>
+    <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
+            <template v-slot:default="{ isActive }">
+                <v-card>
+                    <v-toolbar dense style="background-color: #7d002c">
+                        <v-toolbar-title style="color: white">
+                            <v-icon left :icon="icon.mdiPencil"></v-icon> Modification 
+                        </v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="closeEdit()"></v-icon>
+                    </v-toolbar>
+                    <v-card-text>
+                        <v-form>
+                            <v-row >
+                                <v-col md="12">
+                                    <TextField label="Evaluation" class="mt-1" disabled v-model="form.type_matiere"  >
+                                    </TextField>
+                                </v-col>
+                                <v-col md="12">
+                                    <TextField v-model="form.nom_prenom" disabled label="Nom et prenom"  >
+                                    </TextField>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col md="12">
+                                    <TextField label="Note" v-model="form.note" item-title="name" item-value="id" :items="role_p_u" chips clearable>
+                                    </TextField>
+                                </v-col>
+                            </v-row>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions class="justify-end">
+                        <v-spacer></v-spacer>
+                        <Button variant="outlined" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
+                    </v-card-actions>
+                </v-card>
+            </template>
+        </v-dialog>
+    <v-card  style="border: 2px solid #7d002c;margin: 20px" v-if="notes.length>1">
+        <v-card-title style="color: white; background-color: #7d002c">Liste des notes</v-card-title>
+            <v-divider></v-divider>
+            <br />
+        <Datatable titleDatatable="Listes des notes" v-if="notes.length>1" :displayAddButton="false" :items="notes" :headers="headers">
+            <template v-slot:item.apprenant="{ item}">
+                {{ item.columns.apprenant.nom }} {{ item.columns.apprenant.prenom }}
+            </template>
+            <template v-slot:item.action="{ item}">
+                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item.raw)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="detelete(item.raw)"></v-icon>
+            </template>
+        </Datatable>
     </v-card>
-    <v-card style="margin: 20px" v-if="props.notes">
-      <v-card-title>
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-          <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-            <div class="p-6 text-gray-900">Liste de notes</div>
-          </div>
-        </div>
-      </v-card-title>
-      <!-- <v-data-table :items="props.notes" :headers="headers" :search="search"></v-data-table> -->
-      <TableauDeNote :items="props.notes" :headers="headers"></TableauDeNote>
-    </v-card>
-  </AuthenticatedLayout>
+</AuthenticatedLayout>
 </template>
-

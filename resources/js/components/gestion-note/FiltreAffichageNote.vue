@@ -1,85 +1,79 @@
 <template>
-    <v-row>
-        <v-col md="2"></v-col>
-        <v-col md="3">
-            <v-autocomplete
-                v-model="selectedClasse"
-                :items="classes"
-                item-title="classe_annee.classe.libelle"
-                item-value="classe_annee.classe.id"
-                @update:modelValue="requete(selectedClasse)"
-                outlined
-                required
-                dense
-                chips
-                small-chips
-                label="Classes"
-            ></v-autocomplete>
-        </v-col>
-        <v-col md="3" v-if="$page.props.evaluations != null">
-            <v-select
-                v-model="selectedEvaluation"
-                :items="$page.props.evaluations ? $page.props.evaluations : null"
-                :item-title="formatEvaluationLabel"
-                item-value="id"
-                outlined
-                required
-                dense
-                chips
-                small-chips
-                label="Evaluations"
-            ></v-select>
-        </v-col>
-        <v-col md="2">
-            <v-btn
-            color="primary"
-            @click="rechercher()"
-            :loading="form.processing"
-            :disabled="!selectedClasse || !selectedEvaluation"
-            >
-                Rechercher
-            </v-btn>
-        </v-col>
-        <v-col md="2"></v-col>
-    </v-row>
+<v-row>
+    <v-col md="1"></v-col>
+    <v-col md="4">
+        <Autocomplete v-model="selectedClasse" :items="classes" item-title="classe_annee.classe.libelle" item-value="classe_annee.classe.id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
+    </v-col>
+    <v-col md="4" v-if="$page.props.evaluations != null">
+        <Autocomplete v-model="selectedEvaluation" :items="$page.props.evaluations ? $page.props.evaluations : null" :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
+    </v-col>
+    <v-col md="3" >
+        <Button  color="secondary" variant="outlined" class="mb-3" @click="rechercher()"  nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
+     </v-col>
+    <v-col md="2"></v-col>
+</v-row>
 </template>
 
 <script>
-import { router, usePage, useForm } from "@inertiajs/vue3";
-import { provide } from 'vue';
+import {
+    router,
+    usePage,
+    useForm
+} from "@inertiajs/vue3";
+import {
+    provide
+} from 'vue';
+import {
+    mdiSearchWeb
+} from '@mdi/js'
 export default {
-    props: ["classes"],
-    data() {
-      return {
-        selectedClasse: null,
-        selectedTypeExamen: null,
-        selectedEvaluation: null,
-        selectedMatiere: null,
-        
-        form: useForm({
-        classe: "",
-        prenom: "",
-        tel: "",
-        sex: "",
-        roles: "",
-      }),
-      };
+    components: {
+        mdiSearchWeb
     },
-    
+    props: ["classes","evaluations"],
+    data() {
+        return {
+            icon: {
+                mdiSearchWeb
+            },
+            selectedClasse: null,
+            selectedTypeExamen: null,
+            selectedEvaluation: null,
+            selectedMatiere: null,
+
+            form: useForm({
+                classe: "",
+                prenom: "",
+                tel: "",
+                sex: "",
+                roles: "",
+            }),
+        };
+    },
+
     methods: {
         formatEvaluationLabel(item) {
-            if(item){
+            if (item) {
                 // Concatenate the relevant properties for the label
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.libelle : ''}`;
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
             }
         },
-        rechercher(){
-            router.replace(this.$page.url,{data:{classe:this.selectedClasse,evaluation:this.selectedEvaluation}});
+        rechercher() {
+            router.replace(this.$page.url, {
+                data: {
+                    classe: this.selectedClasse,
+                    evaluation: this.selectedEvaluation
+                }
+            });
             // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
-        requete(id){
-            this.selectedEvaluation = ''
-            router.replace(this.$page.url,{data:{classe:id}});
+        requete(id) {
+            this.selectedEvaluation = null
+            router.replace(this.$page.url, {
+                data: {
+                    classe: id
+                }
+            });
             // console.log('id',id)   
         },
         goBack() {
@@ -99,6 +93,5 @@ export default {
     created() {
 
     },
-  };
+};
 </script>
-

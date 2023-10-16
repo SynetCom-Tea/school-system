@@ -41,11 +41,32 @@
                 <v-divider></v-divider>
 
                 <v-list density="compact">
-                  <v-list-item v-if="apprenant" title="Classe Antérieure"
+                  <v-list-item v-if="apprenant && (type == '1' || type == '2')" title="Classe Antérieure"
                   >
                     <v-list-item-subtitle
                       >
                       <span>{{ apprenant.more.classeAnnee.classe.libelle }} en {{ apprenant.more.classeAnnee.annee.libelle }}</span>
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                  <v-list-item v-if="apprenant && (type == '3' || type == '4')" title="Année Antérieure"
+                  >
+                    <v-list-item-subtitle
+                      >
+                      <span>{{ apprenant.annee }}</span>
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                  <v-list-item v-if="apprenant && (type == '3' || type == '4')" title="Cycle/Niveau"
+                  >
+                    <v-list-item-subtitle
+                      >
+                      <span>{{ apprenant.cycle_niveau }}</span>
+                    </v-list-item-subtitle>
+                  </v-list-item>
+                  <v-list-item v-if="apprenant && (type == '3' || type == '4')" title="Filiere"
+                  >
+                    <v-list-item-subtitle
+                      >
+                      <span>{{ apprenant.filiere }}</span>
                     </v-list-item-subtitle>
                   </v-list-item>
                   <v-list-item title="Nom & Prénom"

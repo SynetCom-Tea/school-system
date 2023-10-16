@@ -6,6 +6,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\AffectationController;
+use App\Http\Controllers\CalendrierscolaireController;
 use App\Http\Controllers\MenuGestionController;
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
@@ -58,14 +59,6 @@ Route::get('/', function () {
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
-// Route::prefix('gestionnote')->group(function () {
-//     Route::get('/', 'GestionNoteController@index');
-//     Route::resource('evaluation', \Modules\GestionNote\Http\Controllers\EvaluationController::class);
-//     // Affichage de notes
-//     Route::get('/note/affichage', [NoteController::class, 'index'])->name('note.affichage');
-//     Route::get('/note/attribution', [NoteController::class, 'attribution'])->name('note.attribution');
-//     Route::post('/note/enregistrer', [NoteController::class, 'store'])->name('note.save');
-// });
 Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
         Route::resource('users', UserController::class);
@@ -114,6 +107,12 @@ Route::resource('affectations', AffectationController::class)->only(['update', '
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
 Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
 Route::post('affectations/{type}', [AffectationController::class, 'store'])->name('affectations.store');
+// Route::resource('calendrierscolaire/{parameter}', CalendrierscolaireController::class);
+Route::prefix('calendrierscolaire')->group(function () {
+    Route::resource('{type}', CalendrierscolaireController::class)->only(['create', 'store', 'index']);
+});
+// Route::resource('calendrierscolaire/{type}', CalendrierscolaireController::class)->parameters(['type' => 'type']);
+
 Route::resource('salles', SalleController::class);
 Route::resource('enseignants', EnseignantController::class)->only(['create', 'update', 'destroy']);
 Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');
