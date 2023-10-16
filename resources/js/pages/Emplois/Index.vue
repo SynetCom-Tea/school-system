@@ -9,7 +9,7 @@ export default {
   components: {
     Qalendar,
   },
-  props: ["emplois", "events", "AllClasses", "niveaux", "emplois"],
+  props: ["emplois", "events", "AllClasses", "niveaux", "emplois", "sectionID"],
   data() {
     return {
       icon: {
@@ -21,7 +21,8 @@ export default {
         niveau: null,
         classe: null,
         date: null,
-        emploi: null
+        emploi: null,
+        section_id: null
       }),
       config: {
         // see configuration section
@@ -47,7 +48,8 @@ export default {
   },
   methods: {
     goTo() {
-      router.get(route("emplois.create"));
+      this.form.get(route("emplois.create"))
+      // router.get(route("emplois.create"));
     },
     setClasse(niveau) {
       this.classes = this.AllClasses.filter((classe) => {
@@ -69,6 +71,9 @@ export default {
       })
     }
   },
+  mounted(){
+    this.form.section_id = this.sectionID
+  }
 };
 </script>
 <template>

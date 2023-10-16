@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
@@ -34,7 +35,11 @@ class CalendrierscolaireController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->programmes);
+        foreach ($request->programmes as $programme) {
+            dd(Carbon::parse($programme['date'], 'UTC'),Carbon::parse($programme['date'])->toDateString(), Carbon::parse($programme['date'])->toTimeString());
+            
+        }
     }
 
     /**

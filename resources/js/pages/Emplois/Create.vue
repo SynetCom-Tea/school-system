@@ -138,7 +138,7 @@ export default {
             <v-card outlined>
               <v-card-text id="heit">
                 <v-row dense>
-                  <v-col md="4">
+                  <!-- <v-col md="4">
                     <autocomplete
                       label="Section"
                       v-model="form.section"
@@ -147,14 +147,13 @@ export default {
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
-                  </v-col>
+                  </v-col> -->
                   <v-col md="4">
                     <autocomplete
                       label="Niveau"
                       v-model="form.niveau"
-                      :items="niveaux"
+                      :items="$page.props.niveaux"
                       @update:modelValue="setClasse(form.niveau)"
-                      :disabled="!form.section"
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>

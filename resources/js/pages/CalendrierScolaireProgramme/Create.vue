@@ -111,7 +111,7 @@
                                     :only-date="true"
                                     date-picker
                                     class="mt-4"
-                                    range
+                                    :min-date="new Date()"
                                     placeholder="programme du ..."
                                     >
                                     </date-range-picker>

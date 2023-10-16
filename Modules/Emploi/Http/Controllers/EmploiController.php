@@ -61,7 +61,8 @@ class EmploiController extends Controller
             'emplois' => $emplois,
             'AllClasses' => $classes,
             'niveaux' => $niveaux,
-            'events' => $events
+            'events' => $events,
+            'sectionID' => $request->section_id
         ]);
     }
 
@@ -72,11 +73,9 @@ class EmploiController extends Controller
     public function create(Request $request)
     {
         // dump('r:', $request->all());
+        // dd($request->section_id);
         $anneeScolaireId = Annee::find(2)->id;
         $etablissement = Etablissement::with('sections')->find(Auth::user()->etablissement_id);
-        // Récupérer les IDs des sections
-        $sectionIds = $etablissement->sections->pluck('id');
-        // dd('$sectionIds:', $sectionIds);
         // Récupérer les niveaux pour toutes les sections
         $sectionEtablissement = DB::table('etablissement_section')
             ->where('etablissement_id', Auth::user()->etablissement_id)
@@ -129,38 +128,51 @@ class EmploiController extends Controller
         $classeAnnee = ClasseAnnee::where('annee_id', Annee::find(2)->id)
             ->where('classe_id', $request->classe)
             ->first();
-        $emploi = Emploi::create([
-            'date_debut' => $request->date[0],
-            'date_fin' => $request->date[1],
-            'classe_annee_id' => $classeAnnee->id
-        ]);
-        foreach ($occurrences as $jour => $seancesDuJour) {
-            // Vérifie s'il y a des horaires pour ce jour
-            if (count($seancesDuJour['seances']) > 0 && $seancesDuJour['seances'][0]['matiere'] != null) {
-                // Récupère les horaires pour ce jour
-                foreach ($seancesDuJour['seances'] as $seance) {
-                    for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
-                        if ($seance['matiere'] != null) {
-                            $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));
-                            Horaire::create([
-                                'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
-                                'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
-                            ])->seances()->create([
-                                'statut' => false,
-                                'niveau_matiere_id' => DB::table('niveau_matieres')
-                                    ->where('niveau_id', $request->niveau)
-                                    ->where('matiere_id', $seance['matiere'])
-                                    ->first()->id,
-                                'emploi_id' => $emploi->id,
-                                'date_seance' => $dateSeance->format('Y-m-d'),
-                                'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
-                                'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
-                            ]);
+        try {
+            $emploi = Emploi::create([
+                'date_debut' => $request->date[0],
+                'date_fin' => $request->date[1],
+                'classe_annee_id' => $classeAnnee->id
+            ]);
+            foreach ($occurrences as $jour => $seancesDuJour) {
+                // Vérifie s'il y a des horaires pour ce jour
+                if (count($seancesDuJour['seances']) > 0 && $seancesDuJour['seances'][0]['matiere'] != null) {
+                    // Récupère les horaires pour ce jour
+                    foreach ($seancesDuJour['seances'] as $seance) {
+                        for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
+                            if ($seance['matiere'] != null) {
+                                $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));
+                                Horaire::create([
+                                    'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
+                                    'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
+                                ])->seances()->create([
+                                    'statut' => false,
+                                    'niveau_matiere_id' => DB::table('niveau_matieres')
+                                        ->where('niveau_id', $request->niveau)
+                                        ->where('matiere_id', $seance['matiere'])
+                                        ->first()->id,
+                                    'emploi_id' => $emploi->id,
+                                    'date_seance' => $dateSeance->format('Y-m-d'),
+                                    'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
+                                    'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
+                                ]);
+                            }
                         }
                     }
                 }
             }
+        }catch (\Exception $exception) {
+            DB::rollBack();
+            return redirect()->back()->with('message', [
+                'type' => 'error',
+                'text' => $exception->getMessage(),
+            ]);
         }
+        DB::commit();
+        return redirect()->route('emplois.index', $request->section_id)->with('message', [
+            'type' => 'success',
+            'text' => "Emploi ajouter avec success !",
+        ]);
         // die();
     }
 

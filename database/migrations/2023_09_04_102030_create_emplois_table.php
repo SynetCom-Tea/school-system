@@ -27,7 +27,7 @@ return new class extends Migration
         });
 
         DB::statement("ALTER TABLE emplois ADD COLUMN tranche_date varchar(255)
-            GENERATED ALWAYS AS (CONCAT(date_debut,'-',date_fin));");
+            GENERATED ALWAYS AS (CONCAT(date_debut,'/',date_fin));");
 
         DB::statement("ALTER TABLE emplois ADD COLUMN nom_classe varchar(255);");
 
