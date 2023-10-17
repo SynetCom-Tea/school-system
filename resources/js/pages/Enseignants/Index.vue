@@ -214,6 +214,43 @@ export default {
       this.dialog = false;
     },
   },
+
+  computed: {
+        itemsmatieres() {
+
+      let list = [];
+
+      if (this.matieres) {
+        this.matieres.forEach((element) => {
+          if (element) {
+            element.forEach((element2) => {
+                if(element2){
+                    // console.log('element',element2);
+                    list.push({
+                    ...element2,
+                        matiere: element2.code,
+                    });
+                }
+            })
+
+          }
+        });
+      }
+      return list ?? [];
+    },
+        Title() {
+        switch (this.section_id) {
+            case "1":
+            return "SECTION PRIMAIRE";
+            case "2":
+            return "SECTION SECONDAIRE";
+            case "3":
+            return "SECTION SUPERIEUR";
+            default:
+            return "SECTION UNIVERSITAIRE";
+        }
+        },
+    },
 };
 </script>
 <template>
@@ -337,12 +374,12 @@ export default {
                         v-model="form.matieres"
                         isRequired
                         itemValue="id"
-                        itemTitle="code"
+                        itemTitle="matiere"
                         placeholder="Matières"
                         label="Matières"
                         multiple
                         chips
-                        :items="matieres"
+                        :items="itemsmatieres"
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         >
                     </Autocomplete>

@@ -170,7 +170,7 @@ class UserController extends Controller
                 ->with('etablissement')->get();
         }
 
-        return Inertia::render('User/Index', [
+        return Inertia::render('user/Index', [
             'users' => $vUsers ?? [],
             'sectionID' => $request->section_id ?? null
         ]);
@@ -182,7 +182,7 @@ class UserController extends Controller
     public function create()
     {
         $user = Auth::user();
-        return Inertia::render('User/Create', [
+        return Inertia::render('user/Create', [
             'etablissements' => Etablissement::all(),
             'roles' => Role::all(),
             'sections' => Section::all(),

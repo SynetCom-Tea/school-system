@@ -70,8 +70,8 @@
             @click="goto('enseignants.index',type)"
           >
             <v-img
-              style="object-fit: fill; width: 210px; height: 70px"
-              :src="'/assets/enseignant.jpg'"
+              style="object-fit: fill; width: 210px; height: 80px"
+              :src="'/assets/enseignant.png'"
               class="text-white"
             >
             </v-img>

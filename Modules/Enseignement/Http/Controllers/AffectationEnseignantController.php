@@ -41,21 +41,58 @@ class AffectationEnseignantController extends Controller
         })->get();
 
         // dd($classes);
-        $enseignement_annee=EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
+        $enseignement_annees=EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
             $classe->where('etablissement_section_id',$table->id);
         })->with('niveau_matiere.matiere','classe_annee.classe','classe_annee.annee','enseignant')->get();
 
-        // dd( $enseignement_annee);
         $niveauMat = NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
 
             $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
 
             $query->where('section_id',$type);})->get();
+        $list = [];
+        $list1 = [];
+        $tabs=[];
+        // dd($list_classes);
+        foreach($enseignants as $enseignant){
+            foreach($enseignement_annees as $enseignement_annee){
+                // $i = 0;
+                if($enseignant->id == $enseignement_annee->enseignant->id){
+
+                    $list[] = [
+                        'id' => $enseignement_annee,
+                        'matiere' => $enseignement_annee->niveau_matiere->matiere,
+                        'classe' => $enseignement_annee->classe_annee->classe,
+                    ];
+                }
+            }
+            $list1[$enseignant->id] = $list;
+            $list = [];
+        }
+        foreach($enseignants as $key => $enseignant){
+            foreach($enseignement_annees as $enseignement_annee){
+                if($enseignant->id == $enseignement_annee->enseignant->id){
+                    $tabs[$key] = [
+                        'enseignant'=>$enseignement_annee->enseignant,
+                        'list' => $list1[$enseignant->id],
+                        'annee'=>$enseignement_annee->classe_annee->annee->libelle,
+                    ];
+                }
+            }
+        }
+        // dd($tabs);
+
+        //    dump($enseignement_annee);
+
+        // dd($all);
+        // die();
+        // dd( $enseignement_annee);
+
         return Inertia::render('AffectationEnseignants/Index', [
             'niveauMatieres' => $niveauMat,
             'enseignants' => $enseignants,
             'classes'=>$classes,
-            'enseignements'=>$enseignement_annee,
+            'enseignements'=>$tabs,
             'section_id' => $type,
         ]);
     }
@@ -156,6 +193,7 @@ class AffectationEnseignantController extends Controller
      */
     public function edit($id)
     {
+        dd($id);
         return view('enseignement::edit');
     }
 
