@@ -15,7 +15,7 @@
         Route::resource('inscriptions', \Modules\Scolarite\Http\Controllers\InscriptionController::class);
         Route::get('/inscription/page/',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'addPage'])->name('inscriptionPage'); 
         Route::get('/inscription/checkClasse/{niveau}/{etabSection}',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'checkClasse'])->name('getcheckClasse'); 
-        Route::get('/inscription/getFrais/{niveau}',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'getFrais'])->name('getfrais'); 
+        Route::get('/inscription/getFrais/{niveau}/{annee}',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'getFrais'])->name('getfrais'); 
           
     });
 

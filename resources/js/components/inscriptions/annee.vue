@@ -266,6 +266,7 @@ export default {
         .get(
           route("getfrais", {
             niveau: this.form.niveau,
+            annee: this.form.annee
           })
         )
         .then((res) => {

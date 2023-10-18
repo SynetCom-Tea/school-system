@@ -59,17 +59,18 @@ class UserController extends Controller
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
         $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
        
-        if($section == '1' || $section == '2'){
-            $p = null;
-        }elseif($section == '3' || $section == '4'){
-           $p = '<>,null';
-        }
-        // dd($p);
-       
         if ($nameRole == 'Administrateur') {
-            $list = Inscription::where('cycle_filiere_id',$p)->where('annee_id',$year)->whereHas('apprenant', function ($query) use ($authUser) {
+            $list = Inscription::where(function ($query) use ($section) {
+                if($section == '1' || $section == '2'){
+                    // Si $p est nul, n'ajoutez aucune condition supplémentaire.
+                    return $query->where('cycle_filiere_id',null);
+                } elseif($section == '3' || $section == '4') {
+                    // Si $p n'est pas nul, ajoutez vos conditions à la requête.
+                    return $query->where('cycle_filiere_id','<>',null);
+                }
+            })->where('annee_id', $year)->whereHas('apprenant', function ($query) use ($authUser) {
                 $query->where('etablissement_id', (int)$authUser->etablissement_id);
-            })->with('apprenant','apprenant.etablissement','cycleFiliere.cycle','cycleFiliere.filiere','niveau','annee')->get();
+            })->with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')->get();
             // dd($list);
             if($section == '1' || $section == '2'){
                 $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first();
@@ -92,8 +93,7 @@ class UserController extends Controller
                         });
                     })
                     ->get();
-
-                    dd($apprenantsCABySection,$list);
+                    // dd($apprenantsCABySection,$list);
                 $list->map(function ($element) use ($apprenantsCABySection, $collection) {
                     $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
                         return $el['apprenant_id'] == $element['apprenant_id'];
@@ -105,7 +105,7 @@ class UserController extends Controller
         if($section == '1' || $section == '2'){
             $flattened = $collection->flatten()->unique()->filter();
             $flattened->all();
-            dd($flattened);
+            // dd($flattened);
             return $flattened ?? [];
         }elseif($section == '3' || $section == '4'){
             return $list ?? []; 

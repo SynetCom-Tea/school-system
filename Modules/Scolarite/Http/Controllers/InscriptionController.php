@@ -78,11 +78,11 @@ class InscriptionController extends Controller
     }
 
     // requete AXIOS pour verifier voir si ya au moins une classe pour ce niveau
-    public function getFrais($niveau)
+    public function getFrais($niveau,$annee)
     {
         // dd($niveau);
         $frais_scolarite = 0;
-        $frais = Frais::where('type_frais_id',2)->where('annee_id',2)->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau)->first();
+        $frais = Frais::where('type_frais_id',2)->where('annee_id',$annee)->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau)->first();
         if($frais){
             $frais_scolarite = $frais->montant;
         }

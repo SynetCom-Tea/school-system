@@ -610,20 +610,17 @@ export default {
               lieu_naissance: element.apprenant?.lieu_naissance,
               telephone: element.apprenant?.telephone,
               classe_code: element.classe_annee?.classe?.code,
-              cycle_niveau: element.cycle_filiere.cycle.name + ' / ' + element.niveau.libelle,
-              filiere: element.cycle_filiere.filiere.name,
-              annee: element.annee.libelle,
+              cycle_niveau: element.cycle_filiere?.cycle?.name + ' / ' + element.niveau?.libelle,
+              filiere: element.cycle_filiere?.filiere?.name,
+              annee: element.annee?.libelle,
               more: {
                 apprenant: element.apprenant,
                 classeAnnee: element.classe_annee,
-                // cycle: element.cycleFiliere?.cycle,
-                // filiere: element.cycleFiliere?.filiere
               },
             });
           }
         });
       }
-
       return columns ?? [];
     },
     // functionOnClickAddButton() {

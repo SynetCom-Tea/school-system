@@ -73,7 +73,7 @@ export default {
       <Toolbar
         styleToolbar="background-color: white;"
         :icon="icons.mdiTimerStarOutline"
-        toolbarTitle="Liste des menus Secondaire"
+        toolbarTitle="Liste des menus Supérieur"
       ></Toolbar>
       <div style="margin: 10px">
         <h2 class="text-color-secondary">Gestion Supérieur</h2>
