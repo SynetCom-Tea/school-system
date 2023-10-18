@@ -82,6 +82,12 @@ class NoteController extends Controller
             $query->where('classe_id',$request->classe); 
         })->with('apprenant')->get() : collect();
         // dd($eleves);
+        $else =  ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request,$annee) { 
+            $query->where('classe_id',16); 
+        })->whereHas('apprenant.notes',function ($app){
+            $app->where('apprenant_id',);
+        })->with('apprenant')->get() ;
+        // dd($else);
         $customizingEleves = $eleves->map(
             function ($value) {
                 return [

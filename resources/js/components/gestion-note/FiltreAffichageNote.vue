@@ -5,7 +5,7 @@
         <Autocomplete v-model="selectedClasse" :items="classes" item-title="classe_annee.classe.libelle" item-value="classe_annee.classe.id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
     </v-col>
     <v-col md="4" v-if="$page.props.evaluations != null">
-        <Autocomplete v-model="selectedEvaluation" :items="$page.props.evaluations ? $page.props.evaluations : null" :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
+        <Autocomplete v-model="selectedEvaluation"  :items="$page.props.evaluations ? $page.props.evaluations : null" :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
     </v-col>
     <v-col md="3" >
         <Button  color="secondary" variant="outlined" class="mb-3" @click="rechercher()"  nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
@@ -40,7 +40,6 @@ export default {
             selectedTypeExamen: null,
             selectedEvaluation: null,
             selectedMatiere: null,
-
             form: useForm({
                 classe: "",
                 prenom: "",

@@ -45,7 +45,7 @@ class RoleSeeder extends Seeder
                 ]);
 
                 $role_admin = Role::firstOrcreate(['name' => 'Administrateur']);
-                $admin->givePermissionTo(Permission::where('name', 'manage_school')->get());
+                $admin->givePermissionTo(Permission::where('name', '<>','manage_system')->get());
                 $admin->assignRole($role_admin);
                 /****************************************  2 éléves au collège et 2 au lycée ******************************************************/
 
