@@ -8,6 +8,7 @@ use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\NiveauMatiere;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\Enseignement\Entities\FiliereNiveauMatiereUe;
 
 class EnseignementAnnee extends Model
 {
@@ -28,6 +29,10 @@ class EnseignementAnnee extends Model
     public function niveau_matiere(): BelongsTo
     {
         return $this->belongsTo(NiveauMatiere::class);
+    }
+    public function filiere_niveau_matiere_ue(): BelongsTo
+    {
+        return $this->belongsTo(FiliereNiveauMatiereUe::class);
     }
     public function enseignant(): BelongsTo
     {

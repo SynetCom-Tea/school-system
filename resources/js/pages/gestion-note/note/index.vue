@@ -83,6 +83,37 @@ export default {
         closeEdit() {
             this.dialogEdit = false
         },
+        deleteItem(item){
+            this.$swal({
+                title: 'Etes-vous sûr de vouloir supprimer cette note',
+                text: "Vous ne pourrez pas revenir en arrière!!!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'orange',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, supprimez-le!',
+                cancelButtonText: 'Non, annulez!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.form.delete(route('note.destroy', item.id), {
+                        onFinish: () => {
+                        if (this.$page.props.flash ?.message ?.type == 'success') {
+                                this.$swal({
+                                    icon: 'success',
+                                    title: 'Suppression',
+                                    text: this.$page.props.flash ?.message ?.text,
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    timerProgressBar: true,
+                                });
+                            }
+                        },
+                    });
+                }
+            });
+        },
         update() {
             if (this.form.note <= 20) {
                 this.form.put(route("note.update", this.form.id_note), {
@@ -186,7 +217,7 @@ export default {
             </template>
             <template v-slot:item.action="{ item}">
                 <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item.raw)"></v-icon>
-                <v-icon color="red" :icon="icon.mdiDelete" @click="detelete(item.raw)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item.raw)"></v-icon>
             </template>
         </Datatable>
     </v-card>

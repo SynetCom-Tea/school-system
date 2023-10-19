@@ -29,7 +29,7 @@ class ClasseAnnee extends Model
         return $this->belongsTo(Annee::class);
     }
 
-    public function enseignementtAnnees(): HasMany
+    public function enseignement_annees(): HasMany
     {
         return $this->hasMany(EnseignementAnnee::class);
     }

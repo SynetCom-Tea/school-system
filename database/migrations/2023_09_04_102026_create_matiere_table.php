@@ -55,6 +55,8 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Ue::class)
                 ->nullable()->index()
                 ->references('id')->on('ues');
+            $table->softDeletes();
+            $table->timestamps();
         });
 
         Schema::create('niveau_matieres', function (Blueprint $table) {

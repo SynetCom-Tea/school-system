@@ -42,9 +42,9 @@ class Apprenant extends Model
         return $this->hasMany(Absence::class);
     }
 
-    public function classeAnnees(): BelongsToMany
+    public function apprenant_classe_annees(): HasMany
     {
-        return $this->belongsToMany(ClasseAnnee::class);
+        return $this->hasMany(ApprenantClasseAnnee::class);
     }
     public function notes(): HasMany
     {

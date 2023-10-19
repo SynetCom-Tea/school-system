@@ -53,6 +53,22 @@ class MatiereTableSeeder extends Seeder
             'nom' => 'Anglais',
             'etablissement_section_id'=>2
         ]);
+        Matiere::create([
+            'nom' => 'Bases des données',
+            'etablissement_section_id'=>3
+        ]);
+        Matiere::create([
+            'nom' => 'MERISE',
+            'etablissement_section_id'=>3
+        ]);
+        Matiere::create([
+            'nom' => 'Philosophie',
+            'etablissement_section_id'=>4
+        ]);
+        Matiere::create([
+            'nom' => 'Psychologie',
+            'etablissement_section_id'=>4
+        ]);
 
         // $this->call("OthersTableSeeder");
     }

@@ -28,6 +28,7 @@ class EvaluationController extends Controller
     public function index(Request $request,$type)
     {
         $user = Auth::user();
+        $id_a = Annee::max('id');
         $enseigements = DB::select("
             SELECT ea.id,ea.code FROM enseignement_annees ea
             JOIN enseignants en ON en.id = ea.enseignant_id 
@@ -36,8 +37,9 @@ class EvaluationController extends Controller
             JOIN annees a ON a.id = ca.annee_id 
             JOIN etablissement_section es ON es.id = c.etablissement_section_id
             JOIN sections s ON s.id = es.section_id
-            WHERE en.id = :enseignant_id and s.id = :section_id
+            WHERE en.id = :enseignant_id AND s.id = :section_id AND a.id = :annee_id
         ",[
+            'annee_id'=>$id_a,
            'enseignant_id'=>$user->enseignant_id,
            'section_id'=>$type 
         ]);
@@ -101,10 +103,8 @@ class EvaluationController extends Controller
             JOIN classes c ON c.id = ca.classe_id
             JOIN etablissement_section es ON es.id = c.etablissement_section_id
             JOIN sections s ON s.id = es.section_id
-            JOIN niveau_matieres nm ON nm.id = ea.niveau_matiere_id
-            JOIN niveaux n ON n.id = nm.niveau_id
-            JOIN filiere_matiere_ues fmu ON fmu.id = nm.filiere_matiere_ue_id
-            JOIN matieres m ON m.id = nm.matiere_id
+            JOIN filiere_niveau_matiere_ues fnmu ON fnmu.id = ea.filiere_niveau_matiere_ue_id
+            JOIN matieres m ON m.id = fnmu.matiere_id
             JOIN type_evaluations t ON t.id = ev.type_evaluation_id
             JOIN periodes p ON p.id = ev.periode_id
             WHERE e.id = :enseignant_id AND s.id = :section_id
@@ -122,10 +122,8 @@ class EvaluationController extends Controller
         JOIN classes c ON c.id = ca.classe_id
         JOIN etablissement_section es ON es.id = c.etablissement_section_id
         JOIN sections s ON s.id = es.section_id
-        JOIN niveau_matieres nm ON nm.id = ea.niveau_matiere_id
-        JOIN niveaux n ON n.id = nm.niveau_id
-        JOIN filiere_matiere_ues fmu ON fmu.id = nm.filiere_matiere_ue_id
-        JOIN matieres m ON m.id = fmu.matiere_id
+        JOIN filiere_niveau_matiere_ues fnmu ON fnmu.id = ea.filiere_niveau_matiere_ue_id
+        JOIN matieres m ON m.id = fnmu.matiere_id
         JOIN type_evaluations t ON t.id = ev.type_evaluation_id
         JOIN periodes p ON p.id = ev.periode_id
         WHERE e.id = :enseignant_id AND s.id = :section_id
