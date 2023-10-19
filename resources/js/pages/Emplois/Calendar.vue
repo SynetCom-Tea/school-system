@@ -2,7 +2,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import "qalendar/dist/style.css";
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiPlus, mdiTimetable, mdiDelete, mdiPencil } from "@mdi/js";
+import { mdiPlus, mdiTimetable } from "@mdi/js";
 import { Qalendar } from "qalendar";
 export default {
   layout: AuthenticatedLayout,
@@ -12,23 +12,10 @@ export default {
   props: ["emplois", "events", "AllClasses", "niveaux", "emplois", "sectionID"],
   data() {
     return {
-      icons: {
+      icon: {
         mdiPlus,
         mdiTimetable,
-        mdiPencil,
-        mdiDelete
       },
-      headers: [
-        {
-          title: 'Code',
-          align: 'start',
-          sortable: false,
-          key: 'code',
-        },
-        { title: 'Date', align: 'center', key: 'tranche_date' },
-        { title: 'Classe', align: 'center', key: 'nom_classe' },
-        {title: 'Actions', align: 'center', key: 'actions'},
-      ],
       classes: [],
       form: useForm({
         niveau: null,
@@ -37,6 +24,26 @@ export default {
         emploi: null,
         section_id: null
       }),
+      config: {
+        // see configuration section
+        dayBoundaries: {
+          start: 7,
+          end: 15,
+        },
+        defaultMode: "month",
+        style: {
+        colorSchemes: {
+          meetings: {
+            color: '#fff',
+            backgroundColor: '#131313',
+          },
+          sports: {
+            color: '#fff',
+            backgroundColor: '#ff4081',
+          }
+        },
+      },
+      }
     };
   },
   methods: {
@@ -58,22 +65,23 @@ export default {
         }
       })
     },
-    editItem(){
-
-    },
-    deleteItem(){
-
+    setCalandar(emploi){
+      this.$inertia.replace(this.$page.url, {
+        data: {
+          emploi: emploi,
+        }
+      })
     }
   },
   mounted(){
+    console.log(this.events)
     this.form.section_id = this.sectionID
-    console.log(this.emplois)
   }
 };
 </script>
 <template>
   <v-card>
-    <Toolbar :icon="icons.mdiTimetable" toolbarTitle="Gestion des Emplois"></Toolbar>
+    <Toolbar :icon="icon.mdiTimetable" toolbarTitle="Calendrier"></Toolbar>
     <v-card-text>
       <v-toolbar flat color="white">
         <v-toolbar-title
@@ -111,18 +119,39 @@ export default {
             item-value="id"
           ></autocomplete>
         </v-col>
+        <v-col md="4">
+          <autocomplete
+            label="Emploi"
+            v-model="form.emploi"
+            :items="emplois"
+            :disabled="!form.classe"
+            @update:modelValue="setCalandar(form.emploi)"
+            class="mt-4"
+            item-title="tranche_date"
+            item-value="id"
+          ></autocomplete>
+        </v-col>
         </v-row>
         </v-toolbar-title>
       </v-toolbar>
       <v-card>
-        <Datatable titleDatatable="Liste des emplois" :headers="headers" :items="emplois" :functionOnClickAddButton="goTo" >   
-            <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
-                </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
-                </v-icon>
-            </template>
-        </Datatable>
+        <Qalendar
+          :selected-date="new Date()"
+          :events="events"
+          :config="config"
+        >
+          <template #weekDayEvent="eventProps">
+            <div :style="{ backgroundColor: 'cornflowerblue', color: '#01579B', width: '100%', height: '100%', overflow: 'hidden' }">
+              <span>{{ timeFormattingFunction(eventProps.eventData.time) }}</span>
+
+              <span>{{ eventProps.eventData.title }}</span>
+            </div>
+          </template>
+
+          <template #monthEvent="monthEventProps">
+            <span>{{ monthEventProps.eventData.title }}</span>
+          </template>
+        </Qalendar>
       </v-card>
     </v-card-text>
   </v-card>

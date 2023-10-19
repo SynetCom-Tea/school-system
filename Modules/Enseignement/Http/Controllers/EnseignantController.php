@@ -2,6 +2,7 @@
 
 namespace Modules\Enseignement\Http\Controllers;
 
+use App\Models\EtablissementSection;
 use App\Models\PermissionRole;
 use App\Models\Role;
 use App\Models\User;
@@ -35,9 +36,16 @@ class EnseignantController extends Controller
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
         // View::share('type',$type);
         // dd($enseignants[0]['matricule']);
+        $matiere=[];
+        $etablissement_section_id= DB::table('etablissement_section')->where('etablissement_id', $ets_id)->get();
+        foreach($etablissement_section_id as $etablissement_section){
+            $matiere[]=Matiere::where('etablissement_section_id' ,$etablissement_section->id)->get();
+        }
+        // dd($matiere);
         return Inertia::render('Enseignants/Index', [
             'enseignants' => $enseignants,
-            'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+            'matieres'=>$matiere,
+
         ]);
 
     }

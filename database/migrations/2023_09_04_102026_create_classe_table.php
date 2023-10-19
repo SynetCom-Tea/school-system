@@ -21,6 +21,9 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
                 ->index()
                 ->references('id')->on('niveauX');
+            $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)->nullable()
+                ->nullable()->index()
+                ->references('id')->on('cycle_filieres');
             $table->timestamps();
             $table->softDeletes();
         });

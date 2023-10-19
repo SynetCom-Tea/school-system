@@ -63,9 +63,8 @@
                         key: 'enseignant.matricule',
                     },
                     { title: 'Nom et Prénom', align: 'center', key: 'enseignant.NomComplet' },
-                    { title: 'Matières', align: 'center', key: 'niveau_matiere.matiere.nom' },
-                    { title: 'Classes', align: 'center', key: 'classe_annee.classe.libelle' },
-                    { title: 'Année scolaire', align: 'center', key: 'classe_annee.annee.libelle' },
+                    { title: 'Matières/Classes', align: 'center', key: 'list' },
+                    { title: 'Année scolaire', align: 'center', key: 'annee' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
                 dialog_title: 'Affectation des enseignants',
@@ -73,8 +72,8 @@
 
                 form: useForm({
                     id:null,
-                    niveau_matiere:null,
-                    classe: null,
+                    matiere:null,
+                    classe: [],
                     enseignant: null,
 
                 }),
@@ -91,13 +90,14 @@
                 router.get(route('affectationEnseignants.create', this.section_id));
             },
             editItem(item){
-                // console.log('edit',item)
-                this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.enseignant.NomComplet
-                this.form.id = item.id
-                this.form.niveau_matiere = item.niveau_matiere.matiere.nom
-                this.form.classe = item.classe_annee.classe.libelle
-                this.form.enseignant= item.enseignant.NomComplet
-                this.dialog = true
+                router.get(route('AffectationEnseignants.edit',item.id ));
+                // console.log('edit',item.list.map((el) => el.matiere.nom))
+                // this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.enseignant.NomComplet
+                // this.form.id = item.id
+                // this.form.niveau_matiere = item.list.map((el) => el.matiere.nom)
+                // this.form.classe = item.list.map((el) => el.classe.libelle)
+                // this.form.enseignant= item.enseignant.NomComplet
+                // this.dialog = true
             },
             deleteItem(item){
                 this.$swal({
@@ -350,7 +350,13 @@
                 </v-dialog>
         <v-card-text>
             <Datatable titleDatatable="Liste des enseignants " :headers="headers" :items="enseignements" :functionOnClickAddButton="create" >
-
+                <template v-slot:item.list="{ item, index}">
+                    <v-chip-group column selected-class="text-purple">
+                        <v-chip v-for="tag in item.columns.list">
+                        {{ tag.matiere.nom }} => {{ tag.classe.libelle }}
+                        </v-chip>
+                    </v-chip-group>
+                </template>
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>

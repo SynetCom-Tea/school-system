@@ -16,7 +16,7 @@ class EnseiggnementAnneeSeeder extends Seeder
         EnseignementAnnee::create([
             'niveau_matiere_id' => 7,
             'enseignant_id' => 1,
-            'classe_annee_id' => 4,
+            'classe_annee_id' => 1,
         ]);
         EnseignementAnnee::create([
             'niveau_matiere_id' => 2,
@@ -36,12 +36,12 @@ class EnseiggnementAnneeSeeder extends Seeder
         EnseignementAnnee::create([
             'niveau_matiere_id' => 9,
             'enseignant_id' => 5,
-            'classe_annee_id' => 4,
+            'classe_annee_id' => 1,
         ]);
         EnseignementAnnee::create([
             'niveau_matiere_id' => 6,
             'enseignant_id' => 6,
-            'classe_annee_id' => 4,
+            'classe_annee_id' => 1,
         ]);
         EnseignementAnnee::create([
             'niveau_matiere_id' => 1,
@@ -51,12 +51,12 @@ class EnseiggnementAnneeSeeder extends Seeder
         EnseignementAnnee::create([
             'niveau_matiere_id' => 8,
             'enseignant_id' => 8,
-            'classe_annee_id' => 4,
+            'classe_annee_id' => 1,
         ]);
         EnseignementAnnee::create([
             'niveau_matiere_id' => 5,
             'enseignant_id' => 9,
-            'classe_annee_id' => 4,
+            'classe_annee_id' => 1,
         ]);
     }
 }

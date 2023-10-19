@@ -32,13 +32,13 @@ class EmploiController extends Controller
     public function index(Request $request)
     {
         // dd('r:', $request->all());
-        $classes = getClasses(Annee::find(2)->id, Auth::user()->etablissement_id, 1);
+        $classes = getClasses(Annee::find(2)->id, getSectionEtablissement($request->section_id, Auth::user()->etablissement_id), $request->section_id);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $events = [];
-        $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id);
-        if ($request->classe) {
-            $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id);
-            $seances = $request->emploi ? Emploi::getEmploiwhitClasse(4, $request->emploi) : Emploi::getEmploiwhitClasse(4, 1);
+        $emplois = [];
+        if ($request->classe != null) {
+            $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id, $request->classe);
+            $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->classe);
             foreach ($seances as $seance) {
                 // Extraire les heures et les minutes de heure_debut et heure_fin
                 $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
@@ -72,44 +72,22 @@ class EmploiController extends Controller
      */
     public function create(Request $request)
     {
-        // dump('r:', $request->all());
-        // dd($request->section_id);
-        $anneeScolaireId = Annee::find(2)->id;
         $etablissement = Etablissement::with('sections')->find(Auth::user()->etablissement_id);
-        // Récupérer les niveaux pour toutes les sections
-        $sectionEtablissement = DB::table('etablissement_section')
-            ->where('etablissement_id', Auth::user()->etablissement_id)
-            ->where('section_id', $request->section_id)
-            ->pluck('id');
-        $classeAnnees = ClasseAnnee::where('annee_id', $anneeScolaireId)->pluck('classe_id');
-        $classes = Classe::whereIn('id', $classeAnnees)->whereIn('etablissement_section_id', $sectionEtablissement)->get();
+        $etablissement_section = getSectionEtablissement($request->section_id, Auth::user()->etablissement_id);
+        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
-        $matieres = Matiere::whereIn('etablissement_section_id', $sectionEtablissement)->get();
-        $niveauMatiere = DB::table('niveau_matieres')
-            ->whereIn('niveau_id', $niveaux->pluck('id'))
-            ->whereIn('matiere_id', $matieres->pluck('id'))
-            ->get();
+        $matieres = getMatieres($etablissement_section);
+        $niveauMatiere = getNiveauxMatieres($matieres->pluck('id'),$niveaux->pluck('id'));
         $salles = Salle::where('etablissement_id', Auth::user()->etablissement_id)->get();
-        // $classes = $request->niveau ? DB::select("
-        //     SELECT * FROM classes c
-        //     JOIN classe_annees AS ca ON c.id = ca.classe_id
-        //     JOIN annee_scolaires a ON a.id = ca.annee_scolaire_id
-        //     JOIN enseignant_annees AS ea ON ca.id = ea.classe_annee_id
-        //     JOIN niveau_matieres AS nm ON nm.id = ea.niveau_matiere_id
-        //     WHERE a.id = :anneeScolaireId AND nm.niveau_id = :niveauId
-        // ", [
-        //     'anneeScolaireId' => $anneeScolaireId,
-        //     'niveauId' => $request->niveau,
-        // ]) : collect();
-        // dd($sections->sections, $niveaux, $classes, $anneeScolaireId);
+        // dd(Section::find($request->section_id));
         return Inertia::render('Emplois/Create', [
             'allSections' => $etablissement->sections,
             'niveaux' => $niveaux,
             'classes' => $classes,
-            'sectionEtablissement' => $sectionEtablissement,
             'salles' => $salles,
             'matieres' => $matieres,
-            'niveauMatiere' => $niveauMatiere
+            'niveauMatiere' => $niveauMatiere,
+            'sectionEnquestion' => Section::find($request->section_id)
         ]);
     }
 
@@ -215,5 +193,45 @@ class EmploiController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+    public function calendar(Request $request)
+    {
+        $etablissement_section = getSectionEtablissement($request->section_id, Auth::user()->etablissement_id);
+        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $niveaux = Niveau::where('section_id', $request->section_id)->get();
+        $events = [];
+        $emplois = [];
+        if ($request->classe != null) {
+            $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id, $request->classe);
+            $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->classe);
+            foreach ($seances as $seance) {
+                // Extraire les heures et les minutes de heure_debut et heure_fin
+                $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
+                $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
+                $event = [
+                    'title' => $seance->nom_matiere,
+                    'with' => $seance->enseignant_nom . ' ' . $seance->enseignant_prenom,
+                    'time' => [
+                        'start' => $seance->date_seance . ' ' . $heureDebut,
+                        'end' => $seance->date_seance . ' ' . $heureFin
+                    ],
+                    'isEditable' => true,
+                    'id' => uniqid(), // Générer un identifiant unique pour l'événement
+                    'colorScheme' => 'meetings',
+                ];
+                $events[] = $event;
+            }
+        }
+        // if($request->emploi != null){
+        //     dd(Emploi::getEmploiwhitClasse($request->classe, $request->emploi));
+        // }
+        return Inertia::render('Emplois/Calendar', [
+            'emplois' => $emplois,
+            'AllClasses' => $classes,
+            'niveaux' => $niveaux,
+            'events' => $events,
+            'sectionID' => $request->section_id
+        ]);
     }
 }

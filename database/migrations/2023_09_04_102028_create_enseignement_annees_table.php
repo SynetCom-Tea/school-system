@@ -5,6 +5,7 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Modules\Enseignement\Entities\Enseignant;
+use Modules\Enseignement\Entities\FiliereNiveauMatiereUe;
 use Modules\Enseignement\Entities\Matiere;
 
 return new class extends Migration
@@ -19,12 +20,15 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Enseignant::class)
                 ->index()
                 ->references('id')->on('enseignants');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\NiveauMatiere::class)
+            $table->foreignIdFor(\Modules\Enseignement\Entities\NiveauMatiere::class)->nullable()
             ->index()
             ->references('id')->on('niveau_matieres');
             $table->foreignIdFor(\App\Models\ClasseAnnee::class)
             ->index()
             ->references('id')->on('classe_annees');
+            $table->foreignIdFor(FiliereNiveauMatiereUe::class)->nullable()
+                ->index()
+                ->references('id')->on('filiere_niveau_matiere_ues');
             $table->timestamps();
             $table->softDeletes();
         });

@@ -40,6 +40,8 @@ return new class extends Migration
                 SET @classe_id = (SELECT classe_id FROM classe_annees WHERE id = NEW.classe_annee_id);
 
                 SET NEW.nom_classe = (SELECT libelle FROM classes WHERE id = @classe_id);
+
+                SET NEW.code = CONCAT(NEW.tranche_date, '/', NEW.nom_classe);
             END
         ");
     }
