@@ -13,7 +13,7 @@
               :items="academicYears"
               v-model="year"
               class="mt-2"
-              itemValue="libelle"
+              itemValue="id"
               itemTitle="libelle"
               isRequired
               label="Année"
@@ -56,6 +56,19 @@
               label="Secondaire"
               @update:modelValue="
                 onChangeModelValueNiveaux('secondaire', secondaire, section, year)
+              "
+            ></Autocomplete>
+
+            <Autocomplete
+              v-if="section == 3"
+              :items="niveauxSuperieur"
+              v-model="superieur"
+              itemValue="id"
+              class="mt-2"
+              itemTitle="libelle"
+              label="Supérieur"
+              @update:modelValue="
+                onChangeModelValueNiveaux('Supérieure', superieur, section, year)
               "
             ></Autocomplete>
           </v-col>
@@ -116,7 +129,18 @@
         </template>
 
         <template v-slot:no-data>
-          <span color="primary">Aucune donnée</span>
+          <!-- <span color="primary">Aucune donnée</span> -->
+          <v-row>
+            <v-col></v-col>
+            <v-col>
+              <v-btn
+          @click="addNewInscription(null)"
+          variant="text"
+          >Nouvel inscription?</v-btn>
+            </v-col>
+            <v-col></v-col>
+          </v-row>
+          
         </template>
 
         <template v-slot:default="props">
@@ -137,7 +161,7 @@
                 <v-divider></v-divider>
 
                 <v-list density="compact">
-                  <v-list-item
+                  <v-list-item 
                     v-for="(key, index) in filteredKeys"
                     :key="index"
                     :title="key.title"
@@ -168,13 +192,25 @@
                               Frais</a
                             ></v-col
                           >
-                          <v-col cols="4" @click="onclickTuteurs(item.raw)">
+                          <v-col cols="3" @click="onclickTuteurs(item.raw)">
                             <a
                               style="cursor: pointer"
                               class="text-caption text-decoration-none text-primary"
                               target="_blank"
                             >
                               Tuteurs</a
+                            ></v-col
+                          >
+                        </v-row>
+                        <v-row>
+                          <v-col cols="4"></v-col>
+                          <v-col cols="4" @click="addNewInscription(item.raw)">
+                            <a
+                              style="cursor: pointer"
+                              class="text-caption text-decoration-none text-warning"
+                              target="_blank"
+                            >
+                              Réinscription</a
                             ></v-col
                           >
                         </v-row>
@@ -237,6 +273,7 @@ import { inject, provide, computed } from "vue";
 import {
   getNiveauxPrimaire,
   getNiveauxSecondaire,
+  getNiveauxSuperieur,
   getAcademicYears,
   generateColorsForGraph,
 } from "../../utils/commonFunctions.js";
@@ -295,8 +332,10 @@ export default {
       section: this.vSectionID,
       primaire: null,
       secondaire: null,
+      superieur: null,
       niveauxPrimaire: [],
       niveauxSecondaire: [],
+      niveauxSuperieur: [],
       headers: [
         {
           title: "Matricule",
@@ -307,6 +346,28 @@ export default {
         { title: "Nom & Prénom", align: "center", key: "name" },
         // { title: "Prénom", align: "center", key: "prenom" },
         { title: "Niveau/Classe", align: "center", key: "classe_code" },
+        { title: "Date & Lieu Naissance", align: "center", key: "date_lieu_naissance" },
+        // { title: "Lieu Naissance", align: "center", key: "lieu_naissance" },
+        // { title: "Classe", align: "center", key: "classe_code" },
+
+        {
+          title: "Détails",
+          key: "actions",
+          sortable: false,
+        },
+      ],
+      headers_sup: [
+        {
+          title: "Matricule",
+          align: "start",
+          key: "matricule",
+          sortable: false,
+        },
+        { title: "Nom & Prénom", align: "center", key: "name" },
+        // { title: "Prénom", align: "center", key: "prenom" },
+        { title: "Année", align: "center", key: "annee" },
+        { title: "Cycle/Niveau", align: "center", key: "cycle_niveau" },
+        { title: "Filière", align: "center", key: "filiere" },
         { title: "Date & Lieu Naissance", align: "center", key: "date_lieu_naissance" },
         // { title: "Lieu Naissance", align: "center", key: "lieu_naissance" },
         // { title: "Classe", align: "center", key: "classe_code" },
@@ -389,9 +450,15 @@ export default {
         return Math.ceil(this.subscribers.length / this.itemsPerPage);
     },
     filteredKeys() {
-      return this.headers.filter((key) => {
-        return key && key.title !== "Matricule";
-      });
+      if(this.vSectionID == 1 || this.vSectionID == 2){
+        return this.headers.filter((key) => {
+          return key && key.title !== "Matricule";
+        });
+      }else if(this.vSectionID == 3 || this.vSectionID == 4){
+        return this.headers_sup.filter((key) => {
+          return key && key.title !== "Matricule";
+        });
+      }
     },
     sortBy() {
       return [
@@ -410,12 +477,18 @@ export default {
       return list ?? [];
     },
   },
+  created(){
+  },
   methods: {
     getNiveauxPrimaire,
     getNiveauxSecondaire,
+    getNiveauxSuperieur,
     getAcademicYears,
     generateColorsForGraph,
-
+    addNewInscription(item){
+      // router.post('/scolarite/inscription/page/',{apprenant:item});
+      router.get(route("inscriptionPage", {apprenant: JSON.stringify(item), section: JSON.stringify(this.vSectionID)}))
+    },
     onclickTuteurs(e) {},
     async onclickFrais(e) {
       this.selectedFrais = e;
@@ -437,8 +510,10 @@ export default {
       this.section = null;
       this.primaire = null;
       this.secondaire = null;
+      this.superieur = null;
       this.niveauxPrimaire = [];
       this.niveauxSecondaire = [];
+      this.niveauxSuperieur = [];
     },
     async onChangeModelValueNiveaux(classe, value, section, year) {
       let niveau;
@@ -447,6 +522,9 @@ export default {
       }
       if (classe == "secondaire" && value) {
         niveau = this.niveauxSecondaire.find((el) => el.id == value);
+      }
+      if (classe == "Supérieure" && value) {
+        niveau = this.niveauxSuperieur.find((el) => el.id == value);
       }
       this.dParams = {
         section: classe,
@@ -475,6 +553,10 @@ export default {
         list = await this.getNiveauxSecondaire();
         this.niveauxSecondaire = list;
       }
+      if (this.vSectionID && this.vSectionID == 3) {
+        list = await this.getNiveauxSuperieur();
+        this.niveauxSuperieur = list;
+      }
     },
     async onChangeModelValueSections(e, year) {},
     async getListUsers(params) {
@@ -492,10 +574,12 @@ export default {
             })
           )
           .then((res) => {
+            console.log('response',res.data);
             if (typeof res.data == "string" || typeof res.data == "undefined") {
-              this.$toast.error("Données non valides!");
+              // this.$toast.error("Données non valides!");
             } else {
               return res.data;
+              
             }
           });
       }
@@ -510,7 +594,11 @@ export default {
           if (element) {
             apprenant = element.apprenant;
             classe = element.classe_annee?.classe;
-            niveau = element.classe_annee?.classe?.niveau;
+            if(element.cycle_filiere_id == null){
+              niveau = element.classe_annee?.classe?.niveau;
+            }else{
+              niveau = element.niveau;
+            }
             columns.push({
               matricule: element.apprenant?.matricule,
               name: element.apprenant?.nom + " " + element.apprenant?.prenom,
@@ -522,9 +610,14 @@ export default {
               lieu_naissance: element.apprenant?.lieu_naissance,
               telephone: element.apprenant?.telephone,
               classe_code: element.classe_annee?.classe?.code,
+              cycle_niveau: element.cycle_filiere.cycle.name + ' / ' + element.niveau.libelle,
+              filiere: element.cycle_filiere.filiere.name,
+              annee: element.annee.libelle,
               more: {
                 apprenant: element.apprenant,
                 classeAnnee: element.classe_annee,
+                // cycle: element.cycleFiliere?.cycle,
+                // filiere: element.cycleFiliere?.filiere
               },
             });
           }
@@ -533,9 +626,9 @@ export default {
 
       return columns ?? [];
     },
-    functionOnClickAddButton() {
-      router.get(route("inscriptions.create"));
-    },
+    // functionOnClickAddButton() {
+    //   router.get(route("inscriptions.create"));
+    // },
     submitNewLine() {},
     editItem(item) {
       this.editedObject = Object.assign({}, item);

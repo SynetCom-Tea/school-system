@@ -201,6 +201,43 @@ MenuGestion = {
 
     let listMenusSections = []
     let iconSection;
+    let childrenBySection = [
+      {
+                icon: mdiSquareMedium,
+                title: "Liste utilisateurs",
+                link: "/users",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Rôles",
+                link: "/enseignement/roles",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Permissions",
+                link: "/enseignement/permissions",
+                permissions: "manage_system",
+            },
+        {
+            title: "Inscription",
+            icon: mdiAccountSchool,
+            link: "/scolarite/inscriptions",
+            permissions: "manage_system"},
+     {
+                icon: mdiSquareMedium,
+                title: "Emploi",
+                link: "/emploi/emplois",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Calendrier",
+                link: "/emploi/emplois/create",
+                permissions: "manage_system",
+            },
+]
     if (pageSections) {
         pageSections.forEach((element, index) => {
             if (element) {

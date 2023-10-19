@@ -34,14 +34,14 @@ class FiliereNiveauUeMatiereSeeder extends Seeder
             'volume_horaire' => 30,
             'coefficient'=>3,
             'matiere_id'=>12,
-            'niveau_id'=>26,
+            'niveau_id'=>25,
             'cycle_filiere_id'=>3
         ]);
         FiliereNiveauMatiereUe::create([
             'volume_horaire' => 40,
             'coefficient'=>4,
             'matiere_id'=>13,
-            'niveau_id'=>27,
+            'niveau_id'=>26,
             'cycle_filiere_id'=>1
         ]);
     }

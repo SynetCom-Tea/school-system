@@ -24,10 +24,9 @@ return new class extends Migration
                 ->references('id')->on('type_frais')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
-            /* $table->foreignIdFor(\Modules\Scolarite\Entities\Filiere::class)
-                ->references('id')->on('filieres')->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('restrict'); */
+            $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)->nullable()
+                ->index()
+                ->references('id')->on('cycle_filieres');
             $table->foreignIdFor(Annee::class)
                 ->references('id')->on('annees')->constrained()
                 ->onUpdate('cascade')

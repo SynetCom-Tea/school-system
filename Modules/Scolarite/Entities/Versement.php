@@ -12,11 +12,11 @@ class Versement extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['libelle', 'date_versement', 'montant', 'apprenant_id', 'frais_id'];
+    protected $fillable = ['libelle', 'date_versement', 'montant', 'inscription_id', 'frais_id'];
 
-    public function apprenant(): BelongsTo
+    public function inscription(): BelongsTo
     {
-        return $this->belongsTo(Apprenant::class);
+        return $this->belongsTo(Inscription::class);
     }
 
     public function frais(): BelongsTo

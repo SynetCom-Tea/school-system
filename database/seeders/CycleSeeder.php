@@ -14,9 +14,20 @@ class CycleSeeder extends Seeder
      */
     public function run(): void
     {
-        Model::unguard();
-        Cycle::create(['name' => 'Premier cycle']);
-        Cycle::create(['name' => 'Deuxième cycle']);
-        Cycle::create(['name' => 'Troisième cycle']);
+        Cycle::create([
+            'name' => 'Cycle Moyen',
+        ]);
+        Cycle::create([
+            'name' => '1er cycle',
+        ]);
+        Cycle::create([
+            'name' => '2e cycle',
+        ]);
+        Cycle::create([
+            'name' => '3e cycle',
+        ]);
+        Cycle::create([
+            'name' => '4e cycle',
+        ]);
     }
 }

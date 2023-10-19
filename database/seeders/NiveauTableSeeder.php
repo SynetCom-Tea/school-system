@@ -104,59 +104,59 @@ class NiveauTableSeeder extends Seeder
             'libelle' => 'Terminale D',
             'section_id' => 2,
         ]);
+        // Niveau::create([
+        //     'code' => '1A M',
+        //     'libelle' => 'Premiere Année Moyen',
+        //     'section_id' => 3,
+        // ]);
+        // Niveau::create([
+        //     'code' => '2A M',
+        //     'libelle' => 'Deuxieme Année Moyen',
+        //     'section_id' => 3,
+        // ]);
+        // Niveau::create([
+        //     'code' => '3A M',
+        //     'libelle' => 'Troisieme Année Moyen',
+        //     'section_id' => 3,
+        // ]);
         Niveau::create([
-            'code' => '1A M',
-            'libelle' => 'Premiere Année Moyen',
-            'section_id' => 3,
-        ]);
-        Niveau::create([
-            'code' => '2A M',
-            'libelle' => 'Deuxieme Année Moyen',
-            'section_id' => 3,
-        ]);
-        Niveau::create([
-            'code' => '3A M',
-            'libelle' => 'Troisieme Année Moyen',
-            'section_id' => 3,
-        ]);
-        Niveau::create([
-            'code' => '1A S',
+            'code' => '1ère année',
             'libelle' => 'Prémiere Année',
             'section_id' => 3,
         ]);
         Niveau::create([
-            'code' => '2A S',
+            'code' => '2e année',
             'libelle' => 'Deuxieme Année',
             'section_id' => 3,
         ]);
         Niveau::create([
-            'code' => '3A S',
+            'code' => '3e année',
             'libelle' => 'Troisieme Année',
             'section_id' => 3,
         ]);
         Niveau::create([
-            'code' => '4A S',
+            'code' => '4e année',
             'libelle' => 'Quatrieme Année',
             'section_id' => 3,
         ]);
 
         Niveau::create([
-            'code' => '1A',
+            'code' => '1ère année',
             'libelle' => 'Prémiere Année',
             'section_id' => 4,
         ]);
         Niveau::create([
-            'code' => '2A ',
+            'code' => '2e année',
             'libelle' => 'Deuxieme Année',
             'section_id' => 4,
         ]);
         Niveau::create([
-            'code' => '3A ',
+            'code' => '3e année',
             'libelle' => 'Troisieme Année',
             'section_id' => 4,
         ]);
         Niveau::create([
-            'code' => '4A ',
+            'code' => '4e année',
             'libelle' => 'Quatrieme Année',
             'section_id' => 4,
         ]);

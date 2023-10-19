@@ -52,52 +52,64 @@ class UserController extends Controller
     public function getInscriptionsByYearAndSection($year, $section, $niveau)
     {
 
-
+        // dd($year);
         $list = [];
         $authUser =  Auth::user();
         $collection = collect();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
         $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
-
+       
+        if($section == '1' || $section == '2'){
+            $p = null;
+        }elseif($section == '3' || $section == '4'){
+           $p = '<>,null';
+        }
+        // dd($p);
+       
         if ($nameRole == 'Administrateur') {
-
-            $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
+            $list = Inscription::where('cycle_filiere_id',$p)->where('annee_id',$year)->whereHas('apprenant', function ($query) use ($authUser) {
                 $query->where('etablissement_id', (int)$authUser->etablissement_id);
-            })->with('apprenant', 'apprenant.etablissement', 'apprenant.etablissement')->get();
+            })->with('apprenant','apprenant.etablissement','cycleFiliere.cycle','cycleFiliere.filiere','niveau','annee')->get();
+            // dd($list);
+            if($section == '1' || $section == '2'){
+                $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first();
 
-            $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first();
-
-            $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
-                ->whereHas('classe_annee', function ($query) use ($year, $niveau, $findNiveau, $findEtabSection) {
-                    $query->whereHas('annee', function ($query) use ($year) {
-                        $query->where('libelle', $year);
-                    })->whereHas('classe', function ($query) use ($niveau, $findNiveau, $findEtabSection) {
-                        if ($findNiveau->count() != 0) {
-                            return $query->where('niveau_id', $niveau)->where(
+                $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
+                    ->whereHas('classe_annee', function ($query) use ($year, $niveau, $findNiveau, $findEtabSection) {
+                        $query->whereHas('annee', function ($query) use ($year) {
+                            $query->where('id', $year);
+                        })->whereHas('classe', function ($query) use ($niveau, $findNiveau, $findEtabSection) {
+                            if ($findNiveau->count() != 0) {
+                                return $query->where('niveau_id', $niveau)->where(
+                                    'etablissement_section_id',
+                                    $findEtabSection->id
+                                );
+                            }
+                            return $query->where(
                                 'etablissement_section_id',
                                 $findEtabSection->id
                             );
-                        }
-                        return $query->where(
-                            'etablissement_section_id',
-                            $findEtabSection->id
-                        );
+                        });
+                    })
+                    ->get();
+
+                    dd($apprenantsCABySection,$list);
+                $list->map(function ($element) use ($apprenantsCABySection, $collection) {
+                    $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
+                        return $el['apprenant_id'] == $element['apprenant_id'];
                     });
-                })
-                ->get();
-
-
-            $list->map(function ($element) use ($apprenantsCABySection, $collection) {
-                $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
-                    return $el['apprenant_id'] == $element['apprenant_id'];
+                    return $collection->push($vTerre->filter()->all());
                 });
-                return $collection->push($vTerre->filter()->all());
-            });
+            }
         }
-
-        $flattened = $collection->flatten()->unique()->filter();
-        $flattened->all();
-        return $flattened ?? [];
+        if($section == '1' || $section == '2'){
+            $flattened = $collection->flatten()->unique()->filter();
+            $flattened->all();
+            dd($flattened);
+            return $flattened ?? [];
+        }elseif($section == '3' || $section == '4'){
+            return $list ?? []; 
+        }
     }
     public function getUsersByCategory($params)
     {
@@ -121,6 +133,11 @@ class UserController extends Controller
 
                 $list = Niveau::where('section_id', 2)->get();
             }
+            if ($params == "superieurClasses") {
+
+                $list = Niveau::where('section_id', 3)->get();
+            }
+            
             if ($params == "organizationStudents") {
                 $list = Inscription::whereHas('apprenant', function ($query) use ($authUser) {
                     $query->where('etablissement_id', (int)$authUser->etablissement_id);
@@ -256,7 +273,7 @@ class UserController extends Controller
 
             return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
         } else {
-            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoille rouge!');
+            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoile rouge!');
 
             return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
         }

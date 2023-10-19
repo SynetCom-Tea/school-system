@@ -266,7 +266,10 @@ class EnseignementController extends Controller
                 }
             }
         }
-        return redirect()->route('admin.config', $request->section);
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => 'Effectuer avec succes',
+        ]);
     }
 
     /**

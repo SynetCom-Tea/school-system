@@ -341,46 +341,46 @@ class RoleSeeder extends Seeder
 
 
                 /****************************************  6 Inscriptions ******************************************************/
-                \DB::table('inscriptions')->insert(array(
-                        0 =>
-                        array(
-                                'id' => 1,
-                                'apprenant_id' => 1,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        1 =>
-                        array(
-                                'id' => 2,
-                                'apprenant_id' => 2,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        2 =>
-                        array(
-                                'id' => 3,
-                                'apprenant_id' => 3,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        3 =>
-                        array(
-                                'id' => 4,
-                                'apprenant_id' => 4,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        4 =>
-                        array(
-                                'id' => 5,
-                                'apprenant_id' => 5,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
+                // \DB::table('inscriptions')->insert(array(
+                //         0 =>
+                //         array(
+                //                 'id' => 1,
+                //                 'apprenant_id' => 1,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         1 =>
+                //         array(
+                //                 'id' => 2,
+                //                 'apprenant_id' => 2,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         2 =>
+                //         array(
+                //                 'id' => 3,
+                //                 'apprenant_id' => 3,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         3 =>
+                //         array(
+                //                 'id' => 4,
+                //                 'apprenant_id' => 4,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         4 =>
+                //         array(
+                //                 'id' => 5,
+                //                 'apprenant_id' => 5,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
 
-                        5 =>
-                        array(
-                                'id' => 6,
-                                'apprenant_id' => 6,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
+                //         5 =>
+                //         array(
+                //                 'id' => 6,
+                //                 'apprenant_id' => 6,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
 
-                ));
+                // ));
 
 
                 /**************************************** Fin inscriptions ******************************************************/

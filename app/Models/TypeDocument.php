@@ -6,12 +6,14 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Programme extends Model
+class TypeDocument extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = [
-        'annee_id',
-        'etablissement_section_id'
-    ];
+    protected $fillable = ['code','libelle','section_id'];
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
 }

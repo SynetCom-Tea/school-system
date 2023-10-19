@@ -11,6 +11,9 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
 Route::prefix('emploi')->group(function() {
     Route::resource('emplois', \Modules\Emploi\Http\Controllers\EmploiController::class);
-});
+    Route::get('calendar', [\Modules\Emploi\Http\Controllers\EmploiController::class, 'calendar'])->name('calendar.index');
+});;

@@ -20,19 +20,19 @@ class FiliereSeeder extends Seeder
         Filiere::create([
             'name' =>'Analyste Programmeur',
             'code'=>'AP',
-            'etablissement_id'=>1,
+            'etablissement_section_id'=>3,
             'departement_id'=>null
         ]);
         Filiere::create([
             'name' =>'Informatique et Gestion',
             'code'=>'IG',
-            'etablissement_id'=>1,
+            'etablissement_section_id'=>3,
             'departement_id'=>null
         ]);
         Filiere::create([
             'name' =>'Genie Logiciel',
             'code'=>'GL',
-            'etablissement_id'=>1,
+            'etablissement_section_id'=>4,
             'departement_id'=>null
         ]);
         

@@ -18,7 +18,7 @@ class Apprenant extends Model
         'matricule',
         'nom',
         'prenom',
-        'sex',
+        'sexe',
         'date_naissance',
         'lieu_naissance',
         'telephone',

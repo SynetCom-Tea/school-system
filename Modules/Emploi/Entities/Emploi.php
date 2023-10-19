@@ -2,6 +2,9 @@
 
 namespace Modules\Emploi\Entities;
 
+use App\Exceptions\AucuneAnneeScolaire;
+use App\Models\Annee;
+use App\Models\ClasseAnnee;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -29,19 +32,50 @@ class Emploi extends Model
         return $this->hasMany(Seance::class);
     }
 
-    public static function getEmploisBySectionAndEtablissement($sectionId, $etablissementId)
+    public static function getEmploisBySectionAndEtablissement($sectionId, $etablissementId, $classe)
     {
+        $latestAnnee = Annee::find(2); // Récupérer la dernière année
+        if ($latestAnnee) {
+            $classeAnneeId = ClasseAnnee::where('classe_id', $classe)
+                ->where('annee_id', $latestAnnee->id)
+                ->first()->id;
+        } else {
+            // Gérer le cas où aucune année n'a été trouvée
+            throw new AucuneAnneeScolaire('Aucune annee scolaire disponible');
+        }
         return Emploi::join('classe_annees', 'emplois.classe_annee_id', '=', 'classe_annees.id')
             ->join('classes', 'classe_annees.classe_id', '=', 'classes.id')
             ->join('etablissement_section', 'classes.etablissement_section_id', '=', 'etablissement_section.id')
             ->where('etablissement_section.section_id', $sectionId)
             ->where('etablissement_section.etablissement_id', $etablissementId)
+            ->where('emplois.classe_annee_id', $classeAnneeId)
             ->select('emplois.*')
             ->get();
     }
 
-    public static function getEmploiwhitClasse($classeAnneeId, $emploiId)
+    public static function getEmploiwhitClasse($classe, $emploiId = null)
     {
+        $latestAnnee = Annee::find(2); // Récupérer la dernière année
+        if ($latestAnnee) {
+            $classeAnneeId = ClasseAnnee::where('classe_id', $classe)
+                ->where('annee_id', $latestAnnee->id)
+                ->first()->id;
+        } else {
+            // Gérer le cas où aucune année n'a été trouvée
+            throw new AucuneAnneeScolaire('Aucune annee scolaire disponible');
+        }
+        if ($emploiId === null) {
+            $latestEmploi = Emploi::where('classe_annee_id', $classeAnneeId)
+                ->latest()
+                ->first();
+    
+            if (!$latestEmploi) {
+                return [];
+            }
+    
+            $emploiId = $latestEmploi->id;
+        }
+        // dd($classeAnneeId, $emploiId);
         return Seance::join('enseignement_annees', 'seances.niveau_matiere_id', '=', 'enseignement_annees.niveau_matiere_id')
         ->join('enseignants', 'enseignement_annees.enseignant_id', '=', 'enseignants.id')
         ->join('emplois', 'seances.emploi_id', '=', 'emplois.id')

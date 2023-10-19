@@ -16,10 +16,9 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('code');
-
-            $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
-                ->index()
-                ->references('id')->on('etablissements');
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)
+            ->index()
+            ->references('id')->on('etablissement_section');
             $table->foreignIdFor(\Modules\Scolarite\Entities\Departement::class)->nullable()
                 ->index()
                 ->references('id')->on('departements');
