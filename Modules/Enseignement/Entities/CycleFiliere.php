@@ -11,7 +11,7 @@ class CycleFiliere extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    
     
     protected static function newFactory()
     {

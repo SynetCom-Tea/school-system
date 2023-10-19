@@ -9,16 +9,17 @@ import { Head } from "@inertiajs/vue3";
 import Toolbar from "@/components/customizedComponents/Toolbar.vue";
 
 defineProps({
-  mustVerifyEmail: {
-    type: Boolean,
-  },
-  status: {
-    type: String,
-  },
-});
+    mustVerifyEmail: {
+        type: Boolean,
+    },
+    status: {
+        type: String,
+    },
+})
 
-const route = useRoute();
-const activeTab = ref(false);
+const route = useRoute()
+//const activeTab = ref(route.params.tab)
+const activeTab = ref(false)
 
 // tabs
 const tabs = [
@@ -41,7 +42,7 @@ const tabs = [
     <Toolbar
       styleToolbar="background-color: white;"
       :icon="mdiAccount"
-      toolbarTitle="Profil"
+      toolbarTitle="Mon Profil"
     ></Toolbar>
     <div>
       <VTabs v-model="activeTab" show-arrows>

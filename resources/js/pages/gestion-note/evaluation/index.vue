@@ -284,17 +284,17 @@ export default {
     </v-dialog>
     <Datatable v-if="types == 1" titleDatatable="Listes des evaluations (section primaire)" :headers="headers" :items="evaluation_primaires" :functionOnClickAddButton="create">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small" color="warning" v-if="$page.props.permissions[2] == 'evaluation.update'" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            <v-icon size="small" color="warning"  title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error" v-if="$page.props.permissions[3] == 'evaluation.delete'" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>
     <Datatable v-if="types == 2" titleDatatable="Listes des evaluations section secondaire " :headers="headers" :items="evaluation_secondaires" :functionOnClickAddButton="create">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small" v-if="$page.props.permissions[2] == 'evaluation.update'" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            <v-icon size="small"  color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error" v-if="$page.props.permissions[3] == 'evaluation.delete'" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>
@@ -302,15 +302,15 @@ export default {
         <template v-slot:[`item.actions`]="{ item }">
             <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error" v-if="$page.props.permissions[3] == 'evaluation.delete'" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>
     <Datatable v-if="types == 4" titleDatatable="Listes des evaluations (section université)" :headers="headers" :items="evaluation_universites" :functionOnClickAddButton="create">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small"  color="warning" v-if="$page.props.permissions[2] == 'evaluation.update'" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            <v-icon size="small"  color="warning"  title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error" v-if="$page.props.permissions[3] == 'evaluation.delete'" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>

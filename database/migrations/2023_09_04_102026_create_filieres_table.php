@@ -36,6 +36,8 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Filiere::class)
                 ->index()
                 ->references('id')->on('filieres');
+            $table->softDeletes();
+            $table->timestamps();
         });
     }
 

@@ -170,7 +170,7 @@ class UserController extends Controller
                 ->with('etablissement')->get();
         }
 
-        return Inertia::render('User/Index', [
+        return Inertia::render('user/Index', [
             'users' => $vUsers ?? [],
             'sectionID' => $request->section_id ?? null
         ]);

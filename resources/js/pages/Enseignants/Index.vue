@@ -36,7 +36,7 @@ export default {
     mdiContentSave,
   },
   layout: AuthenticatedLayout,
-  props: ["enseignants"],
+  props: ["enseignants","matieres"],
   data() {
     return {
       icons: {
@@ -74,6 +74,7 @@ export default {
       form: useForm({
         id: "",
         matricule: "",
+        matieres: [],
         nom: "",
         prenom: "",
         sex: "",
@@ -94,13 +95,14 @@ export default {
   methods: {
     create() {
       this.dialog = true;
-      this.dialog_title = "Création d'enseignant";
+      this.dialog_title = "Ajouter un enseignant";
     },
     editItem(item) {
       //   console.log("edit", item);
       this.dialog_title = "Mise à jour de l'enseignant" + " " + item.NomComplet;
       this.form.id = item.id;
       this.form.matricule = item.matricule;
+      this.form.matieres=[];
       this.form.nom = item.nom;
       this.form.prenom = item.prenom;
       this.form.sex = item.sex;
@@ -166,7 +168,7 @@ export default {
               iconColor: "#004980",
               color: "#004980",
               title: "Enregistrement",
-              text: "Enseignant créée avec succès!",
+              text: "Enseignant enregistrer avec succès!",
               toast: true,
               position: "top-end",
               showConfirmButton: false,
@@ -186,7 +188,7 @@ export default {
               iconColor: "#004980",
               color: "#004980",
               title: "Modification",
-              text: "Enseignant modifiée avec succès!",
+              text: "Mise à jour effectuer avec succès!",
               toast: true,
               position: "top-end",
               showConfirmButton: false,
@@ -200,6 +202,7 @@ export default {
     close() {
       this.form.id = "";
       this.form.matricule = "";
+      this.form.matieres=[];
       this.form.nom = "";
       this.form.prenom = "";
       this.form.sex = "";
@@ -211,6 +214,43 @@ export default {
       this.dialog = false;
     },
   },
+
+  computed: {
+        itemsmatieres() {
+
+      let list = [];
+
+      if (this.matieres) {
+        this.matieres.forEach((element) => {
+          if (element) {
+            element.forEach((element2) => {
+                if(element2){
+                    // console.log('element',element2);
+                    list.push({
+                    ...element2,
+                        matiere: element2.code,
+                    });
+                }
+            })
+
+          }
+        });
+      }
+      return list ?? [];
+    },
+        Title() {
+        switch (this.section_id) {
+            case "1":
+            return "SECTION PRIMAIRE";
+            case "2":
+            return "SECTION SECONDAIRE";
+            case "3":
+            return "SECTION SUPERIEUR";
+            default:
+            return "SECTION UNIVERSITAIRE";
+        }
+        },
+    },
 };
 </script>
 <template>
@@ -239,7 +279,7 @@ export default {
                 color: white;
               "
               ><p class="text-wrap">
-                <v-icon left :icon="icons.mdiPencil"></v-icon>{{ dialog_title }}
+                <v-icon left :icon="icons.mdiPencil"  style=" font-size: 1.5em;"></v-icon>{{ dialog_title }}
               </p>
             </v-toolbar-title>
             <v-spacer></v-spacer>
@@ -328,6 +368,22 @@ export default {
                     isRequired
                     :rules="rules"
                   ></text-field>
+                </v-col>
+                <v-col cols="6" md="6"  style="height: 80px">
+                    <Autocomplete
+                        v-model="form.matieres"
+                        isRequired
+                        itemValue="id"
+                        itemTitle="matiere"
+                        placeholder="Matières"
+                        label="Matières"
+                        multiple
+                        chips
+                        :items="itemsmatieres"
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        >
+                    </Autocomplete>
+
                 </v-col>
                 <v-col cols="6" md="6" v-if="form.id == ''" style="height: 80px">
                   <v-switch

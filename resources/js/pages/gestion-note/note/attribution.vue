@@ -122,9 +122,13 @@ export default {
     },
     methods: {
         formatEvaluationLabel(item) {
-            if (item) {
+            // console.log(item.enseignement_annee.niveau_matiere)
+            if (item.enseignement_annee.niveau_matiere) {
                 // Concatenate the relevant properties for the label
+                // console.log(item.type_evaluation.libelle)
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
+            }else{
+                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
             }
         },
         rechercher(e) {
@@ -235,7 +239,7 @@ export default {
             <v-row>
                 <v-col md="1"></v-col>
                 <v-col md="4">
-                    <Autocomplete v-model="selectedClasse" :items="classes" item-title="classe_annee.classe.libelle" item-value="classe_annee.classe.id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
+                    <Autocomplete v-model="selectedClasse" :items="classes" item-title="libelle" item-value="id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
                 </v-col>
                 <v-col md="4">
                     <Autocomplete v-model="selectedEvaluation" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(selectedEvaluation)"></Autocomplete>

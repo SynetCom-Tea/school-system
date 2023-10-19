@@ -1,6 +1,6 @@
 <script>
     import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-    import { useForm } from '@inertiajs/vue3';
+    import { useForm, router } from '@inertiajs/vue3';
     
     import {
         mdiAccountSchool,
@@ -80,9 +80,7 @@
         },
         methods:{
             create() {
-                this.dialog = true;
-                this.dialog_title = 'Création Classe'
-                console.log(this.niveaux)
+                router.get(route('classes.create', this.section_id))
             },
             editItem(item){
                 this.dialog_title = 'Modifier la classe' 
@@ -139,27 +137,7 @@
             },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
-                if(!this.form.id && valid) {
-                    this.form.post(route('classes.store',this.section_id), {
-                        onFinish: () => {
-                            this.close()
-                            
-                            this.$swal({
-                                icon: 'success',
-                                iconColor: '#004980',
-                                color: '#004980',
-                                title: 'Enregistrement',
-                                text: 'Classe créée avec succès!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-                        },
-                    });
-                    
-                }else if(this.form.id && valid) {
+                 if(this.form.id && valid) {
                     
                      const {id,code,libelle,niveau_id} = this.form
                     
@@ -252,7 +230,7 @@
                     </v-dialog>
         <v-card-text>
             <Datatable titleDatatable="Liste des classes" :headers="headers" :items="classes" :functionOnClickAddButton="create" >
-            
+             
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>

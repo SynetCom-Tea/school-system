@@ -290,6 +290,12 @@ class RoleSeeder extends Seeder
                 SectionUser::create([
                         'user_id' => 15, 'etablissement_section_id' => 2,
                 ]);
+                SectionUser::create([
+                        'user_id' => 14, 'etablissement_section_id' => 3,
+                ]);
+                SectionUser::create([
+                        'user_id' => 14, 'etablissement_section_id' => 4,
+                ]);
 
                 /****************************************  Fin section_users ******************************************************/
 

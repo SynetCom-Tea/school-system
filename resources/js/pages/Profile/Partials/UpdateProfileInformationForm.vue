@@ -41,7 +41,7 @@ const save = () => {
 <template>
   <v-row>
     <v-col cols="12">
-      <v-card title="Détails du compte" elevation="6" rounded="lg" width="950" style="margin-left: auto; margin-right: auto;margin-top:20px;">
+      <v-card title="Détails du compte" elevation="6" rounded="lg" width="950" style="margin-left: auto; margin-right: auto;margin-top:10px;">
         <VDivider />
 
         <v-card-text>

@@ -2,6 +2,7 @@
 
 namespace Modules\Enseignement\Http\Controllers;
 
+use App\Models\EtablissementSection;
 use App\Models\PermissionRole;
 use App\Models\Role;
 use App\Models\User;
@@ -9,10 +10,13 @@ use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
 use Modules\Enseignement\Entities\Enseignant;
+use Modules\Enseignement\Entities\EnseignantMatiere;
+use Modules\Enseignement\Entities\Matiere;
 
 class EnseignantController extends Controller
 {
@@ -22,15 +26,28 @@ class EnseignantController extends Controller
      * @return Renderable
      */
 
-    public function index()
+    public function index($type)
     {
         // dd('salut');
         $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+
+
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
         // View::share('type',$type);
         // dd($enseignants[0]['matricule']);
+        $matiere=[];
+        $etablissement_section_id= DB::table('etablissement_section')->where('etablissement_id', $ets_id)->get();
+        foreach($etablissement_section_id as $etablissement_section){
+            $matiere[]=Matiere::where('etablissement_section_id' ,$etablissement_section->id)->get();
+        }
+        // dd($matiere);
         return Inertia::render('Enseignants/Index', [
-            'enseignants' => $enseignants,]);
+            'enseignants' => $enseignants,
+            'matieres'=>$matiere,
+
+        ]);
+
     }
 
     /**
@@ -51,6 +68,7 @@ class EnseignantController extends Controller
     {
 
         //
+        // dd($request->matieres);
         $ets_id = Auth::user()->etablissement_id;
         request()->validate([
             'matricule' => 'required|string',
@@ -69,6 +87,13 @@ class EnseignantController extends Controller
         $data['date_lieu_nais']=$date_lieu;
 
         $enseig=Enseignant::create($data);
+        foreach($request->matieres as $matiere){
+            EnseignantMatiere::create([
+                'enseignant_id' => $enseig->id,
+                'matiere_id' => $matiere,
+            ]);
+        }
+
         if ($data['compte']==true) {
             $user=['email'=>$request['email'],'password' => Hash::make('password') ,'nom'=>$data['nom'],'prenom'=>$data['prenom'],'etablissement_id'=>$data['etablissement_id'],'user_id '=>Auth::user()->id,'enseignant_id'=>$enseig['id']];
             // dd($user);

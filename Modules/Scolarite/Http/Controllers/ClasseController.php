@@ -50,16 +50,24 @@ class ClasseController extends Controller
     {
         $ets_id = Auth::user()->etablissement_id;
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
-        request()->validate([
-            'code' => 'required|string',
-            'libelle' => 'required|string',
-        ]);
-        $data = $request->all();
-        $data['etablissement_section_id'] = $table->id;
-        Classe::create($data);
+       
+        foreach($request->donnees as $donnee){
+            foreach($donnee['enfants'] as $enfant){
+                Classe::updateOrInsert([
+                    'code' => $enfant['code'],
+                    'libelle' => $enfant['libelle']
+                ],
+                [
+                'niveau_id' => $donnee['niveau_id'],
+                'etablissement_section_id' => $table->id
+                ]
+                );
+            }
+        }
+        
         return redirect()->route('classes.index', $type)->with('message', [
             'type' => 'success',
-            'text' => "La classe a été créée avec succès !",
+            'text' => "Les classes ont été créées avec succès !",
         ]);
     }
 

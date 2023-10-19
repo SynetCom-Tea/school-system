@@ -1,7 +1,7 @@
 <?php
 
 namespace Database\Seeders;
-
+use Illuminate\Support\Facades\DB;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
@@ -22,7 +22,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 3,
                 'niveau_id' => 10,
                 'matiere_id' => 1,
-                'filiere_matiere_ue_id' => NULL
+
             ),
             1 =>
             array(
@@ -31,7 +31,6 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 10,
                 'matiere_id' => 2,
-                'filiere_matiere_ue_id' => NULL
             ),
             2 =>
             array(
@@ -40,7 +39,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 5,
                 'niveau_id' => 10,
                 'matiere_id' => 3,
-                'filiere_matiere_ue_id' => NULL
+
             ),
             3 =>
             array(
@@ -49,7 +48,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 10,
                 'matiere_id' => 9,
-                'filiere_matiere_ue_id' => NULL
+
             ),
             4 =>
             array(
@@ -58,7 +57,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 1,
                 'niveau_id' => 3,
                 'matiere_id' => 8,
-                'filiere_matiere_ue_id' => NULL
+
             ),
             5 =>
             array(
@@ -67,7 +66,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 6,
-                'filiere_matiere_ue_id' => NULL
+
             ),
             6 =>
             array(
@@ -76,7 +75,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 7,
-                'filiere_matiere_ue_id' => NULL
+
             ),
             7 =>
             array(
@@ -85,7 +84,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 4,
-                'filiere_matiere_ue_id' => NULL
+
             ),
             8 =>
             array(
@@ -94,7 +93,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 5,
-                'filiere_matiere_ue_id' => NULL
+
             ),
         ));
     }
