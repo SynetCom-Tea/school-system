@@ -121,6 +121,7 @@ export default {
             this.dialog_title = 'Nouvelle Evaluation'
         },
         editItem(item) {
+            console.log(this.$page.props.permissions)
             this.form.id = item.id
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage

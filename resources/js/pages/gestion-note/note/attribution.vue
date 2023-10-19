@@ -127,12 +127,12 @@ export default {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
             }
         },
-        rechercher() {
+        rechercher(e) {
             // console.log(this.eleves)
             router.replace(this.$page.url, {
                 data: {
                     classe: this.selectedClasse,
-                    evaluation: this.selectedEvaluation
+                    evaluation: e
                 }
             });
         },
@@ -193,13 +193,13 @@ export default {
         dialog(){
             // this.info = this.evaluations.filter(el => el.id = this.selectedEvaluation)
             this.$swal({
-                title: "Es-tu sûr?",
+                title: "Êtes-vous sûr?",
                 text: "Êtes-vous sûr de vouloir sauvegarder ces notes" ,
                 icon: "info",
                 showCancelButton: true,
                 confirmButtonColor: "orange",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Oui, supprimez-le!",
+                confirmButtonText: "Oui, sauvegarde-le!",
                 cancelButtonText: "Non, annulez !",
             }).then((result) => {
                 if (result.isConfirmed) {
@@ -238,13 +238,13 @@ export default {
                     <Autocomplete v-model="selectedClasse" :items="classes" item-title="classe_annee.classe.libelle" item-value="classe_annee.classe.id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
                 </v-col>
                 <v-col md="4">
-                    <Autocomplete v-model="selectedEvaluation" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
+                    <Autocomplete v-model="selectedEvaluation" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(selectedEvaluation)"></Autocomplete>
                 </v-col>
-                <v-col md="3" >
-                    <!-- <br> -->
+                <!-- <v-col md="3" >
+                    <br>
                     <Button  color="secondary" variant="outlined" class="mb-3" @click="rechercher()"  nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
-                </v-col>
-                <v-col md="2"></v-col>
+                </v-col> -->
+                <!-- <v-col md="2"></v-col> -->
             </v-row>
         </v-card>
 
@@ -259,9 +259,6 @@ export default {
             </Datatable>
             <v-card-actions>
                 <v-spacer />
-                <v-btn :disabled="form.processing" variant="outlined" color="error" @click="dialogConfirmation = false">
-                    <v-icon :icon="icon.mdiCheckCircle" ></v-icon>Annuler
-                </v-btn>
                 <v-btn :loading="form.processing" variant="outlined" :disabled="!valid" color="green" @click="dialog">
                     <v-icon :icon="icon.mdiCheckCircle" ></v-icon> Valider
                 </v-btn>

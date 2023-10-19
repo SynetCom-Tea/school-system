@@ -1,334 +1,278 @@
 <template>
-  <div>
+<div>
     <v-row>
-      <v-col cols="6" md="6">
-        <v-card-text class="mt-8">
-          <v-row align="center" justify="center">
-            <v-col cols="12" sm="8" class="login">
-              <h2 class="text-center">Page de connexion</h2>
-              <v-form>
-                <TextField
-                  label="Identifiant"
-                  outlined
-                  :isRequired="true"
-                  v-model="form.email"
-                  dense
-                  class="mt-5"
-                  :error-messages="form.errors.email && 'Email invalide!!'"
-                  hint="Respecter le format email,le mail est obligatoire"
-                  :prepend-inner-icon="icons.mdiEmailOutline"
-                />
-                <div
-                  class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between"
-                >
-                  Mot de passe
+        <v-col cols="6" md="6">
+            <v-card-text class="mt-8">
+                <v-row align="center" justify="center">
+                    <v-col cols="12" sm="8" class="login">
+                        <h2 class="text-center">Page de connexion</h2>
+                        <v-form>
+                            <TextField label="Identifiant" outlined :isRequired="true" v-model="form.email" dense class="mt-5" :error-messages="form.errors.email && 'Email invalide!!'" hint="Respecter le format email,le mail est obligatoire" :prepend-inner-icon="icons.mdiEmailOutline" />
+                            <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+                                Mot de passe
 
-                  <a
-                    style="cursor: pointer"
-                    class="text-caption text-decoration-none text-primary"
-                    target="_blank"
-                    @click="forgottenPassword"
-                  >
-                    Mot de passe oublié?</a
-                  >
+                                <a style="cursor: pointer" class="text-caption text-decoration-none text-primary" target="_blank" @click="forgottenPassword">
+                                    Mot de passe oublié?</a>
+                            </div>
+
+                            <TextField dense v-model="form.password" :append-inner-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff" :type="showPassword == true ? 'text' : 'password'" :prepend-inner-icon="icons.mdiLockOutline" :error-messages="form.errors.password && 'Mot de passe invalide!!'" :isRequired="true" autocomplete="false" hint="Un mot de passe composé de 8 caractères au min dont une lettre majuscule, caractères spéciaux,un chiffre et minuscules" label="Mot de passe" @click:append-inner="togglePassword"></TextField>
+                        </v-form>
+                        <Button :loading="form.processing" title="Valider" variant="flat" nameButton="Connexion" @click="goToLogin" density="comfortable" class="text-center" block size="large" style="text-transform: none">
+                        </Button>
+                        <v-row>
+                            <v-col style="font-size: 2px">
+                                <v-checkbox label="Se rappeler de moi" v-model="form.remember_me" @change="onChangeRememberMe(form.remember_me)" color="primary">
+                                </v-checkbox>
+                            </v-col>
+                        </v-row>
+
+                        <h6 class="text-center">
+                            <hr class="hr-text" data-content="Ou se connecter avec" />
+                        </h6>
+                        <div class="d-flex justify-space-between mx-1 mt-3">
+                            <div v-for="item in listSocialNetworks" class="d-flex justify-space-between mx-1 mt-3">
+                                <Button :title="item.title" color="white" class="text-center" @click="goToSocialNetworksUrl(item.link)">
+                                    <v-icon :color="item.color" :icon="item.icon"></v-icon>
+                                </Button>
+                            </div>
+                        </div>
+                    </v-col>
+                </v-row>
+            </v-card-text>
+        </v-col>
+
+        <v-col cols="6" md="6" class="bg-primary rounded-xl rounded-be-0">
+            <v-card-text style="text-align: center">
+                <div><img src="team.png" class="team-img pt-1" /></div>
+                <v-card-text class="white--text">
+                    <h3 class="text-center">Vous n'avez pas encore de compte?</h3>
+                    <h6 class="text-center">
+                        Tout y pour que vous puissiez commencer à créer votre <br />
+                        première expérience d'intégration
+                    </h6>
+                </v-card-text>
+                <div class="text-center">
+                    <Button title="Valider" style="text-transform: none" nameButton="S'enregistrer" density="comfortable" class="text-center" color="secondary" size="large" variant="flat" @click="goToNextWindow">
+                    </Button>
                 </div>
-
-                <TextField
-                  dense
-                  v-model="form.password"
-                  :append-inner-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
-                  :type="showPassword == true ? 'text' : 'password'"
-                  :prepend-inner-icon="icons.mdiLockOutline"
-                  :error-messages="form.errors.password && 'Mot de passe invalide!!'"
-                  :isRequired="true"
-                  autocomplete="false"
-                  hint="Un mot de passe composé de 8 caractères au min dont une lettre majuscule, caractères spéciaux,un chiffre et minuscules"
-                  label="Mot de passe"
-                  @click:append-inner="togglePassword"
-                ></TextField>
-              </v-form>
-              <Button
-                title="Valider"
-                variant="flat"
-                nameButton="Connexion"
-                @click="goToLogin"
-                density="comfortable"
-                class="text-center"
-                block
-                size="large"
-                style="text-transform: none"
-              >
-              </Button>
-              <v-row>
-                <v-col style="font-size: 2px">
-                  <v-checkbox
-                    label="Se rappeler de moi"
-                    v-model="form.remember_me"
-                    @change="onChangeRememberMe(form.remember_me)"
-                    color="primary"
-                  >
-                  </v-checkbox>
-                </v-col>
-              </v-row>
-
-              <h6 class="text-center">
-                <hr class="hr-text" data-content="Ou se connecter avec" />
-              </h6>
-              <div class="d-flex justify-space-between mx-1 mt-3">
-                <div
-                  v-for="item in listSocialNetworks"
-                  class="d-flex justify-space-between mx-1 mt-3"
-                >
-                  <Button
-                    :title="item.title"
-                    color="white"
-                    class="text-center"
-                    @click="goToSocialNetworksUrl(item.link)"
-                  >
-                    <v-icon :color="item.color" :icon="item.icon"></v-icon
-                  ></Button>
-                </div>
-              </div>
-            </v-col>
-          </v-row>
-        </v-card-text>
-      </v-col>
-
-      <v-col cols="6" md="6" class="bg-primary rounded-xl rounded-be-0">
-        <v-card-text style="text-align: center">
-          <div><img src="team.png" class="team-img pt-1" /></div>
-          <v-card-text class="white--text">
-            <h3 class="text-center">Vous n'avez pas encore de compte?</h3>
-            <h6 class="text-center">
-              Tout y pour que vous puissiez commencer à créer votre <br />
-              première expérience d'intégration
-            </h6>
-          </v-card-text>
-          <div class="text-center">
-            <Button
-              title="Valider"
-              style="text-transform: none"
-              nameButton="S'enregistrer"
-              density="comfortable"
-              class="text-center"
-              color="secondary"
-              size="large"
-              variant="flat"
-              @click="goToNextWindow"
-            >
-            </Button>
-          </div>
-        </v-card-text>
-      </v-col>
+            </v-card-text>
+        </v-col>
     </v-row>
     <div class="text-center ma-2">
-      <v-snackbar v-model="snackbar" location="top">
-        {{ getErrors }}
-
-        <template v-slot:actions>
-          <v-btn
-            color="red"
-            variant="text"
-            @click="snackbar = false"
-            title="Fermer la modale d'alerte"
-            :append-icon="icons.mdiCloseCircle"
-          >
-          </v-btn>
-        </template>
-      </v-snackbar>
+        <v-snackbar v-model="snackbar" location="top">
+            {{ getErrors }}
+            <template v-slot:actions>
+                <v-btn color="red" variant="text" @click="snackbar = false" title="Fermer la modale d'alerte" :append-icon="icons.mdiCloseCircle">
+                </v-btn>
+            </template>
+        </v-snackbar>
     </div>
-  </div>
+</div>
 </template>
 
 <script>
-import { router, useForm } from "@inertiajs/vue3";
 import {
-  mdiGoogle,
-  mdiFacebook,
-  mdiTwitter,
-  mdiInstagram,
-  mdiEye,
-  mdiEyeOff,
-  mdiCloseCircle,
-  mdiMicrophone,
-  mdiMapMarker,
-  mdiMapMarkerOff,
-  mdiLockOutline,
-  mdiEmailOutline,
-} from "@mdi/js";
-
-export default {
-  components: {
-    mdiLockOutline,
+    router,
+    useForm
+} from "@inertiajs/vue3";
+import {
     mdiGoogle,
     mdiFacebook,
     mdiTwitter,
     mdiInstagram,
     mdiEye,
     mdiEyeOff,
-    mdiEmailOutline,
     mdiCloseCircle,
-
     mdiMicrophone,
     mdiMapMarker,
     mdiMapMarkerOff,
-  },
-  props: {
-    goToNextWindow: { type: Function },
-    listSocialNetworks: { type: Array },
-    // goToLogin: { type: Function },
-  },
-  data: () => ({
-    message: "Hey!",
-    marker: true,
-    iconIndex: 0,
-    getErrors: "",
-    snackbar: false,
-    y: "top",
-    x: null,
-    mode: "",
-    timeout: 6000,
-    showPassword: false,
-    icons: {
-      mdiGoogle,
-      mdiLockOutline,
-      mdiFacebook,
-      mdiTwitter,
-      mdiInstagram,
-      mdiEye,
-      mdiEyeOff,
-      mdiCloseCircle,
-      mdiMicrophone,
-      mdiMapMarker,
-      mdiMapMarkerOff,
-      mdiEmailOutline,
+    mdiLockOutline,
+    mdiEmailOutline,
+} from "@mdi/js";
+
+export default {
+    components: {
+        mdiLockOutline,
+        mdiGoogle,
+        mdiFacebook,
+        mdiTwitter,
+        mdiInstagram,
+        mdiEye,
+        mdiEyeOff,
+        mdiEmailOutline,
+        mdiCloseCircle,
+
+        mdiMicrophone,
+        mdiMapMarker,
+        mdiMapMarkerOff,
     },
-    errors: {},
-    form: useForm({
-      email: "",
-      password: "",
-      remember_me: false,
+    props: {
+        goToNextWindow: {
+            type: Function
+        },
+        listSocialNetworks: {
+            type: Array
+        },
+        // goToLogin: { type: Function },
+    },
+    data: () => ({
+        message: "Hey!",
+        marker: true,
+        iconIndex: 0,
+        getErrors: "",
+        snackbar: false,
+        y: "top",
+        x: null,
+        mode: "",
+        timeout: 6000,
+        showPassword: false,
+        icons: {
+            mdiGoogle,
+            mdiLockOutline,
+            mdiFacebook,
+            mdiTwitter,
+            mdiInstagram,
+            mdiEye,
+            mdiEyeOff,
+            mdiCloseCircle,
+            mdiMicrophone,
+            mdiMapMarker,
+            mdiMapMarkerOff,
+            mdiEmailOutline,
+        },
+        errors: {},
+        form: useForm({
+            email: "",
+            password: "",
+            remember_me: false,
+        }),
     }),
-  }),
 
-  computed: {},
-  created() {
-    if (this.$page.props.flash?.message?.type == "error") {
-      this.$swal({
-        icon: "error",
-        title: "Authentification",
-        text: this.$page.props.flash?.message?.text,
-        toast: true,
-        position: "top-end",
-        showConfirmButton: false,
-        timer: 5000,
-        timerProgressBar: true,
-      });
-    }
-  },
-  methods: {
-    onChangeRememberMe(remember) {},
-    togglePassword() {
-      this.showPassword = !this.showPassword;
+    computed: {},
+    created() {
+        if (this.$page.props.flash ?.message ?.type == "error") {
+            this.$swal({
+                icon: "error",
+                title: "Authentification",
+                text: this.$page.props.flash ?.message ?.text,
+                toast: true,
+                position: "top-end",
+                showConfirmButton: false,
+                timer: 5000,
+                timerProgressBar: true,
+            });
+        }
     },
-    goToSocialNetworksUrl(link) {
-      if (link) return window.open(link);
-    },
-
-    forgottenPassword() {
-      router.get(route("password.request"));
-    },
-    goToLogin(e) {
-      e.preventDefault();
-
-      this.form.post(route("login"), {
-        onSuccess: (e) => {
-          if (e.props.flash?.message?.type == "error") {
-            this.snackbar = true;
-            this.getErrors = e.props.flash.message.text;
-          }
+    methods: {
+        onChangeRememberMe(remember) {},
+        togglePassword() {
+            this.showPassword = !this.showPassword;
         },
-        onError: (e) => {
-          if (e.email == "These credentials do not match our records.") {
-            this.errors.text = "Identifiant ou mot de passe incorrect";
-          }
-          if (e.email == "The email field is required.") {
-            this.errors.text = "Mot de passe est obligatoire";
-          }
+        goToSocialNetworksUrl(link) {
+            if (link) return window.open(link);
         },
-      });
+
+        forgottenPassword() {
+            router.get(route("password.request"));
+        },
+        goToLogin(e) {
+            e.preventDefault();
+
+            this.form.post(route("login"), {
+                onSuccess: (e) => {
+                    if (e.props.flash ?.message ?.type == "error") {
+                        this.snackbar = true;
+                        this.getErrors = e.props.flash.message.text;
+                    }
+                },
+                onError: (e) => {
+                    if (e.email == "These credentials do not match our records.") {
+                        this.errors.text = "Identifiant ou mot de passe incorrect";
+                    }
+                    if (e.email == "The email field is required.") {
+                        this.errors.text = "Mot de passe est obligatoire";
+                    }
+                },
+            });
+        },
     },
-  },
 };
 </script>
+
 <style scoped>
 .hr-text {
-  line-height: 1em;
-  position: relative;
-  outline: 0;
-  border: 0;
-  color: black;
-  text-align: center;
-  height: 1.75em;
-  opacity: 0.5;
+    line-height: 1em;
+    position: relative;
+    outline: 0;
+    border: 0;
+    color: black;
+    text-align: center;
+    height: 1.75em;
+    opacity: 0.5;
 }
+
 .hr-text::before {
-  content: "";
-  background: linear-gradient(to right, transparent, #004980, transparent);
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 2px;
+    content: "";
+    background: linear-gradient(to right, transparent, #004980, transparent);
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 100%;
+    height: 2px;
 }
+
 .hr-text::after {
-  content: attr(data-content);
-  position: relative;
-  display: inline-block;
-  color: black;
-  padding: 0 0.5em;
-  line-height: 1.5em;
-  color: #004980;
-  background-color: #fcfcfa;
+    content: attr(data-content);
+    position: relative;
+    display: inline-block;
+    color: black;
+    padding: 0 0.5em;
+    line-height: 1.5em;
+    color: #004980;
+    background-color: #fcfcfa;
 }
 
 .team-img {
-  width: 70%;
-  object-fit: cover;
+    width: 70%;
+    object-fit: cover;
 }
+
 .login {
-  position: relative;
-  /* margin: 100px auto; */
-  /* width: 370px;
+    position: relative;
+    /* margin: 100px auto; */
+    /* width: 370px;
   height: 315px; */
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 5px 5px 30px #004980;
-  /* box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2); */
-  border-radius: 3px;
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 5px 5px 30px #004980;
+    /* box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2); */
+    border-radius: 3px;
 }
+
 .login h2 {
-  line-height: 55px;
-  font-size: 24px;
-  font-weight: bold;
-  font-family: "Open Sans", sans-serif;
-  text-align: center;
-  color: "#004980";
-  background: rgba(255, 255, 255, 0.05);
-  backdrop-filter: blur(10px);
-  border-top: 1px solid rgba(255, 255, 255, 0.2);
-  border-left: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2);
-  margin-top: 0px;
-  border-top-left-radius: 3px;
-  border-top-right-radius: 3px;
+    line-height: 55px;
+    font-size: 24px;
+    font-weight: bold;
+    font-family: "Open Sans", sans-serif;
+    text-align: center;
+    color: "#004980";
+    background: rgba(255, 255, 255, 0.05);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    border-left: 1px solid rgba(255, 255, 255, 0.2);
+    box-shadow: 5px 5px 30px rgba(0, 0, 0, 0.2);
+    margin-top: 0px;
+    border-top-left-radius: 3px;
+    border-top-right-radius: 3px;
 }
+
 .v-application .rounded-bl-xl {
-  border-bottom-left-radius: 300px !important;
+    border-bottom-left-radius: 300px !important;
 }
+
 .v-application .rounded-br-xl {
-  border-bottom-right-radius: 300px !important;
+    border-bottom-right-radius: 300px !important;
 }
 </style>

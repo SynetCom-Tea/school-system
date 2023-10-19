@@ -2,13 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Modules\GestionNote\Entities\Note;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Modules\Scolarite\Entities\Inscription;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\SoftDeletes;
-use Modules\Scolarite\Entities\Inscription;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Apprenant extends Model
 {
@@ -44,5 +45,9 @@ class Apprenant extends Model
     public function classeAnnees(): BelongsToMany
     {
         return $this->belongsToMany(ClasseAnnee::class);
+    }
+    public function notes(): HasMany
+    {
+        return $this->hasMany(Note::class);
     }
 }
