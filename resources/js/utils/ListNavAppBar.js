@@ -10,6 +10,7 @@ import {
   mdiPresentation,
   mdiGift,
   mdiSquareMedium,
+  mdiCash,
   mdiGoogleClassroom,
   mdiClipboardEditOutline,
   mdiInstagram,
@@ -220,6 +221,7 @@ MenuGestion = {
                 link: "/enseignement/permissions",
                 permissions: "manage_system",
             },
+            
         {
             title: "Inscription",
             icon: mdiAccountSchool,
@@ -402,6 +404,15 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder à la liste des inscrits de la section",
       expand:false,
       permissions: "manage_system"
+    },
+    {
+      icon: mdiCash,
+      title: "Versements",
+      link: "versements",
+      color: "rgb(24,18,42)",
+      note: "Ce menu permet d'effectuer des versements de la section",
+      expand:false,
+      permissions: "manage_system",
     },
     {
       icon:mdiBookOpenPageVariantOutline,

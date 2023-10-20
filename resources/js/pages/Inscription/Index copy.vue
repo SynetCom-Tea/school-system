@@ -415,7 +415,6 @@ export default {
     getNiveauxSecondaire,
     getAcademicYears,
     generateColorsForGraph,
-
     onclickTuteurs(e) {},
     async onclickFrais(e) {
       this.selectedFrais = e;

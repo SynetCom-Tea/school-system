@@ -14,9 +14,18 @@ class Annee extends Model
         'libelle',
         'actif',
     ];
+
+    public function getAnneeEnCours()
+    {
+        return $this->where('actif',1);
+    }
     public function frais(): HasMany
     {
         return $this->hasMany(Frais::class);
+    }
+    public function inscriptions()
+    {
+        return $this->hasMany(Cycle::class);
     }
     public function classeAnnees(): HasMany
     {

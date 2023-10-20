@@ -25,4 +25,8 @@ class CycleFiliere extends Model
     {
         return $this->belongsTo(Cycle::class);
     }
+    public function inscriptions()
+    {
+        return $this->hasMany(Cycle::class);
+    }
 }

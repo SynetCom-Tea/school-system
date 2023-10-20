@@ -108,6 +108,7 @@ class InscriptionController extends Controller
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
         // $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
         $year = Annee::where('actif',1)->first()->id;
+        // $year = Annee::getAnneeEnCours();
         // dd($params,$year);
         
             
