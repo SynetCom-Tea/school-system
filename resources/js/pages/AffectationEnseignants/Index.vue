@@ -90,14 +90,14 @@
                 router.get(route('affectationEnseignants.create', this.section_id));
             },
             editItem(item){
-                router.get(route('AffectationEnseignants.edit',item.id ));
-                // console.log('edit',item.list.map((el) => el.matiere.nom))
-                // this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.enseignant.NomComplet
-                // this.form.id = item.id
-                // this.form.niveau_matiere = item.list.map((el) => el.matiere.nom)
-                // this.form.classe = item.list.map((el) => el.classe.libelle)
-                // this.form.enseignant= item.enseignant.NomComplet
-                // this.dialog = true
+                // router.get(route('AffectationEnseignants.edit',item.id ));
+                console.log('edit',item.list.map((el) => el.matiere.nom))
+                this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.enseignant.NomComplet
+                this.form.id = item.id
+                this.form.niveau_matiere = item.list.map((el) => el.matiere.nom)
+                this.form.classe = item.list.map((el) => el.classe.libelle)
+                this.form.enseignant= item.enseignant.NomComplet
+                this.dialog = true
             },
             deleteItem(item){
                 this.$swal({
@@ -201,6 +201,7 @@
         },
     computed: {
         Title() {
+            console.log('eeeef',this.enseignements);
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -349,7 +350,7 @@
 
                 </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des enseignants " :headers="headers" :items="enseignements" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des enseignements  " :headers="headers" :items="enseignements" :functionOnClickAddButton="create" >
                 <template v-slot:item.list="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.columns.list">

@@ -1,6 +1,6 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { useForm } from "@inertiajs/vue3";
+import { router, useForm } from "@inertiajs/vue3";
 
 import {
   mdiAccountSchool,
@@ -94,8 +94,9 @@ export default {
   },
   methods: {
     create() {
-      this.dialog = true;
-      this.dialog_title = "Ajouter un enseignant";
+        router.get(route('enseignants.create'))
+    //   this.dialog = true;
+    //   this.dialog_title = "Ajouter un enseignant";
     },
     editItem(item) {
       //   console.log("edit", item);

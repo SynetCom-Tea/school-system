@@ -2,6 +2,8 @@
 
 namespace Modules\Enseignement\Http\Controllers;
 
+use App\Models\Annee;
+use App\Models\ClasseAnnee;
 use App\Models\EtablissementSection;
 use App\Models\PermissionRole;
 use App\Models\Role;
@@ -16,7 +18,10 @@ use Illuminate\Support\Facades\View;
 use Inertia\Inertia;
 use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\EnseignantMatiere;
+use Modules\Enseignement\Entities\EnseignementAnnee;
 use Modules\Enseignement\Entities\Matiere;
+use Modules\Enseignement\Entities\NiveauMatiere;
+use Spatie\LaravelIgnition\Recorders\DumpRecorder\Dump;
 
 class EnseignantController extends Controller
 {
@@ -26,11 +31,11 @@ class EnseignantController extends Controller
      * @return Renderable
      */
 
-    public function index($type)
+    public function index()
     {
         // dd('salut');
         $ets_id = Auth::user()->etablissement_id;
-        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        // $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
 
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
@@ -54,9 +59,82 @@ class EnseignantController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
-    public function create()
+    public function create(Request $request)
     {
-        return view('enseignement::create');
+        $ets_id = Auth::user()->etablissement_id;
+        $dernierId=Annee::max('id');
+        $annee = Annee::where('id', $dernierId)->first();
+        $matiere=[];
+        $classes=[];
+        $classe_annees=[];
+        $etablissement_section_id= DB::table('etablissement_section')->where('etablissement_id', $ets_id)->get();
+
+        $mat = $request->matiere ? Matiere::where('id',$request->matiere)->first():null;
+
+        if($mat!=null){
+
+                    $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
+                        $classe->where('etablissement_section_id',$mat->etablissement_section_id);
+                    })->whereHas('annee',function($anne) use ($annee){
+                        $anne->where('annee_id',$annee->id);
+                    })->get();
+
+
+
+        }
+        $enseignement_annee=EnseignementAnnee::all();
+        foreach($classes as $classe){
+            $trouver=false;
+            $Niveau_matieres=NiveauMatiere::where('matiere_id',$mat->id)->get();
+            foreach($Niveau_matieres as $Niveau_matiere){
+
+                if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id){
+                    // dump($classe->classe->niveau_id);
+                    foreach($enseignement_annee as $enseignement_anne){
+                        if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
+                                $trouver=true;
+
+                        }
+                    }
+                    if($trouver==false){
+                        $classe_annees[]=$classe;
+                    }
+                }
+
+
+            }
+
+
+        }
+
+
+
+
+        foreach($etablissement_section_id as $etablissement_section){
+            $allmatiere=Matiere::where('etablissement_section_id',$etablissement_section->id)->get();
+            $matiere[]= $allmatiere;
+            // $niveaumats =  NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($etablissement_section){
+
+            //     $query->where('etablissement_section_id',$etablissement_section->id);})->whereHas('niveau',function ($query) use ($etablissement_section){
+
+            //     $query->where('section_id',$etablissement_section->section_id);})->get();
+                // foreach($allmatiere as $mati){
+                //     foreach($niveaumats as $niveaumat){
+                //         if($mati->id==$niveaumat->matiere_id){
+                //             $matiere[]=$mati;
+                //         }
+                //     }
+                // }
+
+        }
+        //  dd($matiere);
+        return Inertia::render('Enseignants/Create', [
+            'matieres'=>$matiere,
+            'classes'=>$classe_annees,
+
+        ]);
+
+        // return view('enseignement::create');
     }
 
     /**
@@ -67,11 +145,12 @@ class EnseignantController extends Controller
     public function store(Request $request)
     {
 
-        //
-        // dd($request->matieres);
+        $dernierenseig = Enseignant::latest()->first();
+        $id_enseig= $dernierenseig->id+1;
+
+
         $ets_id = Auth::user()->etablissement_id;
         request()->validate([
-            'matricule' => 'required|string',
             'nom' => 'required|string',
             'prenom' => 'required|string',
             'sex' => 'required|string',
@@ -83,15 +162,45 @@ class EnseignantController extends Controller
         $data['etablissement_id'] = $ets_id;
         $nomcomplet=$data['nom'].' '.$data['prenom'];
         $date_lieu= $data['date_naissance'].' à '.$data['lieu_naissance'];
+
+        $mat='MAT/'.$ets_id.$id_enseig.'E';
         $data['NomComplet']=$nomcomplet;
         $data['date_lieu_nais']=$date_lieu;
-
+        $data['matricule']=$mat;
         $enseig=Enseignant::create($data);
         foreach($request->matieres as $matiere){
-            EnseignantMatiere::create([
-                'enseignant_id' => $enseig->id,
-                'matiere_id' => $matiere,
-            ]);
+            // EnseignantMatiere::create([
+            //     'enseignant_id' => $enseig->id,
+            //     'matiere_id' => $matiere['matiere'],
+            // ]);
+
+            $Niveau_matieres=NiveauMatiere::where('matiere_id',$matiere['matiere'])->get();
+            // dd($Niveau_matieres);
+            foreach($matiere['classes'] as $classe){
+
+                $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
+
+                foreach($Niveau_matieres as $Niveau_matiere){
+
+                        EnseignementAnnee::updateOrInsert([
+                            'niveau_matiere_id' => $Niveau_matiere->id,
+                            'classe_annee_id' => $classe_annee->id,
+                            'enseignant_id' => $enseig->id,
+
+                        ],
+                        [
+                            'created_at' => now(), // Remplissez le champ created_at
+                            'updated_at' => now() // Remplissez le champ updated_at
+                        ]
+                        );
+
+
+
+                    // dd($classe);
+                }
+
+                // dd($classe);
+            }
         }
 
         if ($data['compte']==true) {
@@ -106,6 +215,7 @@ class EnseignantController extends Controller
             $users->syncRoles($roles);
             $users->syncPermissions($permis);
         }
+
 
         return redirect()->route('enseignants.index')->with('message', [
             'type' => 'success',
