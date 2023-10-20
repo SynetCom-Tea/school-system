@@ -21,12 +21,12 @@ class ApprenantClasseAnneesSeeder extends Seeder
         ]);
         ApprenantClasseAnnee::create([
             'id' => 2,
-            'classe_annee_id' => 2,
+            'classe_annee_id' => 8,
             'apprenant_id' => 2,
         ]);
         ApprenantClasseAnnee::create([
             'id' => 3,
-            'classe_annee_id' => 3,
+            'classe_annee_id' => 8,
             'apprenant_id' => 3,
         ]);
         ApprenantClasseAnnee::create([
@@ -41,12 +41,12 @@ class ApprenantClasseAnneesSeeder extends Seeder
         ]);
         ApprenantClasseAnnee::create([
             'id' => 6,
-            'classe_annee_id' => 6,
+            'classe_annee_id' => 9,
             'apprenant_id' => 6,
         ]);
         ApprenantClasseAnnee::create([
             'id' => 7,
-            'classe_annee_id' => 7,
+            'classe_annee_id' => 9,
             'apprenant_id' => 7,
         ]);
     }

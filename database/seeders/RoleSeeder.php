@@ -45,7 +45,7 @@ class RoleSeeder extends Seeder
                 ]);
 
                 $role_admin = Role::firstOrcreate(['name' => 'Administrateur']);
-                $admin->givePermissionTo(Permission::where('name', 'manage_school')->get());
+                $admin->givePermissionTo(Permission::where('name', '<>','manage_system')->get());
                 $admin->assignRole($role_admin);
                 /****************************************  2 éléves au collège et 2 au lycée ******************************************************/
 
@@ -290,6 +290,12 @@ class RoleSeeder extends Seeder
                 SectionUser::create([
                         'user_id' => 15, 'etablissement_section_id' => 2,
                 ]);
+                SectionUser::create([
+                        'user_id' => 14, 'etablissement_section_id' => 3,
+                ]);
+                SectionUser::create([
+                        'user_id' => 14, 'etablissement_section_id' => 4,
+                ]);
 
                 /****************************************  Fin section_users ******************************************************/
 
@@ -335,46 +341,46 @@ class RoleSeeder extends Seeder
 
 
                 /****************************************  6 Inscriptions ******************************************************/
-                \DB::table('inscriptions')->insert(array(
-                        0 =>
-                        array(
-                                'id' => 1,
-                                'apprenant_id' => 1,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        1 =>
-                        array(
-                                'id' => 2,
-                                'apprenant_id' => 2,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        2 =>
-                        array(
-                                'id' => 3,
-                                'apprenant_id' => 3,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        3 =>
-                        array(
-                                'id' => 4,
-                                'apprenant_id' => 4,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
-                        4 =>
-                        array(
-                                'id' => 5,
-                                'apprenant_id' => 5,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
+                // \DB::table('inscriptions')->insert(array(
+                //         0 =>
+                //         array(
+                //                 'id' => 1,
+                //                 'apprenant_id' => 1,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         1 =>
+                //         array(
+                //                 'id' => 2,
+                //                 'apprenant_id' => 2,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         2 =>
+                //         array(
+                //                 'id' => 3,
+                //                 'apprenant_id' => 3,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         3 =>
+                //         array(
+                //                 'id' => 4,
+                //                 'apprenant_id' => 4,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
+                //         4 =>
+                //         array(
+                //                 'id' => 5,
+                //                 'apprenant_id' => 5,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
 
-                        5 =>
-                        array(
-                                'id' => 6,
-                                'apprenant_id' => 6,
-                                'date_inscription' => "2023-09-22 09:45:24",
-                        ),
+                //         5 =>
+                //         array(
+                //                 'id' => 6,
+                //                 'apprenant_id' => 6,
+                //                 'date_inscription' => "2023-09-22 09:45:24",
+                //         ),
 
-                ));
+                // ));
 
 
                 /**************************************** Fin inscriptions ******************************************************/

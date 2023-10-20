@@ -37,7 +37,7 @@ export default {
         mdiContentSaveEditOutline
     },
     layout: AuthenticatedLayout,
-    props: ["evaluation_primaires","evaluation_secondaires","evaluation_superieures","evaluation_universites","types","periodes","type_evaluation","regime","enseignements"],
+    props: ["evaluation_primaires", "evaluation_secondaires", "evaluation_superieures", "evaluation_universites", "types", "periodes", "type_evaluation", "regime", "enseignements"],
     data() {
         return {
             icon: {
@@ -55,8 +55,7 @@ export default {
                 mdiContentSaveEditOutline
             },
 
-            headers: [
-                {
+            headers: [{
                     title: 'Matière',
                     align: 'center',
                     key: 'matiere',
@@ -113,11 +112,12 @@ export default {
 
     methods: {
         create() {
+            // console.log(this.$page.props.permissions[0])
             this.dialog = true
-            this.dialog_title =  'Nouvelle Evaluation'
+            this.dialog_title = 'Nouvelle Evaluation'
         },
         editItem(item) {
-            // console.log('code', item.enseignement_annee_id)
+            // console.log('code', item.code)
             this.form.id = item.id
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage
@@ -125,12 +125,12 @@ export default {
             this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
             this.dialog = true
-            this.dialog_title = 'Modifier Evaluation ' 
+            this.dialog_title = 'Modifier Evaluation' + ' ' + item.code
         },
         deleteItem(item) {
             this.$swal({
-                title: 'Es-tu sûr?',
-                text: "Vous ne pourrez pas revenir en arrière!",
+                title: 'Etes-vous sûr de vouloir supprimer evaluation de' + ' ' + item.code + '?',
+                text: "Vous ne pourrez pas revenir en arrière!!!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: 'orange',
@@ -200,7 +200,6 @@ export default {
                     type_evaluation_id,
                     enseignement_annee_id
                 } = this.form
-
                 this.form.put(route('evaluation.update', this.form.id), {
                     onFinish: () => {
                         this.close()
@@ -227,7 +226,7 @@ export default {
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
             this.dialog = false
-        },
+        }
     },
 }
 </script>
@@ -236,95 +235,85 @@ export default {
 <Head title="Dashboard" />
 
 <AuthenticatedLayout>
-    <template #header>
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Evaluation</h2>
-    </template>
+    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des evaluations"></Toolbar>
+    <br>
+    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
 
-    <v-card>
-        <page-toolbar :icon="icon.mdiTools">Gestion des Evaluations</page-toolbar>
-        <v-card-text>
-
-            <br>
-            <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
-
-<v-card>
-    <!-- <v-card-title dense color="orange" dark> -->
-    <v-toolbar dense color="secondary" dark >
-        <v-toolbar-title >
-            <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
-        </v-toolbar-title>
-        <v-spacer></v-spacer>
-        <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close()"></v-icon>
-    </v-toolbar>
-    <!-- </v-card-title> -->
-    <v-card-text>
-        <v-form ref="form">
-            <v-container>
-                <v-row>
-                    <v-col cols="6" >
-                        <TextField  label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                        </TextField>
-                    </v-col>
-                    <v-col cols="6">
-                        <Autocomplete v-model="form.periode_id" label="Periodes" itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] "  chips clearable>
-                        </Autocomplete>
-                    </v-col>
-                    <v-col cols="6">
-                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] "  chips clearable :isRequired="true">
-                        </Autocomplete>
-                    </v-col>
-                    <v-col cols="6">
-                        <Autocomplete label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] "  chips clearable>
-                        </Autocomplete>
-                    </v-col>
-                    <v-col cols="6">
-                    <TextField v-if="regime[0].regime_evaluation"  :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                        </TextField>
-                    </v-col>
-                </v-row>
-            </v-container>
-        </v-form>
-    </v-card-text>
-    <v-card-actions class="justify-end">
-        <v-spacer></v-spacer>
-        <Button  class="mb-2" style="height: 30px"  nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">    
-        </Button>
-    </v-card-actions>
-</v-card>
-</v-dialog>
-            <Datatable v-if="types == 1" titleDatatable="Listes des evaluations (section primaire)" :headers="headers" :items="evaluation_primaires" :functionOnClickAddButton="create">
-                <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
-                    </v-icon>
-                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
-                    </v-icon>
-                </template>
-            </Datatable>
-            <Datatable v-if="types == 2" titleDatatable="Listes des evaluations section secondaire " :headers="headers" :items="evaluation_secondaires" :functionOnClickAddButton="create">
-                <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
-                    </v-icon>
-                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
-                    </v-icon>
-                </template>
-            </Datatable>
-            <Datatable v-if="types == 3" titleDatatable="Listes des evaluations (section superieure) " :headers="headers" :items="evaluation_superieures" :functionOnClickAddButton="create">
-                <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
-                    </v-icon>
-                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
-                    </v-icon>
-                </template>
-            </Datatable>
-            <Datatable v-if="types == 4" titleDatatable="Listes des evaluations (section université)" :headers="headers" :items="evaluation_universites" :functionOnClickAddButton="create">
-                <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
-                    </v-icon>
-                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
-                    </v-icon>
-                </template>
-            </Datatable>
-        </v-card-text>
-    </v-card>
+        <v-card>
+            <v-toolbar dense color="secondary" dark>
+                <v-toolbar-title>
+                    <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon> {{ dialog_title }}
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close()"></v-icon>
+            </v-toolbar>
+            <v-card-text>
+                <v-form ref="form">
+                    <v-container>
+                        <v-row>
+                            <v-col cols="6">
+                                <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                </TextField>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete v-model="form.periode_id" label="Periodes" itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <Autocomplete label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                </Autocomplete>
+                            </v-col>
+                            <v-col cols="6">
+                                <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                                </TextField>
+                            </v-col>
+                        </v-row>
+                    </v-container>
+                </v-form>
+            </v-card-text>
+            <v-card-actions class="justify-end">
+                <v-spacer></v-spacer>
+                <Button class="mb-2" style="height: 30px" nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">
+                </Button>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
+    <Datatable v-if="types == 1" titleDatatable="Listes des evaluations (section primaire)" :headers="headers" :items="evaluation_primaires" :functionOnClickAddButton="create">
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-icon size="small" color="warning"  title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            </v-icon>
+            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            </v-icon>
+        </template>
+    </Datatable>
+    <Datatable v-if="types == 2" titleDatatable="Listes des evaluations section secondaire " :headers="headers" :items="evaluation_secondaires" :functionOnClickAddButton="create">
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-icon size="small"  color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            </v-icon>
+            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            </v-icon>
+        </template>
+    </Datatable>
+    <Datatable v-if="types == 3" titleDatatable="Listes des evaluations (section superieure) " :headers="headers" :items="evaluation_superieures" :functionOnClickAddButton="create">
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            </v-icon>
+            <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            </v-icon>
+        </template>
+    </Datatable>
+    <Datatable v-if="types == 4" titleDatatable="Listes des evaluations (section université)" :headers="headers" :items="evaluation_universites" :functionOnClickAddButton="create">
+        <template v-slot:[`item.actions`]="{ item }">
+            <v-icon size="small"  color="warning"  title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            </v-icon>
+            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            </v-icon>
+        </template>
+    </Datatable>
+    
 </AuthenticatedLayout>
 </template>

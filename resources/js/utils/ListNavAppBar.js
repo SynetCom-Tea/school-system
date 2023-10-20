@@ -53,9 +53,9 @@ export function listMenus(page) {
     let tabs = [];
     let enfants = [];
     let tab,tab_s = [];
-    let section_user = [];
+    let section_user = [],notes = [],note = [];
     let MenuEvaluation;
-    let MenuAdmin,linkSection;
+    let MenuAdmin,linkSection,MenuNote;
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
       { title: "Secondaire", icon: mdiSchool, link: "/enseignement/configuration/2" },
@@ -65,11 +65,42 @@ export function listMenus(page) {
     const section_users = [
       { title: "Primaire", icon: mdiSchool, link: "/gestionnote/evaluation/1" },
       { title: "Secondaire", icon: mdiSchool, link: "/gestionnote/evaluation/2" },
-      { title: 'Supérieur', icon: mdiSchool, link: '/gestionnote/evaluation/3' },
+      { title: 'Supérieure', icon: mdiSchool, link: '/gestionnote/evaluation/3' },
       { title: 'Universitaire', icon: mdiSchool, link: '/gestionnote/evaluation/4' },
     ];
+    const section_notes = [
+      { title: "Primaire", icon: mdiSchool, link: "/gestionnote/note/1" },
+      { title: "Secondaire", icon: mdiSchool, link: "/gestionnote/note/2" },
+      { title: 'Supérieure', icon: mdiSchool, link: '/gestionnote/note/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/gestionnote/note/4' },
+    ];
+    // debut gestion note
+    if (page?.roles[0]== "Enseignant") {
+      if (page?.section_users[0]?.libelle) {
+        note = page?.section_users.map(el =>el.libelle);
+      }
+    }
 
+    if (note != []) {
+      section_notes.forEach((s) => {
+
+          if (note.includes(s.title)) {
+
+            notes.push(s);
+            // console.log(notes)
+        }
+      });
+    }
+    MenuNote = {
+      icon: mdiCogOutline,
+      title: "Notes",
+      "icon-alt": mdiChevronLeft,
+      model: false,
+      children: notes,
+  }
+    // Fin gestion note
   //  Début de menu pre-configs
+  // console.log(page?.section_users)
     if (page?.roles[0] == "Administrateur") {
 
       if (page?.sections[0]?.sections) {
@@ -170,7 +201,43 @@ MenuGestion = {
 
     let listMenusSections = []
     let iconSection;
-
+    let childrenBySection = [
+      {
+                icon: mdiSquareMedium,
+                title: "Liste utilisateurs",
+                link: "/users",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Rôles",
+                link: "/enseignement/roles",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Permissions",
+                link: "/enseignement/permissions",
+                permissions: "manage_system",
+            },
+        {
+            title: "Inscription",
+            icon: mdiAccountSchool,
+            link: "/scolarite/inscriptions",
+            permissions: "manage_system"},
+     {
+                icon: mdiSquareMedium,
+                title: "Emploi",
+                link: "/emploi/emplois",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Calendrier",
+                link: "/emploi/emplois/create",
+                permissions: "manage_system",
+            },
+]
     if (pageSections) {
         pageSections.forEach((element, index) => {
             if (element) {
@@ -308,7 +375,7 @@ let superAdminMenus=[]
 
     /*********************Fin  Menu Gestion des enseignants  ************************ */
 
-    return{singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers}
+    return{singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote}
 }
 //Menu par section
 export function listMenusBySection(page, sectionID) {

@@ -12,6 +12,9 @@ use Modules\Enseignement\Entities\EnseignementAnnee;
 class ClasseAnnee extends Model
 {
     use HasFactory;
+    
+    protected $fillable = ['annee_id','classe_id'];
+
     public function etablissement_section(): BelongsTo
     {
         return $this->belongsTo(EtablissementSection::class);
@@ -26,7 +29,7 @@ class ClasseAnnee extends Model
         return $this->belongsTo(Annee::class);
     }
 
-    public function enseignementtAnnees(): HasMany
+    public function enseignement_annees(): HasMany
     {
         return $this->hasMany(EnseignementAnnee::class);
     }

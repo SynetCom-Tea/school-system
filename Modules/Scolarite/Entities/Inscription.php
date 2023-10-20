@@ -6,16 +6,27 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use App\Models\Apprenant;
+use App\Models\Annee;
+use Modules\Enseignement\Entities\CycleFiliere;
+use Modules\Enseignement\Entities\Niveau;
 
 class Inscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date_inscription', 'apprenant_id', 'filiere_id', 'classe_id'];
+    protected $fillable = ['date_inscription', 'apprenant_id', 'niveau_id','cycle_filiere_id', 'annee_id'];
 
-    public function apprenant(): BelongsTo
+    public function apprenant()
     {
         return $this->belongsTo(Apprenant::class);
+    }
+    public function cycleFiliere()
+    {
+        return $this->belongsTo(CycleFiliere::class);
+    }
+    public function annee()
+    {
+        return $this->belongsTo(Annee::class);
     }
 
     /* public function filiere(): BelongsTo
@@ -23,8 +34,8 @@ class Inscription extends Model
         return $this->belongsTo(Filiere::class);
     } */
 
-    public function classe(): BelongsTo
+    public function niveau()
     {
-        return $this->belongsTo(Classe::class);
+        return $this->belongsTo(Niveau::class);
     }
 }

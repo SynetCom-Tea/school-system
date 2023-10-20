@@ -11,17 +11,17 @@ class CycleFiliere extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    
     
     protected static function newFactory()
     {
         return \Modules\Enseignement\Database\factories\CycleFiliereFactory::new();
     }
-    public function filiere(): BelongsTo
+    public function filiere()
     {
         return $this->belongsTo(Filiere::class);
     }
-    public function cycle(): BelongsTo
+    public function cycle()
     {
         return $this->belongsTo(Cycle::class);
     }

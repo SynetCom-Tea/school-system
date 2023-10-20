@@ -19,8 +19,7 @@ return new class extends Migration
             $table->string('libelle');
             $table->foreignIdFor(App\Models\Etablissement::class)
                 ->references('id')->on('etablissements')->constrained()
-                ->onUpdate('cascade')
-                ->onDelete('restrict');
+                ->onUpdate('cascade');
             $table->timestamps();
         });
     }

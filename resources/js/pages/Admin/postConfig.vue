@@ -162,18 +162,18 @@
 import { router, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {
-  mdiGoogleClassroom,
-  mdiBookOpenVariant,
-  mdiAccount,
-  mdiCheckCircle,
-  mdiSchool,
-  mdiHomeOutline,
-  mdiInformation,
-  mdiCloseCircle,
-  mdiPlusCircle,
-  mdiCogOutline,
-  mdiPresentation,
-  mdiGift,
+    mdiGoogleClassroom,
+    mdiBookOpenVariant,
+    mdiAccount,
+    mdiCheckCircle,
+    mdiSchool,
+    mdiHomeOutline,
+    mdiInformation,
+    mdiCloseCircle,
+    mdiPlusCircle,
+    mdiCogOutline,
+    mdiPresentation,
+    mdiGift,
 } from "@mdi/js";
 export default {
   layout: AuthenticatedLayout,
@@ -209,10 +209,10 @@ export default {
       mdiCogOutline,
     },
 
-    form: useForm({
-      matieres: [],
+        form: useForm({
+            matieres: [],
+        }),
     }),
-  }),
 
   methods: {
     goBack() {

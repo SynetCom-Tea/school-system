@@ -14,7 +14,7 @@ import {
   mdiMenuDown,
 } from "@mdi/js";
 export default {
-  props: ["allSections"],
+  props: ["sectionEnquestion"],
   layout: AuthenticatedLayout,
   data() {
     return {
@@ -48,11 +48,6 @@ export default {
   methods: {
     goBack() {
       router.get(route("emplois.index"));
-    },
-    setNiveau(section) {
-      this.niveaux = this.$page.props.niveaux.filter(
-        (niveau) => niveau.section_id == section
-      );
     },
     setClasse(niveau) {
       this.classes = this.$page.props.classes.filter((classe) => {
@@ -112,7 +107,7 @@ export default {
     // }
   },
   mounted() {
-    console.log("Mounted", this.allSections);
+    console.log("Mounted", this.sectionEnquestion);
     this.daysOfWeek.forEach((day) => {
       this.form.seances[day] = [];
       this.addRow(day);
@@ -140,21 +135,10 @@ export default {
                 <v-row dense>
                   <v-col md="4">
                     <autocomplete
-                      label="Section"
-                      v-model="form.section"
-                      :items="allSections"
-                      @update:modelValue="setNiveau(form.section)"
-                      item-title="libelle"
-                      item-value="id"
-                    ></autocomplete>
-                  </v-col>
-                  <v-col md="4">
-                    <autocomplete
                       label="Niveau"
                       v-model="form.niveau"
-                      :items="niveaux"
+                      :items="$page.props.niveaux"
                       @update:modelValue="setClasse(form.niveau)"
-                      :disabled="!form.section"
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
@@ -282,13 +266,13 @@ export default {
                   </v-expansion-panel>
                 </v-expansion-panels>
               </v-card-text>
-              <v-card-actions>
+              <v-card-actions class="justify-end">
                 <v-spacer></v-spacer>
                 <v-btn dark small type="button" color="red" @click="goBack">
-                  <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
+                    <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
                 </v-btn>
-                <v-btn small color="success" @click="submit">
-                  <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
+                <v-btn small color="primary" @click="submit">
+                    <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
                 </v-btn>
               </v-card-actions>
             </v-card>
