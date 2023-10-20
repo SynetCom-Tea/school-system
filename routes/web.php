@@ -41,7 +41,7 @@ use Modules\Scolarite\Http\Controllers\DepartementController;
 // AbdoulAZIZ
 Route::prefix('enseignement')->group(function () {
     Route::get('/', 'EnseignementController@index');
-    Route::resource('ues', UEController::class)->only(['index', 'create', 'store', 'edit', 'update']);
+    // Route::resource('ues', UEController::class)->only(['index', 'create', 'store', 'edit', 'update']);
     Route::resource('etablissements', EtablissementController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     Route::resource('cycles', CycleController::class)->only(['index', 'create', 'destroy', 'store', 'update']);
     Route::resource('permissions', PermissionController::class);
@@ -123,10 +123,14 @@ Route::get('affectationEnseignants/{type}', [AffectationEnseignantController::cl
 Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'index'])->name('AffectationEnseignants.index');
 Route::post('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'store'])->name('AffectationEnseignants.store');
 Route::get('AffectationEnseignants', [AffectationEnseignantController::class, 'edit'])->name('AffectationEnseignants.edit');
-Route::resource('fillieres', FilliereController::class)->only([ 'update', 'destroy']);
+Route::resource('filieres', FilliereController::class)->only([ 'update', 'destroy']);
 Route::get('filierescreate/{type}', [FilliereController::class, 'create'])->name('filieres.create');
-Route::get('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
+Route::post('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
 Route::get('filieres/{type}', [FilliereController::class, 'index'])->name('filieres.index');
+Route::resource('UniteEnseignement', UEController::class)->only([ 'edit', 'update']);
+Route::get('Unité d\'enseignement/{type}', [UEController::class, 'create'])->name('ues.create');
+Route::get('Unité d\'enseignement/{type}', [UEController::class, 'index'])->name('ues.index');
+Route::post('Unité d\'enseignement/{type}', [UEController::class, 'store'])->name('ues.store');
 
 
 require __DIR__ . '/auth.php';

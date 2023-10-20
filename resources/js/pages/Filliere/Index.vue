@@ -85,8 +85,8 @@
                 router.get(route('filieres.create', this.section_id))
             },
             editItem(item){
-                //console.log('edit',item)
-                this.dialog_title = 'Modifier la filière '+ item.nom
+                console.log('edit',item)
+                this.dialog_title = 'Modifier la filière '+ item.name
                 this.form.id = item.id
                 this.form.code = item.code
                 this.form.name = item.name
@@ -150,7 +150,7 @@
                                 iconColor: '#004980',
                                 color: '#004980',
                                 title: 'Enregistrement',
-                                text: 'Matière créée avec succès!',
+                                text: 'la filière a été enregistrée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -172,7 +172,7 @@
                                 iconColor: '#004980',
                                 color: '#004980',
                                 title: 'Modification',
-                                text: 'Matière modifiée avec succès!',
+                                text: 'la filière a été modifiée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -244,7 +244,7 @@
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.nom" isRequired :rules="rules"></text-field>
+                                                <text-field label="Nom de la filière" placeholder="Nom de la filière" v-model="form.name" isRequired :rules="rules"></text-field>
 
                                             </v-col>
                                         </v-row>

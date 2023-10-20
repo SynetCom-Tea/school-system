@@ -17,6 +17,8 @@ use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\NiveauMatiere;
 
+use function PHPSTORM_META\map;
+
 class AffectationEnseignantController extends Controller
 {
     /**
@@ -52,12 +54,12 @@ class AffectationEnseignantController extends Controller
             $query->where('section_id',$type);})->get();
         $list = [];
         $list1 = [];
-        $tabs=[];
+        $tabs=collect();
         // dd($list_classes);
         foreach($enseignants as $enseignant){
             foreach($enseignement_annees as $enseignement_annee){
                 // $i = 0;
-                if($enseignant->id == $enseignement_annee->enseignant->id){
+                if($enseignant->id == $enseignement_annee->enseignant_id){
 
                     $list[] = [
                         'id' => $enseignement_annee,
@@ -87,8 +89,11 @@ class AffectationEnseignantController extends Controller
             }
 
         }
-        $tableau=[];
-        $tableau=$tabs;
+        $tableau=collect();
+        $tabs->map(function($element) use ($tableau){
+            return $tableau->push($element);
+        });
+        // $tableau=$tabs;
         // dd($tableau);
 
         //    dump($enseignement_annee);
@@ -101,7 +106,7 @@ class AffectationEnseignantController extends Controller
             'niveauMatieres' => $niveauMat,
             'enseignants' => $enseignants,
             'classes'=>$classes,
-            'enseignements'=>$tabs,
+            'enseignements'=>$tableau,
             'section_id' => $type,
         ]);
     }

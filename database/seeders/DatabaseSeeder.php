@@ -24,7 +24,6 @@ class DatabaseSeeder extends Seeder
             EtablissementsTableSeeder::class,
             EtablissementSectionSeeder::class,
             FiliereSeeder::class,
-            CycleSeeder::class,
             CycleFiliereSeeder::class,
             ClasseSeeder::class,
             AnneeScolaireSeeder::class,
@@ -43,7 +42,7 @@ class DatabaseSeeder extends Seeder
             FiliereNiveauUeMatiereSeeder::class,
             PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
-            
+
             // EnseignantSeeder::class,
             EnseiggnementAnneeSeeder::class,
             EnseignantMatiereSeeder::class,

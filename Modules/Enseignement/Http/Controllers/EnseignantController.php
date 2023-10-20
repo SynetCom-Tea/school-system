@@ -73,13 +73,12 @@ class EnseignantController extends Controller
 
         if($mat!=null){
 
+
                     $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
                         $classe->where('etablissement_section_id',$mat->etablissement_section_id);
                     })->whereHas('annee',function($anne) use ($annee){
                         $anne->where('annee_id',$annee->id);
                     })->get();
-
-
 
         }
         $enseignement_annee=EnseignementAnnee::all();
