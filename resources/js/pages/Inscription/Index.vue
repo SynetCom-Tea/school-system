@@ -3,12 +3,34 @@
     <Toolbar
       styleToolbar="background-color: white;"
       :icon="icons.mdiAccountSchool"
-      toolbarTitle="Inscriptions"
+      :toolbarTitle="'LISTE DES INSCRITS DE LA ' + Title   "
     ></Toolbar>
-    <div class="mt-3">
+    <div style="margin: 10px; border: 2px solid #7d002c; padding: 10px; border-radius: 25px"
+      class="mt-3">
       <v-container class="bg-primary-variant">
         <v-row align="center">
           <v-col cols="3">
+              <v-switch class="mt-5" v-model="recherche" color="#004980" inset :label="'Recherche avec Nom et prenom'"></v-switch>
+          </v-col>
+
+          <!-- /////////////////////////////////////////// -->
+          <v-col cols="1" v-if="!recherche"></v-col>
+          <v-col cols="5" v-if="!recherche">
+              <TextField class="mt-5" label="Matricule" :isRequired="true" placeholder="Matricule" v-model="matricule"></TextField>
+          </v-col>
+          <v-col cols="3" v-if="recherche">
+              <TextField class="mt-5" label="Nom" :isRequired="true" placeholder="Nom" v-model="nom"></TextField>
+          </v-col>
+          <v-col cols="3" v-if="recherche">
+              <TextField class="mt-5" label="Prénom" :isRequired="true" placeholder="Prenom" v-model="prenom"></TextField>
+          </v-col>
+          <v-col cols="3">
+            <v-btn color="primary" @click="startRechercheInscription()" style="height=80px;text-transform: none; font-size: 10px">Rechercher</v-btn>
+          </v-col>
+
+          <!-- ////////////////////////////////// -->
+
+          <!-- <v-col cols="3">
             <Autocomplete
               :items="academicYears"
               v-model="year"
@@ -19,7 +41,7 @@
               label="Année"
               @update:modelValue="onChangeModelValueYears(year)"
             ></Autocomplete>
-          </v-col>
+          </v-col> -->
           <!-- <v-col cols="3">
             <Autocomplete
               :items="getSections"
@@ -32,7 +54,7 @@
               @update:modelValue="onChangeModelValueSections(section, year)"
             ></Autocomplete>
           </v-col> -->
-          <v-col cols="4">
+          <!-- <v-col cols="4">
             <Autocomplete
               v-if="section == 1"
               :items="niveauxPrimaire"
@@ -71,23 +93,74 @@
                 onChangeModelValueNiveaux('Supérieure', superieur, section, year)
               "
             ></Autocomplete>
-          </v-col>
+          </v-col> -->
 
-          <Button
+          <!-- <Button
             color="primary"
             sizeButton="x-large"
             style="height=70px;text-transform: none; font-size: 10px"
             @click="reset()"
           >
             Réinitialiser</Button
-          >
+          > -->
         </v-row>
       </v-container>
     </div>
+    <!-- <div>
+      <v-container>
+        <v-row>
+          <v-col cols="10"></v-col>
+          <v-col>
+            <Button
+              color="primary"
+              sizeButton="x-large"
+              style="height=70px;text-transform: none; font-size: 10px"
+              @click="addNewInscription(null)"
+            >
+              Réinitialiser</Button
+            >
+          </v-col>
+        </v-row>
+      </v-container>
+      
+    </div> -->
+
+     
     <div
       style="margin: 10px; border: 2px solid #7d002c; padding: 10px; border-radius: 25px"
       class="mt-3"
     >
+    <v-row>
+          <v-col cols="10"></v-col>
+          <v-col>
+            <v-btn
+              color="primary"
+              sizeButton="x-large"
+              title="Nouvel inscription"
+              :prepend-icon="icons.mdiPlus"
+              @click="addNewInscription(null)"
+            >
+              <!-- <template v-slot:prepend>
+                <v-icon color="success"></v-icon>
+              </template> -->
+
+              Inscription
+
+              <!-- <template v-slot:append>
+                <v-icon color="warning"></v-icon>
+              </template> -->
+            </v-btn>
+            <!-- <v-btn
+            icon="mdi-plus"
+              color="primary"
+              sizeButton="x-large"
+              style="height=70px;text-transform: none; font-size: 10px"
+              @click="addNewInscription(null)"
+            >
+              </v-btn
+            > -->
+          </v-col>
+        </v-row><br>
       <v-data-iterator
         v-model:items-per-page="itemsPerPage"
         v-model:page="page"
@@ -314,7 +387,7 @@ export default {
   },
   //*403#
   // layout: AuthenticatedLayout,
-  props: ["vSectionID"],
+  props: ["vSectionID","inscriptions"],
   data() {
     return {
       dialogFrais: false,
@@ -327,6 +400,10 @@ export default {
       sortOrder: "asc",
 
       // FIN
+      matricule: null,
+      nom: null,
+      prenom: null,
+      recherche: null,
       year: null,
       annee: null,
       section: this.vSectionID,
@@ -343,6 +420,7 @@ export default {
           key: "matricule",
           sortable: false,
         },
+        { title: "Année", align: "center", key: "annee_scolaire" },
         { title: "Nom & Prénom", align: "center", key: "name" },
         // { title: "Prénom", align: "center", key: "prenom" },
         { title: "Niveau/Classe", align: "center", key: "classe_code" },
@@ -476,8 +554,21 @@ export default {
       }
       return list ?? [];
     },
+    Title() {
+      switch (this.vSectionID) {
+        case 1:
+          return "SECTION PRIMAIRE";
+        case 2:
+          return "SECTION SECONDAIRE";
+        case 3:
+          return "SECTION SUPERIEURE";
+        default:
+          return "SECTION UNIVERSITAIRE";
+      }
+    },
   },
   created(){
+    this.subscribers = this.customizeData(this.inscriptions)
   },
   methods: {
     getNiveauxPrimaire,
@@ -485,6 +576,28 @@ export default {
     getNiveauxSuperieur,
     getAcademicYears,
     generateColorsForGraph,
+
+    startRechercheInscription(){
+        axios
+          .get(
+            route("getInscriptionsByRecherche", {
+              matricule: this.matricule ?? null,
+              nom: this.nom ?? null,
+              prenom: this.prenom ?? null,
+              section: this.vSectionID,
+            })
+          )
+          .then((res) => {
+            console.log('response',res.data);
+            if (typeof res.data == "string" || typeof res.data == "undefined") {
+              // this.$toast.error("Données non valides!");
+            } else {
+              this.subscribers = this.customizeData(res.data);
+              // return res.data; 
+            }
+          });
+     
+    },
     addNewInscription(item){
       // router.post('/scolarite/inscription/page/',{apprenant:item});
       router.get(route("inscriptionPage", {apprenant: JSON.stringify(item), section: JSON.stringify(this.vSectionID)}))
@@ -610,6 +723,7 @@ export default {
               lieu_naissance: element.apprenant?.lieu_naissance,
               telephone: element.apprenant?.telephone,
               classe_code: element.classe_annee?.classe?.code,
+              annee_scolaire: element.classe_annee?.annee?.libelle,
               cycle_niveau: element.cycle_filiere?.cycle?.name + ' / ' + element.niveau?.libelle,
               filiere: element.cycle_filiere?.filiere?.name,
               annee: element.annee?.libelle,

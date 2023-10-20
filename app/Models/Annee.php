@@ -10,6 +10,10 @@ use Modules\Scolarite\Entities\Frais;
 class Annee extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'libelle',
+        'actif',
+    ];
     public function frais(): HasMany
     {
         return $this->hasMany(Frais::class);

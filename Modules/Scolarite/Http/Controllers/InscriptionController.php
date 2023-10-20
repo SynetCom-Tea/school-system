@@ -24,6 +24,7 @@ use Modules\Scolarite\Entities\Tuteur;
 use Modules\Scolarite\Entities\TypeFrais;
 use Modules\Scolarite\Entities\Versement;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InscriptionController extends Controller
 {
@@ -46,7 +47,8 @@ class InscriptionController extends Controller
             }
 
             return Inertia::render('Inscription/Index', [
-                'vSectionID' => (int)$request->section_id
+                'vSectionID' => (int)$request->section_id,
+                'inscriptions' => $this->ajaxInscriptionListe($request,null,$request->section_id)
             ]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -68,7 +70,15 @@ class InscriptionController extends Controller
             'type' => $section,
             'niveaux' => Niveau::where('section_id', $section)->get(),
             'cycles' => Cycle::all(),
-            'cycleFilieres' => CycleFiliere::whereHas('filiere', function($query){$query->where('etablissement_id',Auth::user()->etablissement_id);})->where('cycle_id',$request->cycle_id ? $request->cycle_id : 1)->with('filiere','cycle')->get(),
+            'cycleFilieres' => CycleFiliere::whereHas('filiere', function($query) use ($section){
+                $query->where('etablissement_id',Auth::user()->etablissement_id)->where(function ($query) use ($section) {
+                    if($section == '3'){
+                        return $query->where('departement_id',null);
+                    } elseif($section == '4') {
+                        return $query->where('departement_id','<>',null);
+                    }
+                });
+            })->where('cycle_id',$request->cycle_id ? $request->cycle_id : 1)->with('filiere','cycle')->get(),
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
@@ -77,7 +87,129 @@ class InscriptionController extends Controller
         ]);
     }
 
-    // requete AXIOS pour verifier voir si ya au moins une classe pour ce niveau
+    // Debut requete AXIOS 
+    public function ajaxInscriptionListe(Request $request,$mat = null,$sec = null)
+    {
+        // dd($request->nom);
+        $nom = null;
+        $prenom = null;
+        
+        $section = $sec ? $sec : $request->section;
+        $matricule = null;
+        if($request->matricule == null && $mat == null){
+            $nom = $request->nom;
+            $prenom = $request->prenom;
+        }elseif($request->matricule != null && $mat == null){
+            $matricule = $request->matricule;
+        }
+        $list = [];
+        $authUser =  Auth::user();
+        $collection = collect();
+        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        // $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
+        $year = Annee::where('actif',1)->first()->id;
+        // dd($params,$year);
+        
+            
+           
+            if ($nameRole == 'Administrateur') {
+                $list = Inscription::where(function ($query) use ($section) {
+                    if($section == '1' || $section == '2'){
+                        return $query->where('cycle_filiere_id',null);
+                    } elseif($section == '3') {
+                        return $query->where('cycle_filiere_id','<>',null)->whereHas('cycleFiliere', function($query) use ($section) {
+                            $query->whereHas('filiere', function($query) use ($section){
+                                $query->where('etablissement_id',Auth::user()->etablissement_id)->where(function ($query) use ($section) {
+                                    if($section == '3'){
+                                        return $query->where('departement_id',null);
+                                    } elseif($section == '4') {
+                                        return $query->where('departement_id','<>',null);
+                                    }
+                                });
+                            });
+                        });
+                    }elseif($section == '4'){
+                        return $query->where('cycle_filiere_id','<>',null)->whereHas('cycleFiliere', function($query) use ($section) {
+                            $query->whereHas('filiere', function($query) use ($section){
+                                $query->where('etablissement_id',Auth::user()->etablissement_id)
+                                ->where(function ($query) use ($section) {
+                                    if($section == '3'){
+                                        return $query->where('departement_id',null);
+                                    } elseif($section == '4') {
+                                        return $query->where('departement_id','<>',null);
+                                    }
+                                });
+                            });
+                        });
+                    }
+                })->where(function ($query) use ($section,$matricule,$year,$nom,$prenom) {
+                    if($matricule !== null || $nom !== null || $prenom !== null){
+                       
+                    }else{
+                        $query->where('annee_id',$year);
+                    }
+                })
+                ->whereHas('apprenant', function ($query) use ($authUser,$matricule,$nom,$prenom) {
+                    if($matricule !== null){
+                        $query->where('matricule','like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                        // dump('matricule',$matricule);
+                    }elseif($nom != null && $prenom != null){
+                        $query->where('nom','like', '%' . $nom . '%')->where('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                    }else{
+                        $query->where('nom','like', '%' . $nom . '%')->orWhere('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                    }
+                    // else{
+                    //     $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                    //     // dump('non matricule');
+                    // }
+                })->with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')->get();
+                // dd($list);
+                if($section == '1' || $section == '2'){
+                    $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first()->id;
+    
+                    $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
+                        ->whereHas('classe_annee', function ($query) use ($year, $matricule,$nom,$prenom,$authUser,$findEtabSection) {
+                            $query->whereHas('classe', function ($query) use ($year, $matricule,$nom,$prenom,$authUser,$findEtabSection){
+                                $query->where('etablissement_section_id',$findEtabSection);
+                            })->whereHas('annee', function ($query) use ($year, $matricule,$nom,$prenom,$authUser,$findEtabSection){
+                                if($matricule !== null || $nom !== null || $prenom !== null){
+                       
+                                }else{
+                                    $query->where('annee_id',$year);
+                                }
+                            });
+                        })
+                        ->whereHas('apprenant', function ($query) use ($year, $matricule,$nom,$prenom,$authUser) {
+                            if($matricule !== null){
+                                $query->where('matricule','like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                                // dump('matricule',$matricule);
+                            }elseif($nom != null && $prenom != null){
+                                $query->where('nom','like', '%' . $nom . '%')->where('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                            }else{
+                                $query->where('nom','like', '%' . $nom . '%')->orWhere('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                            }
+                        })
+                        ->get();
+                        // dd($apprenantsCABySection,$list);
+                    $list->map(function ($element) use ($apprenantsCABySection, $collection) {
+                        $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
+                            return $el['apprenant_id'] == $element['apprenant_id'];
+                        });
+                        return $collection->push($vTerre->filter()->all());
+                    });
+                }
+            }
+            if($section == '1' || $section == '2'){
+                $flattened = $collection->flatten()->unique()->filter();
+                $flattened->all();
+                // dd($flattened);
+                return $flattened ?? [];
+            }elseif($section == '3' || $section == '4'){
+                return $list ?? []; 
+            }
+        
+    }
+
     public function getFrais($niveau,$annee)
     {
         // dd($niveau);
@@ -90,7 +222,6 @@ class InscriptionController extends Controller
         return $frais_scolarite;
     }
     
-    // requete AXIOS pour verifier voir si ya au moins une classe pour ce niveau
     public function checkClasse($niveau,$etabSection)
     {
         // dd($niveau,$etabSection);
@@ -112,6 +243,58 @@ class InscriptionController extends Controller
         return $donnees ?? [];
     }
 
+    // Fin requete AXIOS
+
+    // DEBUT FUNCTION HELPERS
+    public function generateMatricule($donnees)
+    {
+        // dd($donnees['section']);
+        // dd(CycleFiliere::find($donnees['annees']['cycle_filiere'])->with('filiere')->first());
+        $mat = "";
+        $s = substr($this->getNameSection($donnees['section']), 0, 1);
+        $words = preg_split(
+            "/(\s|\-|\.)/",Niveau::find($donnees['annees']['niveau'])->libelle
+        );
+        $n = "";
+        $o = 0;
+        $f = "";
+        foreach ($words as $w) {
+            $n .= substr($w, 0, 1);
+        }
+        $a = Annee::find($donnees['annees']['annee'])->libelle;
+        if($donnees['section'] == '1' || $donnees['section'] == '2'){
+            $o = Inscription::where('annee_id',$donnees['annees']['annee'])->where('niveau_id',$donnees['annees']['niveau'])->count() + 1;
+        }elseif($donnees['section'] == '3' || $donnees['section'] == '4'){
+            $o = Inscription::where('annee_id',$donnees['annees']['annee'])->where('niveau_id',$donnees['annees']['niveau'])->where('cycle_filiere_id',$donnees['annees']['cycle_filiere'])->count() + 1;
+        }
+        if($donnees['section'] == '1' || $donnees['section'] == '2'){
+            $mat = 'US-'.$s.$a.$n.$o;
+        }elseif($donnees['section'] == '3' || $donnees['section'] == '4'){
+            $f = substr(CycleFiliere::find($donnees['annees']['cycle_filiere'])->with('filiere')->first()->filiere->name, 0, 1);
+            $mat = 'US-'.$s.$a.$n.$f.$o;
+        }
+        return $mat ?? "";
+    }
+
+    public function getNameSection($section)
+    {
+        $name = '';
+        if ($section == '1') {
+            $name = 'Primaire';
+        }
+        if ($section == '2') {
+            $name = 'Secondaire';
+        }
+        if ($section == '3') {
+            $name = 'Supérieure';
+        }
+        if ($section == '4') {
+            $name = 'Universitaire';
+        }
+        return $name;
+    }
+    // FIN FUNCTION HELPER
+
     /**
      * Store a newly created resource in storage.
      * @param Request $request
@@ -119,26 +302,27 @@ class InscriptionController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all(),gettype($request->section));
-        // Apprenant
+        /////////////////////////////  matricule  ///////////////////////
+        $matricule = $this->generateMatricule($request->all());
         $id_apprenant = null;
 
-        $type_frais = TypeFrais::where('libelle','Frais de scolarité')->first();
-        $frais = Frais::where('type_frais_id',$type_frais->id)->where('annee_id',$request->annees['annee'])->where('niveau_id',$request->annees['niveau'])
-        ->where('etablissement_id',Auth::user()->etablissement_id)->first();
-        // dd($frais);
-        if($frais == null){
-            return redirect()->back()->with('message', [
-                'type' => 'error',
-                'text' => 'frais de scolarité manquants',
-            ]);
-        }
+        // $type_frais = TypeFrais::where('libelle','Frais de scolarité')->first();
+        // $frais = Frais::where('type_frais_id',$type_frais->id)->where('annee_id',$request->annees['annee'])->where('niveau_id',$request->annees['niveau'])
+        // ->where('etablissement_id',Auth::user()->etablissement_id)->first();
+        // // dd($frais);
+        // if($frais == null){
+        //     return redirect()->back()->with('message', [
+        //         'type' => 'error',
+        //         'text' => 'frais de scolarité manquants',
+        //     ]);
+        // }
         if($request->apprenants){
             $find = Apprenant::where('nom',$request->apprenants['nom'])->where('prenom',$request->apprenants['prenom'])->where('sexe',$request->apprenants['sexe'])
             ->where('date_naissance',$request->apprenants['date_naissance'])->where('lieu_naissance',$request->apprenants['lieu_naissance'])->where('telephone',$request->apprenants['telephone'])
             ->where('etablissement_id',Auth::user()->etablissement_id)->first();
             if($find == null){
                 $item_apprenant = Apprenant::create([
+                    'matricule' => $matricule,
                     'nom' => $request->apprenants['nom'],
                     'prenom' => $request->apprenants['prenom'],
                     'sexe' => $request->apprenants['sexe'],
@@ -167,7 +351,8 @@ class InscriptionController extends Controller
                     'date_inscription' => date('Y-m-d'),
                     'annee_id' => $request->annees['annee'],
                     'niveau_id' => $request->annees['niveau'],
-                    'apprenant_id' => $id_apprenant
+                    'apprenant_id' => $id_apprenant,
+                    'statut' => 0
                 ]);
             }elseif($request->section == '3' || $request->section == '4'){
                 $inscription = Inscription::create([
@@ -175,7 +360,8 @@ class InscriptionController extends Controller
                     'annee_id' => $request->annees['annee'],
                     'niveau_id' => $request->annees['niveau'],
                     'cycle_filiere_id' => $request->annees['cycle_filiere'],
-                    'apprenant_id' => $id_apprenant
+                    'apprenant_id' => $id_apprenant,
+                    'statut' => 0
                 ]);
             }
         }else{
@@ -222,12 +408,12 @@ class InscriptionController extends Controller
         // Versement
 
         
-        Versement::create([
-            'inscription_id' => $inscription->id,
-            'frais_id' => $frais->id,
-            'montant' => $request->annees['versement'],
-            'date_versement' => date('Y-m-d')
-        ]);
+        // Versement::create([
+        //     'inscription_id' => $inscription->id,
+        //     'frais_id' => $frais->id,
+        //     'montant' => $request->annees['versement'],
+        //     'date_versement' => date('Y-m-d')
+        // ]);
 
         // Tuteur
         if($request->tuteurs){

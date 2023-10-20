@@ -14,7 +14,7 @@ class Inscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date_inscription', 'apprenant_id', 'niveau_id','cycle_filiere_id', 'annee_id'];
+    protected $fillable = ['date_inscription', 'apprenant_id', 'niveau_id','cycle_filiere_id', 'annee_id','statut'];
 
     public function apprenant()
     {

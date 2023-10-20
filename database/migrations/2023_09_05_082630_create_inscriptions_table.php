@@ -28,6 +28,7 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
                 ->index()
                 ->references('id')->on('niveauX');
+            $table->integer('statut');
             $table->timestamps();
         });
     }

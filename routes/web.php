@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Modules\Enseignement\Http\Controllers\AffectationEnseignantController;
 use Modules\Enseignement\Http\Controllers\EnseignantController;
+use Modules\Enseignement\Http\Controllers\FilliereController;
 use Modules\Scolarite\Http\Controllers\EtudiantsController;
 use Modules\Scolarite\Http\Controllers\AnneeController;
 use Modules\Scolarite\Http\Controllers\ClasseController;
@@ -40,7 +41,6 @@ use Modules\Scolarite\Http\Controllers\DepartementController;
 Route::prefix('enseignement')->group(function () {
     Route::get('/', 'EnseignementController@index');
     Route::resource('ues', UEController::class)->only(['index', 'create', 'store', 'edit', 'update']);
-    Route::resource('fillieres', FilliereController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     Route::resource('etablissements', EtablissementController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     Route::resource('cycles', CycleController::class)->only(['index', 'create', 'destroy', 'store', 'update']);
     Route::resource('permissions', PermissionController::class);
@@ -117,10 +117,15 @@ Route::resource('salles', SalleController::class);
 Route::resource('enseignants', EnseignantController::class)->only(['create', 'update', 'destroy']);
 Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');
 Route::post('enseignants', [EnseignantController::class, 'store'])->name('enseignants.store');
-
-
 Route::resource('AffectationEnseignants', AffectationEnseignantController::class)->only(['update', 'destroy']);
 Route::get('affectationEnseignants/{type}', [AffectationEnseignantController::class, 'create'])->name('affectationEnseignants.create');
 Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'index'])->name('AffectationEnseignants.index');
 Route::post('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'store'])->name('AffectationEnseignants.store');
+Route::get('AffectationEnseignants', [AffectationEnseignantController::class, 'edit'])->name('AffectationEnseignants.edit');
+Route::resource('fillieres', FilliereController::class)->only([ 'update', 'destroy']);
+Route::get('filierescreate/{type}', [FilliereController::class, 'create'])->name('filieres.create');
+Route::get('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
+Route::get('filieres/{type}', [FilliereController::class, 'index'])->name('filieres.index');
+
+
 require __DIR__ . '/auth.php';

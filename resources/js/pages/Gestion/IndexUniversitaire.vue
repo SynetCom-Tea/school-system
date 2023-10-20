@@ -25,7 +25,7 @@ export default {
         mdiAlert,
       },
       form: this.$inertia.form({
-        section_id: 3,
+        section_id: 4,
       }),
       expand: {},
       time: 0,
