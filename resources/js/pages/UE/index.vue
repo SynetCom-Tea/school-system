@@ -105,7 +105,7 @@
                     }).then((result) => {
                     if (result.isConfirmed) {
 
-                       this.form.delete(route('ues.destroy', item.id), {
+                       this.form.delete(route('UniteEnseignement.destroy', item.id), {
                         onFinish: () => {
                             if(this.$page.props.flash?.message?.type == 'error'){
                                 this.$swal({

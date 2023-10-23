@@ -127,8 +127,8 @@ Route::resource('filieres', FilliereController::class)->only([ 'update', 'destro
 Route::get('filierescreate/{type}', [FilliereController::class, 'create'])->name('filieres.create');
 Route::post('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
 Route::get('filieres/{type}', [FilliereController::class, 'index'])->name('filieres.index');
-Route::resource('UniteEnseignement', UEController::class)->only([ 'edit', 'update']);
-Route::get('Unité d\'enseignement/{type}', [UEController::class, 'create'])->name('ues.create');
+Route::resource('UniteEnseignement', UEController::class)->only([ 'edit', 'update','destroy']);
+Route::get('Unité d\'enseignement create/{type}', [UEController::class, 'create'])->name('ues.create');
 Route::get('Unité d\'enseignement/{type}', [UEController::class, 'index'])->name('ues.index');
 Route::post('Unité d\'enseignement/{type}', [UEController::class, 'store'])->name('ues.store');
 
