@@ -37,4 +37,8 @@ class Niveau extends Model
     {
         return $this->hasMany(Frais::class);
     }
+    public function inscriptions()
+    {
+        return $this->hasMany(Cycle::class);
+    }
 }

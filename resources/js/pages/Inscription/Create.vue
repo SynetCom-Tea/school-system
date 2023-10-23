@@ -408,6 +408,7 @@ export default {
         : { disabled: true };
     },
     Title() {
+      console.log(this.type);
       switch (this.type) {
         case 1:
           return "SECTION PRIMAIRE";

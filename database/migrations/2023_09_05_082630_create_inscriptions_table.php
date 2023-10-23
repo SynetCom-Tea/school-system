@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('inscriptions', function (Blueprint $table) {
             $table->id();
+            $table->string('code')->nullable();
             $table->date('date_inscription');
             $table->foreignIdFor(\App\Models\Apprenant::class)
                 ->index()
@@ -28,6 +29,7 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)->nullable()
                 ->index()
                 ->references('id')->on('niveauX');
+            $table->integer('statut');
             $table->timestamps();
         });
     }

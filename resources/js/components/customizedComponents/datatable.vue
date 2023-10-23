@@ -44,6 +44,16 @@ export default {
       default: "Titre du datatable",
       required: false,
     },
+    libelleButton: {
+      type: String,
+      default: "Ajouter",
+      required: false,
+    },
+    displaySearch: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     functionEditItem: {
       type: Function,
     },
@@ -202,7 +212,7 @@ export default {
         <v-toolbar-title
           style="
             font-size: 1em;
-            width: 250px;
+            width: 300px;
             word-wrap: break-word;
             white-space: pre-wrap;
             word-break: break-word;
@@ -213,8 +223,8 @@ export default {
           </p>
         </v-toolbar-title>
 
-        <v-divider class="mx-4 color-secondary" inset vertical></v-divider>
-        <div style="width: 250px">
+        <v-divider class="mx-4 color-secondary" inset vertical v-if="displaySearch == true"></v-divider>
+        <div style="width: 200px" v-if="displaySearch == true">
           <TextField
             density="compact"
             variant="solo"
@@ -235,7 +245,7 @@ export default {
           variant="flat"
           style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c"
           class="add-button-style"
-          nameButton="Ajouter"
+          :nameButton="libelleButton"
           title="Ajouter une nouvelle ligne"
           :prependIcon="icons.mdiPlus"
           @click="onClickAddButton"
