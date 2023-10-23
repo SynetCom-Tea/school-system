@@ -54,5 +54,9 @@ class ClasseAnneeSeeder extends Seeder
             'classe_id' => 27,
             'annee_id' => 2,
         ]);
+        ClasseAnnee::create([
+            'classe_id' => 1,
+            'annee_id' => 2,
+        ]);
     }
 }

@@ -35,7 +35,8 @@
         },
         "files": [
             "app/Helpers/CountDayRepet.php",
-            "app/Helpers/GetClasses.php"
+            "app/Helpers/GetClasses.php",
+            "app/Helpers/AddEmploi.php"
         ]
     },
     "autoload-dev": {

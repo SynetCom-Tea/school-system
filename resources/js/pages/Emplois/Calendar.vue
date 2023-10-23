@@ -28,7 +28,7 @@ export default {
         // see configuration section
         dayBoundaries: {
           start: 7,
-          end: 15,
+          end: 23,
         },
         defaultMode: "month",
         style: {

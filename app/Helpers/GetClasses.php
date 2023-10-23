@@ -15,9 +15,12 @@ use Modules\Enseignement\Entities\Matiere;
     if (!function_exists('getClasses')) {
         function getClasses($anneeScolaireId, $sectionEtablissement) {
             // Récupérer les niveaux pour toutes les sections
-            $classeAnnees = ClasseAnnee::where('annee_id', $anneeScolaireId)->pluck('classe_id');
-            $classes = Classe::whereIn('id', $classeAnnees)->whereIn('etablissement_section_id', $sectionEtablissement)->get();
-    
+            // $classeAnnees = ClasseAnnee::where('annee_id', $anneeScolaireId)->pluck('classe_id');
+            // $classes = Classe::whereIn('id', $classeAnnees)->whereIn('etablissement_section_id', $sectionEtablissement)->get();
+            $classes = Classe::join('classe_annees', 'classes.id', '=', 'classe_annees.classe_id')
+                ->whereIn('classe_annees.annee_id', [$anneeScolaireId])
+                ->whereIn('classes.etablissement_section_id', $sectionEtablissement)
+                ->get();
             return $classes;
         }
     }
@@ -29,6 +32,7 @@ use Modules\Enseignement\Entities\Matiere;
                 ->where('etablissement_id', $etablissementId)
                 ->where('section_id', $sectionId)
                 ->pluck('id');
+            // dd($etablissementId, $sectionId, $sectionEtablissement);
             return $sectionEtablissement;
         }
     }

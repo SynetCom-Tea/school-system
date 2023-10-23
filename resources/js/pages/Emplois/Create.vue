@@ -14,7 +14,7 @@ import {
   mdiMenuDown,
 } from "@mdi/js";
 export default {
-  props: ["sectionEnquestion"],
+  props: ["sectionEnquestion", "filieres", "props_cycles", "cycle_filieres", "filiere_niveau_matiere_ues"],
   layout: AuthenticatedLayout,
   data() {
     return {
@@ -34,6 +34,7 @@ export default {
       niveaux: [],
       classes: [],
       matieres: [],
+      cycles: [],
       activeStep: 1,
       daysOfWeek: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
       form: useForm({
@@ -50,14 +51,36 @@ export default {
       router.get(route("emplois.index"));
     },
     setClasse(niveau) {
-      this.classes = this.$page.props.classes.filter((classe) => {
-        return classe.niveau_id == niveau;
+      this.classes = this.$page.props.classes.filter((classe) => classe.niveau_id == niveau);
+      if(this.sectionEnquestion.id == 1 || this.sectionEnquestion.id == 2){
+        this.matieres = this.$page.props.matieres.filter((matiere) => {
+          let nm = this.$page.props.niveauMatiere.filter((nm) => nm.niveau_id == niveau);
+          const matiereIds = nm.map((item) => item.matiere_id);
+          return matiereIds.includes(matiere.id);
+        });
+      }
+      if(this.sectionEnquestion.id == 3){
+        console.log(this.$page.props.classes[0].niveau_id, niveau)
+      }
+    },
+    setCycle(filiere){
+      this.cycles = this.$page.props.props_cycles.filter((cycle) => {
+        let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
+        const cycleIds = cf.map((item) => item.cycle_id);
+        let fnmu = this.$page.props.filiere_niveau_matiere_ues.filter((f_n_m_u) => cycleIds.includes(f_n_m_u.cycle_filiere_id));
+        const niveauIds = fnmu.map((item) => item.niveau_id);
+        const matiereIds = fnmu.map((item) => item.matiere_id);
+        this.matieres = this.$page.props.matieres.filter((matiere) => matiereIds.includes(matiere.id))
+        // console.log(niveauIds, this.$page.props.niveaux);
+        this.setNiveau(niveauIds);
+        this.niveaux = this.$page.props.niveaux.filter((n) => niveauIds.includes(n.id));
+        return cycleIds.includes(cycle.id);
       });
-      this.matieres = this.$page.props.matieres.filter((matiere) => {
-        let nm = this.$page.props.niveauMatiere.filter((nm) => nm.niveau_id == niveau);
-        const matiereIds = nm.map((item) => item.matiere_id);
-        return matiereIds.includes(matiere.id);
-      });
+      console.log(this.niveaux)
+    },
+    setNiveau(niveauIds) {
+      // Filtrer les niveaux en fonction des niveauIds
+      this.niveaux = this.$page.props.niveaux.filter((n) => niveauIds.includes(n.id));
     },
     addRow(day) {
       this.form.seances[day].push({
@@ -107,7 +130,10 @@ export default {
     // }
   },
   mounted() {
-    console.log("Mounted", this.sectionEnquestion);
+    console.log("filieres", this.filieres);
+    console.log("cycles", this.cycles);
+    console.log(this.sectionEnquestion)
+    this.form.section = this.sectionEnquestion.id
     this.daysOfWeek.forEach((day) => {
       this.form.seances[day] = [];
       this.addRow(day);
@@ -133,7 +159,28 @@ export default {
             <v-card outlined>
               <v-card-text id="heit">
                 <v-row dense>
-                  <v-col md="4">
+                  <v-col v-if="sectionEnquestion.id == 3" md="3">
+                    <autocomplete
+                      label="Filière"
+                      v-model="form.filiere"
+                      :items="$page.props.filieres"
+                      @update:modelValue="setCycle(form.filiere)"
+                      item-title="name"
+                      item-value="id"
+                    ></autocomplete>
+                  </v-col>
+                  <v-col v-if="sectionEnquestion.id == 3" md="3">
+                    <autocomplete
+                      label="Cycle"
+                      v-model="form.cycle"
+                      :items="cycles"
+                      :disabled="!form.filiere"
+                      @update:modelValue="setCycle(form.filiere)"
+                      item-title="name"
+                      item-value="id"
+                    ></autocomplete>
+                  </v-col>
+                  <v-col v-if="sectionEnquestion.id == 1 || sectionEnquestion.id == 2" md="4">
                     <autocomplete
                       label="Niveau"
                       v-model="form.niveau"
@@ -143,7 +190,18 @@ export default {
                       item-value="id"
                     ></autocomplete>
                   </v-col>
-                  <v-col md="4">
+                  <v-col v-if="sectionEnquestion.id == 3" md="3">
+                    <autocomplete
+                      label="Niveau"
+                      v-model="form.niveau"
+                      :items="niveaux"
+                      :disabled="!form.cycle"
+                      @update:modelValue="setClasse(form.niveau)"
+                      item-title="libelle"
+                      item-value="id"
+                    ></autocomplete>
+                  </v-col>
+                  <v-col md="3">
                     <autocomplete
                       label="Classe"
                       v-model="form.classe"
@@ -268,9 +326,9 @@ export default {
               </v-card-text>
               <v-card-actions class="justify-end">
                 <v-spacer></v-spacer>
-                <v-btn dark small type="button" color="red" @click="goBack">
+                <!-- <v-btn dark small type="button" color="red" @click="goBack">
                     <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-                </v-btn>
+                </v-btn> -->
                 <v-btn small color="primary" @click="submit">
                     <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
                 </v-btn>
