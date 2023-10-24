@@ -173,13 +173,13 @@ class EnseignantController extends Controller
             //     'matiere_id' => $matiere['matiere'],
             // ]);
 
-            $Niveau_matieres=NiveauMatiere::where('matiere_id',$matiere['matiere'])->get();
+
             // dd($Niveau_matieres);
             foreach($matiere['classes'] as $classe){
 
                 $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
+                $Niveau_matiere=NiveauMatiere::where('matiere_id',$matiere['matiere'])->where('niveau_id',$classe_annee->classe->niveau_id)->first();
 
-                foreach($Niveau_matieres as $Niveau_matiere){
 
                         EnseignementAnnee::updateOrInsert([
                             'niveau_matiere_id' => $Niveau_matiere->id,
@@ -192,11 +192,6 @@ class EnseignantController extends Controller
                             'updated_at' => now() // Remplissez le champ updated_at
                         ]
                         );
-
-
-
-                    // dd($classe);
-                }
 
                 // dd($classe);
             }

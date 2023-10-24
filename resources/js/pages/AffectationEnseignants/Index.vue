@@ -107,7 +107,7 @@
                 this.dialog_title = 'Mise à jour d\'affectation de'+ " "+item.enseignant.NomComplet
                 this.form.id = item.id
                 this.form.matiere = item.niveau_matiere.matiere.id
-                this.form.classe = item.classe_annee
+                this.form.classe = item.classe_annee.id
                 this.form.enseignant= item.enseignant.id
                 this.dialog = true
             },
