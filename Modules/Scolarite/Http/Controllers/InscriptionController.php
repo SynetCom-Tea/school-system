@@ -341,7 +341,7 @@ class InscriptionController extends Controller
         /////////////////////////////  matricule  ///////////////////////
         $matricule = $this->generateMatricule($request->all());
         $code_inscription = $this->generateCodeInscription($request->all());
-        dd($code_inscription,$matricule);
+        // dd($code_inscription,$matricule);
         $id_apprenant = null;
 
         // $type_frais = TypeFrais::where('libelle','Frais de scolarité')->first();
