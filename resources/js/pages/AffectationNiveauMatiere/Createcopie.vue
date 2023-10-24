@@ -10,14 +10,13 @@ import {
     mdiAccountSchool,
     mdiCheckCircle,
     mdiCancel,
-   mdiCurrencyUsd,
+    mdiClipboardEditOutline,
     mdiPlusCircle,
     mdiCloseCircle,
-
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
-    props: ["typefrais","section_id", "niveaux","annees"],
+    props: ["section_id", "niveaux","matieres"],
     data() {
         return {
             icon: {
@@ -26,31 +25,30 @@ export default {
                 mdiAccountSchool,
                 mdiCheckCircle,
                 mdiCancel,
-                mdiCurrencyUsd,
+                mdiClipboardEditOutline,
                 mdiPlusCircle,
                 mdiCloseCircle,
-
             },
 
             form: useForm({
-                annee_id: '',
-                donnees: []
+                donnees:[],
             }),
         }
     },
-    mounted() {
-        this.addRow()
+    created() {
+
     },
     methods: {
 
         goBack() {
-            router.get(route('frais.index', this.section_id))
+            router.get(route('affectations.index', this.section_id))
         },
         addRow() {
             this.form.donnees.push({
+                volume_horaire: '',
+                coefficient: '',
                 niveau_id: [],
-                type_frais_id: null,
-                montant: null,
+                matiere_id: '',
                 before: null,
                 after: null
             })
@@ -80,7 +78,7 @@ export default {
             } = await this.$refs.form.validate()
             if (valid) {
                 console.log(this.form)
-                this.form.post(route('frais.store',this.section_id), {
+                this.form.post(route('affectations.store',this.section_id), {
                     onFinish: () => {
                         this.close()
                         this.$swal({
@@ -88,7 +86,7 @@ export default {
                                 iconColor: '#004980',
                                 color: '#004980',
                                 title: 'Enregistrement',
-                                text: 'Frais créé avec succès!',
+                                text: 'Niveau_Matière créé avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -100,10 +98,9 @@ export default {
             }
         },
         close() {
-                this.form.reset()
+            this.form.reset()
             }
     },
-
     computed: {
         Title() {
 
@@ -118,11 +115,11 @@ export default {
             return "SECTION UNIVERSITAIRE";
         }
         },
-    },
+    }
 }
 </script>
 <template>
-    <Toolbar
+        <Toolbar
       styleToolbar="background-color: white;"
       :icon="icon.mdiSchool"
       :toolbarTitle="Title"
@@ -130,81 +127,69 @@ export default {
     <br>
 <v-card variant="outlined" style="border: 2px solid #7d002c">
     <v-card-title style="color: white; background-color: #7d002c"
-            >AJOUT DES FRAIS</v-card-title
+            >Affectation de matière aux niveaux</v-card-title
           >
           <v-divider></v-divider>
 
-
     <v-card-text>
         <v-form ref="form">
-            <v-row>
-                <v-col cols="4" md="4">
-                </v-col>
-                <v-col cols="4" md="4">
+                <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
+                    <v-col cols="3" md="3">
                     <Select
-                        label="Année Scolaire"
-                        :items="annees"
+                        label="Matière"
+                        :items="matieres"
                         variant="outlined"
                         item-value="id"
-                        item-title="libelle"
-                        v-model="form.annee_id"
+                        item-title="nom"
+                        v-model="donnee.matiere_id"
                         isRequired
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         >
                     </Select>
                     </v-col>
-            </v-row>
-
-            <v-card-text>
-                    <!-- <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des frais</v-chip> -->
-                    <v-card outlined class="mb-md-2">
-                        <v-card-text>
-                            <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                                <v-col md="1"></v-col>
-                                <v-col md="3">
-                                     <Select
+                    <v-col cols="3" md="3">
+                    <Select
                         label="Niveaux"
                         :items="niveaux"
                         variant="outlined"
                         item-value="id"
-                        item-title="code"
+                        item-title="libelle"
                         v-model="donnee.niveau_id"
                         multiple
+                        ships
                         isRequired
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         >
                     ></Select>
-                                </v-col>
-                                <v-col md="3">
-                                    <Select
-                        label="TypeFrais"
-                        :items="typefrais"
-                        variant="outlined"
-                        item-value="id"
-                        item-title="libelle"
-                        v-model="donnee.type_frais_id"
-                        isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                        >
-                    </Select>
-                                </v-col>
-                                <v-col md="3">
-                                    <TextField
+                    </v-col>
+                    <v-col cols="2" md="2">
+                            <TextField
                             type="number"
-                            label="Montant"
-                            placeholder="Montant"
-                            v-model="donnee.montant"
+                            label="Volume_Horaire"
+                            placeholder="Volume_Horaire"
+                            v-model="donnee.volume_horaire"
                             isRequired
                             :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></TextField>
-                                </v-col>
-                                <v-col md="2">
-                                    <v-btn variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
-                                        <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                    </v-btn>
-                                </v-col>
-                            </v-row>
-                            <v-row>
+                        </v-col>
+                        <v-col cols="2" md="2">
+                            <TextField
+                            type="number"
+                            label="Coefficient"
+                            placeholder="Coefficient"
+                            v-model="donnee.coefficient"
+                            isRequired
+                            :rules="[(v) => !!v || 'Ce champ est requis!']"
+                            ></TextField>
+                        </v-col>
+                        <v-col md="2">
+                            <v-btn variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
+                                <v-icon :icon="icon.mdiCloseCircle"></v-icon>
+                            </v-btn>
+                        </v-col>
+
+                    </v-row>
+                    <v-row>
                                 <v-col md="10">
                                 </v-col>
                                 <v-col offset-md="11" md="2">
@@ -213,9 +198,7 @@ export default {
                                     </v-btn>
                                 </v-col>
                             </v-row>
-                        </v-card-text>
-                    </v-card>
-                </v-card-text>
+
         </v-form>
         </v-card-text>
         <v-card-actions class="justify-end">

@@ -71,7 +71,7 @@ export default {
             const array = this.form.donnees.filter(el => el.nom !== null && el.nom == p.nom)
             if (array.length > 1) {
                this.removeRow(p)
-                
+
                 this.$swal({
                                 icon: 'error',
                                 title: 'Erreur',
@@ -292,7 +292,7 @@ export default {
                 <v-card outlined class="mb-md-2">
                     <v-card-text>
                         <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                            
+
                                     <v-row>
                                         <v-col md="6">
                                             <TextField label="Libellé" placeholder="Libellé" v-model="donnee.nom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
@@ -305,7 +305,7 @@ export default {
                                         </v-col>
                                     </v-row>
 
-                                    
+
                         </v-row>
                         <v-row>
                                         <v-col md="6">

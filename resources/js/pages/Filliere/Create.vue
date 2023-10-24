@@ -17,7 +17,7 @@ import {
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
-    props: ["section_id"],
+    props: ["section_id","cycles"],
     components: {
     XLSX,
   },
@@ -56,7 +56,9 @@ export default {
         },
         addRow() {
             this.form.donnees.push({
-                nom: null,
+                code:null,
+                name: null,
+                cycles:[],
                 before: null,
                 after: null
             });
@@ -68,7 +70,7 @@ export default {
         },
 
         async verify(p) {
-            const array = this.form.donnees.filter(el => el.nom !== null && el.nom == p.nom)
+            const array = this.form.donnees.filter(el => el.name !== null && el.name == p.name)
             if (array.length > 1) {
                this.removeRow(p)
 
@@ -215,8 +217,8 @@ export default {
         !this.importation &&
         !this.form.filieres.find(
           (el) =>
-            el.nom == null ||
-            el.nom.trim() == ""
+            el.name == null ||
+            el.name.trim() == ""
         )
       ) {
         fichier = true;
@@ -330,9 +332,11 @@ export default {
                                         </v-col>
                                         <v-col cols="3" md="3" >
                                             <Autocomplete
-                                                v-model="form.cycle"
-                                                :isRequired="true"
-                                                itemTitle="id"
+                                                v-model="donnee.cycles"
+                                                isRequired
+                                                item-title="name"
+                                                item-value="id"
+                                                multiple
                                                 class="mt-2"
                                                 placeholder="Cycle"
                                                 label="Cycles"

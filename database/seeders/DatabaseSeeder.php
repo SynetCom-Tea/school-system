@@ -42,7 +42,7 @@ class DatabaseSeeder extends Seeder
             // FiliereNiveauUeMatiereSeeder::class,
             PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
-            
+
             // EnseignantSeeder::class,
             // EnseiggnementAnneeSeeder::class,
             // EnseignantMatiereSeeder::class,

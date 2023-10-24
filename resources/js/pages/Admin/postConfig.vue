@@ -142,7 +142,7 @@
                 </v-card>
             </v-col>
             <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
 

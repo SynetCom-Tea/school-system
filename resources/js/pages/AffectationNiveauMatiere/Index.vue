@@ -200,13 +200,38 @@ export default {
                         this.form.matiere_id = "";
                         this.dialog = false;
                     },
-                },        
+                },
+
+        computed: {
+        Title() {
+
+        switch (this.section_id) {
+            case "1":
+            return "SECTION PRIMAIRE";
+            case "2":
+            return "SECTION SECONDAIRE";
+            case "3":
+            return "SECTION SUPERIEUR";
+            default:
+            return "SECTION UNIVERSITAIRE";
+        }
+        },
+    }
     }
 </script>
 <template>
-<v-card>
-    <Toolbar styleToolbar="background-color: white;" :icon="icons.mdiClipboardEditOutline" toolbarTitle="Gestion des matières par niveau"></Toolbar>
-    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
+    <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icons.mdiSchool"
+      :toolbarTitle="Title"
+    ></Toolbar>
+    <br>
+<v-card variant="outlined" style="border: 2px solid #7d002c">
+    <v-card-title style="color: white; background-color: #7d002c"
+            >GESTION DES MATIERES PAR NIVEAUX</v-card-title
+          >
+          <v-divider></v-divider>
+      <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
         <template v-slot:default="{ isActive }">
             <v-card>
                 <v-toolbar dense style="background-color: #7d002c">

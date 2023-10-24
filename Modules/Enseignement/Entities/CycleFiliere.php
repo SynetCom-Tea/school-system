@@ -13,8 +13,8 @@ class CycleFiliere extends Model
 {
     use HasFactory;
 
-    
-    
+    protected $fillable = ['code','cycle_id','filiere_id'];
+
     protected static function newFactory()
     {
         return \Modules\Enseignement\Database\factories\CycleFiliereFactory::new();
