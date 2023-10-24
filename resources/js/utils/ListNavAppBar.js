@@ -48,7 +48,8 @@ import {
     mdiCalendar,
     mdiPrinterPosStar,
     mdiAccountSchoolOutline,
-mdiTimerStarOutline,mdiTimerSyncOutline
+mdiTimerStarOutline,mdiTimerSyncOutline,
+mdiPencil
 } from "@mdi/js";
 export function listMenus(page) {
 
@@ -448,6 +449,15 @@ export function listMenusBySection(page, sectionID) {
       link: "absences",
       color: "#AD1457",
       note: "Ce menu permet d'ajouter les absences",
+      expand:false,
+      permissions: "manage_system"
+    },
+      {
+      title: "Notes",
+      icon: mdiPencil,
+      link: "note",
+      color: "#363600",
+      note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
       permissions: "manage_system"
     },

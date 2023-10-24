@@ -49,7 +49,7 @@ export default {
     computed: {
         getMenus() {
             let list = this.listMenusBySection(this.authPage, 1);
-            console.log(list)
+            // console.log(list)
             return list[0] ?? [];
         },
     },

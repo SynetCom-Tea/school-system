@@ -39,7 +39,7 @@ export default {
         mdiTimelineAlert,
         mdiContentSaveEditOutline
     },
-    props: ['classes', 'evaluations', 'eleves','filieres','type','niveaux'],
+    props: ['enseignants' ,'annees', 'classes', 'evaluations', 'eleves','type'],
     layout: AuthenticatedLayout,
     data() {
         return {
@@ -62,10 +62,6 @@ export default {
             valid: null,
             dialogConfirmation: false,
             searchQuery: null,
-            selectedClasse: null,
-            selectedEvaluation: null,
-            selectedNiveau: null,
-            selectedFiliere : null,
             headers: [{
                     title: '#',
                     align: 'start',
@@ -92,6 +88,8 @@ export default {
                 notes: [],
                 evaluation: null,
                 classe: null,
+                annee : null,
+                enseignant : null
             }),
             info : ''
         }
@@ -133,42 +131,43 @@ export default {
                  return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
             }
         },
+        formatClasseLabel(item){
+            if (this.type >= 3) {
+                return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
+            }
+            else{
+                return `${item ? item?.libelle : 'Pas de données'}`
+            }
+        },
         rechercher(e) {
             // console.log(this.eleves)
             router.replace(this.$page.url, {
                 data: {
-                    classe: this.selectedClasse,
                     evaluation: e
                 }
             });
         },
-        // FindFiliere(){},
-        setClasse(n){
+        requete(a) {
+            // console.log(this.form)
             router.replace(this.$page.url, {
                 data: {
-                    filiere: this.selectedFiliere,
-                    niveau: n
+                    annee: a,
+                    enseignant : this.form.enseignant,
                 }
             });
         },
-        requete(id) {
-            this.selectedEvaluation = null
-            router.replace(this.$page.url, {
-                data: {
-                    classe: id
+        setEvaluation(c){
+            router.replace(this.$page.url,{
+                data : {
+                    classe : this.form.classe
                 }
-            });
+            })
         },
         setNote(item) {
             // console.log('item',item.key)
             this.form.notes[item.key] = item.note;
         },
         submit() {
-            // this.form.notes = this.tabs.filter(el => el != null)
-            this.form.classe = this.selectedClasse
-            this.form.evaluation = this.selectedEvaluation
-            this.form.filiere = this.selectedFiliere
-            // console.log(this.form)
             this.form.post(route("note.save"), {
                 preverseScroll: true,
                 onFailed: () => {
@@ -250,23 +249,22 @@ export default {
             <br />
             <v-row>
                 <v-col md="1"></v-col>
-                <v-col md="2" v-if="type >=3">
-                    <Autocomplete v-if="type >=3" v-model="selectedFiliere" :items="filieres" item-title="name" item-value="id"  outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                <v-col md="2" >
+                    <Autocomplete v-model="form.enseignant" :items="enseignants" item-title="matricule" item-value="id"  outlined required dense chips small-chips label="Enseignants"></Autocomplete>
                 </v-col>
-                <v-col md="2" v-if="type >=3" >
-                    <Autocomplete v-if="type >=3" :disabled="!selectedFiliere" v-model="selectedNiveau" :items="niveaux" item-title="libelle" item-value="id" @update:modelValue="setClasse(selectedNiveau)" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
+                <v-col md="2" >
+                    <Autocomplete :disabled="!form.enseignant" v-model="form.annee" :items="annees" item-title="libelle" item-value="id"  outlined required dense chips small-chips label="Années academiques" @update:modelValue="requete(form.annee)"></Autocomplete>
                 </v-col>
                 <v-col md="3">
-                    <Autocomplete :disabled="!selectedNiveau && type >=3" v-model="selectedClasse" :items="classes" item-title="libelle" item-value="id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
+                    <Autocomplete :disabled="!form.annee" v-model="form.classe" :items="classes" :item-title="formatClasseLabel" item-value="id"  outlined required dense chips small-chips label="Classes" @update:modelValue="setEvaluation(form.classe)"></Autocomplete>
                 </v-col>
-                <v-col md="1" v-if="type <3"></v-col>
                 <v-col md="3">
-                    <Autocomplete v-model="selectedEvaluation" :disabled="!selectedClasse" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(selectedEvaluation)"></Autocomplete>
+                    <Autocomplete v-model="form.evaluation" :disabled="!form.classe" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(form.evaluation)"></Autocomplete>
                 </v-col>
             </v-row>
         </v-card>
 
-        <v-card style="border: 2px solid #7d002c;margin: 20px" v-if="eleves">
+        <v-card style="border: 2px solid #7d002c;margin: 20px" >
             <v-card-title style="color: white; background-color: #7d002c">Saisissez les notes</v-card-title>
             <v-divider></v-divider>
             <br />

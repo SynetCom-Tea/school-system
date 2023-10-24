@@ -104,5 +104,5 @@ export default {
         </v-col>
       </v-row>
     </div>
-  </AuthenticatedLayout>
+</AuthenticatedLayout>
 </template>

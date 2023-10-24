@@ -67,7 +67,7 @@ export default {
                 {
                     title: 'Enseignant',
                     align: 'center',
-                    key: 'nom'
+                    key: 'enseignant'
                 },
                 {
                     title: 'Date Evaluation',
@@ -121,7 +121,7 @@ export default {
             this.dialog_title = 'Nouvelle Evaluation'
         },
         editItem(item) {
-            console.log(this.$page.props.permissions)
+            // console.log(item.id)
             this.form.id = item.id
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage
@@ -419,11 +419,11 @@ export default {
             </v-dialog>
             <Datatable titleDatatable="Listes des evaluations " :headers="headers" :items="evaluations" :functionOnClickAddButton="create">
                 <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="info" title="details" class="me-2" @click="detail(item)" :icon="icon.mdiEye">
+                    <v-icon size="small" color="info" title="details" class="me-2" @click="detail(item.raw)" :icon="icon.mdiEye">
                     </v-icon>
-                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
+                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
                     </v-icon>
-                    <v-icon size="small" color="error" @click="deleteItem(item)" :icon="icon.mdiDelete">
+                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
                     </v-icon>
                 </template>
             </Datatable>
