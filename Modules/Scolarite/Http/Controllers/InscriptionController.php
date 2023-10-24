@@ -17,6 +17,7 @@ use Modules\Enseignement\Entities\CycleFiliere;
 use App\Models\TypeDocument;
 use App\Models\Document;
 use App\Models\ApprenantClasseAnnee;
+use App\Models\Etablissement;
 use App\Models\ApprenantTuteur;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Frais;
@@ -249,6 +250,40 @@ class InscriptionController extends Controller
     // DEBUT FUNCTION HELPERS
     public function generateMatricule($donnees)
     {
+        // dd($donnees['annees']['etablissement_section_id']['pivot']['etablissement_id']);
+        // dd(CycleFiliere::find($donnees['annees']['cycle_filiere'])->with('filiere')->first());
+        $mat = "";
+        // $s = substr($this->getNameSection($donnees['section']), 0, 1);
+        $words = preg_split(
+            "/(\s|\-|\.)/",Etablissement::find($donnees['annees']['etablissement_section_id']['pivot']['etablissement_id'])->name
+        );
+        $n = "";
+        $o = 0;
+        $f = "";
+        foreach ($words as $w) {
+            $n .= substr($w, 0, 1);
+        }
+        $o = Apprenant::where('etablissement_id',$donnees['annees']['etablissement_section_id']['pivot']['etablissement_id'])->count() + 1;
+
+
+        $mat = 'US-'.$n.'-0'.$o;
+        // $a = Annee::find($donnees['annees']['annee'])->libelle;
+        // if($donnees['section'] == '1' || $donnees['section'] == '2'){
+        //     $o = Inscription::where('annee_id',$donnees['annees']['annee'])->where('niveau_id',$donnees['annees']['niveau'])->count() + 1;
+        // }elseif($donnees['section'] == '3' || $donnees['section'] == '4'){
+        //     $o = Inscription::where('annee_id',$donnees['annees']['annee'])->where('niveau_id',$donnees['annees']['niveau'])->where('cycle_filiere_id',$donnees['annees']['cycle_filiere'])->count() + 1;
+        // }
+        // if($donnees['section'] == '1' || $donnees['section'] == '2'){
+           
+        // }elseif($donnees['section'] == '3' || $donnees['section'] == '4'){
+        //     $f = substr(CycleFiliere::find($donnees['annees']['cycle_filiere'])->with('filiere')->first()->filiere->name, 0, 1);
+        //     $mat = 'US-'.$s.$a.$n.$f.$o;
+        // }
+        return $mat ?? "";
+    }
+
+    public function generateCodeInscription($donnees)
+    {
         // dd($donnees['section']);
         // dd(CycleFiliere::find($donnees['annees']['cycle_filiere'])->with('filiere')->first());
         $mat = "";
@@ -269,10 +304,10 @@ class InscriptionController extends Controller
             $o = Inscription::where('annee_id',$donnees['annees']['annee'])->where('niveau_id',$donnees['annees']['niveau'])->where('cycle_filiere_id',$donnees['annees']['cycle_filiere'])->count() + 1;
         }
         if($donnees['section'] == '1' || $donnees['section'] == '2'){
-            $mat = 'US-'.$s.$a.$n.$o;
+            $mat = 'US-'.$s.'-'.$a.'-'.$n.'-'.$o;
         }elseif($donnees['section'] == '3' || $donnees['section'] == '4'){
             $f = substr(CycleFiliere::find($donnees['annees']['cycle_filiere'])->with('filiere')->first()->filiere->name, 0, 1);
-            $mat = 'US-'.$s.$a.$n.$f.$o;
+            $mat = 'US-'.'-'.$s.'-'.$a.'-'.$n.'-'.$f.'-'.$o;
         }
         return $mat ?? "";
     }
@@ -305,6 +340,8 @@ class InscriptionController extends Controller
     {
         /////////////////////////////  matricule  ///////////////////////
         $matricule = $this->generateMatricule($request->all());
+        $code_inscription = $this->generateCodeInscription($request->all());
+        dd($code_inscription,$matricule);
         $id_apprenant = null;
 
         // $type_frais = TypeFrais::where('libelle','Frais de scolarité')->first();
@@ -349,6 +386,7 @@ class InscriptionController extends Controller
         if($check->count() == 0){
             if($request->section == '1' || $request->section == '2'){
                 $inscription = Inscription::create([
+                    'code' => $code_inscription,
                     'date_inscription' => date('Y-m-d'),
                     'annee_id' => $request->annees['annee'],
                     'niveau_id' => $request->annees['niveau'],
@@ -357,6 +395,7 @@ class InscriptionController extends Controller
                 ]);
             }elseif($request->section == '3' || $request->section == '4'){
                 $inscription = Inscription::create([
+                    'code' => $code_inscription,
                     'date_inscription' => date('Y-m-d'),
                     'annee_id' => $request->annees['annee'],
                     'niveau_id' => $request->annees['niveau'],

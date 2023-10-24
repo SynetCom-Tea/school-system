@@ -24,7 +24,7 @@
         style="margin: 10px; border: 2px solid #7d002c; padding: 10px; border-radius: 25px"
         class="mt-3"
       >
-        <Datatable :displaySearch="false" :titleDatatable="inscriptions[0].versements.length == 0 ? 'Inscription inactive' : 'Les versements de '+inscriptions[0].apprenant.nom + ' ' + inscriptions[0].apprenant.prenom+' de l\'année academique '+ inscriptions[0].annee.libelle + ' immatriculé sous le N° '+inscriptions[0].apprenant.matricule" :headers="section == '1' || section == '2' ? headers : headers_sup" :items="inscriptions[0].versements" @click="dialog = true" :functionOnClickAddButton="create" :libelleButton="'Versement'">
+        <Datatable :displaySearch="false" :titleDatatable="inscriptions[0].versements.length == 0 ? 'Inscription inactive' : 'Les versements de '+inscriptions[0].apprenant.nom + ' ' + inscriptions[0].apprenant.prenom+' de l\'année academique '+ inscriptions[0].annee.libelle + ' immatriculé sous le N° '+inscriptions[0].apprenant.matricule" :headers="section == '1' || section == '2' ? headers : headers_sup" :items="inscriptions[0].versements"  :functionOnClickAddButton="create" :libelleButton="'Versement'">
             <!-- <template v-slot:item.list="{ item, index}">
                 <v-chip-group column selected-class="text-purple">
                     <v-chip v-for="tag in item.columns.list">
@@ -43,7 +43,7 @@
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Imprimer le reçu" @click="" :icon="icons.mdiPrinter" color="primary">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>
@@ -59,6 +59,7 @@
       persistent
       width="500"
     >
+    
       <v-card>
         <v-card-title color="red">
           <span class="text-h6">{{ 'N° ' + inscriptions[0].code }} </span><br>
@@ -74,12 +75,13 @@
                   md="12"
                 >
                 <Autocomplete
-                    :items="frais"
+                    :items="type_frais"
                     item-title="libelle"
                     item-value="id"
                     label="Frais"
                     isRequired
-                    v-model="form.frais"
+                    v-model="form.type_frais"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
                 </v-col>
               
@@ -87,16 +89,28 @@
                   <TextField
                     label="Montant"
                     isRequired
-                    @update:modelValue="submitForm()"
-                    placeholder="Montant"
                     v-model="form.montant"
+                    @update:modelValue="calculFrais()"
+                    placeholder="Montant"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></TextField>
                   
                 </v-col>
+                
               </v-row>
+              <v-row v-if="spinnerLoading">
+                <v-col cols="5"></v-col>
+                <v-col>
+                  <half-circle-spinner
+                    :animation-duration="1000"
+                    :size="60"
+                    color="#3c80e7"
+                  />
+                </v-col>
+            </v-row>
             </v-form>
           </v-container>
-          <small>*indicates required field</small>
+          <small style="color: #7d002c;">{{ restant }}</small>
         </v-card-text>
         <v-card-actions>
           <v-spacer></v-spacer>
@@ -105,14 +119,15 @@
             variant="text"
             @click="dialog = false"
           >
-            Close
+            Fermer
           </v-btn>
           <v-btn
             color="blue-darken-1"
             variant="text"
+            :disabled="done"
             @click="submit()"
           >
-            Save
+            Enregistrer
           </v-btn>
         </v-card-actions>
       </v-card>
@@ -139,7 +154,7 @@
   import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
   import { router, useForm } from "@inertiajs/vue3";
   import { inject, provide, computed } from "vue";
-  import { AtomSpinner,ScalingSquaresSpinner,HollowDotsSpinner } from 'epic-spinners'
+  import { AtomSpinner,ScalingSquaresSpinner,HollowDotsSpinner, HalfCircleSpinner } from 'epic-spinners'
   import {
     mdiChevronLeft,
     mdiChevronRight,
@@ -147,6 +162,7 @@
     mdiAccountCircle,
     mdiAccountSchool,
     mdiCurrencyUsd,
+    mdiDelete,
     mdiCash,
     mdiPrinter,
     mdiPlus,
@@ -167,11 +183,13 @@
       AtomSpinner,
       ScalingSquaresSpinner,
       HollowDotsSpinner,
+      HalfCircleSpinner,
       mdiAccountCircle,
       mdiAccountSchool,
       mdiCurrencyUsd,
       mdiPlus,
       mdiPrinter,
+      mdiDelete,
       mdiCash,
       mdiClose,
       mdiHeart,
@@ -182,7 +200,7 @@
     },
     //*403#
     // layout: AuthenticatedLayout,
-    props: ["section","frais"],
+    props: ["section","type_frais","resultCalculFrais"],
     data() {
       return {
         // FIN
@@ -225,6 +243,7 @@
           mdiCurrencyUsd,
           mdiPlus,
           mdiClose,
+          mdiDelete,
           mdiCash,
           mdiArrowDown,
           mdiArrowUp,
@@ -235,12 +254,16 @@
           mdiAlertCircle,
         },
         code: '',
+        spinnerLoading: false,
         loading: false,
         dialog: false,
+        done: false,
         inscriptions: [],
+        restant: 'Aucune information disponible',
+        montant: 0,
         form: useForm({
           montant: 0,
-          frais: null,
+          type_frais: null,
         }),
       };
     },
@@ -264,14 +287,44 @@
     created(){
     },
     methods: {
-      create(){
+      // reset(){
+      //   this.restant = '';
+      // },
+      calculFrais(){
+        this.$emit('input',this.form.montant)
+        axios
+          .get(
+            route("getCalculFrais", {
+              inscription: this.inscriptions[0].id ?? null,
+              type_frais: this.form.type_frais,
+            })
+          )
+          .then((res) => {
+            // this.loading = false
+            console.log('response',res.data);
+            if (typeof res.data == "string" || typeof res.data == "undefined") {
+              // this.$toast.error("Données non valides!");
+            } else {
+              let r = res.data.total - res.data.somme_versee
 
+              this.restant = 'Il vous reste ' + r + ' FCFA à payer' ; 
+              if(parseInt(r) < parseInt(this.form.montant)  ){
+                this.done = true
+              }else{
+                this.done = false
+              }
+            }
+            
+          });
+      },
+      create(){
+        this.dialog = true
       },
       addNewInscription(item){
         router.get(route("inscriptionPage", {apprenant: JSON.stringify(item), section: JSON.stringify(this.vSectionID)}))
       },
       async RechercheInscription(){
-        console.log(this.code);
+      
         if(this.code.trim() == ''){
         }else{
           this.inscriptions = await this.ajax(this.code)
@@ -301,10 +354,109 @@
         }
         return axiosResult ?? [];
       },
+      deleteItem(item){
+        axios
+          .get(
+            route("deleteVersement", {
+              id: item.id ?? null,
+              inscription: this.inscriptions[0].id ?? null,
+              type_frais: this.form.type_frais,
+              section: this.section,
+            })
+          )
+          .then((del) => {
+            console.log('response',del.data);
+            if (del.data == "ERREUR") {
+              this.$swal({
+                  icon: 'error',
+                  title: 'ERREUR',
+                  text: 'Erreur serveur',
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 5000,
+                  timerProgressBar: true,
+              });
+              // this.$toast.error("Données non valides!");
+            } else if(del.data.code == 1) {
+              this.inscriptions = []
+              this.inscriptions = del.data.list ?? []
+              this.$swal({
+                  icon: 'success',
+                  iconColor: '#004980',
+                  color: '#004980',
+                  title: 'Suppression',
+                  text: 'Suppression effectuée avec succes',
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 5000,
+                  timerProgressBar: true,
+              });
+            }
+          });
+      },
+
+
       async submit(){
         const { valid } = await this.$refs.form.validate()
         if(valid) {
-          console.log('ça y est');
+          this.spinnerLoading = true
+          axios
+          .get(
+            route("postVersement", {
+              inscription: this.inscriptions[0].id ?? null,
+              montant: this.form.montant,
+              type_frais: this.form.type_frais,
+              section: this.section,
+            })
+          )
+          .then((response) => {
+            this.spinnerLoading = false
+            // this.loading = false
+            console.log('response',response.data);
+            if (response.data == "ERREUR") {
+              this.$swal({
+                  icon: 'error',
+                  title: 'ERREUR',
+                  text: 'Erreur serveur',
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 5000,
+                  timerProgressBar: true,
+              });
+              // this.$toast.error("Données non valides!");
+            } else if(response.data.code == 1) {
+              this.form.reset()
+              this.dialog = false
+              this.inscriptions = []
+              this.inscriptions = response.data.list ?? []
+              this.$swal({
+                  icon: 'success',
+                  iconColor: '#004980',
+                  color: '#004980',
+                  title: 'Enregistrement',
+                  text: 'Versement enregistré avec succes',
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 5000,
+                  timerProgressBar: true,
+              });
+            }else if(response.data.code == 0){
+              this.$swal({
+                  icon: 'warning',
+                  title: 'Frais inscription',
+                  text: 'Vous avez déjà versé les frais d\inscriptions',
+                  toast: true,
+                  position: 'top-end',
+                  showConfirmButton: false,
+                  timer: 5000,
+                  timerProgressBar: true,
+              });
+            }
+          });
         }else{
           console.log('revois ton formulaire');
         }
