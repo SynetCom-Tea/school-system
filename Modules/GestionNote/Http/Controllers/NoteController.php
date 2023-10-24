@@ -212,6 +212,7 @@ class NoteController extends Controller
     {
         $annee = Annee::all();
         $user = Auth::user();
+        $notes = [];
         $section_id = Section::where('id',$request->section_id)->get()[0]->id;
         // dd($section_id);
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
@@ -221,12 +222,13 @@ class NoteController extends Controller
         $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) { 
             $query1->where('classe_id',$request->classe); 
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
-        
+        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.periode')->get() : []; 
         return Inertia::render('gestion-note/note/indexAdmin',[
             'type'=>$request->section_id,
             'annees'=>$annee,
             'classes'=>$classes,
             'evaluations'=>$evaluations,
+            'notes'=>$notes
         ]);
     }
     public function attributionAdmin(Request $request)
