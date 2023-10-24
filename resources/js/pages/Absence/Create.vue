@@ -51,12 +51,13 @@ export default {
     setClasse(niveau) {
         console.log(this.$page.props.classes)
       this.classes = this.$page.props.classes.filter((classe) => classe.niveau_id == niveau);
-      if(this.sectionEnquestion.id == 1 || this.sectionEnquestion.id == 2){
-        
-      }
-      if(this.sectionEnquestion.id == 3  || sectionEnquestion.id == 4){
-        console.log(this.$page.props.classes[0].niveau_id, niveau)
-      }
+    },
+    setSeance(classe) {
+      this.$inertia.replace(this.$page.url, {
+        data: {
+          classe: classe,
+        }
+      })
     },
     setCycle(filiere){
       this.cycles = this.$page.props.props_cycles.filter((cycle) => {
