@@ -244,7 +244,7 @@ class EmploiController extends Controller
                 $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
                 $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
                 $event = [
-                    'title' => $seance->nom_matiere,
+                    'title' => $seance->nom_matiere . ', ' . 'Salle de classe',
                     'with' => $seance->enseignant_nom . ' ' . $seance->enseignant_prenom,
                     'time' => [
                         'start' => $seance->date_seance . ' ' . $heureDebut,
