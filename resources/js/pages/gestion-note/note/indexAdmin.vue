@@ -27,7 +27,57 @@
             <v-col md="2"></v-col>
         </v-row>
     </v-card>
-
+    <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
+        <template v-slot:default="{ isActive }">
+            <v-card>
+                <v-toolbar dense style="background-color: #7d002c">
+                    <v-toolbar-title style="color: white">
+                        <v-icon left :icon="icon.mdiPencil"></v-icon> Modification
+                    </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="closeEdit()"></v-icon>
+                </v-toolbar>
+                <v-card-text>
+                    <v-form>
+                        <v-row>
+                            <v-col md="12">
+                                <TextField label="Evaluation" class="mt-1" disabled v-model="form.type_matiere">
+                                </TextField>
+                            </v-col>
+                            <v-col md="12">
+                                <TextField v-model="form.nom_prenom" disabled label="Nom et prenom">
+                                </TextField>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col md="12">
+                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator, rules.max]">
+                                </TextField>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions class="justify-end">
+                    <v-spacer></v-spacer>
+                    <Button variant="outlined" :loading="form.processing" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
+                </v-card-actions>
+            </v-card>
+        </template>
+    </v-dialog>
+    <v-card style="border: 2px solid #7d002c;margin: 20px">
+        <v-card-title style="color: white; background-color: #7d002c">Liste des notes</v-card-title>
+        <v-divider></v-divider>
+        <br />
+        <Datatable titleDatatable="Listes des notes"  :displayAddButton="false" :items="notes" :headers="headers">
+            <template v-slot:item.apprenant="{ item}">
+                {{ item.columns.apprenant.nom }} {{ item.columns.apprenant.prenom }}
+            </template>
+            <template v-slot:item.action="{ item}">
+                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item.raw)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item.raw)"></v-icon>
+            </template>
+        </Datatable>
+    </v-card>
 </AuthenticatedLayout>
 </template>
 
@@ -128,14 +178,14 @@ export default {
         rechercher() {
             router.replace(this.$page.url, {
                 data: {
-                    classe: this.selectedClasse,
-                    evaluation: this.selectedEvaluation
+                    evaluation: this.form.evaluation
                 }
             });
             // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
         setClasse(a) {
             // console.log(this.form)
+            this.form.classe = null
             router.replace(this.$page.url, {
                 data: {
                     annee: a,
@@ -144,7 +194,7 @@ export default {
         },
         requete(id) {
             // console.log(this.type)
-            this.selectedEvaluation = null
+            this.form.evaluation = null
             router.replace(this.$page.url, {
                 data: {
                     classe: id
@@ -152,6 +202,89 @@ export default {
             });
             // console.log('id',id)   
         },
+        edit(item) {
+            // console.log(item)
+            this.dialogEdit = true
+            this.form.id_note = item.id
+            this.form.note = item.note
+            if(item.evaluation.enseignement_annee.niveau_matiere){
+            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
+            }
+            else{
+            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
+            }
+            this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
+        },
+        closeEdit() {
+            this.dialogEdit = false
+        },
+        deleteItem(item){
+            this.$swal({
+                title: 'Etes-vous sûr de vouloir supprimer cette note',
+                text: "Vous ne pourrez pas revenir en arrière!!!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: 'orange',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Oui, supprimez-le!',
+                cancelButtonText: 'Non, annulez!',
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    this.form.delete(route('note.destroy', item.id), {
+                        onFinish: () => {
+                        if (this.$page.props.flash ?.message ?.type == 'success') {
+                                this.$swal({
+                                    icon: 'success',
+                                    title: 'Suppression',
+                                    text: this.$page.props.flash ?.message ?.text,
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    timerProgressBar: true,
+                                });
+                            }
+                        },
+                    });
+                }
+            });
+        },
+        update() {
+            if (this.form.note <= 20) {
+                this.form.put(route("note.update", this.form.id_note), {
+                    onSuccess: () => {
+                        this.isLoading = false;
+                        this.dialogEdit = false;
+                        if (this.$page.props.flash ?.message ?.type == 'success') {
+                            this.$swal({
+                                icon: 'success',
+                                title: 'Modification',
+                                text: this.$page.props.flash ?.message ?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 10000,
+                                timerProgressBar: true,
+                            });
+                        }
+
+                    },
+                })
+            } else {
+                this.dialogEdit = false;
+                this.$swal({
+                    icon: 'warning',
+                    title: 'Attention',
+                    text: 'La note ne doit pas dépasser 20',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 10000,
+                    timerProgressBar: true,
+                });
+            }
+
+        }
     }
 }
 </script>
