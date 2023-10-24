@@ -75,6 +75,9 @@ export default {
             if (item.link == "absences") {
                 this.form.get(route("absences.index"));
             }
+            if (item.link == "note") {
+             this.form.get(route("note.index_admin"));
+            }
         },
         onClickExpland(item) {
             let vExpand = item.expand;

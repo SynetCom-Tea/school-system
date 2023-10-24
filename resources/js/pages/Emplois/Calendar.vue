@@ -26,23 +26,7 @@ export default {
       }),
       config: {
         // see configuration section
-        dayBoundaries: {
-          start: 7,
-          end: 23,
-        },
-        defaultMode: "month",
-        style: {
-        colorSchemes: {
-          meetings: {
-            color: '#fff',
-            backgroundColor: '#131313',
-          },
-          sports: {
-            color: '#fff',
-            backgroundColor: '#ff4081',
-          }
-        },
-      },
+       
       }
     };
   },

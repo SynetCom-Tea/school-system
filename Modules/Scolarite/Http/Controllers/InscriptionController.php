@@ -65,14 +65,15 @@ class InscriptionController extends Controller
         // dd($request);
         $apprenant = json_decode($request->query('apprenant'));
         $section = json_decode($request->query('section'));
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $section);
         // dd($apprenant,$section);
         // dd($request->apprenant);
         return Inertia::render('Inscription/Create', [
             'type' => $section,
             'niveaux' => Niveau::where('section_id', $section)->get(),
             'cycles' => Cycle::all(),
-            'cycleFilieres' => CycleFiliere::whereHas('filiere', function($query) use ($section){
-                $query->where('etablissement_id',Auth::user()->etablissement_id)->where(function ($query) use ($section) {
+            'cycleFilieres' => CycleFiliere::whereHas('filiere', function($query) use ($section, $etablissement_section){
+                $query->where('etablissement_section_id',$etablissement_section)->where(function ($query) use ($section) {
                     if($section == '3'){
                         return $query->where('departement_id',null);
                     } elseif($section == '4') {

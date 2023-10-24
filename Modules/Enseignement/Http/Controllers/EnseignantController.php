@@ -145,7 +145,11 @@ class EnseignantController extends Controller
     {
 
         $dernierenseig = Enseignant::latest()->first();
-        $id_enseig= $dernierenseig->id+1;
+        if($dernierenseig){
+            $id_enseig = $dernierenseig->id+1;
+        }else{
+            $id_enseig = 1;
+        }
 
 
         $ets_id = Auth::user()->etablissement_id;
