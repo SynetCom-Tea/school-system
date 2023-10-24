@@ -28,4 +28,6 @@ Route::prefix('gestionnote')->group(function() {
     Route::post('/enregistrer/note',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'store'])->name('note.save');
     Route::put('/update/note/{id}',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'update'])->name('note.update');
     Route::delete('/delete/note/{id}',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'destroy'])->name('note.destroy');
-});
+    Route::get('/admin/note',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'indexAdmin'])->name('note.index_admin');
+    Route::get('/attribution/admin',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attributionAdmin'])->name('note.attribution_admin');
+});     

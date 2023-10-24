@@ -168,7 +168,7 @@ export default {
         <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
         <v-divider></v-divider>
         <br />
-        <FiltreAffichageNote :classes="classes" :evaluations="evaluations"></FiltreAffichageNote>
+        <FiltreAffichageNote :classes="classes" :evaluations="evaluations" :type="type"></FiltreAffichageNote>
     </v-card>
     <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
         <template v-slot:default="{ isActive }">

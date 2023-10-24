@@ -55,6 +55,12 @@ export default {
       if (item.link == "emploisCreate") {
         this.form.get(route("calendar.index"));
       }
+      if (item.link == "evaluation") {
+        this.form.get(route("evaluation.index_admin"));
+      }
+      if (item.link == "note") {
+        this.form.get(route("note.index_admin"));
+      }
     },
     onClickExpland(item) {
       let vExpand = item.expand;
