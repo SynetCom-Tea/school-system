@@ -247,21 +247,20 @@ class AffectationEnseignantController extends Controller
     public function store(Request $request,$type)
     {
 
-        // dd($request);
+        // dd($request->matieres);
         $ets_id = Auth::user()->etablissement_id;
 
         foreach($request->matieres as $matiere){
 
-             $Niveau_matieres=NiveauMatiere::where('matiere_id',$matiere['matiere'])->get();
+
             //  dd($Niveau_matieres);
 
-            foreach($Niveau_matieres as $Niveau_matiere){
                 foreach($matiere['classes'] as $classe){
 
                 $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
-                // dd($classe_annee->classe->niveau_id);
+                $Niveau_matiere=NiveauMatiere::where('matiere_id',$matiere['matiere'])->where('niveau_id',$classe_annee->classe->niveau_id)->first();
+                // dd($Niveau_matiere);
 
-                    if($classe_annee->classe->niveau_id == $Niveau_matiere->niveau_id){
                         EnseignementAnnee::updateOrInsert([
                             'niveau_matiere_id' => $Niveau_matiere->id,
                             'classe_annee_id' => $classe_annee->id,
@@ -273,14 +272,12 @@ class AffectationEnseignantController extends Controller
                             'updated_at' => now() // Remplissez le champ updated_at
                         ]
                         );
-                        return redirect()->back();
                     }
 
                     // dd($classe);
-                }
 
                 // dd($classe);
-            }
+
         }
         return redirect()->route('AffectationEnseignants.index', $type)->with('message', [
             'type' => 'success',
@@ -317,14 +314,12 @@ class AffectationEnseignantController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
-        dd($request);
-        $Niveau_matieres=NiveauMatiere::where('matiere_id',$request->matiere)->get();
+      
 
-        $classe_annee=ClasseAnnee::with('classe')->where('id',$request->classe['id'])->first();
+
+        $classe_annee=ClasseAnnee::with('classe')->where('id',$request->classe)->first();
+        $Niveau_matiere=NiveauMatiere::where('matiere_id',$request->matiere)->where('niveau_id',$classe_annee->classe->niveau_id)->first();
         // dd($classe_annee->classe->niveau_id);
-        foreach($Niveau_matieres as $Niveau_matiere){
-            if($classe_annee->classe->niveau_id == $Niveau_matiere->niveau_id){
                 EnseignementAnnee::updateOrInsert([
                     'niveau_matiere_id' => $Niveau_matiere->id,
                     'classe_annee_id' => $classe_annee->id,
@@ -338,10 +333,7 @@ class AffectationEnseignantController extends Controller
                 );
 
 
-            }
 
-            // dd($classe);
-        }
 
 
     }

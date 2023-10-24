@@ -104,7 +104,7 @@
 
                 // router.get(route('AffectationEnseignants.edit',item.id ));
                 console.log('edit',item)
-                this.dialog_title = 'Mise à jour d\'affectation de'+ " "
+                this.dialog_title = 'Mise à jour d\'affectation de'+ " "+item.enseignant.NomComplet
                 this.form.id = item.id
                 this.form.matiere = item.niveau_matiere.matiere.id
                 this.form.classe = item.classe_annee
@@ -315,7 +315,7 @@
                                                 <Autocomplete
                                                     v-model="form.classe"
                                                     isRequired
-                                                    itemValue="id"
+                                                    itemValue="classe.id"
                                                     itemTitle="classe.libelle"
                                                     placeholder="Classes"
                                                     label="Classes"
@@ -367,7 +367,6 @@
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.columns.list">
                         {{ tag.matiere.nom }} => {{ tag.classe.libelle }}
-
                             <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
                             <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiDelete" color="red">
@@ -377,8 +376,6 @@
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
-                </v-icon>
                 <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
