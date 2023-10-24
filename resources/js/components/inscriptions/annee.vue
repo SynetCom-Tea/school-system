@@ -306,6 +306,22 @@ export default {
       }else{
         this.mdVersement = 4
       }
+      if(this.resultClasse[this.resultClasse.length - 1].nbre >= 1){
+        this.$swal({
+            title: 'Création d\'une nouvelle classe?',
+            text: "Voulez-vous créer une nouvelle classe car ''" + this.resultClasse[this.resultClasse.length - 1].classe.classe.code + "'' est pleine !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#004980',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, créer!',
+            cancelButtonText: 'Non!',
+          }).then((result) => {
+          if (result.isConfirmed) {
+            // redirection vers la page de création des classes
+          }
+        });
+      }
     },
     onclickAlertButton(type) {
       if (type == "second") {

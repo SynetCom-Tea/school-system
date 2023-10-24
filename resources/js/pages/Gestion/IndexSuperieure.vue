@@ -49,6 +49,9 @@ export default {
       if (item.link == "/subscribers") {
         this.form.get(route("inscriptions.index"));
       }
+      if (item.link == "versements") {
+        this.form.get(route("versements.index"));
+      }
       if (item.link == "emplois") {
         this.form.get(route("emplois.index"));
       }

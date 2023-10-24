@@ -23,7 +23,11 @@
         // les routes pour le versement
         Route::resource('versements', \Modules\Scolarite\Http\Controllers\VersementController::class);
         Route::get('/inscription_for_versement',[\Modules\Scolarite\Http\Controllers\VersementController::class,'ajaxGetInscriptionForVersement'])->name('getInscriptionForVersement'); 
-
+        Route::get('/calcul_frais',[\Modules\Scolarite\Http\Controllers\VersementController::class,'calculFrais'])->name('getCalculFrais');
+        Route::get('/save_versement',[\Modules\Scolarite\Http\Controllers\VersementController::class,'saveVersement'])->name('postVersement'); 
+        Route::get('/delete_versement',[\Modules\Scolarite\Http\Controllers\VersementController::class,'supVersement'])->name('deleteVersement'); 
+        
+        
         
           
     });
