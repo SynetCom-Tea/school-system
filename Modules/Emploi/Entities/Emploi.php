@@ -66,7 +66,7 @@ class Emploi extends Model
             ->where('emplois.id', $emploiId)
             ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom')
             ->get();
-        } elseif($section == 3){
+        } elseif($section == 3 || $section == 4){
             $seances = Seance::join('enseignement_annees', 'seances.filiere_niveau_matiere_ue_id', '=', 'enseignement_annees.filiere_niveau_matiere_ue_id')
             ->join('enseignants', 'enseignement_annees.enseignant_id', '=', 'enseignants.id')
             ->join('emplois', 'seances.emploi_id', '=', 'emplois.id')

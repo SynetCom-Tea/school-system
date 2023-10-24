@@ -87,13 +87,13 @@ class EmploiController extends Controller
         $cycles = Cycle::whereIn('id', $cycle_filieres->pluck('cycle_id'))->get();
         if($request->section_id == 1 || $request->section_id == 2){
             $niveauMatiere = getNiveauxMatieres($matieres->pluck('id'),$niveaux->pluck('id'));
-        }elseif($request->section_id == 3){
+        }elseif($request->section_id == 3 || $request->section_id == 4){
             // dd($filieres, $etablissement_section, Auth::user()->etablissement_id, $request->section_id);
             $filiere_niveau_matiere_ues = DB::table('filiere_niveau_matiere_ues')
                 ->whereIn('cycle_filiere_id', $cycle_filieres->pluck('id'))->get();
         }
         $salles = Salle::where('etablissement_id', Auth::user()->etablissement_id)->get();
-        // dd($filieres, $cycle_filieres->pluck('cycle_id'));
+        // dd($filieres, $cycle_filieres, $niveaux);
         return Inertia::render('Emplois/Create', [
             'filiere_niveau_matiere_ues' => $filiere_niveau_matiere_ues,
             'props_cycles' => $cycles,
@@ -145,7 +145,7 @@ class EmploiController extends Controller
                                 $key = '';
                                 if ($request->section == 1 || $request->section == 2) {
                                     $key = 'niveau_matiere_id';
-                                } elseif ($request->section == 3) {
+                                } elseif ($request->section == 3 || $request->section == 4) {
                                     $key = 'filiere_niveau_matiere_ue_id';
                                 }
                                 Horaire::create([

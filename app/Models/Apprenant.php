@@ -46,6 +46,7 @@ class Apprenant extends Model
     {
         return $this->hasMany(ApprenantClasseAnnee::class);
     }
+    
     public function notes(): HasMany
     {
         return $this->hasMany(Note::class);

@@ -36,9 +36,7 @@ export default {
       matieres: [],
       cycles: [],
       activeStep: 1,
-      daysOfWeek: ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"],
       form: useForm({
-        seances: {},
         section: null,
         niveau: null,
         classe: null,
@@ -47,17 +45,14 @@ export default {
     };
   },
   methods: {
-    goBack() {
-      router.get(route("emplois.index"));
-    },
+    // goBack() {
+    //   router.get(route("emplois.index"));
+    // },
     setClasse(niveau) {
+        console.log(this.$page.props.classes)
       this.classes = this.$page.props.classes.filter((classe) => classe.niveau_id == niveau);
       if(this.sectionEnquestion.id == 1 || this.sectionEnquestion.id == 2){
-        this.matieres = this.$page.props.matieres.filter((matiere) => {
-          let nm = this.$page.props.niveauMatiere.filter((nm) => nm.niveau_id == niveau);
-          const matiereIds = nm.map((item) => item.matiere_id);
-          return matiereIds.includes(matiere.id);
-        });
+        
       }
       if(this.sectionEnquestion.id == 3  || sectionEnquestion.id == 4){
         console.log(this.$page.props.classes[0].niveau_id, niveau)
@@ -80,18 +75,6 @@ export default {
     setNiveau(niveauIds) {
       // Filtrer les niveaux en fonction des niveauIds
       this.niveaux = this.$page.props.niveaux.filter((n) => niveauIds.includes(n.id));
-    },
-    addRow(day) {
-      this.form.seances[day].push({
-        matiere: null,
-        jour: day,
-        before: null,
-        after: null,
-        ensalle: "Non",
-      });
-    },
-    removeRow(day, p) {
-      this.form.seances[day] = this.form.seances[day].filter((seance) => seance !== p);
     },
     submit() {
       console.log(this.form);
@@ -130,16 +113,12 @@ export default {
   },
   mounted() {
     this.form.section = this.sectionEnquestion.id
-    this.daysOfWeek.forEach((day) => {
-      this.form.seances[day] = [];
-      this.addRow(day);
-    });
   },
 };
 </script>
 <template>
   <v-card>
-    <Toolbar :icon="icon.mdiTimetable" toolbarTitle="Nouveau emploi"></Toolbar>
+    <Toolbar :icon="icon.mdiTimetable" toolbarTitle="Ajouter des absences"></Toolbar>
     <v-card-text>
       <v-form>
         <v-row>
@@ -208,117 +187,11 @@ export default {
                     ></autocomplete>
                   </v-col>
                   <v-col>
-                    <date-range-picker
-                      v-model="form.date"
-                      @focus="handleFocusDate"
-                      @update:model-value="handleDate"
-                      locale="fr"
-                      cancelText="Annuler"
-                      selectText="Confirme"
-                      :only-date="true"
-                      date-picker
-                      :disabled="!form.classe"
-                      range
-                      placeholder="Emploi du ..."
-                    >
-                    </date-range-picker>
+                    
                   </v-col>
-                  <!-- <v-col>
-                    <VueDatePicker
-                      v-model="date"
-                      @focus="handleFocusDate"
-                      @update:model-value="handleDate"
-                      locale="fr"
-                      cancelText="Annuler"
-                      selectText="Confirme"
-                      flow="calendar"
-                      date-picker
-                      range
-                      placeholder="Start Typing ..."
-                    />
-                  </v-col> -->
+                  
                 </v-row>
-                <br />
-                <v-expansion-panels>
-                  <v-expansion-panel
-                    id="seanceId"
-                    v-for="(day, index) in daysOfWeek"
-                    :key="index"
-                  >
-                    <v-expansion-panel-title>
-                      {{ `Les seances du ${day}` }}
-                    </v-expansion-panel-title>
-                    <v-expansion-panel-text>
-                      <v-row
-                        v-for="(seance, seanceIndex) in form.seances[day]"
-                        :key="seanceIndex"
-                        dense
-                      >
-                        <v-col md="3">
-                          <VueDatePicker
-                            :disabled="!form.date"
-                            v-model="seance.horaire"
-                            time-picker
-                            range
-                          />
-                        </v-col>
-                        <v-col md="3">
-                          <autocomplete
-                            dense
-                            :disabled="!seance.horaire"
-                            label="Matiere"
-                            item-title="nom"
-                            item-value="id"
-                            :items="matieres"
-                            v-model="seance.matiere"
-                          >
-                          </autocomplete>
-                        </v-col>
-                        <v-col md="3">
-                          <v-switch
-                            v-model="seance.ensalle"
-                            hide-details
-                            :disabled="!seance.matiere"
-                            true-value="Oui"
-                            false-value="Non"
-                            :label="`Dans une autre salle?: ${seance.ensalle}`"
-                          ></v-switch>
-                        </v-col>
-                        <v-col md="2">
-                          <autocomplete
-                            dense
-                            :disabled="!seance.ensalle"
-                            v-if="seance.ensalle == 'Oui'"
-                            label="Salle"
-                            item-title="libelle"
-                            item-value="id"
-                            :items="$page.props.salles"
-                            chips
-                            v-model="seance.salle"
-                          >
-                          </autocomplete>
-                        </v-col>
-                        <v-col md="1">
-                          <v-icon
-                            color="error"
-                            :disabled="!(form.seances[day].length > 1)"
-                            @click="removeRow(day, seance)"
-                            :icon="icon.mdiCloseCircle"
-                          ></v-icon>
-                        </v-col>
-                      </v-row>
-                      <v-row dense>
-                        <v-col offset-md="11" md="1">
-                          <v-icon
-                            color="success"
-                            @click="addRow(day)"
-                            :icon="icon.mdiPlusCircle"
-                          ></v-icon>
-                        </v-col>
-                      </v-row>
-                    </v-expansion-panel-text>
-                  </v-expansion-panel>
-                </v-expansion-panels>
+                
               </v-card-text>
               <v-card-actions class="justify-end">
                 <v-spacer></v-spacer>
