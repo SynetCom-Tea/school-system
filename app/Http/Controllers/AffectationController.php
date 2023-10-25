@@ -55,15 +55,18 @@ class AffectationController extends Controller
      */
     public function store(Request $request, $type)
     {
-        foreach($request->niveau_id as $niv){
+        // dd($request);
+        foreach($request->Affectations as $Affectation){
+        foreach($Affectation['niveau_id'] as $niv){
             NiveauMatiere::updateOrInsert([
-                'matiere_id' => $request->matiere_id,
+                'matiere_id' => $Affectation['matiere_id'],
                 'niveau_id' => $niv
             ],
-            ['volume_horaire' => $request->volume_horaire,
-            'coefficient' => $request->coefficient]
+            ['volume_horaire' => $Affectation['volume_horaire'],
+            'coefficient' => $Affectation['coefficient']]
         );
         }
+    }
         return redirect()->route('affectations.index', $type)->with('message', [
             'type' => 'success',
             'text' => "La matière a été affectée aux niveaux avec succès !",

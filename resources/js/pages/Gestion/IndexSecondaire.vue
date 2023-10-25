@@ -49,7 +49,7 @@ export default {
     computed: {
         getMenus() {
             let list = this.listMenusBySection(this.authPage, 1);
-            console.log(list)
+            // console.log(list)
             return list[0] ?? [];
         },
     },
@@ -69,11 +69,14 @@ export default {
                 this.form.get(route("emplois.index"));
             }
             if (item.link == "emploisCreate") {
-                this.form.get(route("emplois.create"));
+                this.form.get(route("calendar.index"));
             }
             if (item.link == "evaluation") {
                 this.form.get(route("evaluation.index_admin"));
             }
+            if (item.link == "note") {
+        this.form.get(route("note.index_admin"));
+      }
         },
         onClickExpland(item) {
             let vExpand = item.expand;

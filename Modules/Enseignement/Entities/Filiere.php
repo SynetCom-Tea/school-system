@@ -13,7 +13,7 @@ class Filiere extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['code','name','etablissement_id','departement_id'];
+    protected $fillable = ['code','name','etablissement_section_id','departement_id'];
 
     protected static function newFactory()
     {

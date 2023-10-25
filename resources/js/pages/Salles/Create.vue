@@ -71,7 +71,7 @@ export default {
                     timer: 5000,
                     timerProgressBar: true,
                 });
-                
+
             }
         },
         async submit() {
@@ -106,38 +106,49 @@ export default {
 }
 </script>
 <template>
-<v-card>
-    <Toolbar :icon="icon.mdiGoogleClassroom" toolbarTitle="Création Salles"></Toolbar>
+     <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icon.mdiSchool"
+      toolbarTitle="GESTION DES SALLES"
+    ></Toolbar>
+    <br>
+<v-card variant="outlined" style="border: 2px solid #7d002c">
+    <!-- <Toolbar :icon="icon.mdiGoogleClassroom" toolbarTitle="Création Salles"></Toolbar> -->
+    <v-card-title style="color: white; background-color: #7d002c"
+            >AJOUT DES SALLES</v-card-title
+          >
+          <v-divider></v-divider>
 
     <v-card-text>
         <v-form ref="form">
             <v-card-text>
-                <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des salles</v-chip>
+                <!-- <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des salles</v-chip> -->
                 <v-card outlined class="mb-md-2">
                     <v-card-text>
                         <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                            
+
                                     <v-row>
-                                        <v-col md="5">
+                                        <v-col md="1"></v-col>
+                                        <v-col md="4">
                                             <TextField label="Code" placeholder="Code" v-model="donnee.code" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
                                         </v-col>
-                                        <v-col md="5">
+                                        <v-col md="4">
                                             <TextField label="Libellé" placeholder="Libellé" v-model="donnee.libelle" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
                                         </v-col>
 
-                                        <v-col md="2">
+                                        <v-col offset-md="10" md="2">
                                             <v-btn title="supprimer la salle" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
                                                 <v-icon :icon="icon.mdiCloseCircle"></v-icon>
                                             </v-btn>
                                         </v-col>
                                     </v-row>
 
-                                    
+
                         </v-row>
                         <v-row>
-                                        <v-col md="10">
+                                        <v-col md="9">
                                         </v-col>
-                                        <v-col md="2">
+                                        <v-col  md="2">
                                             <v-btn title="ajouter une salle" variant="outlined" icon @click="addRow()" fab small color="primary">
                                                 <v-icon :icon="icon.mdiPlusCircle"></v-icon>
                                             </v-btn>

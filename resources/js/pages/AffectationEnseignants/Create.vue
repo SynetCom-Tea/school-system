@@ -60,7 +60,7 @@
                   :items="enseignants"
                   v-model="form.enseignant"
                   :rules="[(v) => !!v || 'Ce champ est requis!']"
-                  @update:modelValue="submitForm(any),setmatiere()"
+                  @update:modelValue="submitForm(any)"
                   chips
                 >
                 </Autocomplete>
@@ -78,8 +78,8 @@
                       label="Matière"
                       placeholder="Matière"
                       class="mt-2"
-                      item-title="matiere.nom"
-                      item-value="matiere.id"
+                      item-title="code"
+                      item-value="id"
                       isRequired
                       :items="matieres"
                       chips
@@ -96,12 +96,12 @@
                         isRequired
                         itemValue="id"
                         class="mt-2"
-                        itemTitle="code_libelle"
+                        itemTitle="classe.libelle"
                         placeholder="Classes"
                         label="Classes"
                         multiple
                         chips
-                        :items="itemsClasses"
+                        :items="classes"
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         @update:modelValue="submitForm(matiere)"
                         >
@@ -186,6 +186,7 @@ import axios from "axios";
 
         setmatiere(){
             console.log('enseignant',this.form.enseignant);
+            this.matieres=[];
             this.$emit('input',this.form.enseignant)
             let eng=this.form.enseignant;
             router.replace(this.$page.url,{data:{enseignant:eng}});
@@ -194,7 +195,7 @@ import axios from "axios";
 
             },
         setclasses(i){
-
+            this.form.matieres[i].classes=[];
             this.$emit('input',this.form.matieres[i].matiere)
             let mat=this.form.matieres[i].matiere;
             router.replace(this.$page.url,{data:{matiere:mat}});
@@ -263,7 +264,6 @@ import axios from "axios";
       },
       addRow() {
         this.form.matieres.push({
-          etablissement_section_id: this.$page.props.admin_etablissement.etablissement_id,
           matiere: null,
           classes: [],
           after: null,
@@ -321,6 +321,8 @@ import axios from "axios";
     },
 
     computed: {
+
+
         itemsClasses() {
       let list = [];
 

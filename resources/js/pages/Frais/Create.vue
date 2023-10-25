@@ -12,7 +12,8 @@ import {
     mdiCancel,
    mdiCurrencyUsd,
     mdiPlusCircle,
-    mdiCloseCircle
+    mdiCloseCircle,
+
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
@@ -27,9 +28,10 @@ export default {
                 mdiCancel,
                 mdiCurrencyUsd,
                 mdiPlusCircle,
-                mdiCloseCircle
+                mdiCloseCircle,
+
             },
-        
+
             form: useForm({
                 annee_id: '',
                 donnees: []
@@ -58,7 +60,7 @@ export default {
         },
         async verify(p) {
             const array = this.form.donnees.filter(el => el !== p)
-            if (array.length > 1) {  
+            if (array.length > 1) {
                 this.removeRow(p)
                 this.$swal({
                             icon: 'error',
@@ -100,12 +102,38 @@ export default {
         close() {
                 this.form.reset()
             }
-    }
+    },
+
+    computed: {
+        Title() {
+
+        switch (this.section_id) {
+            case "1":
+            return "SECTION PRIMAIRE";
+            case "2":
+            return "SECTION SECONDAIRE";
+            case "3":
+            return "SECTION SUPERIEUR";
+            default:
+            return "SECTION UNIVERSITAIRE";
+        }
+        },
+    },
 }
 </script>
 <template>
-<v-card>
-    <Toolbar :icon="icon.mdiCurrencyUsd" toolbarTitle="Création frais"></Toolbar>
+    <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icon.mdiSchool"
+      :toolbarTitle="Title"
+    ></Toolbar>
+    <br>
+<v-card variant="outlined" style="border: 2px solid #7d002c">
+    <v-card-title style="color: white; background-color: #7d002c"
+            >AJOUT DES FRAIS</v-card-title
+          >
+          <v-divider></v-divider>
+
 
     <v-card-text>
         <v-form ref="form">
@@ -126,13 +154,14 @@ export default {
                     </Select>
                     </v-col>
             </v-row>
-                    
+
             <v-card-text>
-                    <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des frais</v-chip>
+                    <!-- <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des frais</v-chip> -->
                     <v-card outlined class="mb-md-2">
                         <v-card-text>
                             <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                                <v-col md="4">
+                                <v-col md="1"></v-col>
+                                <v-col md="3">
                                      <Select
                         label="Niveaux"
                         :items="niveaux"
@@ -146,7 +175,7 @@ export default {
                         >
                     ></Select>
                                 </v-col>
-                                <v-col md="4">
+                                <v-col md="3">
                                     <Select
                         label="TypeFrais"
                         :items="typefrais"
@@ -169,16 +198,16 @@ export default {
                             :rules="[(v) => !!v || 'Ce champ est requis!']"
                             ></TextField>
                                 </v-col>
-                                <v-col md="1">
+                                <v-col md="2">
                                     <v-btn variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
                                         <v-icon :icon="icon.mdiCloseCircle"></v-icon>
                                     </v-btn>
                                 </v-col>
                             </v-row>
                             <v-row>
-                                <v-col md="11">
+                                <v-col md="10">
                                 </v-col>
-                                <v-col offset-md="11" md="1">
+                                <v-col offset-md="11" md="2">
                                     <v-btn variant="outlined" icon @click="addRow()" fab small color="primary">
                                         <v-icon :icon="icon.mdiPlusCircle"></v-icon>
                                     </v-btn>
@@ -186,7 +215,7 @@ export default {
                             </v-row>
                         </v-card-text>
                     </v-card>
-                </v-card-text>          
+                </v-card-text>
         </v-form>
         </v-card-text>
         <v-card-actions class="justify-end">

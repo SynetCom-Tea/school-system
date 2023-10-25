@@ -142,7 +142,7 @@
                 </v-card>
             </v-col>
             <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
 
@@ -162,52 +162,52 @@
 import { router, useForm } from "@inertiajs/vue3";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {
-  mdiGoogleClassroom,
-  mdiBookOpenVariant,
-  mdiAccount,
-  mdiCheckCircle,
-  mdiSchool,
-  mdiHomeOutline,
-  mdiInformation,
-  mdiCloseCircle,
-  mdiPlusCircle,
-  mdiCogOutline,
-  mdiPresentation,
-  mdiGift,
+    mdiGoogleClassroom,
+    mdiBookOpenVariant,
+    mdiAccount,
+    mdiCheckCircle,
+    mdiSchool,
+    mdiHomeOutline,
+    mdiInformation,
+    mdiCloseCircle,
+    mdiPlusCircle,
+    mdiCogOutline,
+    mdiPresentation,
+    mdiGift,
 } from "@mdi/js";
 export default {
   layout: AuthenticatedLayout,
-    props: ["type", "niveaux", "lmd"],
-    components: {
-        mdiAccount,
-        mdiCogOutline,
-        mdiInformation,
-        mdiSchool,
-        mdiHomeOutline,
-        mdiPlusCircle,
-        mdiPresentation,
-        mdiCloseCircle,
-        mdiGift,
-        mdiCheckCircle,
-        mdiBookOpenVariant,
-        mdiGoogleClassroom,
+  props: ["type", "niveaux", "lmd"],
+  components: {
+    mdiAccount,
+    mdiCogOutline,
+    mdiInformation,
+    mdiSchool,
+    mdiHomeOutline,
+    mdiPlusCircle,
+    mdiPresentation,
+    mdiCloseCircle,
+    mdiGift,
+    mdiCheckCircle,
+    mdiBookOpenVariant,
+    mdiGoogleClassroom,
+  },
+  data: () => ({
+    alert: true,
+    icons: {
+      mdiGoogleClassroom,
+      mdiBookOpenVariant,
+      mdiAccount,
+      mdiPlusCircle,
+      mdiCheckCircle,
+      mdiCloseCircle,
+      mdiSchool,
+      mdiInformation,
+      mdiHomeOutline,
+      mdiPresentation,
+      mdiGift,
+      mdiCogOutline,
     },
-    data: () => ({
-        alert: true,
-        icons: {
-            mdiGoogleClassroom,
-            mdiBookOpenVariant,
-            mdiAccount,
-            mdiPlusCircle,
-            mdiCheckCircle,
-            mdiCloseCircle,
-            mdiSchool,
-            mdiInformation,
-            mdiHomeOutline,
-            mdiPresentation,
-            mdiGift,
-            mdiCogOutline,
-        },
 
         form: useForm({
             matieres: [],

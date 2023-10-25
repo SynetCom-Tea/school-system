@@ -73,7 +73,7 @@
                 form: useForm({
                     id:null,
                     matiere:null,
-                    classe: [],
+                    classe:null,
                     enseignant: null,
 
                 }),
@@ -86,18 +86,30 @@
             }
         },
         methods:{
+
+            setclasses(){
+            this.form.classe=null;
+            this.$emit('input',this.form.matiere)
+            let mat=this.form.matiere;
+            console.log('mat',this.form.matiere);
+            router.replace(this.$page.url,{data:{matiere:mat}});
+            console.log('fdgfggg',this.classes);
+
+
+        },
             create() {
                 router.get(route('affectationEnseignants.create', this.section_id));
             },
             editItem(item){
-                router.get(route('AffectationEnseignants.edit',item.id ));
-                // console.log('edit',item.list.map((el) => el.matiere.nom))
-                // this.dialog_title = 'Mise à jour d\'ffectation de'+ " " + item.enseignant.NomComplet
-                // this.form.id = item.id
-                // this.form.niveau_matiere = item.list.map((el) => el.matiere.nom)
-                // this.form.classe = item.list.map((el) => el.classe.libelle)
-                // this.form.enseignant= item.enseignant.NomComplet
-                // this.dialog = true
+
+                // router.get(route('AffectationEnseignants.edit',item.id ));
+                console.log('edit',item)
+                this.dialog_title = 'Mise à jour d\'affectation de'+ " "+item.enseignant.NomComplet
+                this.form.id = item.id
+                this.form.matiere = item.niveau_matiere.matiere.id
+                this.form.classe = item.classe_annee
+                this.form.enseignant= item.enseignant.id
+                this.dialog = true
             },
             deleteItem(item){
                 this.$swal({
@@ -193,7 +205,7 @@
             },
             close() {
                 this.form.id =null
-                this.form.niveau_matiere =null
+                this.form.matiere =null
                 this.form.enseignant = null
                 this.form.classe = null
                 this.dialog = false
@@ -201,6 +213,7 @@
         },
     computed: {
         Title() {
+            console.log('eeeef',this.classes);
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -268,14 +281,13 @@
                                             </v-col>
                                             <v-col cols="12" md="12" v-if="form.id ==null">
                                                 <Autocomplete
-                                                    v-model="form.niveau_matiere"
+                                                    v-model="form.matiere"
                                                     isRequired
                                                     itemValue="id"
                                                     itemTitle="code"
-                                                    placeholder="Niveau/Matiere"
-                                                    label="Niveau/Matiere"
-                                                    multiple
-                                                    chips
+                                                    placeholder="Matiere"
+                                                    label="Matiere"
+                                                    @update:modelValue="setclasses()"
                                                     :items="niveauMatieres"
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
@@ -284,13 +296,14 @@
                                             </v-col>
                                             <v-col cols="12" md="12" v-if="form.id !=null">
                                                 <Autocomplete
-                                                    v-model="form.niveau_matiere"
+                                                    v-model="form.matiere"
                                                     isRequired
                                                     itemValue="id"
                                                     itemTitle="code"
-                                                    placeholder="Niveau/Matiere"
-                                                    label="Niveau/Matiere"
+                                                    placeholder="Matiere"
+                                                    label="Matiere"
                                                     chips
+                                                    @update:modelValue="setclasses()"
                                                     :items="niveauMatieres"
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
@@ -302,7 +315,7 @@
                                                 <Autocomplete
                                                     v-model="form.classe"
                                                     isRequired
-                                                    itemValue="id"
+                                                    itemValue="classe.id"
                                                     itemTitle="classe.libelle"
                                                     placeholder="Classes"
                                                     label="Classes"
@@ -319,7 +332,7 @@
                                                     v-model="form.classe"
                                                     isRequired
                                                     itemValue="id"
-                                                    itemTitle="libelle"
+                                                    itemTitle="classe.libelle"
                                                     placeholder="Classes"
                                                     label="Classes"
                                                     chips
@@ -349,17 +362,20 @@
 
                 </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des enseignants " :headers="headers" :items="enseignements" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des enseignements  " :headers="headers" :items="enseignements" :functionOnClickAddButton="create" >
                 <template v-slot:item.list="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
-                        <v-chip v-for="tag in item.columns.list">
+                        <v-chip v-for="tag in item.list">
                         {{ tag.matiere.nom }} => {{ tag.classe.libelle }}
+                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
+                            </v-icon>
+                            <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiDelete" color="red">
+                            </v-icon>
+
                         </v-chip>
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
-                </v-icon>
                 <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>

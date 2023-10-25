@@ -3,8 +3,9 @@
 namespace Database\Seeders;
 
 use App\Models\Cycle;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class CycleSeeder extends Seeder
 {

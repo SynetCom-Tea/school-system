@@ -14,7 +14,6 @@ class ClasseAnneeSeeder extends Seeder
     public function run(): void
     {
         ClasseAnnee::create([
-
             'classe_id' => 4,
             'annee_id' => 2,
         ]);
@@ -45,6 +44,18 @@ class ClasseAnneeSeeder extends Seeder
         ]);
         ClasseAnnee::create([
             'classe_id' => 8,
+            'annee_id' => 2,
+        ]);
+        ClasseAnnee::create([
+            'classe_id' => 26,
+            'annee_id' => 2,
+        ]);
+        ClasseAnnee::create([
+            'classe_id' => 27,
+            'annee_id' => 2,
+        ]);
+        ClasseAnnee::create([
+            'classe_id' => 1,
             'annee_id' => 2,
         ]);
     }

@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Database\Seeders\FiliereSeeder;
 use Modules\Enseignement\Database\Seeders\EnseignantMatiereSeeder;
 
 class DatabaseSeeder extends Seeder
@@ -20,27 +21,31 @@ class DatabaseSeeder extends Seeder
             SectionSeeder::class,
             TypeDocumentSeeder::class,
             NiveauTableSeeder::class,
-            EtablissementsTableSeeder::class,
-            EtablissementSectionSeeder::class,
-            ClasseSeeder::class,
+            // EtablissementsTableSeeder::class,
+            // EtablissementSectionSeeder::class,
+            // FiliereSeeder::class,
+            // CycleFiliereSeeder::class,
+            // ClasseSeeder::class,
             AnneeScolaireSeeder::class,
-            ClasseAnneeSeeder::class,
+            // ClasseAnneeSeeder::class,
             TypeFraisSeeder::class,
-            TuteursSeeder::class,
-            ApprenantSeeder::class,
-            EnseignantSeeder::class,
+            // TuteursSeeder::class,
+            // ApprenantSeeder::class,
+            // EnseignantSeeder::class,
             RoleSeeder::class,
-            FraisSeeder::class,
+            // FraisSeeder::class,
             // VersementsSeeder::class,
-            ApprenantClasseAnneesSeeder::class,
-            SalleSeeder::class,
-            MatiereTableSeeder::class,
-            NiveauMatiereSeeder::class,
+            // ApprenantClasseAnneesSeeder::class,
+            // SalleSeeder::class,
+            // MatiereTableSeeder::class,
+            // NiveauMatiereSeeder::class,
+            // FiliereNiveauUeMatiereSeeder::class,
             PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
+
             // EnseignantSeeder::class,
-            EnseiggnementAnneeSeeder::class,
-            EnseignantMatiereSeeder::class,
+            // EnseiggnementAnneeSeeder::class,
+            // EnseignantMatiereSeeder::class,
         ]);
     }
 }

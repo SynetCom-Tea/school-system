@@ -53,7 +53,7 @@ export default {
         this.form.get(route("emplois.index"));
       }
       if (item.link == "emploisCreate") {
-        this.form.get(route("emplois.create"));
+        this.form.get(route("calendar.index"));
       }
     },
     onClickExpland(item) {
@@ -104,5 +104,5 @@ export default {
         </v-col>
       </v-row>
     </div>
-  </AuthenticatedLayout>
+</AuthenticatedLayout>
 </template>
