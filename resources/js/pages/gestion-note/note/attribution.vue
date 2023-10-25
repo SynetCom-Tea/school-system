@@ -160,7 +160,7 @@ export default {
             });
         },
         setNote(item) {
-            // console.log('item',item.key)
+            console.log('item',item.key)
             this.form.notes[item.key] = item.note;
         },
         submit() {
