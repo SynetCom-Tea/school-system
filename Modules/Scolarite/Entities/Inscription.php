@@ -9,12 +9,13 @@ use App\Models\Apprenant;
 use App\Models\Annee;
 use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Enseignement\Entities\Niveau;
+use Modules\Scolarite\Entities\Versement;
 
 class Inscription extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date_inscription', 'apprenant_id', 'niveau_id','cycle_filiere_id', 'annee_id'];
+    protected $fillable = ['code','date_inscription', 'apprenant_id', 'niveau_id','cycle_filiere_id', 'annee_id','statut'];
 
     public function apprenant()
     {
@@ -27,6 +28,10 @@ class Inscription extends Model
     public function annee()
     {
         return $this->belongsTo(Annee::class);
+    }
+    public function versements()
+    {
+        return $this->hasMany(Versement::class);
     }
 
     /* public function filiere(): BelongsTo

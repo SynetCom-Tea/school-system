@@ -5,6 +5,7 @@ namespace Modules\Emploi\Http\Controllers;
 use App\Models\Annee;
 use App\Models\Classe;
 use App\Models\ClasseAnnee;
+use App\Models\Cycle;
 use App\Models\Etablissement;
 use App\Models\EtablissementSection;
 use App\Models\Salle;
@@ -20,6 +21,7 @@ use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
 use Modules\Emploi\Entities\Emploi;
 use Modules\Emploi\Entities\Horaire;
+use Modules\Enseignement\Entities\Filiere;
 use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\Niveau;
 
@@ -32,13 +34,13 @@ class EmploiController extends Controller
     public function index(Request $request)
     {
         // dd('r:', $request->all());
-        $classes = getClasses(Annee::find(2)->id, getSectionEtablissement($request->section_id, Auth::user()->etablissement_id), $request->section_id);
+        $classes = getClasses(Annee::find(2)->id, getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id), $request->section_id);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $events = [];
         $emplois = [];
         if ($request->classe != null) {
             $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id, $request->classe);
-            $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->classe);
+            $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->section_id, $request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->section_id, $request->classe);
             foreach ($seances as $seance) {
                 // Extraire les heures et les minutes de heure_debut et heure_fin
                 $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
@@ -72,16 +74,31 @@ class EmploiController extends Controller
      */
     public function create(Request $request)
     {
-        $etablissement = Etablissement::with('sections')->find(Auth::user()->etablissement_id);
-        $etablissement_section = getSectionEtablissement($request->section_id, Auth::user()->etablissement_id);
-        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
-        $niveaux = Niveau::where('section_id', $request->section_id)->get();
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $matieres = getMatieres($etablissement_section);
-        $niveauMatiere = getNiveauxMatieres($matieres->pluck('id'),$niveaux->pluck('id'));
+        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $niveauMatiere = [];
+        $filiere_niveau_matiere_ues = [];
+        $niveaux = Niveau::where('section_id', $request->section_id)->get();
+        $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
+        $cycle_filieres = DB::table('cycle_filieres')
+                ->whereIn('filiere_id', $filieres->pluck('id'))
+                ->get();
+        $cycles = Cycle::whereIn('id', $cycle_filieres->pluck('cycle_id'))->get();
+        if($request->section_id == 1 || $request->section_id == 2){
+            $niveauMatiere = getNiveauxMatieres($matieres->pluck('id'),$niveaux->pluck('id'));
+        }elseif($request->section_id == 3 || $request->section_id == 4){
+            // dd($filieres, $etablissement_section, Auth::user()->etablissement_id, $request->section_id);
+            $filiere_niveau_matiere_ues = DB::table('filiere_niveau_matiere_ues')
+                ->whereIn('cycle_filiere_id', $cycle_filieres->pluck('id'))->get();
+        }
         $salles = Salle::where('etablissement_id', Auth::user()->etablissement_id)->get();
-        // dd(Section::find($request->section_id));
+        // dd($filieres, $cycle_filieres, $niveaux);
         return Inertia::render('Emplois/Create', [
-            'allSections' => $etablissement->sections,
+            'filiere_niveau_matiere_ues' => $filiere_niveau_matiere_ues,
+            'props_cycles' => $cycles,
+            'filieres' => $filieres,
+            'cycle_filieres' => $cycle_filieres,
             'niveaux' => $niveaux,
             'classes' => $classes,
             'salles' => $salles,
@@ -103,14 +120,12 @@ class EmploiController extends Controller
         $dateFin = Carbon::parse($request->date[1]);
         $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
         // dd($occurrences);
-        $classeAnnee = ClasseAnnee::where('annee_id', Annee::find(2)->id)
-            ->where('classe_id', $request->classe)
-            ->first();
+        // dd($classeAnnee, $request->classe, Annee::find(2)->id);
         try {
             $emploi = Emploi::create([
                 'date_debut' => $request->date[0],
                 'date_fin' => $request->date[1],
-                'classe_annee_id' => $classeAnnee->id
+                'classe_annee_id' => $request->classe
             ]);
             foreach ($occurrences as $jour => $seancesDuJour) {
                 // Vérifie s'il y a des horaires pour ce jour
@@ -120,16 +135,35 @@ class EmploiController extends Controller
                         for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
                             if ($seance['matiere'] != null) {
                                 $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));
+                                // Vérifiez si $seance['salle'] existe
+                                if (isset($seance['salle'])) {
+                                    $salleId = $seance['salle'];
+                                } else {
+                                    $salleId = null;
+                                }
+                                // Variable pour stocker la clé dynamique en fonction de $request->section
+                                $key = '';
+                                if ($request->section == 1 || $request->section == 2) {
+                                    $key = 'niveau_matiere_id';
+                                } elseif ($request->section == 3 || $request->section == 4) {
+                                    $key = 'filiere_niveau_matiere_ue_id';
+                                }
                                 Horaire::create([
                                     'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
                                     'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
                                 ])->seances()->create([
                                     'statut' => false,
-                                    'niveau_matiere_id' => DB::table('niveau_matieres')
+                                    $key => ($request->section == 1 || $request->section == 2)
+                                    ? DB::table('niveau_matieres')
+                                        ->where('niveau_id', $request->niveau)
+                                        ->where('matiere_id', $seance['matiere'])
+                                        ->first()->id
+                                    : DB::table('filiere_niveau_matiere_ues')
                                         ->where('niveau_id', $request->niveau)
                                         ->where('matiere_id', $seance['matiere'])
                                         ->first()->id,
                                     'emploi_id' => $emploi->id,
+                                    'salle_id' => $salleId,
                                     'date_seance' => $dateSeance->format('Y-m-d'),
                                     'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
                                     'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
@@ -197,20 +231,20 @@ class EmploiController extends Controller
 
     public function calendar(Request $request)
     {
-        $etablissement_section = getSectionEtablissement($request->section_id, Auth::user()->etablissement_id);
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $events = [];
         $emplois = [];
         if ($request->classe != null) {
             $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id, $request->classe);
-            $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->classe);
+            $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->section_id, $request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->section_id, $request->classe);
             foreach ($seances as $seance) {
                 // Extraire les heures et les minutes de heure_debut et heure_fin
                 $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
                 $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
                 $event = [
-                    'title' => $seance->nom_matiere,
+                    'title' => $seance->nom_matiere . ', ' . 'Salle de classe',
                     'with' => $seance->enseignant_nom . ' ' . $seance->enseignant_prenom,
                     'time' => [
                         'start' => $seance->date_seance . ' ' . $heureDebut,

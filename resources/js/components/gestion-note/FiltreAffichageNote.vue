@@ -1,15 +1,15 @@
 <template>
 <v-row>
     <v-col md="1"></v-col>
-    <v-col md="4">
-        <Autocomplete v-model="selectedClasse" :items="classes" item-title="libelle" item-value="id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
+    <v-col md="3">
+        <Autocomplete v-model="selectedClasse" :items="classes" :item-title="formatClasseLabel" item-value="id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
     </v-col>
-    <v-col md="4" v-if="$page.props.evaluations != null">
-        <Autocomplete v-model="selectedEvaluation"  :items="$page.props.evaluations ? $page.props.evaluations : null" :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
+    <v-col md="3">
+        <Autocomplete v-model="selectedEvaluation" :disabled="!selectedClasse" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
     </v-col>
-    <v-col md="3" >
-        <Button  color="secondary" variant="outlined" class="mb-3" @click="rechercher()"  nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
-     </v-col>
+    <v-col md="3">
+        <Button color="secondary" variant="outlined" class="mb-3" @click="rechercher()" nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
+    </v-col>
     <v-col md="2"></v-col>
 </v-row>
 </template>
@@ -30,7 +30,7 @@ export default {
     components: {
         mdiSearchWeb
     },
-    props: ["classes","evaluations"],
+    props: ["classes", "evaluations", "type"],
     data() {
         return {
             icon: {
@@ -53,11 +53,17 @@ export default {
     methods: {
         formatEvaluationLabel(item) {
             if (item.enseignement_annee.niveau_matiere) {
-                // Concatenate the relevant properties for the label
-                // console.log(item.type_evaluation.libelle)
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
-            }else{
-                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
+            } else {
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
+            }
+        },
+        formatClasseLabel(item){
+            if (this.type >= 3) {
+                return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
+            }
+            else{
+                return `${item ? item?.libelle : 'Pas de données'}`
             }
         },
         rechercher() {
@@ -70,6 +76,7 @@ export default {
             // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
         requete(id) {
+            // console.log(this.type)
             this.selectedEvaluation = null
             router.replace(this.$page.url, {
                 data: {
@@ -80,16 +87,7 @@ export default {
         },
         goBack() {
             router.get(route("users.index"));
-            console.log();
-        },
-        submit() {
-            // console.log(this.form)
-            this.form.post(route("users.store"), {
-                onFinish: () => this.form.reset(),
-            });
-        },
-        onChange() {
-            // console.log("Picture changed!");
+            // console.log(console.log(this.type));
         },
     },
     created() {

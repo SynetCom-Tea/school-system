@@ -169,7 +169,7 @@
                     </template>
                   </v-autocomplete>
                 </v-col>
-                <v-col :cols="mdVersement">
+                <!-- <v-col :cols="mdVersement">
                   <TextField
                     label="1er versement"
                     :isRequired="true"
@@ -177,7 +177,7 @@
                     v-model="form.versement"
                     :hint="hint"
                   ></TextField>
-                </v-col>
+                </v-col> -->
                 <v-col cols="1"></v-col>
               </v-row>
             </v-col>
@@ -259,29 +259,30 @@ export default {
       this.$emit('input',this.vCycle)
           router.replace(this.$page.url,{data:{cycle_id:this.vCycle}});
     },
-    setHint(){
-      let frais = 0
-      this.$emit('input',this.form.versement)
-      axios
-        .get(
-          route("getfrais", {
-            niveau: this.form.niveau,
-          })
-        )
-        .then((res) => {
-          console.log('res',res.data)
-          if (typeof res.data == "string" || typeof res.data == "undefined") {
+    // setHint(){
+    //   let frais = 0
+    //   this.$emit('input',this.form.versement)
+    //   axios
+    //     .get(
+    //       route("getfrais", {
+    //         niveau: this.form.niveau,
+    //         annee: this.form.annee
+    //       })
+    //     )
+    //     .then((res) => {
+    //       console.log('res',res.data)
+    //       if (typeof res.data == "string" || typeof res.data == "undefined") {
             
-          } else {
-              frais = res.data ?? [];
-              let r = frais - this.form.versement
-              this.hint = 'Il vous reste '+ r + ' FCFA à payer sur ' + frais + ' FCFA'
-              if(r < 0){
-                this.form.versement = 0
-              }
-          }
-        });
-    },
+    //       } else {
+    //           frais = res.data ?? [];
+    //           let r = frais - this.form.versement
+    //           this.hint = 'Il vous reste '+ r + ' FCFA à payer sur ' + frais + ' FCFA'
+    //           if(r < 0){
+    //             this.form.versement = 0
+    //           }
+    //       }
+    //     });
+    // },
     async checkClasseExist(niveau) {
       if (niveau) {
         this.resultClasse = await axios
@@ -304,6 +305,22 @@ export default {
         this.mdVersement = 8
       }else{
         this.mdVersement = 4
+      }
+      if(this.resultClasse[this.resultClasse.length - 1].nbre >= 1){
+        this.$swal({
+            title: 'Création d\'une nouvelle classe?',
+            text: "Voulez-vous créer une nouvelle classe car ''" + this.resultClasse[this.resultClasse.length - 1].classe.classe.code + "'' est pleine !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#004980',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, créer!',
+            cancelButtonText: 'Non!',
+          }).then((result) => {
+          if (result.isConfirmed) {
+            // redirection vers la page de création des classes
+          }
+        });
       }
     },
     onclickAlertButton(type) {
@@ -337,7 +354,7 @@ export default {
     },
     async isValid() {
       let valid = false;
-      if ( (this.form.annee != null && this.form.annee != '') && this.form.versement != ''){
+      if ( (this.form.annee != null && this.form.annee != '')){
         valid = true;
       }
       return valid;
@@ -356,7 +373,6 @@ export default {
     this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
         (el) => el.libelle == this.section
       );
-      console.log('hhhhhh',this.$page.props.sections[0],this.form.etablissement_section_id);
       this.mdVersement = 8
     if(this.type == '1' || this.type == '2'){
       this.mdAnnee = 4

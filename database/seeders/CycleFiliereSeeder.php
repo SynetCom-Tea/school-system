@@ -27,8 +27,8 @@ class CycleFiliereSeeder extends Seeder
         ]);
         CycleFiliere::create([
             'cycle_id'=>3,
-            'filiere_id'=>3,
-            'code'=>'3A/GL'
+            'filiere_id'=>2,
+            'code'=>'2A/GL'
         ]);
     }
 }

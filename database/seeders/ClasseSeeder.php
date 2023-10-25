@@ -201,14 +201,16 @@ class ClasseSeeder extends Seeder
             'code' => 'Group B',
             'libelle' => 'Group B',
             'etablissement_section_id' => 3,
-            'niveau_id' => 22
+            'niveau_id' => 22,
+            'cycle_filiere_id'=>2
         ]);
         Classe::create([
             'id' => 27,
             'code' => 'Group A',
             'libelle' => 'Group A',
             'etablissement_section_id' => 4,
-            'niveau_id' => 26
+            'niveau_id' => 26,
+            'cycle_filiere_id'=>3
         ]);
     }
 }

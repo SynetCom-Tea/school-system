@@ -1,21 +1,32 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import "qalendar/dist/style.css";
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiPlus, mdiTimetable } from "@mdi/js";
-import { Qalendar } from "qalendar";
+import { mdiPlus, mdiTimetable, mdiDelete, mdiPencil } from "@mdi/js";
 export default {
   layout: AuthenticatedLayout,
   components: {
-    Qalendar,
+    
   },
-  props: ["emplois", "events", "AllClasses", "niveaux", "emplois", "sectionID"],
+  props: ["absences", "sectionID"],
   data() {
     return {
-      icon: {
+      icons: {
         mdiPlus,
         mdiTimetable,
+        mdiPencil,
+        mdiDelete
       },
+      headers: [
+        {
+          title: 'Code',
+          align: 'start',
+          sortable: false,
+          key: 'code',
+        },
+        { title: 'Date', align: 'center', key: 'tranche_date' },
+        { title: 'Classe', align: 'center', key: 'nom_classe' },
+        {title: 'Actions', align: 'center', key: 'actions'},
+      ],
       classes: [],
       form: useForm({
         niveau: null,
@@ -24,16 +35,12 @@ export default {
         emploi: null,
         section_id: null
       }),
-      config: {
-        // see configuration section
-       
-      }
     };
   },
   methods: {
     goTo() {
-      this.form.get(route("emplois.create"))
-      // router.get(route("emplois.create"));
+      this.form.get(route("absences.create"))
+      // router.get(route("absences.create"));
     },
     setClasse(niveau) {
       this.form.classe = null
@@ -49,23 +56,22 @@ export default {
         }
       })
     },
-    setCalandar(emploi){
-      this.$inertia.replace(this.$page.url, {
-        data: {
-          emploi: emploi,
-        }
-      })
+    editItem(){
+
+    },
+    deleteItem(){
+
     }
   },
   mounted(){
-    console.log(this.events)
     this.form.section_id = this.sectionID
+    console.log(this.absences)
   }
 };
 </script>
 <template>
   <v-card>
-    <Toolbar :icon="icon.mdiTimetable" toolbarTitle="Calendrier"></Toolbar>
+    <Toolbar :icon="icons.mdiTimetable" toolbarTitle="Gestion des absences"></Toolbar>
     <v-card-text>
       <v-toolbar flat color="white">
         <v-toolbar-title
@@ -103,39 +109,18 @@ export default {
             item-value="id"
           ></autocomplete>
         </v-col>
-        <v-col md="4">
-          <autocomplete
-            label="Emploi"
-            v-model="form.emploi"
-            :items="emplois"
-            :disabled="!form.classe"
-            @update:modelValue="setCalandar(form.emploi)"
-            class="mt-4"
-            item-title="tranche_date"
-            item-value="id"
-          ></autocomplete>
-        </v-col>
         </v-row>
         </v-toolbar-title>
       </v-toolbar>
       <v-card>
-        <Qalendar
-          :selected-date="new Date()"
-          :events="events"
-          :config="config"
-        >
-          <template #weekDayEvent="eventProps">
-            <div :style="{ backgroundColor: 'cornflowerblue', color: '#01579B', width: '100%', height: '100%', overflow: 'hidden' }">
-              <span>{{ timeFormattingFunction(eventProps.eventData.time) }}</span>
-
-              <span>{{ eventProps.eventData.title }}</span>
-            </div>
-          </template>
-
-          <template #monthEvent="monthEventProps">
-            <span>{{ monthEventProps.eventData.title }}</span>
-          </template>
-        </Qalendar>
+        <Datatable titleDatatable="Liste des absences" :headers="headers" :items="absences" :functionOnClickAddButton="goTo" >   
+            <template v-slot:item.actions="{item}">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
+                </v-icon>
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
+                </v-icon>
+            </template>
+        </Datatable>
       </v-card>
     </v-card-text>
   </v-card>

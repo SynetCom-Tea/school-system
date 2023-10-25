@@ -3,6 +3,7 @@
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
+use Modules\Enseignement\Entities\FiliereNiveauMatiereUe;
 use Illuminate\Support\Facades\DB;
 
 return new class extends Migration
@@ -26,9 +27,12 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\Salle::class)->nullable()
                 ->index()
                 ->references('id')->on('salles');
-            $table->foreignIdFor(\Modules\Enseignement\Entities\NiveauMatiere::class)
+            $table->foreignIdFor(\Modules\Enseignement\Entities\NiveauMatiere::class)->nullable()
                 ->index()
                 ->references('id')->on('niveau_matieres');
+            $table->foreignIdFor(FiliereNiveauMatiereUe::class)->nullable()
+                ->index()
+                ->references('id')->on('filiere_niveau_matiere_ues');
             $table->foreignIdFor(\Modules\Emploi\Entities\Emploi::class)
                 ->index()
                 ->references('id')->on('emplois');

@@ -49,11 +49,20 @@ export default {
       if (item.link == "/subscribers") {
         this.form.get(route("inscriptions.index"));
       }
+      if (item.link == "versements") {
+        this.form.get(route("versements.index"));
+      }
       if (item.link == "emplois") {
         this.form.get(route("emplois.index"));
       }
       if (item.link == "emploisCreate") {
         this.form.get(route("calendar.index"));
+      }
+      if (item.link == "evaluation") {
+        this.form.get(route("evaluation.index_admin"));
+      }
+      if (item.link == "note") {
+        this.form.get(route("note.index_admin"));
       }
     },
     onClickExpland(item) {
@@ -73,10 +82,10 @@ export default {
       <Toolbar
         styleToolbar="background-color: white;"
         :icon="icons.mdiTimerStarOutline"
-        toolbarTitle="Liste des menus Secondaire"
+        toolbarTitle="Liste des menus Supérieur"
       ></Toolbar>
       <div style="margin: 10px">
-        <h2 class="text-color-secondary">Gestion Supérieur</h2>
+        <h2 class="text-color-secondary">Gestion Supérieure</h2>
       </div>
 
       <v-row>
@@ -96,7 +105,7 @@ export default {
 
               <div class="d-flex py-3 justify-space-between">
                 <v-list-item density="compact" :prepend-icon="icons.mdiWeatherWindy">
-                  <v-list-item-subtitle>Section Supérieur</v-list-item-subtitle>
+                  <v-list-item-subtitle>Section Supérieure</v-list-item-subtitle>
                 </v-list-item>
               </div>
             </v-card-text>

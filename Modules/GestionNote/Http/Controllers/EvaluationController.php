@@ -189,7 +189,7 @@ class EvaluationController extends Controller
         $enseignants = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get();    
         if ($request->section_id >=3){
         $evaluations = DB::select("
-            SELECT m.nom,s.libelle section,ev.id,p.libelle,en.nom,ev.date,t.libelle type,ea.code,
+            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom enseignant,ev.date,t.libelle type,ea.code,
             s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
@@ -201,18 +201,17 @@ class EvaluationController extends Controller
             JOIN sections s ON s.id = es.section_id
             JOIN type_evaluations t ON t.id = ev.type_evaluation_id
             JOIN periodes p ON p.id = ev.periode_id
-            JOIN niveau_matieres nm ON nm.id = ea.niveau_matiere_id
-            JOIN filiere_matiere_ues fmu ON fmu.id = nm.filiere_matiere_ue_id
-            JOIN matieres m ON m.id = fmu.matiere_id
+            JOIN filiere_niveau_matiere_ues fnmu ON fnmu.id = ea.filiere_niveau_matiere_ue_id
+            JOIN matieres m ON m.id = fnmu.matiere_id
             WHERE e.id = :etablissement_id AND s.id = :section_id
             ",[
                 'etablissement_id' => Auth::user()->etablissement_id,
                 'section_id'=>$request->section_id
         ]);
-        // dd('sup');
+        // dd($evaluations);
         }else{
         $evaluations = DB::select("
-            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom,ev.date,t.libelle type,ea.code,
+            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom enseignant,ev.date,t.libelle type,ea.code,
             s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id

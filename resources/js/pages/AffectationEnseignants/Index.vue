@@ -365,7 +365,7 @@
             <Datatable titleDatatable="Liste des enseignements  " :headers="headers" :items="enseignements" :functionOnClickAddButton="create" >
                 <template v-slot:item.list="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
-                        <v-chip v-for="tag in item.columns.list">
+                        <v-chip v-for="tag in item.list">
                         {{ tag.matiere.nom }} => {{ tag.classe.libelle }}
                             <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>

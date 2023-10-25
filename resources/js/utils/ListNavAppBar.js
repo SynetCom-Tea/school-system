@@ -10,6 +10,7 @@ import {
   mdiPresentation,
   mdiGift,
   mdiSquareMedium,
+  mdiCash,
   mdiGoogleClassroom,
   mdiClipboardEditOutline,
   mdiInstagram,
@@ -32,6 +33,7 @@ import {
   mdiHumanMaleBoard ,
     mdiWalletMembership,
   mdiChevronLeft,
+  mdiAccountCreditCard,
   mdiAccountSchool,
   mdiInformation,
   mdiCardAccountDetails,
@@ -46,7 +48,8 @@ import {
     mdiCalendar,
     mdiPrinterPosStar,
     mdiAccountSchoolOutline,
-mdiTimerStarOutline,mdiTimerSyncOutline
+mdiTimerStarOutline,mdiTimerSyncOutline,
+mdiPencil
 } from "@mdi/js";
 export function listMenus(page) {
 
@@ -220,6 +223,7 @@ MenuGestion = {
                 link: "/enseignement/permissions",
                 permissions: "manage_system",
             },
+            
         {
             title: "Inscription",
             icon: mdiAccountSchool,
@@ -404,6 +408,15 @@ export function listMenusBySection(page, sectionID) {
       permissions: "manage_system"
     },
     {
+      icon: mdiCash,
+      title: "Versements",
+      link: "versements",
+      color: "rgb(24,18,42)",
+      note: "Ce menu permet d'effectuer des versements de la section",
+      expand:false,
+      permissions: "manage_system",
+    },
+    {
       icon:mdiBookOpenPageVariantOutline,
       title: "Emploi",
       link: "emplois",
@@ -425,6 +438,24 @@ export function listMenusBySection(page, sectionID) {
       title: "Évaluations",
       icon: mdiAccountSchool,
       link: "evaluation",
+      color: "#363600",
+      note: "Ce menu permet d'accèder aux évaluations  section",
+      expand:false,
+      permissions: "manage_system"
+    },
+    {
+      title: "Absences",
+      icon: mdiAccountCreditCard,
+      link: "absences",
+      color: "#AD1457",
+      note: "Ce menu permet d'ajouter les absences",
+      expand:false,
+      permissions: "manage_system"
+    },
+      {
+      title: "Notes",
+      icon: mdiPencil,
+      link: "note",
       color: "#363600",
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,

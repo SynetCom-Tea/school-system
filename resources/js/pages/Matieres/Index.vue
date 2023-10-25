@@ -94,7 +94,7 @@
                 // router.get(route('matieres.create', this.section_id))
             },
             editItem(item){
-                //console.log('edit',item)
+                console.log('edit',item)
                 this.dialog_title = 'Modifier la matière '+ item.nom
                 this.form.id = item.id
                 this.form.code = item.code
@@ -394,9 +394,9 @@
             <Datatable titleDatatable="Liste des matières" :headers="headers" :items="matieres" :functionOnClickAddButton="create" >
 
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

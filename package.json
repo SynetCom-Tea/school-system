@@ -41,6 +41,7 @@
         "bootstrap-vue": "^2.23.1",
         "core-js": "^3.32.1",
         "echarts": "^5.4.3",
+        "epic-spinners": "^2.0.0",
         "form-wizard-vue3": "^1.1.0",
         "qalendar": "^3.5.0",
         "unplugin-vue-components": "^0.25.1",

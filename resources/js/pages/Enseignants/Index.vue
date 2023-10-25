@@ -450,7 +450,7 @@ export default {
             size="small"
             class="me-2"
             title="Modifier"
-            @click="editItem(item.raw)"
+            @click="editItem(item)"
             :icon="icons.mdiPencil"
             color="orange"
           >
