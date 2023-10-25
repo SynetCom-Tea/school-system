@@ -39,7 +39,7 @@ export default {
         mdiTimelineAlert,
         mdiContentSaveEditOutline
     },
-    props: ['enseignants' ,'annees', 'classes', 'evaluations', 'eleves','type'],
+    props: ['enseignants' ,'annees', 'classes', 'evaluations', 'eleves','type','filieres','niveaux'],
     layout: AuthenticatedLayout,
     data() {
         return {
@@ -85,11 +85,14 @@ export default {
                 max: v => v <= 20 || "La note ne doit pas dépasser 20"
             },
             form: this.$inertia.form({
+                section_id : null,
                 notes: [],
                 evaluation: null,
                 classe: null,
                 annee : null,
-                enseignant : null
+                enseignant : null,
+                filiere : null,
+                niveau : null
             }),
             info : ''
         }
@@ -131,13 +134,8 @@ export default {
                  return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
             }
         },
-        formatClasseLabel(item){
-            if (this.type >= 3) {
-                return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
-            }
-            else{
-                return `${item ? item?.libelle : 'Pas de données'}`
-            }
+        formatCode(item){
+            return `${item ? item?.filiere.code : 'Pas de données'} - ${item ? item.cycle.name : 'Pas de données'} `
         },
         rechercher(e) {
             // console.log(this.eleves)
@@ -147,7 +145,7 @@ export default {
                 }
             });
         },
-        requete(a) {
+        SetFiliere(a) {
             // console.log(this.form)
             router.replace(this.$page.url, {
                 data: {
@@ -166,6 +164,16 @@ export default {
         setNote(item) {
             // console.log('item',item.key)
             this.form.notes[item.key] = item.note;
+        },
+        setClasse(n){
+            // console.log(n)
+            router.replace(this.$page.url,{
+                data : {
+                    niveau : n,
+                    filiere : this.form.filiere,
+                    annee : this.form.annee
+                }
+            })
         },
         submit() {
             this.form.post(route("note.save"), {
@@ -206,7 +214,8 @@ export default {
             });
         },
         dialog(){
-            // this.info = this.evaluations.filter(el => el.id = this.selectedEvaluation)
+            // console.log(this.form.notes)
+            this.info = this.evaluations.filter(el => el.id = this.selectedEvaluation)
             this.$swal({
                 title: "Êtes-vous sûr?",
                 text: "Êtes-vous sûr de vouloir sauvegarder ces notes" ,
@@ -247,18 +256,24 @@ export default {
             <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
             <v-divider></v-divider>
             <br />
-            <v-row>
-                <v-col md="1"></v-col>
+            <v-row style="margin: 20px">
+                <v-col md="2" v-if="type<=2"></v-col>
                 <v-col md="2" >
                     <Autocomplete v-model="form.enseignant" :items="enseignants" item-title="matricule" item-value="id"  outlined required dense chips small-chips label="Enseignants"></Autocomplete>
                 </v-col>
                 <v-col md="2" >
-                    <Autocomplete :disabled="!form.enseignant" v-model="form.annee" :items="annees" item-title="libelle" item-value="id"  outlined required dense chips small-chips label="Années academiques" @update:modelValue="requete(form.annee)"></Autocomplete>
+                    <Autocomplete :disabled="!form.enseignant" v-model="form.annee" :items="annees" item-title="libelle" item-value="id"  outlined required dense chips small-chips label="Années academiques" @update:modelValue="SetFiliere(form.annee)"></Autocomplete>
                 </v-col>
-                <v-col md="3">
-                    <Autocomplete :disabled="!form.annee" v-model="form.classe" :items="classes" :item-title="formatClasseLabel" item-value="id"  outlined required dense chips small-chips label="Classes" @update:modelValue="setEvaluation(form.classe)"></Autocomplete>
+                <v-col md="2" v-if="type>=3">
+                    <Autocomplete :disabled="!form.annee" v-model="form.filiere" :items="filieres" :item-title="formatCode" item-value="id"  outlined required dense chips small-chips label="Filieres" ></Autocomplete>
                 </v-col>
-                <v-col md="3">
+                <v-col md="2" v-if="type>=3">
+                    <Autocomplete :disabled="!form.filiere" v-model="form.niveau" :items="niveaux" item-title="libelle" item-value="id"  outlined required dense chips small-chips label="Niveaux" @update:modelValue="setClasse(form.niveau)"></Autocomplete>
+                </v-col>
+                <v-col md="2">
+                    <Autocomplete v-model="form.classe" :items="classes" item-title="libelle" item-value="id"  outlined required dense chips small-chips label="Classes" @update:modelValue="setEvaluation(form.classe)"></Autocomplete>
+                </v-col>
+                <v-col md="2">
                     <Autocomplete v-model="form.evaluation" :disabled="!form.classe" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(form.evaluation)"></Autocomplete>
                 </v-col>
             </v-row>
@@ -270,7 +285,7 @@ export default {
             <br />
             <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
                 <template v-slot:item.note="{ item, index }">
-                    <TextField label="" v-model="item.note" @update:modelValue="setNote(item)" outlined dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
+                    <TextField label="" v-model="form.notes[item.key]"  outlined dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
                 </template>
             </Datatable>
             <v-card-actions>

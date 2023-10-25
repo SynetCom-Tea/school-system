@@ -39,7 +39,7 @@ export default {
         mdiEye,
     },
     layout: AuthenticatedLayout,
-    props: ["evaluations", "types", "evaluation_id", "details", "periodes", "type_evaluation", "enseignements",'section','enseignants','section_id'],
+    props: ["evaluations", "types", "evaluation_id", "details", "periodes", "type_evaluation", "enseignements",'section','enseignants','section_id','annees'],
     data() {
         return {
             icon: {
@@ -107,7 +107,8 @@ export default {
                 type_evaluation_id: null,
                 periode_id: null,
                 enseignement_annee_id: null,
-                enseignant_id : null
+                enseignant_id : null,
+                annee_id : null 
             }),
         }
     },
@@ -248,22 +249,12 @@ export default {
             this.form.enseignant_id = null
             this.dialogEdit = false
         },
-        detail(item) {
-                this.dialogDetail = true
-                this.date = item.date
-                this.pourcentage = item.pourcentage
-                this.periode = item.libelle
-                this.type = item.type
-                this.enseignant = item.nom
-                this.code = item.code
-                this.matiere = item.matiere
-            
-        },
-        setMatiere(e){
+        setMatiere(a){
             this.form.enseignement_annee_id = null
             this.$inertia.replace(this.$page.url,{
                 data : {
-                    enseignant_id : e
+                    enseignant_id : this.form.enseignant_id,
+                    annee_id : a
                 }
             })
         }
@@ -279,48 +270,6 @@ export default {
         <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des evaluations"></Toolbar>
         <v-card-text>
             <br>
-            <v-dialog v-model="dialogDetail" max-width="700">
-                <v-card>
-                    <v-toolbar dark color="secondary">
-                        <v-toolbar-title>
-                            Détail de l'evaluation <v-icon size="large"> </v-icon>
-                        </v-toolbar-title>
-                    </v-toolbar>
-                    <v-card-text>
-                        <v-card flat class="mt-3 mb-6">
-                            <v-card>
-                                <v-table dense>
-                                    <tbody>
-                                        <tr>
-                                            <td class="font-weight-black">Type Evaluation:</td>
-                                            <td>{{ type }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-black">Nom Enseignant:</td>
-                                            <td>{{ enseignant }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-black">Date Evaluation</td>
-                                            <td>{{ date }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-black">Periode :</td>
-                                            <td>{{ periode }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="font-weight-black">Matiere :</td>
-                                            <td>{{ matiere }}</td>
-                                        </tr>
-                                    </tbody>
-                                </v-table>
-                            </v-card>
-                        </v-card>
-                    </v-card-text>
-                    <v-card-actions class="justify-end" id="actions">
-                        <v-btn color="danger"  variant="outlined" @click="dialogDetail = false"> Fermer </v-btn>
-                    </v-card-actions>
-                </v-card>
-            </v-dialog>
             <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
                 <v-card>
                     <v-toolbar dense color="secondary" dark>
@@ -343,7 +292,7 @@ export default {
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setMatiere(form.enseignant_id)"   variant="outlined" item-title="matricule" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id"    variant="outlined" item-title="matricule" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
@@ -351,7 +300,11 @@ export default {
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete v-if="form.enseignant_id" label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                        <Autocomplete label="Annees scolaire" v-model="form.annee_id" @update:modelValue="setMatiere(form.annee_id)"   variant="outlined" item-title="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        </Autocomplete>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <Autocomplete :disabled="!form.annee_id" v-if="section_id <=2" label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="6">
@@ -391,11 +344,15 @@ export default {
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="6">
-                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setMatiere(form.enseignant_id)"   variant="outlined" item-title="matricule" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id"   variant="outlined" item-title="matricule" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
                                         <Autocomplete  label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        </Autocomplete>
+                                    </v-col>
+                                    <v-col cols="6">
+                                        <Autocomplete label="Annees scolaire" v-model="form.annee_id" @update:modelValue="setMatiere(form.annee_id)"   variant="outlined" item-title="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="6">
@@ -419,8 +376,6 @@ export default {
             </v-dialog>
             <Datatable titleDatatable="Listes des evaluations " :headers="headers" :items="evaluations" :functionOnClickAddButton="create">
                 <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="info" title="details" class="me-2" @click="detail(item.raw)" :icon="icon.mdiEye">
-                    </v-icon>
                     <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
                     </v-icon>
                     <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">

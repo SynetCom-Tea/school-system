@@ -149,12 +149,13 @@ class EvaluationController extends Controller
         $evaluations = [];
         $evaluation_id  = null;
         $detail = [];
+        $id_a = Annee::max('id');
         $user = Auth::user();
         $sections = Section::whereHas('etablissements.users', function ($q) use ($user) {
             $q->where('id', $user->id);
         })->get(); 
         // dd($sections);
-        $enseigements = $request->enseignant_id ?  DB::select("
+        $enseigements = $request->annee_id ?  DB::select("
         SELECT ea.id,ea.code FROM enseignement_annees ea
         JOIN enseignants en ON en.id = ea.enseignant_id 
         JOIN classe_annees ca ON ca.id = ea.classe_annee_id
@@ -163,8 +164,9 @@ class EvaluationController extends Controller
         JOIN etablissement_section es ON es.id = c.etablissement_section_id
         JOIN sections s ON s.id = es.section_id
         JOIN etablissements e ON e.id = es.etablissement_id
-        WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id
+        WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id AND a.id = :annee_id
         ",[
+            'annee_id'=>$request->annee_id,
            'enseignant_id'=>$request->enseignant_id,
            'section_id'=> $request->section_id,
            'etablissement_id'=>$user->etablissement_id
@@ -242,7 +244,8 @@ class EvaluationController extends Controller
             'section'=>$sections,
             'enseignants'=>$enseignants,
             'evaluation_id'=> $evaluation_id,
-            'section_id'=>$request->section_id
+            'section_id'=>$request->section_id,
+            'annees'=>Annee::all()
         ]);
     }
     public function create(Request $request)

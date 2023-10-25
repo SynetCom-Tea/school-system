@@ -19,6 +19,7 @@ use Modules\Enseignement\Entities\Filiere;
 use Illuminate\Contracts\Support\Renderable;
 use Modules\GestionNote\Entities\Evaluation;
 use Modules\Enseignement\Entities\Enseignant;
+use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Enseignement\Entities\EnseignementAnnee;
 
 class NoteController extends Controller
@@ -235,15 +236,38 @@ class NoteController extends Controller
     {
         $annee = Annee::all();
         $user = Auth::user();
+        $classes = [];
         $section_id = Section::where('id',$request->section_id)->get()[0]->id;
         // dd($section_id);
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
-        $enseignant = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get();   
-        $classes = $request->annee ? Classe::where('etablissement_section_id',$etat_section_id)->whereHas('classe_annees.enseignement_annees',function($classe) use($request){
-                  $classe->where('enseignant_id',$request->enseignant);
-                })->whereHas('classe_annees',function($classe) use($request){
+        $enseignant = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get(); 
+        // Cycle filieres
+        $filieres = $request->enseignant ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
+            $filiere->where('etablissement_section_id',$etat_section_id);
+        })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
+            $enseignant->where('enseignant_id',$request->enseignant);
+        })->with('filiere','cycle')->get() : [];
+        // dd($filieres);
+        // Niveaux
+        $niveaux = Niveau::where('section_id',$request->section_id)->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
+            $enseignant->where('enseignant_id',$request->enseignant);
+        })->get() ;
+        // dd($niveaux);
+        // Classes
+        if ($request->section_id >=3 && $request->niveau){
+            $classes = Classe::where('etablissement_section_id',$etat_section_id)->whereHas('cycle_filiere.filiere',function($filiere) use($request){
+                $filiere->where('filiere_id',$request->filiere);
+               })->whereHas('classe_annees',function($classe) use($request){
                   $classe->where('annee_id',$request->annee);
-               })->with('niveau','cycle_filiere.filiere')->get() : [] ; 
+               })->where('niveau_id',$request->niveau)->get();
+        } elseif ($request->annee && $request->section_id <=2) {
+          $classes =   Classe::where('etablissement_section_id',$etat_section_id)->whereHas('classe_annees.enseignement_annees',function($classe) use($request){
+                $classe->where('enseignant_id',$request->enseignant);
+              })->whereHas('classe_annees',function($classe) use($request){
+                $classe->where('annee_id',$request->annee);
+             })->get();
+            //  dd($classes);
+        }
         $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) { 
             $query1->where('classe_id',$request->classe); 
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
@@ -274,6 +298,8 @@ class NoteController extends Controller
             'classes'=>$classes,
             'evaluations'=>$evaluations,
             'eleves' => $customizingEleves ? $customizingEleves : null,
+            'filieres'=>$filieres,
+            'niveaux'=>$niveaux
         ]);
     }
 }
