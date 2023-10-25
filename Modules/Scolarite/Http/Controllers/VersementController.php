@@ -61,7 +61,6 @@ class VersementController extends Controller
                 'frais_id' => $frais->id,
                 'montant' => (float)$request->montant,
                 'date_versement' => date('Y-m-d'),
-                'statut' => 1
             ]);
             $list = Inscription::where('code',$inscription->code)->whereHas('niveau', function($query) use ($request){
                 $query->where('section_id',(int)$request->section);
