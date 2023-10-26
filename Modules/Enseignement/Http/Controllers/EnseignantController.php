@@ -62,8 +62,7 @@ class EnseignantController extends Controller
     public function create(Request $request)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $dernierId=Annee::max('id');
-        $annee = Annee::where('id', $dernierId)->first();
+        $annee = Annee::where('actif',1)->first();;
         $matiere=[];
         $classes=[];
         $classe_annees=[];

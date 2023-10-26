@@ -21,7 +21,7 @@
              close-label="Close Alert"
              color="primary"
              type="info"
-             title="Note"
+             title="Information"
            >
              <li>
                Cette section vous permet d'ajouter un enseignant attribuer les matières et affecter les classes

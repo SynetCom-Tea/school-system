@@ -56,15 +56,17 @@
                     mdiCurrencyUsd,
                 },
                 headers: [
+                { title: 'Niveau', align: 'center', key: 'niveau.libelle' },
+                { title: 'Année Scolaire', align: 'center', key: 'annee.libelle' },
                     {
-                        title: 'Libellé',
+                        title: 'Frais',
                         align: 'start',
                         sortable: false,
-                        key: 'type_frais.libelle',
+                        key: 'frais',
                     },
-                    { title: 'Montant', align: 'center', key: 'montant' },
-                    { title: 'Année Scolaire', align: 'center', key: 'annee.libelle' },
-                    { title: 'Niveau', align: 'center', key: 'niveau.libelle' },
+                    // { title: 'Montant', align: 'center', key: 'montant' },
+
+
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
                 dialog_title: 'Modifier Frais',
@@ -89,7 +91,7 @@
                 router.get(route('frais.create', this.section_id))
             },
             editItem(item){
-                //console.log('edit',item)
+                console.log('edit',item)
                 this.dialog_title = 'Modifier le frais'
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
@@ -207,7 +209,22 @@
             >GESTION DES FRAIS</v-card-title
           >
           <v-divider></v-divider>
-
+          <br>
+        <v-row>
+            <v-col cols="7" md="7"></v-col>
+            <v-col  cols="4" md="4">
+                <Select
+                    label="Année scolaire"
+                    :items="typefrais"
+                    variant="outlined"
+                    itemValue="id"
+                    itemTitle="libelle"
+                    placeholder="Année scolaire"
+                    v-model="form.type_frais_id"
+                    >
+                </Select>
+            </v-col>
+        </v-row>
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
                         <template v-slot:default="{ isActive }">
                 <v-card>
@@ -223,6 +240,7 @@
                                         <v-row>
                                             <v-col cols="12" md="12">
                                                 <Select
+                                                    disabled
                                                     label="Année"
                                                     :items="annees"
                                                     variant="outlined"
@@ -238,6 +256,7 @@
                                         <v-row>
                                             <v-col cols="12" md="12">
                                                 <Select
+                                                    disabled
                                                     label="Niveau"
                                                     :items="niveaux"
                                                     variant="outlined"
@@ -253,6 +272,7 @@
                                         <v-row>
                                             <v-col cols="12" md="12">
                                                 <Select
+                                                    disabled
                                                     label="Type Frais"
                                                     :items="typefrais"
                                                     variant="outlined"
@@ -284,10 +304,19 @@
                     </v-dialog>
         <v-card-text>
             <Datatable titleDatatable="Liste des frais" :headers="headers" :items="frais" :functionOnClickAddButton="create" >
-
+                <template v-slot:item.frais="{ item, index}">
+                    <v-chip-group column selected-class="text-purple">
+                        <v-chip v-for="tag in item.columns.frais">
+                            {{ tag.type_frais.libelle}} => {{tag.montant}}
+                            <v-icon end  size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange">
+                            </v-icon>
+                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItemc(tag)" :icon="icons.mdiCloseCircle">
+                            </v-icon>
+                        </v-chip>
+                    </v-chip-group>
+                </template>
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
-                </v-icon>
+
                 <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>

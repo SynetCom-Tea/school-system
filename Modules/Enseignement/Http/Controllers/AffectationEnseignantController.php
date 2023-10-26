@@ -28,8 +28,7 @@ class AffectationEnseignantController extends Controller
     public function index( Request $request,$type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $dernierId=Annee::max('id');
-        $annee = Annee::where('id', $dernierId)->first();
+        $annee = Annee::where('actif',1)->first();
 
 
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
@@ -183,8 +182,7 @@ class AffectationEnseignantController extends Controller
 
 
         $ets_id = Auth::user()->etablissement_id;
-        $dernierId=Annee::max('id');
-        $annee = Annee::where('id', $dernierId)->first();
+        $annee = Annee::where('actif',1)->first();
         $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
         $matiere=[];
@@ -314,7 +312,7 @@ class AffectationEnseignantController extends Controller
      */
     public function update(Request $request, $id)
     {
-      
+
 
 
         $classe_annee=ClasseAnnee::with('classe')->where('id',$request->classe)->first();

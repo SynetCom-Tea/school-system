@@ -15,6 +15,7 @@ use Inertia\Inertia;
 use Modules\Enseignement\Http\Controllers\AffectationEnseignantController;
 use Modules\Enseignement\Http\Controllers\EnseignantController;
 use Modules\Enseignement\Http\Controllers\FilliereController;
+use Modules\Enseignement\Http\Controllers\LmdController;
 use Modules\Enseignement\Http\Controllers\UEController;
 use Modules\Scolarite\Http\Controllers\EtudiantsController;
 use Modules\Scolarite\Http\Controllers\AnneeController;
@@ -126,11 +127,15 @@ Route::get('AffectationEnseignants', [AffectationEnseignantController::class, 'e
 Route::resource('filieres', FilliereController::class)->only([ 'update', 'destroy']);
 Route::get('filierescreate/{type}', [FilliereController::class, 'create'])->name('filieres.create');
 Route::post('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
+Route::post('filierescycle/{type}', [FilliereController::class, 'ajout'])->name('filieres.ajout');
+Route::delete('filieressup/{type}', [FilliereController::class, 'supprimer'])->name('filieres.supprimer');
 Route::get('filieres/{type}', [FilliereController::class, 'index'])->name('filieres.index');
 Route::resource('UniteEnseignement', UEController::class)->only([ 'edit', 'update','destroy']);
 Route::get('Unité d\'enseignement create/{type}', [UEController::class, 'create'])->name('ues.create');
 Route::get('Unité d\'enseignement/{type}', [UEController::class, 'index'])->name('ues.index');
 Route::post('Unité d\'enseignement/{type}', [UEController::class, 'store'])->name('ues.store');
+Route::get('/systeme/lmd/{type}', [LmdController::class, 'index'])->name('lmd.index');
+Route::post('/systeme/lmd/store', [LmdController::class, 'store'])->name('systemelmd.store');
 
 
 require __DIR__ . '/auth.php';

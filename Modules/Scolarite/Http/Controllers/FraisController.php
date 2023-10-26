@@ -23,9 +23,29 @@ class FraisController extends Controller
     public function index($type)
     {
         $ets_id = Auth::user()->etablissement_id;
-        $frais=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
+        // $frais=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
 
-            $query->where('section_id',$type);})->get();
+        //     $query->where('section_id',$type);})->get();
+        $frais=[];
+        $annee_cour=Annee::where('actif',1)->first();
+        // dd($annee_cour->id);
+        $niveaux=Niveau::where('section_id',$type)->get();
+        foreach($niveaux as $niveau){
+            $frai=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->where('niveau_id',$niveau->id)->where('annee_id',$annee_cour->id)->get();
+             if ($frai->count() != 0) {
+            // $key = $key - 1;
+            $tabs= [
+                'annee'=>$annee_cour,
+                'niveau' =>$niveau,
+                'frais' => $frai
+            ];
+            $frais[] = $tabs;
+
+        }
+
+        }
+
+
 
         return Inertia::render('Frais/Index', [
             'frais' => $frais,
