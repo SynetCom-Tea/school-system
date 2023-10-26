@@ -296,7 +296,7 @@
 
         computed: {
         Title() {
-         
+
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
