@@ -28,4 +28,8 @@ class Matiere extends Model
     {
         return $this->belongsTo(EtablissementSection::class);
     }
+    public function filiere_niveau_matiere_ues(): HasMany
+    {
+        return $this->hasMany(FiliereNiveauMatiereUe::class);
+    }
 }

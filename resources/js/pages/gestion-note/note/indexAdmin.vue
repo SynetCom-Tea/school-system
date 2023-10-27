@@ -207,13 +207,13 @@ export default {
             this.dialogEdit = true
             this.form.id_note = item.id
             this.form.note = item.note
+            this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
             if(item.evaluation.enseignement_annee.niveau_matiere){
             this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
             }
             else{
             this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
             }
-            this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
         },
         closeEdit() {
             this.dialogEdit = false
@@ -271,7 +271,7 @@ export default {
                     },
                 })
             } else {
-                this.dialogEdit = false;
+                this.dialogEdit = false
                 this.$swal({
                     icon: 'warning',
                     title: 'Attention',
