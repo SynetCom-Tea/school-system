@@ -57,13 +57,13 @@
                 },
                 headers: [
                 { title: 'Niveau', align: 'center', key: 'niveau.libelle' },
-                { title: 'Année Scolaire', align: 'center', key: 'annee.libelle' },
                     {
-                        title: 'Frais',
+                        title: 'Type de frais et Montant',
                         align: 'start',
                         sortable: false,
                         key: 'frais',
                     },
+                    { title: 'Année Scolaire', align: 'center', key: 'annee.libelle' },
                     // { title: 'Montant', align: 'center', key: 'montant' },
 
 
@@ -75,6 +75,7 @@
                 form: useForm({
                     type_frais_id: '',
                     montant: '',
+                    annee:null,
                     niveau_id: '',
                     annee_id: '',
                 }),
@@ -87,6 +88,17 @@
             }
         },
         methods:{
+
+            setannee(){
+            console.log('matiere',this.form.annee);
+            // this.form.matieres[i].classes=[];
+           this.$emit('input',this.form.annee)
+           let mat=this.form.annee;
+           router.replace(this.$page.url,{data:{annee:mat}});
+        //    console.log('fdgfggg',this.classes);
+
+
+       },
             create() {
                 router.get(route('frais.create', this.section_id))
             },
@@ -144,6 +156,60 @@
                         });
                     }
                 });
+            },
+
+            deleteItemc(items){
+
+
+                     this.$swal({
+                    title: 'Es-tu sûr?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#004980',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, supprimez-le!',
+                    cancelButtonText: 'Non, annulez !',
+                    }).then((result) => {
+                    items.frais.forEach(item => {
+                        console.log('item',item);
+                    if (result.isConfirmed) {
+
+
+                       this.form.delete(route('frais.supprimer', item.id), {
+                        onFinish: () => {
+                            if(this.$page.props.flash?.message?.type == 'error'){
+                                this.$swal({
+                                icon: 'error',
+                                title: 'Suppression',
+                                text: this.$page.props.flash?.message?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            }else if(this.$page.props.flash?.message?.type == 'success'){
+                                this.$swal({
+                                icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
+                                title: 'Suppression',
+                                text: this.$page.props.flash?.message?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            }
+                        },
+                        });
+                    }
+                });
+                });
+
+
             },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
@@ -211,18 +277,20 @@
           <v-divider></v-divider>
           <br>
         <v-row>
-            <v-col cols="7" md="7"></v-col>
-            <v-col  cols="4" md="4">
-                <Select
+            <v-col cols="7" md="7" style="height: 80px"></v-col>
+            <v-col  cols="4" md="4" style="height: 80px">
+                <Autocomplete
                     label="Année scolaire"
-                    :items="typefrais"
+                    :items="annees"
                     variant="outlined"
                     itemValue="id"
                     itemTitle="libelle"
                     placeholder="Année scolaire"
-                    v-model="form.type_frais_id"
+                    chips
+                    v-model="form.annee"
+                    @update:modelValue="setannee()"
                     >
-                </Select>
+                </Autocomplete>
             </v-col>
         </v-row>
         <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
@@ -239,7 +307,7 @@
                                     <v-form ref="form">
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <Select
+                                                <Autocomplete
                                                     disabled
                                                     label="Année"
                                                     :items="annees"
@@ -250,12 +318,12 @@
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
-                                                </Select>
+                                                </Autocomplete>
                                             </v-col>
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <Select
+                                                <Autocomplete
                                                     disabled
                                                     label="Niveau"
                                                     :items="niveaux"
@@ -266,12 +334,12 @@
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
-                                                </Select>
+                                                </Autocomplete>
                                             </v-col>
                                         </v-row>
                                         <v-row>
                                             <v-col cols="12" md="12">
-                                                <Select
+                                                <Autocomplete
                                                     disabled
                                                     label="Type Frais"
                                                     :items="typefrais"
@@ -282,7 +350,7 @@
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
-                                                </Select>
+                                                </Autocomplete>
                                             </v-col>
                                         </v-row>
                                         <v-row>
@@ -310,14 +378,14 @@
                             {{ tag.type_frais.libelle}} => {{tag.montant}}
                             <v-icon end  size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
-                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItemc(tag)" :icon="icons.mdiCloseCircle">
+                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">
                             </v-icon>
                         </v-chip>
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{item}">
 
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemc(item.raw)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

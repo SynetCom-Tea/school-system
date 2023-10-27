@@ -20,7 +20,7 @@ class FraisController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index($type)
+    public function index(Request $request,$type)
     {
         $ets_id = Auth::user()->etablissement_id;
         // $frais=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
@@ -30,18 +30,39 @@ class FraisController extends Controller
         $annee_cour=Annee::where('actif',1)->first();
         // dd($annee_cour->id);
         $niveaux=Niveau::where('section_id',$type)->get();
-        foreach($niveaux as $niveau){
-            $frai=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->where('niveau_id',$niveau->id)->where('annee_id',$annee_cour->id)->get();
-             if ($frai->count() != 0) {
-            // $key = $key - 1;
-            $tabs= [
-                'annee'=>$annee_cour,
-                'niveau' =>$niveau,
-                'frais' => $frai
-            ];
-            $frais[] = $tabs;
+        // dd($request->annee);
+        if($request->annee!=null){
 
-        }
+            foreach($niveaux as $niveau){
+                $frai=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->where('niveau_id',$niveau->id)->where('annee_id',$request->annee)->get();
+                 if ($frai->count() != 0) {
+                // $key = $key - 1;
+                $tabs= [
+                    'annee'=>$annee_cour,
+                    'niveau' =>$niveau,
+                    'frais' => $frai
+                ];
+                $frais[] = $tabs;
+
+            }
+
+            }
+
+        }else{
+            foreach($niveaux as $niveau){
+                $frai=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->where('niveau_id',$niveau->id)->where('annee_id',$annee_cour->id)->get();
+                 if ($frai->count() != 0) {
+                // $key = $key - 1;
+                $tabs= [
+                    'annee'=>$annee_cour,
+                    'niveau' =>$niveau,
+                    'frais' => $frai
+                ];
+                $frais[] = $tabs;
+
+            }
+
+            }
 
         }
 
@@ -92,7 +113,10 @@ class FraisController extends Controller
                 ],
                 [
                 'montant' => $donnee['montant'],
-                'etablissement_id' => $ets_id
+                'etablissement_id' => $ets_id,
+                'deleted_at'=>null,
+                'created_at' => now(), // Remplissez le champ created_at
+                'updated_at' => now() // Remplissez le champ updated_at
                 ]
                 );
             }
@@ -143,8 +167,9 @@ class FraisController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function destroy($id)
+    public function supprimer($id)
     {
+        dd($id);
         try{
             $frais = Frais::find($id);
             $niveau = Niveau::where('id',$frais->niveau_id)->first();
@@ -165,4 +190,29 @@ class FraisController extends Controller
         ]);
     }
 
+
+
+public function destroy($id)
+{
+    try{
+        $frais = Frais::find($id);
+        $niveau = Niveau::where('id',$frais->niveau_id)->first();
+        $frais->delete();
+    }
+    catch(\Illuminate\Database\QueryException $e){
+        if($e->getCode() == "23000"){
+            return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+                'type' => 'error',
+                'text' => "Désolé, vous ne pouvez pas supprimer ce frais!",
+            ]);
+
+        }
+    }
+    return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+        'type' => 'success',
+        'text' => "Le frais a été supprimé avec succès !",
+    ]);
 }
+
+}
+

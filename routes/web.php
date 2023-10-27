@@ -105,6 +105,7 @@ Route::resource('frais', FraisController::class)->only(['update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
 Route::get('Frais/{type}', [FraisController::class, 'create'])->name('frais.create');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
+Route::delete('frais/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
 Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
 Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');

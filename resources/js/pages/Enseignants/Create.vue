@@ -282,7 +282,7 @@
 
        },
        goBack() {
-           router.get(route('AffectationEnseignants.index', this.section_id))
+           router.get(route('enseignants.index'))
        },
      onclickAlertButton(type) {
        if (type == "second") {
