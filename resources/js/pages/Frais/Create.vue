@@ -181,7 +181,7 @@ export default {
                         :items="typefrais"
                         variant="outlined"
                         item-value="id"
-                        item-title="libelle"
+                        item-title="type_frais.libelle"
                         v-model="donnee.type_frais_id"
                         isRequired
                         :rules="[(v) => !!v || 'Ce champ est requis!']"

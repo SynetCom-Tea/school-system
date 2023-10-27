@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use PDF;
 use Inertia\Inertia;
 
 
@@ -14,11 +15,33 @@ use Modules\Scolarite\Entities\Inscription;
 use Modules\Scolarite\Entities\Versement;
 use Modules\Scolarite\Entities\Frais;
 use Modules\Scolarite\Entities\TypeFrais;
+use App\Models\User;
+use App\Models\EtablissementTypeFrais;
 
 class VersementController extends Controller
 {
 
     // FUNCTION AJAX
+    public function ajaxGetInscriptionAboutMle(Request $request)
+    {
+        // dd($request->all());
+        $recherche = $request->search;
+        $section = $request->section;
+
+        if($recherche && $section){
+            $items = $recherche ? Inscription::whereHas('apprenant', function($query) use ($recherche){
+                $query->where('etablissement_id',Auth::user()->etablissement_id)->where('matricule','like', '%' . $recherche . '%')->orWhere('nom','like', '%' . $recherche . '%')->orWhere('prenom','like', '%' . $recherche . '%');
+            })->whereHas('niveau', function($query) use ($section){
+                $query->where('section_id',$section);
+            })->with('apprenant','annee','niveau')->get() : [];
+        
+            // dd($items);
+            return $items;
+        }else{
+            return 'ERREUR';
+        }
+    }
+
     public function ajaxGetInscriptionForVersement(Request $request)
     {
         // dd($request->all());
@@ -35,17 +58,25 @@ class VersementController extends Controller
     public function calculFrais(Request $request)
     {
         // dd($request->all());
-        $inscription = Inscription::find($request->inscription);
-        $type_frais = TypeFrais::find($request->type_frais);
-        $frais = Frais::where('type_frais_id',$type_frais->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
-        $somme_versee = Versement::where('inscription_id',$inscription->id)->where('frais_id',$frais->id)->sum('montant');
-        // dd($inscription,$type_frais,$frais,$somme_versee);
-        $result = [
-            'somme_versee' => $somme_versee,
-            'total' => $frais->montant
-        ];
-        // dd($result);
-        return $result ?? [];
+        if($request->inscription && $request->type_frais){
+            $inscription = Inscription::find($request->inscription);
+            $etab_type_frais = EtablissementTypeFrais::where('type_frais_id',$request->type_frais)->where('etablissement_id',Auth::user()->etablissement_id)->first();
+            $frais = Frais::where('etablissement_type_frais_id',$etab_type_frais->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
+            if($frais){
+                $somme_versee = Versement::where('inscription_id',$inscription->id)->where('frais_id',$frais->id)->sum('montant');
+                // dd($inscription,$type_frais,$frais,$somme_versee);
+                $result = [
+                    'somme_versee' => $somme_versee,
+                    'total' => $frais->montant
+                ];
+                // dd($result);
+                return ['code'=> 1, 'list'=> $result ?? []];
+            }else{
+                return ['code'=> 0];
+            }
+        }else{
+            return 'ERREUR';
+        }
     }
 
     public function saveVersement(Request $request)
@@ -53,8 +84,8 @@ class VersementController extends Controller
         // dd($request->all());
         if($request->inscription && $request->type_frais && $request->montant){
             $inscription = Inscription::find($request->inscription);
-            $type_frais = TypeFrais::find($request->type_frais);
-            $frais = Frais::where('type_frais_id',$type_frais->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
+            $etab_type_frais = EtablissementTypeFrais::where('type_frais_id',$request->type_frais)->where('etablissement_id',Auth::user()->etablissement_id)->first();
+            $frais = Frais::where('etablissement_type_frais_id',$etab_type_frais->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
             // dd($inscription);
             $versement = Versement::create([
                 'inscription_id' => $inscription->id,
@@ -62,6 +93,7 @@ class VersementController extends Controller
                 'montant' => (float)$request->montant,
                 'date_versement' => date('Y-m-d'),
             ]);
+            Inscription::find($inscription->id)->update(['statut'=>1]);
             $list = Inscription::where('code',$inscription->code)->whereHas('niveau', function($query) use ($request){
                 $query->where('section_id',(int)$request->section);
             })->with('apprenant','cycleFiliere','annee','niveau','versements.frais.type_frais')->get();
@@ -70,6 +102,21 @@ class VersementController extends Controller
         }else{
             return 'ERREUR';
         }
+    }
+
+    public function recuVersement(Request $request){
+        // dd($request->all());
+        $users = User::all();
+  
+        $data = [
+            'title' => 'Welcome to ItSolutionStuff.com',
+            'date' => date('m/d/Y'),
+            'users' => $users
+        ]; 
+            
+        $pdf = PDF::loadView('myPDF', $data);
+     
+        return $pdf->stream('itsolutionstuff.pdf');
     }
 
     public function supVersement(Request $request)
