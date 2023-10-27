@@ -123,10 +123,17 @@
                   sm="6"
                   md="12"
                 >
-                <Autocomplete
+                  <v-switch class="mt-5" v-model="tous_frais" @update:modelValue="calculFrais(tous_frais),form.type_frais = null" color="#004980" inset :label="'Payement de tous les frais (Non payés)'"></v-switch>
+                </v-col>
+                <v-col v-if="!tous_frais"
+                  cols="12"
+                  sm="6"
+                  md="12"
+                >
+                <Autocomplete 
                     :items="type_frais"
-                    item-title="libelle"
-                    item-value="id"
+                    item-title="type_frais.libelle"
+                    item-value="type_frais.id"
                     label="Frais"
                     isRequired
                     v-model="form.type_frais"
@@ -135,7 +142,7 @@
                   ></Autocomplete>
                 </v-col>
               
-                <v-col cols="12">
+                <v-col cols="12" v-if="!tous_frais">
                   <TextField
                     label="Montant"
                     isRequired
@@ -175,7 +182,7 @@
             color="blue-darken-1"
             variant="text"
             :disabled="done"
-            @click="submit()"
+            @click="submit(tous_frais)"
           >
             Enregistrer
           </v-btn>
@@ -307,7 +314,7 @@
           {
             title: "Type de frais",
             align: "start",
-            key: "frais.type_frais.libelle",
+            key: "frais.etablissement_type_frais.type_frais.libelle",
             sortable: false,
           },
           { title: "Montant", align: "center", key: "montant" },
@@ -353,6 +360,7 @@
         },
         code: '',
         search: '',
+        tous_frais: null,
         spinnerLoading: false,
         loading: false,
         dialog: false,
@@ -429,35 +437,42 @@
 
 
 
-      calculFrais(){
+      calculFrais(type){
+        console.log('type',type);
         this.$emit('input',this.form.montant)
-        axios
-          .get(
-            route("getCalculFrais", {
-              inscription: this.inscriptions[0].id ?? null,
-              type_frais: this.form.type_frais,
-            })
-          )
-          .then((res) => {
-            // this.loading = false
-            console.log('response',res.data);
-            if (res.data == "ERREUR") {
-              // this.$toast.error("Données non valides!");
-            } else if(res.data.code == 1){
-              let r = res.data.list.total - res.data.list.somme_versee
-
-              this.restant = 'Il vous reste ' + r + ' FCFA à payer' ; 
-              if(parseInt(r) < parseInt(this.form.montant)  ){
-                this.done = true
+        if(type != false){
+          axios
+            .get(
+              route("getCalculFrais", {
+                inscription: this.inscriptions[0].id ?? null,
+                type_frais: this.form.type_frais,
+                tous_frais: type
+              })
+            )
+            .then((res) => {
+              // this.loading = false
+              console.log('response',res.data);
+              if (res.data == "ERREUR") {
+                // this.$toast.error("Données non valides!");
+              } else if(res.data.code == 1){
+                let r = res.data.list.total - res.data.list.somme_versee
+                if(r == 0){
+                  this.restant = 'Vous avez payé toute la somme du frais sélectionné'
+                }else{
+                  this.restant = 'Il vous reste ' + r + ' FCFA à payer pour le type de frais sélectionné' ; 
+                }
+                if((parseInt(r) < parseInt(this.form.montant)) || r == 0  ){
+                  this.done = true
+                }else{
+                  this.done = false
+                }
               }else{
-                this.done = false
+                this.restant = 'Pas de frais pour ce type de frais pour l\'année en cours';
+                this.done = true
               }
-            }else{
-              this.restant = 'Pas de frais pour ce type de frais pour l\'année en cours';
-              this.done = true
-            }
-            
-          });
+              
+            });
+          }
       },
       create(){
         this.dialog = true
@@ -543,7 +558,7 @@
       },
 
 
-      async submit(){
+      async submit(type){
         const { valid } = await this.$refs.form.validate()
         if(valid) {
           this.spinnerLoading = true
@@ -554,6 +569,7 @@
               montant: this.form.montant,
               type_frais: this.form.type_frais,
               section: this.section,
+              tous_frais: type
             })
           )
           .then((response) => {

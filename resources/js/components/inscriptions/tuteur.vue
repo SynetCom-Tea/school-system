@@ -294,9 +294,9 @@
 
         // test
 
-        let valid = false; // Par défaut, considérez le formulaire comme valide.
-        console.log(await this.v$)
-        const elementValid = await this.v$.form.tuteur.$validate();
+        // let valid = false; // Par défaut, considérez le formulaire comme valide.
+        // console.log(await this.v$)
+        // const elementValid = await this.v$.form.tuteur.$validate();
         // Vérifiez la validité de chaque élément du tableau.
         // for (const tuteur of this.form.tuteurs) {
         //   const elementValid = await this.v$.tuteur.$invalid;
@@ -305,35 +305,35 @@
         //     break; // S'il y a une erreur de validation, arrêtez la vérification.
         //   }
         // }
-        console.log('valid',elementValid);
+        // console.log('valid',elementValid);
 
-        return valid = elementValid;
+        // return valid = elementValid;
 
         // fin test
 
-        // let valid = false;
-        // const result = await this.v$.$validate()
-        // console.log('ttesttttt',result);
-        // console.log('tttttt',this.tuteurShow)
-        // if(this.tuteurShow == '1'){
-        //     if (!this.form.selection &&
-        //     !this.form.tuteurs.find(
-        //         (el) =>
-        //         el.tel == null ||
-        //         el.email == null ||
-        //         el.tel.trim() == "" ||
-        //         el.email.trim() == ""
-        //     )
-        //     ){
-        //         valid = true;
-        //     }else if(this.form.selection && this.form.selectTuteurs.length != 0){
-        //         valid = true;
-        //     } 
-        // }else{
-        //     valid = true;
-        // }
+        let valid = false;
+        const result = await this.v$.$validate()
+        console.log('ttesttttt',result);
+        console.log('tttttt',this.tuteurShow)
+        if(this.tuteurShow == '1'){
+            if (!this.form.selection &&
+            !this.form.tuteurs.find(
+                (el) =>
+                el.tel == null ||
+                el.email == null ||
+                el.tel.trim() == "" ||
+                el.email.trim() == ""
+            )
+            ){
+                valid = true;
+            }else if(this.form.selection && this.form.selectTuteurs.length != 0){
+                valid = true;
+            } 
+        }else{
+            valid = true;
+        }
        
-        // return valid = result;
+        return valid;
       },
       goBack() {
         router.get(route("etablissements.index"));
