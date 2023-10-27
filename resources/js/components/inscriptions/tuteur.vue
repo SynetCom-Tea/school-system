@@ -79,6 +79,7 @@
                   placeholder="Nom"
                   @update:modelValue="submitForm(tuteur)"
                   v-model="tuteur.nom"
+                  :rules="[(v) => !!v || 'Ce champ est requis!']"
                 ></TextField>
               </v-col>
               <v-col cols="2">
@@ -88,6 +89,7 @@
                   @update:modelValue="submitForm(tuteur)"
                   placeholder="Prénom"
                   v-model="tuteur.prenom"
+                  :rules="[(v) => !!v || 'Ce champ est requis!']"
                 ></TextField>
               </v-col>
               <v-col cols="2">
@@ -97,6 +99,7 @@
                   placeholder="Téléphone"
                   @update:modelValue="submitForm(tuteur)"
                   v-model="tuteur.tel"
+                  :rules="[(v) => !!v || 'Ce champ est requis!']"
                 ></TextField>
               </v-col>
               <v-col cols="2">
@@ -104,8 +107,9 @@
                     label="Sexe"
                     isRequired
                     @update:modelValue="submitForm()"
-                    v-model="form.sexe"
-                    :items="['Sélectionner', 'Masculin', 'Féminin']"
+                    v-model="tuteur.sexe"
+                    :items="['Masculin', 'Féminin']"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
                 ></Autocomplete>
               </v-col>
               <!-- <v-col cols="2">
@@ -120,7 +124,6 @@
               <v-col cols="2">
                 <TextField
                   label="Email"
-                  :isRequired="true"
                   placeholder="Email"
                   @update:modelValue="submitForm(tuteur)"
                   v-model="tuteur.email"
@@ -189,6 +192,8 @@
   import * as XLSX from "xlsx/xlsx.mjs";
   import { router, useForm } from "@inertiajs/vue3";
   import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+  import { useVuelidate } from '@vuelidate/core';
+  import { required , email, alpha, minLength, maxLength, numeric } from '@vuelidate/validators';
   export default {
     props: ["type","tuteurs","tuteurShow"],
     components: {
@@ -198,6 +203,7 @@
       XLSX,
     },
     data: () => ({
+      v$: useVuelidate(),
       tooltipModel: false,
       alertFirst: true,
       alertSecond: true,
@@ -208,11 +214,31 @@
       section: null,
       form: useForm({
         selection: null,
-        tuteurs: [],
+        tuteurs: [
+           {
+            nom: '',
+            prenom: '',
+            tel: '',
+            sexe: '',
+            email: ''
+           }
+        ],
         selectTuteurs: [],
         etablissement_section_id: null,
       }),
     }),
+    validations () {
+    console.log('ggggg',typeof this.type);
+      return {
+        form: {
+        tuteurs: {
+            nom: { required, alpha },
+            prenom: { required, alpha },
+            sexe: { required }
+        }
+      }
+      }
+  },
     computed:{
         setTuteurs() {
         let list = [];
@@ -257,35 +283,57 @@
       },
       async submitForm(element) {
         await this.verify(element);
-        await this.isValid();
+        const v = await this.isValid();
         this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
           (el) => el.libelle == this.section
         );
         this.$emit("formSubmitted", this.form);
-        this.$emit("tuteurFormValid", this.isValid());
+        this.$emit("tuteurFormValid", v);
       },
       async isValid() {
-        let valid = false;
-        console.log('tttttt',this.tuteurShow)
-        if(this.tuteurShow == '1'){
-            if (!this.form.selection &&
-            !this.form.tuteurs.find(
-                (el) =>
-                el.tel == null ||
-                el.email == null ||
-                el.tel.trim() == "" ||
-                el.email.trim() == ""
-            )
-            ){
-                valid = true;
-            }else if(this.form.selection && this.form.selectTuteurs.length != 0){
-                valid = true;
-            } 
-        }else{
-            valid = true;
-        }
+
+        // test
+
+        let valid = false; // Par défaut, considérez le formulaire comme valide.
+        console.log(await this.v$)
+        const elementValid = await this.v$.form.tuteur.$validate();
+        // Vérifiez la validité de chaque élément du tableau.
+        // for (const tuteur of this.form.tuteurs) {
+        //   const elementValid = await this.v$.tuteur.$invalid;
+        //   if (elementValid) {
+        //     valid = false;
+        //     break; // S'il y a une erreur de validation, arrêtez la vérification.
+        //   }
+        // }
+        console.log('valid',elementValid);
+
+        return valid = elementValid;
+
+        // fin test
+
+        // let valid = false;
+        // const result = await this.v$.$validate()
+        // console.log('ttesttttt',result);
+        // console.log('tttttt',this.tuteurShow)
+        // if(this.tuteurShow == '1'){
+        //     if (!this.form.selection &&
+        //     !this.form.tuteurs.find(
+        //         (el) =>
+        //         el.tel == null ||
+        //         el.email == null ||
+        //         el.tel.trim() == "" ||
+        //         el.email.trim() == ""
+        //     )
+        //     ){
+        //         valid = true;
+        //     }else if(this.form.selection && this.form.selectTuteurs.length != 0){
+        //         valid = true;
+        //     } 
+        // }else{
+        //     valid = true;
+        // }
        
-        return valid;
+        // return valid = result;
       },
       goBack() {
         router.get(route("etablissements.index"));
@@ -321,7 +369,7 @@
     },
     mounted() {
         console.log('showtuteur',this.tuteurShow)
-      this.addRow();
+      
       this.section = this.getSection(this.type);
     },
   };

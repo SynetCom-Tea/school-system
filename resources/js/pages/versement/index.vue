@@ -9,7 +9,10 @@
         class="mt-3">
         <v-container class="bg-primary-variant">
           <v-row align="center">
-            <v-col cols="3"></v-col>
+           
+            <v-col cols="4">
+                <v-switch class="mt-5" v-model="recherche" @click="inscriptions = []" color="#004980" inset :label="'Recherche avec Mle/Nom & prenom'"></v-switch>
+            </v-col>
             <v-col cols="5">
                 <TextField class="mt-5" label="Entrer le Code de l'inscription" :isRequired="true" placeholder="Taper le code" v-model="code"></TextField>
             </v-col>
@@ -19,7 +22,52 @@
           </v-row>
         </v-container>
       </div>
-     
+      <v-card v-if="recherche"
+        class="mx-auto"
+        max-width="500"
+      >
+        <v-card-title>
+          <TextField class="mt-5" label="Entrer le Mle/Nom & Prenom" :isRequired="true" placeholder="Merci de saisir" v-model="search" @update:modelValue="getItems(search)"></TextField>
+
+        </v-card-title>
+
+        <v-divider></v-divider>
+
+        <v-virtual-scroll v-if="items.length > 0"
+          :items="items"
+          height="320"
+          item-height="48"
+        >
+          <template v-slot:default="{ item }">
+            <v-list-item
+              :title="`${item.apprenant.nom} ${item.apprenant.prenom}` "
+              :subtitle="`${item.niveau.libelle} en ${item.annee.libelle}`"
+              @click="getCodeInscription(item)"
+            >
+              <template v-slot:prepend>
+                <v-icon class="bg-primary" :icon="icons.mdiAccountSchool"></v-icon>
+              </template>
+
+              <!-- <template v-slot:append>
+                <v-btn
+                  icon="mdi-pencil"
+                  size="x-small"
+                  variant="tonal"
+                ></v-btn>
+              </template> -->
+            </v-list-item>
+          </template>
+        </v-virtual-scroll>
+        <template v-else>
+          <v-row>
+            <v-col></v-col>
+            <v-col>
+              <span style="color:#7d002c">Aucune donnée</span>
+            </v-col>
+            <v-col></v-col>
+          </v-row>
+        </template>
+      </v-card>
       <div v-if="inscriptions.length > 0 && !loading"
         style="margin: 10px; border: 2px solid #7d002c; padding: 10px; border-radius: 25px"
         class="mt-3"
@@ -41,8 +89,9 @@
               </v-chip>
             </template>
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Imprimer le reçu" @click="" :icon="icons.mdiPrinter" color="primary">
-                </v-icon>
+              <a :href="route('generateRecuVersement', { id: item.id, section: type })" target="__blank">
+                <v-icon size="small" class="me-2" :icon="icons.mdiPrinter" color="primary"></v-icon>
+              </a>
                 <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
@@ -81,6 +130,7 @@
                     label="Frais"
                     isRequired
                     v-model="form.type_frais"
+                    @update:modelValue="calculFrais()"
                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
                 </v-col>
@@ -148,6 +198,52 @@
       
      
       <div class="loader" v-if="loading"></div>
+
+      <!-- <template>
+        <div>
+          <vue3-html2pdf
+        :show-layout="false"
+        :float-layout="true"
+        :enable-download="true"
+        :preview-modal="true"
+        :paginate-elements-by-height="1400"
+        filename="hee hee"
+        :pdf-quality="2"
+        :manual-pagination="false"
+        pdf-format="a4"
+        pdf-orientation="landscape"
+        pdf-content-width="800px"
+
+        @progress="onProgress($event)"
+        @hasStartedGeneration="hasStartedGeneration()"
+        @hasGenerated="hasGenerated($event)"
+        ref="html2Pdf"
+    >
+        <section slot="pdf-content">
+          <section class="pdf-item">
+              <h4>
+                  Title
+              </h4>
+
+              <span>
+                  Value
+              </span>
+          </section>
+          <div class="html2pdf__page-break"/>
+
+    <section class="pdf-item">
+        <h4>
+            Title
+        </h4>
+
+        <span>
+            Value
+        </span>
+    </section>
+        </section>
+    </vue3-html2pdf> -->
+        <!-- </div>
+      </template> -->
     </AuthenticatedLayout>
   </template>
   <script>
@@ -155,6 +251,7 @@
   import { router, useForm } from "@inertiajs/vue3";
   import { inject, provide, computed } from "vue";
   import { AtomSpinner,ScalingSquaresSpinner,HollowDotsSpinner, HalfCircleSpinner } from 'epic-spinners'
+  import Vue3Html2pdf from 'vue3-html2pdf/src/vue3-html2pdf.vue'
   import {
     mdiChevronLeft,
     mdiChevronRight,
@@ -184,6 +281,7 @@
       ScalingSquaresSpinner,
       HollowDotsSpinner,
       HalfCircleSpinner,
+      Vue3Html2pdf,
       mdiAccountCircle,
       mdiAccountSchool,
       mdiCurrencyUsd,
@@ -254,10 +352,13 @@
           mdiAlertCircle,
         },
         code: '',
+        search: '',
         spinnerLoading: false,
         loading: false,
         dialog: false,
         done: false,
+        recherche: null,
+        items: [],
         inscriptions: [],
         restant: 'Aucune information disponible',
         montant: 0,
@@ -287,9 +388,47 @@
     created(){
     },
     methods: {
+      generateReport (recup) {
+            this.$refs.html2Pdf.generatePdf()
+        },
+        hasGenerated(e){
+          console.log('hasDowloaded',e);
+        },
+        onProgress(e){
+          console.log('onProgress',e);
+        },
+        hasStartedGeneration(){
+          
+        },
       // reset(){
       //   this.restant = '';
       // },
+      getCodeInscription(ligne){
+        this.code = ligne.code
+      },
+      async getItems(search){
+        if (search) {
+         axios
+          .get(
+            route("getInscriptionAboutMle", {
+              search: search ?? null,
+              section: this.section,
+            })
+          )
+          .then((item) => {
+            console.log('response',item.data);
+            if (item.data == "ERREUR") {
+              // this.$toast.error("Données non valides!");
+            } else {
+              this.items = item.data; 
+            }
+            
+          });
+        }
+      },
+
+
+
       calculFrais(){
         this.$emit('input',this.form.montant)
         axios
@@ -302,10 +441,10 @@
           .then((res) => {
             // this.loading = false
             console.log('response',res.data);
-            if (typeof res.data == "string" || typeof res.data == "undefined") {
+            if (res.data == "ERREUR") {
               // this.$toast.error("Données non valides!");
-            } else {
-              let r = res.data.total - res.data.somme_versee
+            } else if(res.data.code == 1){
+              let r = res.data.list.total - res.data.list.somme_versee
 
               this.restant = 'Il vous reste ' + r + ' FCFA à payer' ; 
               if(parseInt(r) < parseInt(this.form.montant)  ){
@@ -313,6 +452,9 @@
               }else{
                 this.done = false
               }
+            }else{
+              this.restant = 'Pas de frais pour ce type de frais pour l\'année en cours';
+              this.done = true
             }
             
           });
@@ -331,6 +473,9 @@
         }
       },
       async ajax(item){
+        this.search = ''
+        this.items = []
+        this.recherche = false
         this.loading = true
         let axiosResult = [];
         if (item) {

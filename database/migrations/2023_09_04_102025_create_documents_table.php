@@ -27,6 +27,19 @@ return new class extends Migration
             $table->timestamps();
             $table->softDeletes();
         });
+    
+        Schema::create('etablissement_type_documents', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\TypeDocument::class)
+                ->index()
+                ->references('id')->on('type_documents');
+            $table->foreignIdFor(\App\Models\Etablissement::class)
+                ->index()
+                ->references('id')->on('etablissements');
+            $table->string('statut')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
     }
 
     /**

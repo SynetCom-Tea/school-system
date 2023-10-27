@@ -5,6 +5,7 @@ namespace Modules\Scolarite\Entities;
 use App\Models\Annee;
 use App\Models\Etablissement;
 use App\Models\EtablissementSection;
+use Modules\Scolarite\Entities\EtablissementTypeFrais;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -22,16 +23,16 @@ class Frais extends Model
         'annee_id',
         'etablissement_id',
         'niveau_id',
-        'type_frais_id'
+        'etablissement_type_frais_id'
     ];
 
     /* public function filiere(): BelongsTo
     {
         return $this->belongsTo(Filiere::class);
     } */
-    public function type_frais(): BelongsTo
+    public function etablissement_type_frais(): BelongsTo
     {
-        return $this->belongsTo(TypeFrais::class);
+        return $this->belongsTo(EtablissementTypeFrais::class);
     }
     public function annee(): BelongsTo
     {
