@@ -169,7 +169,6 @@ class FraisController extends Controller
      */
     public function supprimer($id)
     {
-        dd($id);
         try{
             $frais = Frais::find($id);
             $niveau = Niveau::where('id',$frais->niveau_id)->first();

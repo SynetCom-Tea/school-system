@@ -42,6 +42,19 @@ return new class extends Migration
             $table->timestamps();
         });
 
+        Schema::create('etablissement_type_frais', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\Modules\Scolarite\Entities\TypeFrais::class)
+                ->index()
+                ->references('id')->on('type_frais');
+            $table->foreignIdFor(\App\Models\Etablissement::class)
+                ->index()
+                ->references('id')->on('etablissements');
+            $table->integer('statut')->nullable();
+            $table->timestamps();
+            $table->softDeletes();
+        });
+
         DB::statement("ALTER TABLE etablissement_section ADD COLUMN code varchar(255);");
         DB::statement("ALTER TABLE etablissement_section ADD COLUMN statutLmd integer default 0;");
 

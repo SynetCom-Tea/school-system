@@ -6,6 +6,7 @@
     "license": "MIT",
     "require": {
         "php": "^8.1",
+        "barryvdh/laravel-dompdf": "^2.0",
         "guzzlehttp/guzzle": "^7.2",
         "inertiajs/inertia-laravel": "^0.6.8",
         "laravel/framework": "^10.20",
@@ -36,7 +37,8 @@
         "files": [
             "app/Helpers/CountDayRepet.php",
             "app/Helpers/GetClasses.php",
-            "app/Helpers/AddEmploi.php"
+            "app/Helpers/AddEmploi.php",
+            "app/Helpers/FunctionImportant.php"
         ]
     },
     "autoload-dev": {

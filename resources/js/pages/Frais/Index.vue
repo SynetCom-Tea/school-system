@@ -104,10 +104,11 @@
             },
             editItem(item){
                 console.log('edit',item)
+                console.log('edit',item)
                 this.dialog_title = 'Modifier le frais'
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
-                this.form.type_frais_id = item.type_frais_id
+                this.form.type_frais_id = item.etablissement_type_frais.type_frais.id
                 this.form.montant = item.montant
                 this.form.annee_id = item.annee_id
                 this.dialog = true
@@ -344,9 +345,10 @@
                                                     label="Type Frais"
                                                     :items="typefrais"
                                                     variant="outlined"
-                                                    itemValue="id"
-                                                    itemTitle="libelle"
+                                                    itemValue="type_frais.id"
+                                                    itemTitle="type_frais.libelle"
                                                     v-model="form.type_frais_id"
+                                                    readonly
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >

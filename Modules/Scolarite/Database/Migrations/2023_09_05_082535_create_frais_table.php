@@ -5,7 +5,6 @@ use App\Models\Etablissement;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
-use Modules\Scolarite\Entities\TypeFrais;
 
 return new class extends Migration
 {
@@ -20,8 +19,8 @@ return new class extends Migration
             $table->id();
             $table->string('libelle')->nullable();
             $table->double('montant');
-            $table->foreignIdFor(TypeFrais::class)
-                ->references('id')->on('type_frais')->constrained()
+            $table->foreignIdFor(App\Models\EtablissementTypeFrais::class)
+                ->references('id')->on('etablissement_type_frais')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');
             $table->foreignIdFor(\Modules\Enseignement\Entities\CycleFiliere::class)->nullable()
