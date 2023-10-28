@@ -70,11 +70,11 @@
         <br />
         <Datatable titleDatatable="Listes des notes"  :displayAddButton="false" :items="notes" :headers="headers">
             <template v-slot:item.apprenant="{ item}">
-                {{ item.columns.apprenant.nom }} {{ item.columns.apprenant.prenom }}
+                {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
             </template>
             <template v-slot:item.action="{ item}">
-                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item.raw)"></v-icon>
-                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item.raw)"></v-icon>
+                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item)"></v-icon>
             </template>
         </Datatable>
     </v-card>

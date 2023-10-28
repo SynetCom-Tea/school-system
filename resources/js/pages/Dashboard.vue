@@ -224,10 +224,8 @@ export default {
       </Vue3Marquee>
     </div>
     <br /><br /><br /><br /><br /><br />
-
-    <div>
-      <ExampleApplicationDatatable />
-    </div>
+   
+    
 
     <Button
       variant="flat"

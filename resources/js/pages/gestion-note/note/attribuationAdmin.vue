@@ -285,7 +285,7 @@ export default {
             <br />
             <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
                 <template v-slot:item.note="{ item, index }">
-                    <TextField label="" v-model="form.notes[item.key]"  outlined dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
+                    <TextField label="" v-model="form.notes[item.id]"  outlined dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
                 </template>
             </Datatable>
             <v-card-actions>
