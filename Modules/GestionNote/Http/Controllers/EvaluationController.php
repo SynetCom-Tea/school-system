@@ -154,6 +154,7 @@ class EvaluationController extends Controller
         $id_a = Annee::max('id');
         $user = Auth::user();
         $classes = [];
+        $matieres = [];
         // dd($enseigement_anne);
         $sections = Section::whereHas('etablissements.users', function ($q) use ($user) {
             $q->where('id', $user->id);
@@ -180,9 +181,20 @@ class EvaluationController extends Controller
                   $classe->where('annee_id',$request->annee_id);
                })->where('niveau_id',$request->niveau)->get();
         } 
-        $matieres = $request->enseignant_id ? Matiere::where('etablissement_section_id',$etat_section_id )->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
+        if ($request->enseignant_id && $request->niveau && $request->ue){
+        $matieres = Matiere::where('etablissement_section_id',$etat_section_id )->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant_id);
-        })->get() : [];
+        })->whereHas('filiere_niveau_matiere_ues',function($fnmu) use ($request){
+            $fnmu->where('niveau_id',$request->niveau)->where('cycle_filiere_id',$request->filiere)->where('ue_id',$request->ue);
+        })->get() ;
+        // dd($matieres);
+        } else {
+            $matieres =   $request->enseignant_id && $request->niveau ? Matiere::where('etablissement_section_id',$etat_section_id )->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
+                $enseignant->where('enseignant_id',$request->enseignant_id);
+            })->whereHas('filiere_niveau_matiere_ues',function($fnmu) use ($request){
+                $fnmu->where('niveau_id',$request->niveau)->where('cycle_filiere_id',$request->filiere)->where('ue_id','=',null);
+            })->get()  : [];
+        }
         // dd($matieres);
         $enseigements = $request->annee_id && $request->section_id<=2 ?  DB::select("
         SELECT ea.id,ea.code FROM enseignement_annees ea
@@ -213,7 +225,7 @@ class EvaluationController extends Controller
         $evaluations = DB::select("
             SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom enseignant,ev.date,t.libelle type,
             en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ca.annee_id annee_id,fnmu.niveau_id niveau_id,
-            fnmu.cycle_filiere_id filiere_id,fnmu.ue_id ue_id,c.id classe_id,m.id matiere_id
+            fnmu.cycle_filiere_id filiere_id,fnmu.ue_id ue_id,c.id classe_id,m.id matiere_id,fnmu.ue_id ue_id
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
             JOIN enseignants en ON en.id = ea.enseignant_id
@@ -414,9 +426,27 @@ class EvaluationController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
         $evaluation = Evaluation::find($id);
-        $evaluation->update($request->all());
+        if($request->ue){
+            $fnmu = FiliereNiveauMatiereUe::where('matiere_id',$request->matiere)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id',$request->ue)->get();
+        }
+        else {
+            $fnmu = FiliereNiveauMatiereUe::where('matiere_id',$request->matiere)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id','=',null)->get();
+        }
+            // dd($fnmu[0]->id);
+        if ($request->section_id >=3){
+            $enseigement_anne = EnseignementAnnee::where('filiere_niveau_matiere_ue_id',$fnmu[0]->id)->where('enseignant_id',$request->enseignant_id)->whereHas('classe_annee',function($classe) use ($request){
+                $classe->where('classe_id',$request->classe)->where('annee_id',$request->annee_id);
+            })->where('niveau_matiere_id','=',null)->get();
+            $id_enseignement = $enseigement_anne[0]->id;
+        }else {
+            $id_enseignement = $request->enseignement_annee_id;
+        }
+            // $data = $request->all();
+        $data = ['date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+        // Evaluation::update($data);
+        // dd($request->all());
+        $evaluation->update($data);
     }
     
     public function destroy(string $id)

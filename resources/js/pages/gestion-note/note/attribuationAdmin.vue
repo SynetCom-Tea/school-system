@@ -82,8 +82,7 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                max: v => v <= 20 || "La note ne doit pas dépasser 20"
-            },
+                },
             form: this.$inertia.form({
                 notes: [],
                 evaluation: null,
@@ -293,7 +292,7 @@ export default {
             <br />
             <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
                 <template v-slot:item.note="{ item, index }">
-                    <TextField label="" v-model="form.notes[item.key]" outlined dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
+                    <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[rules.required, rules.validator]" style="max-width: 300px"></TextField>
                 </template>
             </Datatable>
             <v-card-actions>

@@ -126,6 +126,9 @@ export default {
         formatCode(item) {
             return `${item.filiere.code } - ${item.cycle.name } `
         },
+        formatEnseignant(item) {
+            return `${item.matricule } - ${item.nom }  ${item.prenom}`
+        },
         create() {
             this.dialog = true
             this.dialog_title = 'Nouvelle Evaluation'
@@ -146,14 +149,15 @@ export default {
             this.form.ue = item.ue_id,
             this.form.niveau = item.niveau_id,
             this.dialogEdit = true
-            this.dialog_title = 'Modifier Evaluation' 
+            this.dialog_title = 'Modifier Evaluation',
             this.$inertia.replace(this.$page.url,{
                 data : {
                     enseignant_id : item.enseignant_id,
                     annee_id: item.annee_id,
-                    section_id : this.section_id,
+                    // section_id : this.section_id,
                     niveau : item.niveau_id,
                     filiere : item.filiere_id,
+                    ue : item.ue_id
                 }
             }) 
         },
@@ -230,6 +234,7 @@ export default {
                     enseignement_annee_id
                 } = this.form
                 // console.log(this.form)
+                this.form.section_id = this.section_id
                 this.form.put(route('evaluation.update', this.form.id), {
                     onFinish: () => {
                         this.close()
@@ -256,7 +261,13 @@ export default {
             this.form.periode_id = null
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
-            this.form.enseignant_id = null
+            this.form.enseignant_id = null,
+            this.form.annee_id = null,
+            this.form.filiere = null,
+            this.form.matiere = null,
+            this.form.niveau = null
+            this.form.classe = null
+            this.form.ue = null
             this.dialog = false
         },
         closeEdit() {
@@ -266,7 +277,13 @@ export default {
             this.form.periode_id = null
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
-            this.form.enseignant_id = null
+            this.form.enseignant_id = null,
+            this.form.annee_id = null,
+            this.form.filiere = null,
+            this.form.matiere = null,
+            this.form.niveau = null
+            this.form.classe = null
+            this.form.ue = null
             this.dialogEdit = false
         },
         setMatiere(a){
@@ -279,7 +296,8 @@ export default {
             })
         },
         setFiliere(e){
-            this.form.filiere = null
+            this.form.filiere = null,
+            this.form.enseignement_annee_id = null
             this.$inertia.replace(this.$page.url,{
                 data : {
                     enseignant_id: e,
@@ -288,11 +306,14 @@ export default {
         },
         setClasse(n) {
             // console.log(n)
+            this.form.matiere = null,
+            this.form.classe = null
             router.replace(this.$page.url, {
                 data: {
                     niveau: n,
                     filiere: this.form.filiere,
                     annee_id: this.form.annee_id,
+                    ue : this.form.ue
                 }
             })
         },
@@ -321,50 +342,50 @@ export default {
                         <v-form ref="form">
                             <v-container>
                                 <v-row>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                         </TextField>
                                     </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete> 
                                     </v-col>
-                                    <v-col cols="6">
-                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setFiliere(form.enseignant_id)"      variant="outlined" item-title="matricule" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                    <v-col cols="3">
+                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setFiliere(form.enseignant_id)"      variant="outlined" :item-title="formatEnseignant" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <Autocomplete label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col cols="6" v-if="section_id>=3">
+                                    <v-col cols="3" v-if="section_id>=3">
                                         <Autocomplete label="Annees scolaire" v-model="form.annee_id"  variant="outlined" item-title="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col cols="6" v-if="section_id<=2">
+                                    <v-col cols="3" v-if="section_id<=2">
                                         <Autocomplete label="Annees scolaire" v-model="form.annee_id" @update:modelValue="setMatiere(form.annee_id)"  variant="outlined" item-title="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
+                                    <v-col md="3" v-if="section_id>=3">
                                         <Autocomplete  v-model="form.filiere" :items="filieres" :item-title="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3 && regime[0].regime_evaluation ">
+                                    <v-col md="3" v-if="section_id>=3 && regime[0].regime_evaluation ">
                                         <Autocomplete  v-model="form.ue" :items="ues" item-title="code" item-value="id" outlined required dense chips small-chips label="Unités d'enseignement"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
+                                    <v-col md="3" v-if="section_id>=3">
                                         <Autocomplete  v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
+                                    <v-col md="3" v-if="section_id>=3">
                                         <Autocomplete v-model="form.classe" :items="classes" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Classes"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
+                                    <v-col md="3" v-if="section_id>=3">
                                         <Autocomplete v-model="form.matiere" :items="matieres" item-title="nom" item-value="id" outlined required dense chips small-chips label="Matieres"></Autocomplete>
                                     </v-col>
-                                    <v-col cols="6" v-if="section_id <=2">
+                                    <v-col cols="3" v-if="section_id <=2">
                                         <Autocomplete :disabled="!form.annee_id"  label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                                         </Autocomplete> 
                                     </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                         </TextField>    
                                     </v-col>
@@ -392,50 +413,50 @@ export default {
                         <v-form ref="form">
                             <v-container>
                                 <v-row>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                         </TextField>
                                     </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete> 
                                     </v-col>
-                                    <v-col cols="6">
-                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setFiliere(form.enseignant_id)"      variant="outlined" item-title="matricule" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                    <v-col cols="3">
+                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setFiliere(form.enseignant_id)"      variant="outlined" :item-title="formatEnseignant" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <Autocomplete  label="Periodes" variant="outlined" item-title="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col cols="6" v-if="section_id>=3">
+                                    <v-col cols="3" v-if="section_id>=3">
                                         <Autocomplete label="Annees scolaire" v-model="form.annee_id"  variant="outlined" item-title="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col cols="6" v-if="section_id<=2">
+                                    <v-col cols="3" v-if="section_id<=2">
                                         <Autocomplete label="Annees scolaire" v-model="form.annee_id" @update:modelValue="setMatiere(form.annee_id)"  variant="outlined" item-title="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
-                                        <Autocomplete  v-model="form.filiere" :items="filieres" :item-title="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                                    <v-col md="3" v-if="section_id>=3">
+                                        <Autocomplete  v-model="form.filiere" :items="filieres" item-title="code" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3 && regime[0].regime_evaluation ">
+                                    <v-col md="3" v-if="section_id>=3 && regime[0].regime_evaluation ">
                                         <Autocomplete  v-model="form.ue" :items="ues" item-title="code" item-value="id" outlined required dense chips small-chips label="Unités d'enseignement"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
+                                    <v-col md="3" v-if="section_id>=3">
                                         <Autocomplete  v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
+                                    <v-col md="3" v-if="section_id>=3">
                                         <Autocomplete v-model="form.classe" :items="classes" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Classes"></Autocomplete>
                                     </v-col>
-                                    <v-col md="6" v-if="section_id>=3">
+                                    <v-col md="3" v-if="section_id>=3">
                                         <Autocomplete v-model="form.matiere" :items="matieres" item-title="nom" item-value="id" outlined required dense chips small-chips label="Matieres"></Autocomplete>
                                     </v-col>
-                                    <v-col cols="6" v-if="section_id <=2">
+                                    <v-col cols="3" v-if="section_id <=2">
                                         <Autocomplete :disabled="!form.annee_id"  label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                                         </Autocomplete> 
                                     </v-col>
-                                    <v-col cols="6">
+                                    <v-col cols="3">
                                         <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                         </TextField>
                                     </v-col>
@@ -445,16 +466,16 @@ export default {
                     </v-card-text>
                     <v-card-actions class="justify-end">
                         <v-spacer></v-spacer>
-                        <Button class="mb-2" style="height: 30px" nameButton="Enregistrer" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit">
+                        <Button class="mb-2" style="height: 30px" nameButton="Modifier" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiPencil" @click="submit">
                         </Button>
                     </v-card-actions>
                 </v-card>
             </v-dialog>
             <Datatable titleDatatable="Listes des evaluations " :headers="headers" :items="evaluations" :functionOnClickAddButton="create">
                 <template v-slot:[`item.actions`]="{ item }">
-                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+                    <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
                     </v-icon>
-                    <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+                    <v-icon size="small" color="error" @click="deleteItem(item)" :icon="icon.mdiDelete">
                     </v-icon>
                 </template>
             </Datatable>

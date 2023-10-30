@@ -51,7 +51,7 @@
                         </v-row>
                         <v-row>
                             <v-col md="12">
-                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator, rules.max]">
+                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator]">
                                 </TextField>
                             </v-col>
                         </v-row>
@@ -67,14 +67,14 @@
     <v-card style="border: 2px solid #7d002c;margin: 20px">
         <v-card-title style="color: white; background-color: #7d002c">Liste des notes</v-card-title>
         <v-divider></v-divider>
-        <br />
+        <br/>
         <Datatable titleDatatable="Listes des notes"  :displayAddButton="false" :items="notes" :headers="headers">
             <template v-slot:item.apprenant="{ item}">
-                {{ item.columns.apprenant.nom }} {{ item.columns.apprenant.prenom }}
+                {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
             </template>
             <template v-slot:item.action="{ item}">
-                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item.raw)"></v-icon>
-                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item.raw)"></v-icon>
+                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item)"></v-icon>
             </template>
         </Datatable>
     </v-card>
