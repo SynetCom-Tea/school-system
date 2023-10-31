@@ -39,6 +39,7 @@
               :cycles="cycles"
               :cycleFilieres="cycleFilieres"
               :niveaux="niveaux"
+              :nextIndex="nextIndex"
               :apprenant="apprenant"
               :annees="annees"
               @anneeFormValid="anneeFormValid"
@@ -54,6 +55,7 @@
               :cycles="cycles"
               :cycleFilieres="cycleFilieres"
               :niveaux="niveaux"
+              :nextIndex="nextIndex"
               :formapprenant="formApprenant"
               :annees="annees"
               @anneeFormValid="anneeFormValid"
@@ -65,6 +67,7 @@
               :type="type"
               :tuteurShow="0"
               :niveaux="niveaux"
+              :nextIndex="nextIndex"
               :tuteurs="tuteurs"
               @tuteurFormValid="tuteurFormValid"
             />
@@ -79,6 +82,7 @@
               :type="type"
               :tuteurShow="1"
               :niveaux="niveaux"
+              :nextIndex="nextIndex"
               :tuteurs="tuteurs"
               @tuteurFormValid="tuteurFormValid"
             />
@@ -153,6 +157,7 @@
   </AuthenticatedLayout>
 </template>
 <script>
+import { ref, provide } from 'vue';
 import { FormWizard, TabContent } from "vue3-form-wizard"; 
 import "vue3-form-wizard/dist/style.css";
 import ApprenantForm from "@/components/inscriptions/apprenant.vue";

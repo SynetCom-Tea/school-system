@@ -198,12 +198,13 @@
 <script>
 // import XLSX from "xlsx/dist/xlsx.extendscript.js";
 import * as XLSX from "xlsx/xlsx.mjs";
+import { ref, inject, watch } from 'vue';
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 export default {
-  props: ["type","niveaux","apprenant","annees","formapprenant","cycleFilieres","cycles"],
+  props: ["type","niveaux","nextIndex","apprenant","annees","formapprenant","cycleFilieres","cycles"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
@@ -225,6 +226,7 @@ export default {
     section: null,
     vCycle: null,
     resultClasse: [],
+    eventChange : inject('eventChange'),
     hint:'',
     form: useForm({
       apprenant: null,
@@ -255,6 +257,13 @@ export default {
       }
     }
   },
+  watch: {
+      // Surveillez les valeurs spécifiques ici
+      async nextIndex(){
+          await this.submitForm()
+      },
+  },
+
   computed:{
     setCycleFilieres() {
       let list = [];
@@ -275,8 +284,11 @@ export default {
     await this.submitForm()
   },
   created(){
+    
   },
+  
   methods: {
+    
     requete(){
       this.$emit('input',this.vCycle)
           router.replace(this.$page.url,{data:{cycle_id:this.vCycle}});

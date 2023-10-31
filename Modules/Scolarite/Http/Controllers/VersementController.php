@@ -159,7 +159,7 @@ class VersementController extends Controller
             'users' => $users
         ]; 
             
-        $pdf = PDF::loadView('myPDF', $data);
+        $pdf = PDF::loadView('recu_versement', $data);
      
         return $pdf->stream('itsolutionstuff.pdf');
     }

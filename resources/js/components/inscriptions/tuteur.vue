@@ -79,7 +79,7 @@
                   placeholder="Nom"
                   @update:modelValue="submitForm(tuteur)"
                   v-model="tuteur.nom"
-                  :rules="[(v) => !!v || 'Ce champ est requis!']"
+                  :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z]+$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
                 ></TextField>
               </v-col>
               <v-col cols="2">
@@ -89,7 +89,7 @@
                   @update:modelValue="submitForm(tuteur)"
                   placeholder="Prénom"
                   v-model="tuteur.prenom"
-                  :rules="[(v) => !!v || 'Ce champ est requis!']"
+                  :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z]+$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
                 ></TextField>
               </v-col>
               <v-col cols="2">
@@ -99,7 +99,7 @@
                   placeholder="Téléphone"
                   @update:modelValue="submitForm(tuteur)"
                   v-model="tuteur.tel"
-                  :rules="[(v) => !!v || 'Ce champ est requis!']"
+                  :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^\d{2}-\d{2}-\d{2}-\d{2}$/.test(v) || 'Ce champ doit contenir ce format de téléphone ( xx-xx-xx-xx (96-00-00-00))']"
                 ></TextField>
               </v-col>
               <v-col cols="2">
@@ -193,9 +193,9 @@
   import { router, useForm } from "@inertiajs/vue3";
   import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
   import { useVuelidate } from '@vuelidate/core';
-  import { required , email, alpha, minLength, maxLength, numeric } from '@vuelidate/validators';
+  import { helpers ,required , email, alpha, minLength, maxLength, numeric } from '@vuelidate/validators';
   export default {
-    props: ["type","tuteurs","tuteurShow"],
+    props: ["type","tuteurs","nextIndex","tuteurShow"],
     components: {
       mdiPlusCircle,
       mdiCloseCircle,
@@ -228,16 +228,25 @@
       }),
     }),
     validations () {
-    console.log('ggggg',typeof this.type);
       return {
         form: {
-        tuteurs: {
+          tuteurs: {
+            $each: helpers.forEach({
             nom: { required, alpha },
             prenom: { required, alpha },
-            sexe: { required }
+            sexe: { required },
+            tel: { required, regex: helpers.regex(/^\d{2}-\d{2}-\d{2}-\d{2}$/) }
+            })
         }
       }
       }
+  },
+  
+  watch: {
+      // Surveillez les valeurs spécifiques ici
+      async nextIndex(){
+          await this.submitForm()
+      },
   },
     computed:{
         setTuteurs() {
@@ -291,48 +300,23 @@
         this.$emit("tuteurFormValid", v);
       },
       async isValid() {
-
-        // test
-
-        // let valid = false; // Par défaut, considérez le formulaire comme valide.
-        // console.log(await this.v$)
-        // const elementValid = await this.v$.form.tuteur.$validate();
-        // Vérifiez la validité de chaque élément du tableau.
-        // for (const tuteur of this.form.tuteurs) {
-        //   const elementValid = await this.v$.tuteur.$invalid;
-        //   if (elementValid) {
-        //     valid = false;
-        //     break; // S'il y a une erreur de validation, arrêtez la vérification.
-        //   }
-        // }
-        // console.log('valid',elementValid);
-
-        // return valid = elementValid;
-
-        // fin test
-
         let valid = false;
-        const result = await this.v$.$validate()
-        console.log('ttesttttt',result);
-        console.log('tttttt',this.tuteurShow)
+        // const result = await this.v$.$validate()
+        console.log('v$',await this.v$);
+        // console.log('result vuelidate',result);
+        // console.log('tuteurShow',this.tuteurShow)
         if(this.tuteurShow == '1'){
-            if (!this.form.selection &&
-            !this.form.tuteurs.find(
-                (el) =>
-                el.tel == null ||
-                el.email == null ||
-                el.tel.trim() == "" ||
-                el.email.trim() == ""
-            )
-            ){
+            if (this.form.selection && this.form.selectTuteurs.length != 0)
+            {
                 valid = true;
-            }else if(this.form.selection && this.form.selectTuteurs.length != 0){
-                valid = true;
-            } 
+            }else if(!this.form.selection){
+              valid = await this.v$.$validate()
+            }else{
+              valid = false
+            }
         }else{
             valid = true;
         }
-       
         return valid;
       },
       goBack() {
@@ -353,12 +337,7 @@
       },
       async verify(element) {
         if (element) {
-          const array = this.form.tuteurs.filter(
-            (el) =>
-              (el.tel != null && el.tel == element.tel) ||
-              (el.email != "" && el.email == element.email)
-          );
-  
+          const array = this.form.tuteurs.filter((el) => el.tel == element.tel);
           if (array.length > 1) {
             this.removeRow(element);
             this.$swal("L'élément existe déjà !");
@@ -368,8 +347,6 @@
       },
     },
     mounted() {
-        console.log('showtuteur',this.tuteurShow)
-      
       this.section = this.getSection(this.type);
     },
   };
