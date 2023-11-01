@@ -66,6 +66,7 @@ return new class extends Migration
         });
 
         DB::statement("ALTER TABLE etablissement_section ADD COLUMN code varchar(255);");
+        DB::statement("ALTER TABLE etablissement_section ADD COLUMN statutLmd integer default 0;");
 
         DB::unprepared('
             CREATE TRIGGER etablissement_section_before_insert BEFORE INSERT ON etablissement_section

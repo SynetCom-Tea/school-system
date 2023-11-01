@@ -269,7 +269,7 @@ export default {
             variant="tonal"
             color="primary"
             type="info"
-            title="Note"
+            title="Information"
 
           >
             <li>
@@ -324,13 +324,14 @@ export default {
                         <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
 
                                     <v-row>
+
                                         <v-col cols="3" md="3">
                                             <TextField label="Code filière" class="mt-2" placeholder="Code filière" v-model="donnee.code" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
                                         </v-col>
                                         <v-col cols="3" md="3">
                                             <TextField label="Libellé" class="mt-2" placeholder="Libellé" v-model="donnee.name" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
                                         </v-col>
-                                        <v-col cols="3" md="3" >
+                                        <v-col cols="3" md="3">
                                             <Autocomplete
                                                 v-model="donnee.cycles"
                                                 isRequired

@@ -2,18 +2,18 @@
 
 namespace Modules\Scolarite\Http\Controllers;
 
-use Inertia\Inertia;
-use App\Models\Annee;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Auth;
-use Modules\Scolarite\Entities\Frais;
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
-use Modules\Enseignement\Entities\Niveau;
-use Modules\Scolarite\Entities\EtablissementTypeFrais;
+use Modules\Scolarite\Entities\Frais;
 use Modules\Scolarite\Entities\TypeFrais;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Modules\Enseignement\Entities\Niveau;
+use App\Models\Annee;
+use Modules\Scolarite\Entities\EtablissementTypeFrais;
 
 class FraisController extends Controller
 {
@@ -21,14 +21,53 @@ class FraisController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index($type)
+    public function index(Request $request,$type)
     {
-        $ets_id = getSectionEtablissement(Auth::user()->etablissement_id, $type);
-        $frais=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->whereHas('etablissement_type_frais',function ($query) use ($ets_id){
-            $query->where('etablissement_section_id',$ets_id);
-        })->whereHas('niveau',function ($query) use ($type){
 
-            $query->where('section_id',$type);})->get();
+        $ets_id = getSectionEtablissement(Auth::user()->etablissement_id, $type)->first();
+        // dd($ets_id);
+        // $frais=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->whereHas('etablissement_type_frais',function ($query) use ($ets_id){
+        //     $query->where('etablissement_section_id',$ets_id);
+        // })->whereHas('niveau',function ($query) use ($type){
+
+        //     $query->where('section_id',$type);})->get();
+
+        // $ets_id = Auth::user()->etablissement_id;
+        // $frais=Frais::with('annee','niveau','type_frais')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
+
+        //     $query->where('section_id',$type);})->get();
+        $frais=[];
+        $annee_cour=Annee::where('actif',1)->first();
+        // dd($annee_cour->id);
+        $niveaux=Niveau::where('section_id',$type)->get();
+        // dd($request->annee);
+       
+            foreach($niveaux as $niveau){
+                $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau->id)->where(function ($query) use ($request,$annee_cour){
+                    if($request->annee!=null){
+                        return $query->where('annee_id',$request->annee);
+                    }else{
+                        return $query->where('annee_id',$annee_cour->id);
+                    }
+                })->get();
+
+                
+                // $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',$ets_id)->where('niveau_id',$niveau->id)->where('annee_id',$request->annee)->get();
+                if ($frai->count() != 0) 
+                {
+                    // $key = $key - 1;
+                    $tabs= [
+                        'annee'=>$request->annee ? $request->annee : $annee_cour,
+                        'niveau' =>$niveau,
+                        'frais' => $frai
+                    ];
+                    $frais[] = $tabs;
+
+                }
+            
+            }
+            // dd($frais);
+
 
         return Inertia::render('Frais/Index', [
             'frais' => $frais,
@@ -73,11 +112,14 @@ class FraisController extends Controller
                 Frais::updateOrInsert([
                     'niveau_id' => $niv,
                     'annee_id' => $request->annee_id,
-                    'etablissement_type_frais_id' => $etab_type_frais->id
+                    'etablissement_type_frais_id' => $donnee['type_frais_id']
                 ],
                 [
                 'montant' => $donnee['montant'],
-                'etablissement_id' => $ets_id
+                'etablissement_id' => $ets_id,
+                'deleted_at'=>null,
+                'created_at' => now(), // Remplissez le champ created_at
+                'updated_at' => now() // Remplissez le champ updated_at
                 ]
                 );
             }
@@ -116,7 +158,7 @@ class FraisController extends Controller
      * @return Renderable
      */
     public function update(Request $request, $id)
-    {   
+    {
         $frais = Frais::find($id);
         $frais->update($request->all());
         $niveau = Niveau::where('id',$frais->niveau_id)->first();
@@ -128,7 +170,7 @@ class FraisController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function destroy($id)
+    public function supprimer($id)
     {
         try{
             $frais = Frais::find($id);
@@ -150,4 +192,29 @@ class FraisController extends Controller
         ]);
     }
 
+
+
+public function destroy($id)
+{
+    try{
+        $frais = Frais::find($id);
+        $niveau = Niveau::where('id',$frais->niveau_id)->first();
+        $frais->delete();
+    }
+    catch(\Illuminate\Database\QueryException $e){
+        if($e->getCode() == "23000"){
+            return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+                'type' => 'error',
+                'text' => "Désolé, vous ne pouvez pas supprimer ce frais!",
+            ]);
+
+        }
+    }
+    return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+        'type' => 'success',
+        'text' => "Le frais a été supprimé avec succès !",
+    ]);
 }
+
+}
+

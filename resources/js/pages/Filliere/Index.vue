@@ -16,7 +16,8 @@
        mdiCancel,
        mdiCloseCircle,
        mdiBookOpenVariant,
-       mdiContentSave
+       mdiContentSave,
+       mdiClose
     } from '@mdi/js'
     export default {
         components: {
@@ -33,15 +34,17 @@
             mdiCancel,
             mdiCloseCircle,
             mdiBookOpenVariant,
-            mdiContentSave
+            mdiContentSave,
+            mdiClose
         },
         layout: AuthenticatedLayout,
-        props: ["filieres","section_id"],
+        props: ["filieres","section_id","cycles"],
         data() {
             return {
                 icons: {
                     mdiAccountSchool,
                     mdiPlus,
+                    mdiClose,
                     mdiPencil,
                     mdiDelete,
                     mdiPlusCircle,
@@ -60,17 +63,21 @@
                         title: 'Code',
                         align: 'start',
                         sortable: false,
-                        key: 'code',
+                        key: 'filiere.code',
                     },
-                    { title: 'Nom de la filière', align: 'center', key: 'name' },
+                    { title: 'Nom de la filière', align: 'center', key: 'filiere.name' },
+                    { title: 'Cycle', align: 'center', key: 'cycle' },
                     {title: 'Actions', align: 'center', key: 'actions'},
                 ],
                 dialog_title: 'Modifier la filière',
                 dialog: false,
 
                 form: useForm({
+                    id:'',
                     code: '',
                     name: '',
+                    option:'',
+                    cycles:[],
                 }),
                 rules: [
                         value => {
@@ -84,12 +91,22 @@
             create() {
                 router.get(route('filieres.create', this.section_id))
             },
+            createcycle(item) {
+
+                this.form.id=item.filiere.id;
+                 console.log('option',this.form.option);
+                this.dialog = true;
+                this.dialog_title = 'Ajouter des cycles'
+
+
+            },
             editItem(item){
-                console.log('edit',item)
-                this.dialog_title = 'Modifier la filière '+ item.name
-                this.form.id = item.id
-                this.form.code = item.code
-                this.form.name = item.name
+                this.form.option=1;
+                console.log('edit',item.filiere)
+                this.dialog_title = 'Modifier la filière '+ item.filiere.name
+                this.form.id = item.filiere.id
+                this.form.code = item.filiere.code
+                this.form.name = item.filiere.name
                 this.dialog = true
             },
             deleteItem(item){
@@ -105,7 +122,55 @@
                     }).then((result) => {
                     if (result.isConfirmed) {
 
-                       this.form.delete(route('filieres.destroy', item.id), {
+                       this.form.delete(route('filieres.destroy', item.filiere.id), {
+                        onFinish: () => {
+                            if(this.$page.props.flash?.message?.type == 'error'){
+                                this.$swal({
+                                icon: 'error',
+                                title: 'Suppression',
+                                text: this.$page.props.flash?.message?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            }else if(this.$page.props.flash?.message?.type == 'success'){
+                                this.$swal({
+                                icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
+                                title: 'Suppression',
+                                text: this.$page.props.flash?.message?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            }
+                        },
+                        });
+                    }
+                });
+            },
+
+
+            deleteItemc(item){
+                this.$swal({
+                    title: 'Es-tu sûr?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#004980',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, supprimez-le!',
+                    cancelButtonText: 'Non, annulez !',
+                    }).then((result) => {
+                        console.log('item',item);
+                    if (result.isConfirmed) {
+
+                       this.form.delete(route('filieres.supprimer', item.id), {
                         onFinish: () => {
                             if(this.$page.props.flash?.message?.type == 'error'){
                                 this.$swal({
@@ -139,8 +204,8 @@
             },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
-                if(!this.form.id && valid) {
-                    this.form.post(route('filieres.store', this.section_id), {
+                if(!this.form.option && valid) {
+                    this.form.post(route('filieres.ajout', this.section_id), {
                         onFinish: () => {
                             //console.log(this.form)
                             this.close()
@@ -150,7 +215,7 @@
                                 iconColor: '#004980',
                                 color: '#004980',
                                 title: 'Enregistrement',
-                                text: 'la filière a été enregistrée avec succès!',
+                                text: 'le cycle a été enregistrée avec succès!',
                                 toast: true,
                                 position: 'top-end',
                                 showConfirmButton: false,
@@ -160,7 +225,7 @@
                         },
                     });
 
-                }else if(this.form.id && valid) {
+                }else if(this.form.option && valid) {
 
                      const {id,code,nom} = this.form
 
@@ -185,9 +250,11 @@
 
             },
             close() {
-                this.form.id = ""
+                this.form.id =""
                 this.form.code = ""
                 this.form.name = ""
+                this.form.cycles = []
+                this.form.option=""
                 this.dialog = false
             }
         },
@@ -195,6 +262,7 @@
     computed: {
 
        Title() {
+
             switch (this.section_id) {
                 case "1":
                 return "SECTION PRIMAIRE";
@@ -237,16 +305,33 @@
                     <v-card-text>
                                     <v-form ref="form">
                                         <v-row>
-                                            <v-col cols="12" md="12">
+                                            <v-col cols="12" md="12" v-if="form.option != ''">
                                                 <text-field label="Code" placeholder="Code" v-model="form.code" isRequired :rules="rules"></text-field>
 
                                             </v-col>
                                         </v-row>
                                         <v-row>
-                                            <v-col cols="12" md="12">
+                                            <v-col cols="12" md="12" v-if="form.option != ''">
                                                 <text-field label="Nom de la filière" placeholder="Nom de la filière" v-model="form.name" isRequired :rules="rules"></text-field>
 
                                             </v-col>
+
+                                            <v-col cols="12" md="12" v-if="form.option == ''">
+                                            <Autocomplete
+                                                v-model="form.cycles"
+                                                isRequired
+                                                item-title="name"
+                                                item-value="id"
+                                                multiple
+                                                chips
+                                                class="mt-2"
+                                                placeholder="Cycle"
+                                                label="Cycles"
+                                                :items="cycles"
+                                            >
+                                            </Autocomplete>
+                                            <!-- <text-field label="Genre" placeholder="Genre" v-model="form.sex" isRequired :rules="rules"></text-field> -->
+                                        </v-col>
                                         </v-row>
                                     </v-form>
                                     </v-card-text>
@@ -261,9 +346,19 @@
                     </v-dialog>
         <v-card-text>
             <Datatable titleDatatable="Liste des filières" :headers="headers" :items="filieres" :functionOnClickAddButton="create" >
-
+                <template v-slot:item.cycle="{ item, index}">
+                    <v-chip-group column selected-class="text-purple">
+                        <v-chip v-for="tag in item.cycle">
+                            {{ tag.cycle.name}}
+                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItemc(tag)" :icon="icons.mdiCloseCircle">
+                            </v-icon>
+                        </v-chip>
+                    </v-chip-group>
+                </template>
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Ajouter des cycles" @click="createcycle(item)" :icon="icons.mdiPlusCircle" color="primary">
+                </v-icon>
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
                 <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
                 </v-icon>

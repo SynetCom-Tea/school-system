@@ -167,8 +167,8 @@ export function listMenus(page) {
     const section = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/gestion/1" },
       { title: "Secondaire", icon: mdiSchool, link: "/enseignement/gestion/2" },
-      { title: 'Supérieure', icon: mdiSchool, link: '/enseignement/gestion/3' },
-      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/gestion/4' },
+      { title: 'Supérieure', icon: mdiSchool, link: ' /systeme/lmd/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/systeme/lmd/4' },
     ];
 
     if (page?.roles[0] == "Administrateur") {
@@ -223,7 +223,7 @@ MenuGestion = {
                 link: "/enseignement/permissions",
                 permissions: "manage_system",
             },
-            
+
         {
             title: "Inscription",
             icon: mdiAccountSchool,

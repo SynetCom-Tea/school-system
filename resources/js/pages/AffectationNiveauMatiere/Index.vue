@@ -20,6 +20,7 @@ import {
     mdiCloseCircle,
     mdiContentSave,
     mdiCurrencyUsd,
+    mdiEye
 } from "@mdi/js";
 export default {
     components: {
@@ -37,6 +38,7 @@ export default {
         mdiCloseCircle,
         mdiContentSave,
         mdiCurrencyUsd,
+        mdiEye
     },
     layout: AuthenticatedLayout,
     props: ["niveauMatieres", "section_id", "niveaux", "matieres"],
@@ -57,6 +59,7 @@ export default {
                 mdiCloseCircle,
                 mdiContentSave,
                 mdiCurrencyUsd,
+                mdiEye
             },
             headers: [{
                     title: "Matière",
@@ -85,9 +88,41 @@ export default {
                     key: "actions"
                 },
             ],
+
+
+            headersup: [
+                {
+                    title: "Niveau",
+                    align: "center",
+                    key: "niveau.libelle"
+                },
+                {
+                    title: "Filière/Cycle",
+                    align: "center",
+                    key: "cycle_filiere.code"
+                },
+                {
+                    title: "Unités des enseignements",
+                    align: "center",
+                    key: "ues"
+                },
+                {
+                    title: "Matière",
+                    align: "start",
+                    sortable: false,
+                    key: "matieres",
+                },
+                {
+                    title: "Actions",
+                    align: "center",
+                    key: "actions"
+                },
+
+            ],
             dialog_title: "Modifier Niveau_Matière",
             dialog: false,
-
+            target: {},
+            show: false,
             form: useForm({
                 volume_horaire: "",
                 coefficient: "",
@@ -102,9 +137,14 @@ export default {
             ],
         }
     },
-                methods: {
+ methods: {
                     create() {
                         router.get(route('affectations.create', this.section_id))
+                    },
+                    showItem(item) {
+                        console.log('target',item);
+                        this.target = item;
+                        this.show = true;
                     },
                     editItem(item) {
                         console.log(item)
@@ -204,7 +244,6 @@ export default {
 
         computed: {
         Title() {
-
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -283,8 +322,114 @@ export default {
             </v-card>
         </template>
     </v-dialog>
+
+    <v-dialog v-model="show" max-width="600" v-if="target">
+        <v-card>
+            <v-toolbar dark color="primary">
+                <v-toolbar-title>
+                    Les matières avec leurs coefficient et volume horaire <v-icon size="large"> </v-icon>
+                </v-toolbar-title>
+            </v-toolbar>
+            <v-card-text>
+                <v-card flat class="mt-3 mb-6" >
+                    <v-card>
+                        <v-table dense>
+                            <thead>
+                            <tr>
+                                <th class="text-left font-weight-black">
+                                    Matières
+                                </th>
+                                <th class="text-left font-weight-black">
+                                    coefficiant
+                                </th>
+                                <th class="text-left font-weight-black">
+                                    Volume Horaire
+                                </th>
+                                <th class="text-left font-weight-black">
+                                    Actions
+                                </th>
+                                </tr>
+                             </thead>
+                            <tbody>
+                                <tr :key="i" v-for="(t, i) in target.matieres">
+                                    <td >{{ t.matiere.nom }}</td>
+                                    <td >{{ t.coefficient }}</td>
+                                    <td >{{ t.volume_horaire }}</td>
+                                    <td><v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem()" :icon="icons.mdiDelete" color="red">
+                                        </v-icon></td>
+                                </tr>
+                                <!-- <tr>
+                                    <td class="font-weight-black">Nom Etablissement:</td>
+                                    <td>{{ target.name }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-black">Ville</td>
+                                    <td>{{ target.ville }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-black">Adresse :</td>
+                                    <td>{{ target.adresse }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-black">Email :</td>
+                                    <td>{{ target.email }}</td>
+                                </tr>
+                                <tr v-if="target.sections[0]">
+                                    <td class="font-weight-black">Sections :</td>
+                                    <td>
+                                        <v-chip-group column>
+                                            <v-chip label color="primary" :key="i" v-for="(t, i) in target.sections">{{ t.libelle }}</v-chip>
+                                        </v-chip-group>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-black">Administrateur:</td>
+                                    <td :key="i" v-for="(t, i) in target.users">
+                                        {{ t.nom }} {{ t.prenom }}
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-black">Email Admin:</td>
+                                    <td :key="i" v-for="(t, i) in target.users">{{ t.email }}</td>
+                                </tr>
+                                <tr>
+                                    <td class="font-weight-black">Statut:</td>
+                                    <td v-if="target.statut == 1">Actif</td>
+                                    <td v-if="target.statut == 0">Inactif</td>
+                                </tr> -->
+                            </tbody>
+                        </v-table>
+                    </v-card>
+                </v-card>
+            </v-card-text>
+            <v-card-actions class="justify-end" id="actions">
+                <v-btn color="danger" variant="text" @click="show = false"> Fermer </v-btn>
+            </v-card-actions>
+        </v-card>
+    </v-dialog>
     <v-card-text>
-        <Datatable titleDatatable="Liste des matières par niveau" :headers="headers" :items="niveauMatieres" :functionOnClickAddButton="create">
+        <Datatable  v-if="section_id == 1|| section_id == 2" titleDatatable="Liste des matières par niveau" :headers="headers" :items="niveauMatieres" :functionOnClickAddButton="create">
+            <template v-slot:item.actions="{ item }">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
+                </v-icon>
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
+                </v-icon>
+            </template>
+        </Datatable>
+
+        <Datatable v-if="section_id == 3|| section_id == 4" titleDatatable="Liste des matières par niveau" :headers="headersup" :items="niveauMatieres" :functionOnClickAddButton="create">
+            <template v-slot:item.ues="{ item, index}">
+                    <v-chip-group column selected-class="text-purple">
+                        <v-chip v-for="tag in item.ues">
+                            {{ tag.ue.libelle }} =>{{ 'credit: ' }} {{ tag.credit }}
+                            <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon>
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiDelete" color="red">
+                            </v-icon>
+
+                        </v-chip>
+                    </v-chip-group>
+                </template>
+
             <template v-slot:item.actions="{ item }">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>

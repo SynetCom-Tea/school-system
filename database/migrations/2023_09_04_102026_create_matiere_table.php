@@ -19,6 +19,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
                 ->index()
                 ->references('id')->on('etablissement_section');
+            $table->softDeletes();
             $table->timestamps();
         });
 
@@ -69,6 +70,7 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Enseignement\Entities\Matiere::class)->nullable()
                 ->index()
                 ->references('id')->on('matieres');
+                $table->softDeletes();
             $table->timestamps();
         });
         DB::statement("ALTER TABLE niveau_matieres ADD COLUMN code varchar(255);");

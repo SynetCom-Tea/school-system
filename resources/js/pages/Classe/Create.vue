@@ -18,7 +18,12 @@ export default {
     layout: AuthenticatedLayout,
     props: ["section_id", "niveaux"],
     data() {
+
         return {
+
+        tooltipModel: false,
+        alertFirst: true,
+        alertSecond: true,
             icon: {
                 mdiPlus,
                 mdiSchool,
@@ -29,7 +34,7 @@ export default {
                 mdiPlusCircle,
                 mdiCloseCircle
             },
-        
+
             form: useForm({
                 donnees: []
             }),
@@ -39,28 +44,34 @@ export default {
         this.addRow()
     },
     methods: {
-
+        onclickAlertButton(type) {
+            if (type == "second") {
+                this.alertSecond = true;
+            }
+            if (type == "first") this.alertFirst = true;
+        },
         goBack() {
             router.get(route('classes.index', this.section_id))
         },
         addRow() {
             this.form.donnees.push({
                 niveau_id: null,
-                enfants: [],
+                option: null,
+                nombre: null,
                 before: null,
                 after: null
             });
             let data = this.form.donnees[this.form.donnees.length - 1];
-            this.addChild(data);
+            // this.addChild(data);
         },
-        addChild(donnee) {
-            donnee.enfants.push({
-                code: null,
-                libelle: null,
-                before: null,
-                after: null
-            })
-        },
+        // addChild(donnee) {
+        //     donnee.enfants.push({
+        //         code: null,
+        //         libelle: null,
+        //         before: null,
+        //         after: null
+        //     })
+        // },
         removeRow(p) {
             this.form.donnees = this.form.donnees.filter((product) => product !== p)
         },
@@ -131,103 +142,133 @@ export default {
         close() {
                 this.form.reset()
             }
+    },
+
+
+    computed: {
+        Title() {
+       switch (this.section_id) {
+           case "1":
+           return "SECTION PRIMAIRE";
+           case "2":
+           return "SECTION SECONDAIRE";
+           case "3":
+           return "SECTION SUPERIEUR";
+           default:
+           return "SECTION UNIVERSITAIRE";
+       }
+       },
+
     }
 }
 </script>
 <template>
-<v-card>
-    <Toolbar :icon="icon.mdiGoogleClassroom" toolbarTitle="Création Classes"></Toolbar>
+     <Toolbar
+      styleToolbar="background-color: white;"
+      :icon="icon.mdiSchool"
+      :toolbarTitle="Title"
+    ></Toolbar>
+    <br>
+    <!-- <Toolbar :icon="icon.mdiGoogleClassroom" toolbarTitle="Création Classes"></Toolbar> -->
+<v-card variant="outlined" style="border: 2px solid #7d002c">
+    <v-card-title style="color: white; background-color: #7d002c">Création Classes</v-card-title>
+            <v-divider></v-divider>
+            <br />
 
+            <div style="margin: 10px">
+                <v-alert v-model="alertFirst" border="start" variant="tonal" closable close-label="Close Alert" color="primary" type="info" title="Information">
+                    <li>
+                        Cette section vous permet de créer les classes de foçon automatique en renseignant les nombres et la notation souhaiter par niveau  dans cet
+                        établissement
+                    </li>
+                    <li>
+                        Le formulaire sera valide <strong>si et seulement si </strong>tous les
+                        champs obligatoires marqués par <span style="color: red">*</span> sont
+                        renseignés
+                    </li>
+                </v-alert>
+
+                <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+                    <Button  size="large" style="height: 30px" title="Plier la note" @click="onclickAlertButton('first')" variant="outlined" color="primary" nameButton="Relire la note">
+                    </Button>
+                </div>
+            </div>
     <v-card-text>
-        <v-form ref="form">        
-            <v-card-text>
-                    <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des classes</v-chip>
-                    <v-card outlined class="mb-md-2">
-                        <v-card-text>
-                            <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                                <v-card class="mx-auto" width="800" style="border-color: #004980; margin-bottom:6px;" rounded="lg" variant="outlined">
-                                    <v-card-text>
-                                <v-row>
-                                <v-col md="5">
-                                     <Select
+        <v-card>
+        <v-form ref="form">
+
+                    <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
+                        <v-col cols="1" md="1"></v-col>
+                                <v-col cols="3" md="3" style="height: 80px">
+                                     <Autocomplete
                                         label="Niveau"
                                         :items="niveaux"
                                         variant="outlined"
                                         item-value="id"
+                                        class="mt-2"
                                         item-title="libelle"
                                         v-model="donnee.niveau_id"
                                         isRequired
                                         :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
                                         >
-                                    ></Select>
+                                    ></Autocomplete>
+
                                 </v-col>
-                                
+
+                                <v-col cols="3" md="3" style="height: 80px">
+                                        <Autocomplete
+                                            v-model="donnee.option"
+                                            :isRequired="true"
+                                            itemTitle="Option"
+                                            class="mt-2"
+                                            placeholder="Option"
+                                            label="Option"
+                                            :items="['Alphabet', 'Numérique']"
+                                            :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                        >
+                                        </Autocomplete>
+                                        <!-- <text-field label="Genre" placeholder="Genre" v-model="form.sex" isRequired :rules="rules"></text-field> -->
+                                        </v-col>
+                                        <v-col cols="3" md="3" style="height: 80px">
+                                            <text-field
+                                                type="number"
+                                                label="Nonbre des classes"
+                                                class="mt-2"
+                                                placeholder="Nonbre des classes"
+                                                v-model="donnee.nombre"
+                                                isRequired
+                                                :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                            ></text-field>
+                                            </v-col>
                                 <v-col md="2">
-                                    <v-btn title="supprimer le niveau et ses classes" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
+                                    <br>
+                                    <Button  size="large" title="supprimer le niveau et ses classes" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
                                         <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                    </v-btn>
+                                    </Button>
                                 </v-col>
-                                </v-row>
-                                <v-row :key="enfant.id" v-for="(enfant, j) in donnee.enfants">
-                                    <v-col md="5">
-                                                <TextField
-                                                    label="Code"
-                                                    placeholder="Code"
-                                                    v-model="enfant.code"
-                                                    isRequired
-                                                    :rules="[(v) => !!v || 'Ce champ est requis!', verifyChild(donnee,enfant)]"
-                                                ></TextField>
-                                            </v-col>
-                                            <v-col md="5">
-                                                <TextField
-                                                    label="Libellé"
-                                                    placeholder="Libellé"
-                                                    v-model="enfant.libelle"
-                                                    isRequired
-                                                    :rules="[(v) => !!v || 'Ce champ est requis!', verifyChild(donnee,enfant)]"
-                                                ></TextField>
-                                            </v-col>
-                                            <v-col md="2">
-                                                <v-btn title="supprimer la classe" variant="outlined" :disabled="!(donnee.enfants.length > 1)" icon @click="removeChild(donnee,enfant)" fab small color="orange">
-                                                    <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                                </v-btn>
-                                            </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col md="10">
-                                  </v-col> 
-                                            <v-col md="2">
-                                                <v-btn title="ajouter une classe" variant="outlined" icon @click="addChild(donnee)" fab small color="blue">
-                                                    <v-icon :icon="icon.mdiPlusCircle"></v-icon>
-                                                </v-btn>
-                                            </v-col>
-                                            </v-row>
-                                </v-card-text>
-                                </v-card>
+
                             </v-row>
                             <v-row>
                                 <v-col md="10">
                                 </v-col>
                                 <v-col md="2">
-                                    <v-btn title="ajouter un niveau" variant="outlined" icon @click="addRow()" fab small color="primary">
+                                    <Button  size="large" title="ajouter un niveau" variant="outlined" icon @click="addRow()" fab small color="primary">
                                         <v-icon :icon="icon.mdiPlusCircle"></v-icon>
-                                    </v-btn>
+                                    </Button>
                                 </v-col>
                             </v-row>
-                        
-                        </v-card-text>
-                    </v-card>
-                </v-card-text>          
         </v-form>
+        <br>
+        </v-card>
         </v-card-text>
         <v-card-actions class="justify-end">
       <v-spacer></v-spacer>
-      <v-btn dark small type="button" color="red" @click="goBack">
+      <Button   dark small type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-      </v-btn>
-      <v-btn small color="primary" @click="submit">
+      </Button>
+      <Button   small color="primary" @click="submit">
         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-      </v-btn>
+      </Button>
     </v-card-actions>
 </v-card>
 </template>

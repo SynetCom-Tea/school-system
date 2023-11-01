@@ -18,10 +18,24 @@ class FilliereController extends Controller
      */
     public function index($type)
     {
+        $filiere=[];
+        $tabs=[];
         $table = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$type)->first();
-        // dd(Filiere::where('etablissement_id',Auth::user()->etablissement_id)->with('cycle_filieres.cycle')->get());
+        $filieres=Filiere::where('etablissement_section_id',$table->id)->get();
+        foreach($filieres as $filie){
+            $cyclfiliere=CycleFiliere::where('filiere_id',$filie->id)->with('cycle')->get();
+            if ($cyclfiliere->count() != 0) {
+                // $key = $key - 1;
+                $tabs= [
+                    'filiere' =>$filie,
+                    'cycle' => $cyclfiliere
+                ];
+                $filiere[] = $tabs;
+
+            }
+        }
         return Inertia::render('Filliere/Index', [
-            'filieres' => Filiere::where('etablissement_section_id',$table->id)->with('cycle_filieres.cycle')->get(),
+            'filieres' => $filiere,
             'cycles'=>Cycle::all(),
             'section_id' => $type,
         ]);
@@ -77,6 +91,25 @@ class FilliereController extends Controller
         //
     }
 
+    public function ajout(Request $request,$type)
+    {
+        //
+        // dd($request);
+
+        foreach($request->cycles as $cycle){
+            CycleFiliere::updateOrInsert([
+                'filiere_id' => $request->id,
+                'cycle_id' => $cycle,
+            ],
+            [
+                'created_at' => now(), // Remplissez le champ created_at
+                'updated_at' => now() // Remplissez le champ updated_at
+            ]
+            );
+        }
+        return redirect()->back();
+    }
+
     /**
      * Show the form for editing the specified resource.
      */
@@ -119,6 +152,31 @@ class FilliereController extends Controller
         ]);
         //
     }
+
+    public function supprimer($id)
+    {
+        try{
+            $cycle = CycleFiliere::find($id);
+            $cycle->delete();
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                return redirect()->back()->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer cet cycle!",
+                ]);
+
+            }
+        }
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => "Le cycle a été supprimé avec succès !",
+        ]);
+        //
+    }
         //
 
 }
+
+
+

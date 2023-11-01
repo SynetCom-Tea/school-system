@@ -36,7 +36,7 @@ export default {
     mdiContentSave,
   },
   layout: AuthenticatedLayout,
-  props: ["enseignants","matieres"],
+  props: ["enseignants","matieres","section_id"],
   data() {
     return {
       icons: {
@@ -94,7 +94,7 @@ export default {
   },
   methods: {
     create() {
-        router.get(route('enseignants.create'))
+        router.get(route('enseignants.create',this.section_id))
     //   this.dialog = true;
     //   this.dialog_title = "Ajouter un enseignant";
     },
