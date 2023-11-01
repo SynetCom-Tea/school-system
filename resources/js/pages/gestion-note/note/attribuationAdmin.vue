@@ -202,7 +202,7 @@ export default {
                     if (this.$page.props.flash ?.message ?.type == 'error') {
                         this.$swal({
                             icon: 'error',
-                            title: 'Sauvegarde',
+                            title: 'Attention!!!',
                             text: this.$page.props.flash ?.message ?.text,
                             toast: true,
                             position: 'top-end',

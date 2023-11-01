@@ -224,16 +224,29 @@ export default {
                 this.form.post(route('evaluation.store'), {
                     onFinish: () => {
                         this.close()
+                        if (this.$page.props.flash ?.message ?.type == 'error') {
                         this.$swal({
-                            icon: 'success',
-                            title: 'Enrégistrement',
-                            text: 'Evaluation créée avec succès!',
+                            icon: 'error',
+                            title: 'Attention!!!',
+                            text: this.$page.props.flash ?.message ?.text,
                             toast: true,
                             position: 'top-end',
                             showConfirmButton: false,
-                            timer: 5000,
+                            timer: 10000,
                             timerProgressBar: true,
                         });
+                    } else if (this.$page.props.flash ?.message ?.type == 'success') {
+                        this.$swal({
+                            title: "Information!!!",
+                            icon: "info",
+                            text: this.$page.props.flash ?.message ?.text,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 10000,
+                            timerProgressBar: true,
+                        })
+                    }
                     },
                 });
             } else if (this.form.id && valid) {

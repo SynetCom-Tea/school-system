@@ -393,9 +393,22 @@ class EvaluationController extends Controller
         }else {
             $id_enseignement = $request->enseignement_annee_id;
         }
-        $data = $request->all();
+        // $data = $request->all();
+        $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$id_enseignement)->get();
+        if ($evaluation->count() == 0){
         $data = ['notation'=>$request->notation,'date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
         Evaluation::create($data);
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => "Evaluation créée avec succes",
+        ]);
+        }
+        else {
+            return redirect()->back()->with('message', [
+                'type' => 'error',
+                'text' => "Vous ne pouvez pas créer deux évaluations de même type, de même periode dans la même année avec la même matiere",
+            ]);
+        }
     }
 
     /**
