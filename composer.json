@@ -39,11 +39,8 @@
             "app/Helpers/CountDayRepet.php",
             "app/Helpers/GetClasses.php",
             "app/Helpers/AddEmploi.php",
-<<<<<<< HEAD
-            "app/Helpers/GetNoteByClasse.php"
-=======
+            "app/Helpers/GetNoteByClasse.php",
             "app/Helpers/FunctionImportant.php"
->>>>>>> origin/Enseignement
         ]
     },
     "autoload-dev": {

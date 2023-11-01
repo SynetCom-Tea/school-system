@@ -19,7 +19,7 @@ return new class extends Migration
             $table->id();
             $table->string('libelle')->nullable();
             $table->double('montant');
-            $table->foreignIdFor(App\Models\EtablissementTypeFrais::class)
+            $table->foreignIdFor(\Modules\Scolarite\Entities\EtablissementTypeFrais::class)->nullable()
                 ->references('id')->on('etablissement_type_frais')->constrained()
                 ->onUpdate('cascade')
                 ->onDelete('restrict');

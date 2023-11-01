@@ -98,7 +98,7 @@ class MatieresTableSeeder extends Seeder
                 'etablissement_section_id' => 2,
                 'created_at' => NULL,
                 'updated_at' => NULL,
-                'code' => 'Primaire/Anglais',
+                'code' => 'Secondaire/Anglais',
             ),
             9 => 
             array (
@@ -107,7 +107,7 @@ class MatieresTableSeeder extends Seeder
                 'etablissement_section_id' => 2,
                 'created_at' => NULL,
                 'updated_at' => NULL,
-                'code' => 'Primaire/Informatique',
+                'code' => 'Secondaire/Informatique',
             ),
             10 => 
             array (
@@ -221,7 +221,7 @@ class MatieresTableSeeder extends Seeder
             array (
                 'id' => 24,
                 'nom' => 'Éducation Physique',
-                'etablissement_section_id' => 2,
+                'etablissement_section_id' => 1,
                 'created_at' => NULL,
                 'updated_at' => NULL,
                 'code' => 'Secondaire/Éducation Physique',
@@ -252,6 +252,24 @@ class MatieresTableSeeder extends Seeder
                 'created_at' => NULL,
                 'updated_at' => NULL,
                 'code' => 'Secondaire/Histoire-géographie',
+            ),
+            26 => 
+            array (
+                'id' => 28,
+                'nom' => 'Questions',
+                'etablissement_section_id' => 1,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Primaire/Questions',
+            ),
+            27 => 
+            array (
+                'id' => 29,
+                'nom' => 'Copie',
+                'etablissement_section_id' => 1,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Primaire/Copie',
             ),
         ));
         

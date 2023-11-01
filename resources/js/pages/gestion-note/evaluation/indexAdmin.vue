@@ -101,6 +101,7 @@ export default {
             enseignant: null,
             code: null,
             matiere :null,
+            filtrer : [],
             form: useForm({
                 section_id : null,
                 date: '',
@@ -114,14 +115,10 @@ export default {
                 classe : null,
                 matiere : null,
                 niveau : null,
-                ue : null
+                ue : null,
             }),
         }
     },
-    created(){
-        
-    },
-
     methods: {
         formatCode(item) {
             return `${item.filiere.code } - ${item.cycle.name } `
@@ -318,6 +315,17 @@ export default {
             })
         },
     },
+    mounted(){
+        if (this.section_id==1){
+            this.filtrer = this.type_evaluation.filter(el => el.libelle == "Composition" || el.libelle == "Devoir" || el.libelle == "Contrôle")
+        }
+        if (this.section_id==2){
+            this.filtrer = this.type_evaluation
+        }
+        if (this.section_id ==3 || this.section_id==4){
+            this.filtrer = this.type_evaluation.filter(el => el.libelle == "Examen" || el.libelle == "TP")
+        }
+    }
 }
 </script>
 
@@ -347,7 +355,7 @@ export default {
                                         </TextField>
                                     </v-col>
                                     <v-col cols="3">
-                                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="3">
@@ -471,7 +479,7 @@ export default {
                     </v-card-actions>
                 </v-card>
             </v-dialog>
-            <Datatable titleDatatable="Listes des evaluations " :headers="headers" :items="evaluations" :functionOnClickAddButton="create">
+            <Datatable titleDatatable="Liste des evaluations " :headers="headers" :items="evaluations" :functionOnClickAddButton="create">
                 <template v-slot:[`item.actions`]="{ item }">
                     <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
                     </v-icon>
