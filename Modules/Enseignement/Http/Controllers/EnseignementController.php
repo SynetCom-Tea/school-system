@@ -11,15 +11,19 @@ use Illuminate\Support\Facades\Auth;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\Matiere;
 use App\Models\Etablissement;
+use App\Models\Parametre;
 use Modules\Scolarite\Entities\TypeFrais;
 use App\Models\Salle;
 use App\Models\Section;
 use App\Models\SystemeLmd;
+use App\Models\TypeDocument;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Filiere;
 use Modules\Enseignement\Entities\Ue;
 use Modules\Scolarite\Entities\Departement;
+use Modules\Scolarite\Entities\EtablissementTypeDocument;
+use Modules\Scolarite\Entities\EtablissementTypeFrais;
 use Modules\Scolarite\Entities\Faculte;
 use Modules\Scolarite\Entities\Frais;
 
@@ -33,6 +37,96 @@ class EnseignementController extends Controller
     {
         return Inertia::render('Admin/accueil');
     }
+
+
+    // ****************************Parametrage de type frais, type document et la limite par classe par etablissement************************************
+
+    public function getPageParam($type){
+        $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $type)->first();
+        // dd(EtablissementTypeDocument::where('etablissement_section_id',$et_sec_id)->where('statut','1')->with('type_document')->get());
+        return Inertia::render('Enseignement/Configs/param_index',[
+            'type' => $type,
+            'type_documents' => TypeDocument::all(),
+            'type_frais' => TypeFrais::all(),
+            'liste_document' => EtablissementTypeDocument::where('etablissement_section_id',$et_sec_id)->where('statut','1')->with('type_document')->get(),
+            'liste_frais' => EtablissementTypeFrais::where('etablissement_section_id',$et_sec_id)->where('statut',1)->with('type_frais')->get(),
+            'nbre' => Parametre::where('etablissement_section_id',$et_sec_id)->first() ? Parametre::where('etablissement_section_id',$et_sec_id)->first()->nbre_limite_eleve_par_classe : null,
+        ]);
+    }
+
+    public function saveParam(Request $request){
+        // dd($request->all());
+        $check = 0;
+        $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $request->section)->first();
+        DB::select("
+            UPDATE etablissement_type_frais
+            SET statut = 0
+            WHERE statut = 1 AND etablissement_section_id = :et_sec_id
+        ",
+        [
+            'et_sec_id' => $et_sec_id,
+            
+        ]); 
+        ;
+        foreach ($request->selected_frais as $key => $type_frais_id) {
+            EtablissementTypeFrais::create([
+                'type_frais_id' => $type_frais_id,
+                'etablissement_section_id' => $et_sec_id,
+                'statut' => 1
+            ]);
+
+            # code...
+        }
+
+        /////////////////////// fin type frais ///////////////////////
+
+        DB::select("
+            UPDATE etablissement_type_documents
+            SET statut = 0
+            WHERE statut = 1 AND etablissement_section_id = :et_sec_id
+        ",
+        [
+            'et_sec_id' => $et_sec_id,
+            
+        ]); 
+        ;
+        foreach ($request->selected_documents as $key => $type_document_id) {
+            EtablissementTypeDocument::create([
+                'type_document_id' => $type_document_id,
+                'etablissement_section_id' => $et_sec_id,
+                'statut' => 1
+            ]);
+
+            # code...
+        }
+
+        /////////////////////// fin type document ///////////////////////
+
+        Parametre::updateOrCreate([
+            'etablissement_section_id' => $et_sec_id,
+            'nbre_limite_eleve_par_classe' => $request->nbre_limite,
+        ]);
+
+
+        ///////////////////// fin nombre limite //////////////////////
+
+        $check = 1;
+        if($check == 1){
+            return redirect()->route('param.index',$request->section)->with('message', [
+                'type' => 'success',
+                'text' => "Enregistrement effectué avec succes !",
+            ]);
+        }else{
+            return redirect()->back()->with('message', [
+                'type' => 'error',
+                'text' => "Un probleme est survenu lors de l'enregistrement !",
+            ]);
+        }
+        
+    }
+    
+
+    // ********************************************************************************
 
     public function config($type)
     {

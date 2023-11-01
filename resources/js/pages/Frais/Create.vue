@@ -180,7 +180,7 @@ export default {
                         label="TypeFrais"
                         :items="typefrais"
                         variant="outlined"
-                        item-value="id"
+                        item-value="type_frais.id"
                         item-title="type_frais.libelle"
                         v-model="donnee.type_frais_id"
                         isRequired

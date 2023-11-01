@@ -23,14 +23,16 @@ class FraisController extends Controller
      */
     public function index($type)
     {
-        $ets_id = Auth::user()->etablissement_id;
-        $frais=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',$ets_id)->whereHas('niveau',function ($query) use ($type){
+        $ets_id = getSectionEtablissement(Auth::user()->etablissement_id, $type);
+        $frais=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->whereHas('etablissement_type_frais',function ($query) use ($ets_id){
+            $query->where('etablissement_section_id',$ets_id);
+        })->whereHas('niveau',function ($query) use ($type){
 
             $query->where('section_id',$type);})->get();
 
         return Inertia::render('Frais/Index', [
             'frais' => $frais,
-            'typefrais' => EtablissementTypeFrais::where('etablissement_id',$ets_id)->with('type_frais')->get(),
+            'typefrais' => EtablissementTypeFrais::where('etablissement_section_id',$ets_id)->where('statut',1)->with('type_frais')->get(),
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
             'annees' => Annee::All(),
@@ -43,10 +45,10 @@ class FraisController extends Controller
      */
     public function create($type)
     {
-        $ets_id = Auth::user()->etablissement_id;
+        $ets_id = getSectionEtablissement(Auth::user()->etablissement_id, $type);
 
         return Inertia::render('Frais/Create', [
-            'typefrais' => EtablissementTypeFrais::where('etablissement_id',$ets_id)->with('type_frais')->get(),
+            'typefrais' => EtablissementTypeFrais::where('etablissement_section_id',$ets_id)->where('statut',1)->with('type_frais')->get(),
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
             'annees' => Annee::All(),
@@ -61,11 +63,12 @@ class FraisController extends Controller
      */
     public function store(Request $request,$type)
     {
-        // dd($request);
+        // dd($request->all());
         $ets_id = Auth::user()->etablissement_id;
+        $ets_section_id = getSectionEtablissement(Auth::user()->etablissement_id, $type);
 
         foreach($request->donnees as $donnee){
-            $etab_type_frais = EtablissementTypeFrais::where('etablissement_id',$ets_id)->where('type_frais_id',$donnee['type_frais_id'])->first();
+            $etab_type_frais = EtablissementTypeFrais::where('etablissement_section_id',$ets_section_id)->where('statut',1)->where('type_frais_id',$donnee['type_frais_id'])->first();
             foreach($donnee['niveau_id'] as $niv){
                 Frais::updateOrInsert([
                     'niveau_id' => $niv,

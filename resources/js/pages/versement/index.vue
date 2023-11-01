@@ -318,7 +318,7 @@
             sortable: false,
           },
           { title: "Montant", align: "center", key: "montant" },
-          { title: "Date du versement", align: "center", key: "date_versement" },
+          { title: "Date du versement", align: "center", key: "created_at" },
           {title: 'Actions', align: 'center', key: 'actions'},
         ],
         headers_sup: [
@@ -446,7 +446,8 @@
               route("getCalculFrais", {
                 inscription: this.inscriptions[0].id ?? null,
                 type_frais: this.form.type_frais,
-                tous_frais: type
+                tous_frais: type,
+                section: this.section,
               })
             )
             .then((res) => {

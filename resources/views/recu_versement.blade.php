@@ -89,21 +89,21 @@
         </div>
         <p style="margin-bottom: 20px; text-align:center; margin-top:-120px;">
        
-            <b style="margin-top: -10px;"><strong>ESIMAD</strong></b><br>
-            <b style="margin-top: 5px;">Rue de Yantala</b><br>
-            <b style="margin-top: 5px;">Tel: 97 34 19 00 / 83 82 23 64</b><br>
-            <b style="margin-top: 5px;">Niamey-Niger</b>
+            <b style="margin-top: -10px;"><strong>{{$etablissement->name}}</strong></b><br>
+            <b style="margin-top: 5px;">Rue de {{$etablissement->adresse}}</b><br>
+            <b style="margin-top: 5px;">Tel: {{$etablissement->telephone}}</b><br>
+            <b style="margin-top: 5px;">{{$etablissement->ville}}-Niger</b>
       
     </p>
         <h1>Reçu de versement</h1>
-        <h1 style="font-size: 16px;">Date du versement: 01/10/2023</h1>
-        <p><span style="float: left;">Nom & Prénom: <strong>John Doe</strong></span> &nbsp; <span style="float:right;">Montant versé: <strong>$100.00</strong></span> </p>
+        <h1 style="font-size: 16px;">Date du versement: {{$versement->created_at}}</h1>
+        <p><span style="float: left;">Nom & Prénom: <strong>{{$versement->inscription->apprenant->nom}} {{$versement->inscription->apprenant->prenom}}</strong></span> &nbsp; <span style="float:right;">Montant versé: <strong>{{$versement->montant}} FCFA</strong></span> </p>
        
-        <p><span style="float: left;">Référence du versement: <strong>#123456</strong></span> <span style="float:right;">Montant restant: <strong>Carte de crédit</strong></span></p>
+        <p><span style="float: left;">Référence du versement: <strong>#123456</strong></span> <span style="float:right;">Montant restant: <strong>{{($versement->frais->montant - $somme_verse)}}</strong></span></p>
         <br><br>
         <div class="info">
-            <p>Année Scolaire: 2023-2024</p>
-            <p>Niveau: TD</p>
+            <p>Année Scolaire: {{$versement->inscription->annee->libelle}}</p>
+            <p>Niveau: {{$versement->inscription->niveau->code}}</p>
         </div>
     </div>
 </body>

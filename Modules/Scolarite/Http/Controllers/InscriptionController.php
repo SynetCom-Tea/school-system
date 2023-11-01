@@ -26,6 +26,7 @@ use Modules\Scolarite\Entities\TypeFrais;
 use Modules\Scolarite\Entities\Versement;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Modules\Scolarite\Entities\EtablissementTypeDocument;
 
 class InscriptionController extends Controller
 {
@@ -84,7 +85,7 @@ class InscriptionController extends Controller
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
-            'typeDocuments' => TypeDocument::all(),
+            'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id',$etablissement_section)->where('statut','1')->with('type_document')->get(),
             'tuteurs' => ApprenantTuteur::whereHas('apprenant', function($query){$query->where('etablissement_id',Auth::user()->etablissement_id);})->with('tuteur')->get()
         ]);
     }

@@ -152,6 +152,17 @@
                 </v-card>
 
             </v-col>
+
+            <v-col cols="auto" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('param.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/param.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Parametres</p>
+
+                </v-card>
+            </v-col>
           </v-row>
 
     </v-card-text>
