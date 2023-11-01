@@ -15,9 +15,9 @@ class Annee extends Model
         'actif',
     ];
 
-    public function getAnneeEnCours()
+    public static function getAnneeEnCours()
     {
-        return $this->where('actif',1);
+        return self::where('actif',1)->first();
     }
     public function frais(): HasMany
     {

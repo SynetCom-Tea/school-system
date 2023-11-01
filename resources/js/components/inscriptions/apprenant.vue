@@ -1,5 +1,5 @@
 <template>
-  <form novalidate @submit.prevent="submitForm">
+  
     <v-container fluid>
       <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
@@ -25,7 +25,7 @@
 
           
         </div>
-
+        <v-form @submit.prevent="submitForm" noValidate>
         <v-card-text>
           <v-row style="margin-top: 3px;height: 80px;">
             <!-- <v-col md="2"></v-col> -->
@@ -33,9 +33,10 @@
               <TextField
                 label="Nom"
                 isRequired
-                placeholder="Code matiere"
+                placeholder="Nom"
                 @update:modelValue="submitForm()"
                 v-model="form.nom"
+                :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z]+$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
               ></TextField>
             </v-col>
             <v-col cols="4">
@@ -43,8 +44,9 @@
                 label="Prénom"
                 isRequired
                 @update:modelValue="submitForm()"
-                placeholder="Libelle matiere"
+                placeholder="Prénom"
                 v-model="form.prenom"
+                :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z]+$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
               ></TextField>
             </v-col>
             <v-col cols="4">
@@ -53,7 +55,8 @@
                 isRequired
                 @update:modelValue="submitForm()"
                 v-model="form.sexe"
-                :items="['Sélectionner', 'Masculin', 'Féminin']"
+                :items="['Masculin', 'Féminin']"
+                :rules="[(v) => !!v || 'Ce champ est requis!']"
               ></Autocomplete>
               <!-- <TextField
                 label="Sexe"
@@ -70,9 +73,10 @@
                 label="Date de naissance"
                 :isRequired="true"
                 type="date"
-                placeholder="Code matiere"
+                placeholder="Date de naissance"
                 @update:modelValue="submitForm()"
                 v-model="form.date_naissance"
+                :rules="[(v) => !!v || 'Ce champ est requis!']"
               ></TextField>
             </v-col>
             <v-col cols="4">
@@ -80,34 +84,38 @@
                 label="Lieu de naissance"
                 :isRequired="true"
                 @update:modelValue="submitForm()"
-                placeholder="Libelle matiere"
+                placeholder="Lieu de naissance"
                 v-model="form.lieu_naissance"
+                :rules="[(v) => !!v || 'Ce champ est requis!']"
               ></TextField>
             </v-col>
             <v-col cols="4">
               <TextField
                 label="Téléphone"
-                :isRequired="true"
                 @update:modelValue="submitForm()"
-                placeholder="Libelle matiere"
+                placeholder="Téléphone"
                 v-model="form.telephone"
-                :rules="[(v) => !!v || 'Ce champ est requis!']"
+                :rules="[(v) => /^[+][0-9]+$/.test(v) || 'Le numéro de téléphone doit être dans le format (00227 xx xx xx xx ou xx xx xx xx)' ]"
               ></TextField>
             </v-col>
           </v-row>
         </v-card-text>
+      </v-form>
       </v-card>
     </v-container>
     <br />
-  </form>
+  
 </template>
 <script>
 // import XLSX from "xlsx/dist/xlsx.extendscript.js";
 import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+import { useVuelidate } from '@vuelidate/core';
+import { required, alpha, minLength, maxLength, numeric } from '@vuelidate/validators';
 export default {
   props: ["type","apprenant"],
+ 
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
@@ -115,6 +123,7 @@ export default {
     XLSX,
   },
   data: () => ({
+    v$: useVuelidate(),
     tooltipModel: false,
     alertFirst: true,
     alertSecond: true,
@@ -126,12 +135,6 @@ export default {
     contentType: ["code", "nom"],
     importation: false,
     section: null,
-    rules: [
-      value => {
-          if (value) return true
-          return 'Ce champ est requis!'
-      },
-    ],
     form: useForm({
       nom: '',
       prenom: '',
@@ -143,6 +146,18 @@ export default {
       etablissement_section_id: null,
     }),
   }),
+  validations () {
+    return {
+      form: {
+        nom: { required, alpha},
+        prenom: { required, alpha},
+        sexe: { required },
+        date_naissance: { required },
+        lieu_naissance: { required , alpha},
+        telephone: { numeric , minLengthValue: minLength(10), maxLengthValue: maxLength(10)}
+      }
+    }
+  },
 
   methods: {
     onclickAlertButton(type) {
@@ -169,17 +184,18 @@ export default {
       }
     },
     async submitForm() {
-      // await this.verify();
-      await this.isValid();
+      const v = await this.isValid();
       this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
         (el) => el.libelle == this.section
       );
       this.$emit("formSubmitted", this.form);
-      this.$emit("apprenantFormValid", this.isValid());
+      this.$emit("apprenantFormValid", v);
     },
     async isValid() {
       let valid = false;
-      if ( this.form.nom.trim() != '' &&  this.form.prenom.trim() != '' &&   this.form.lieu_naissance.trim() != '' && (this.form.sexe != null && this.form.sexe != 'Sélectionner') && (this.form.date_naissance != null && this.form.date_naissance != '')){
+      const result = await this.v$.$validate()
+      console.log('result',result);
+      if (result) {
         valid = true;
       }
       return valid;
@@ -187,13 +203,8 @@ export default {
     goBack() {
       router.get(route("etablissements.index"));
     },
-
-    async verify() {
-     
-    },
   },
   mounted() {
-    console.log(typeof this.apprenant, this.apprenant)
     this.section = this.getSection(this.type);
   },
 };

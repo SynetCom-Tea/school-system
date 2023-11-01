@@ -109,8 +109,8 @@ class InscriptionController extends Controller
         $collection = collect();
         $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
         // $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
-        $year = Annee::where('actif',1)->first()->id;
-        // $year = Annee::getAnneeEnCours();
+        // $year = Annee::where('actif',1)->first()->id;
+        $year = getAnneeEncours()->id;
         // dd($params,$year);
         
             
@@ -171,10 +171,10 @@ class InscriptionController extends Controller
                     $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first()->id;
     
                     $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
-                        ->whereHas('classe_annee', function ($query) use ($year, $matricule,$nom,$prenom,$authUser,$findEtabSection) {
-                            $query->whereHas('classe', function ($query) use ($year, $matricule,$nom,$prenom,$authUser,$findEtabSection){
+                        ->whereHas('classe_annee', function ($query) use ($year, $matricule,$nom,$prenom,$findEtabSection) {
+                            $query->whereHas('classe', function ($query) use ($findEtabSection){
                                 $query->where('etablissement_section_id',$findEtabSection);
-                            })->whereHas('annee', function ($query) use ($year, $matricule,$nom,$prenom,$authUser,$findEtabSection){
+                            })->whereHas('annee', function ($query) use ($year, $matricule,$nom,$prenom){
                                 if($matricule !== null || $nom !== null || $prenom !== null){
                        
                                 }else{
@@ -182,7 +182,7 @@ class InscriptionController extends Controller
                                 }
                             });
                         })
-                        ->whereHas('apprenant', function ($query) use ($year, $matricule,$nom,$prenom,$authUser) {
+                        ->whereHas('apprenant', function ($query) use ($matricule,$nom,$prenom,$authUser) {
                             if($matricule !== null){
                                 $query->where('matricule','like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
                                 // dump('matricule',$matricule);
@@ -230,20 +230,28 @@ class InscriptionController extends Controller
         // dd($niveau,$etabSection);
         $donnees = [];
         $tabs = [];
-        $result = ClasseAnnee::whereHas('classe', function ($query) use ($niveau,$etabSection){
-            $query->where('niveau_id',$niveau)->where('etablissement_section_id',$etabSection);
-        })->with('classe.niveau')->get();
+        if($niveau && $etabSection){
+            $result = ClasseAnnee::whereHas('classe', function ($query) use ($niveau,$etabSection){
+                $query->where('niveau_id',$niveau)->where('etablissement_section_id',$etabSection);
+            })->with('classe.niveau')->get();
 
-        foreach($result as $key => $item){
-            $nbre = ApprenantClasseAnnee::where('classe_annee_id',$item->id)->count();
-            $tabs = [
-                'classe' => $item,
-                'nbre' => $nbre
-            ];
-            $donnees[$key] = $tabs;
+            if($result->count() > 0){
+                foreach($result as $key => $item){
+                    $nbre = ApprenantClasseAnnee::where('classe_annee_id',$item->id)->count();
+                    $tabs = [
+                        'classe' => $item,
+                        'nbre' => $nbre
+                    ];
+                    $donnees[$key] = $tabs;
+                }
+                // dd($donnees);
+                return ['code'=> 1, $donnees ?? []];
+            }else{
+                return ['code'=> 0];
+            }
+        }else{
+            return 'ERREUR';
         }
-        // dd($donnees);
-        return $donnees ?? [];
     }
 
     // Fin requete AXIOS

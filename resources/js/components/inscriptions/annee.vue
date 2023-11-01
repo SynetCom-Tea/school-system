@@ -1,5 +1,5 @@
 <template>
-  <form novalidate @submit.prevent="submitForm">
+  <form ref="form" novalidate @submit.prevent="submitForm">
     <v-container fluid>
       <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
@@ -108,6 +108,7 @@
                     item-value="id"
                     v-model="form.annee"
                     @update:modelValue="submitForm()"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
                 </v-col>
                 <v-col :cols="mdNiveau">
@@ -119,13 +120,13 @@
                     item-value="id"
                     class="mt-3"
                     v-model="form.niveau"
-                    @update:modelValue="type == '1' || type == '2' ? checkClasseExist(form.niveau) : ''"
+                    @update:modelValue="type == '1' || type == '2' ? checkClasseExist(form.niveau) : '',submitForm()"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
                 </v-col>
                 <v-col :cols="mdCycle" v-if="type == '3' || type == '4'">
                   <Autocomplete 
                     label="Cycles"
-                    :isRequired="true"
                     :items="cycles"
                     item-title="name"
                     item-value="id"
@@ -142,18 +143,17 @@
                   <Autocomplete
                     label="Filieres"
                     :isRequired="true"
-                    
                     item-title="code_libelle"
                     item-value="id"
                     v-model="form.cycle_filiere"
                     :items="setCycleFilieres"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
                 </v-col>
                 <v-col :cols="mdClasse" v-if="resultClasse.length != 0">
                   <v-autocomplete
                     label="Classes"
-                    :isRequired="true"
-                    :items="resultClasse ? resultClasse : []"
+                    :items="resultClasse.length > 0 ? resultClasse : []"
                     chips
                     item-title="classe.classe.libelle"
                     item-value="classe.classe.id"
@@ -200,6 +200,8 @@
 import * as XLSX from "xlsx/xlsx.mjs";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
+import { useVuelidate } from '@vuelidate/core';
+import { required } from '@vuelidate/validators';
 export default {
   props: ["type","niveaux","apprenant","annees","formapprenant","cycleFilieres","cycles"],
   components: {
@@ -209,7 +211,7 @@ export default {
     XLSX,
   },
   data: () => ({
-   
+    v$: useVuelidate(),
     alertFirst: true,
     alertSecond: true,
     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation },
@@ -234,26 +236,46 @@ export default {
       etablissement_section_id: null,
     }),
   }),
+  validations () {
+    console.log('ggggg',typeof this.type);
+    if(this.type == '1' || this.type == '2'){
+      return {
+        form: {
+          annee: { required },
+          niveau: { required },
+        }
+      }
+    }else if(this.type == '3' || this.type == '4'){
+      return {
+        form: {
+          annee: { required },
+          niveau: { required },
+          cycle_filiere: { required },
+        }
+      }
+    }
+  },
   computed:{
     setCycleFilieres() {
-          
-        let list = [];
-
-        if (this.cycleFilieres) {
-            this.cycleFilieres.forEach((element) => {
-            if (element) {
-                list.push({
-                ...element,
-                code_libelle: element.cycle.name + " - " + element.filiere.name,
-                });
-            }
-            });
-        }
-        return list ?? [];
-        },
-    },
-    created(){
-    },
+      let list = [];
+      if (this.cycleFilieres) {
+          this.cycleFilieres.forEach((element) => {
+          if (element) {
+              list.push({
+              ...element,
+              code_libelle: element.cycle.name + " - " + element.filiere.name,
+              });
+          }
+          });
+      }
+      return list ?? [];
+      },
+  },
+  async mounted(){
+    await this.submitForm()
+  },
+  created(){
+  },
   methods: {
     requete(){
       this.$emit('input',this.vCycle)
@@ -294,10 +316,12 @@ export default {
           )
           .then((res) => {
             console.log('res',res.data)
-            if (typeof res.data == "string" || typeof res.data == "undefined") {
+            if (res.data == "ERREUR") {
              
-            } else {
+            } else if(res.data.code == 1){
                return res.data ?? [];
+            }else{
+              return []
             }
           });
       }
@@ -306,7 +330,7 @@ export default {
       }else{
         this.mdVersement = 4
       }
-      if(this.resultClasse[this.resultClasse.length - 1].nbre >= 1){
+      if(this.resultClasse[this.resultClasse.length - 1]?.nbre >= 1){
         this.$swal({
             title: 'Création d\'une nouvelle classe?',
             text: "Voulez-vous créer une nouvelle classe car ''" + this.resultClasse[this.resultClasse.length - 1].classe.classe.code + "'' est pleine !",
@@ -319,6 +343,7 @@ export default {
           }).then((result) => {
           if (result.isConfirmed) {
             // redirection vers la page de création des classes
+            router.get(route('classes.index',{type:this.type}))
           }
         });
       }
@@ -347,14 +372,16 @@ export default {
       }
     },
     async submitForm() {
-      await this.isValid();
+      const v = await this.isValid();
       this.form.apprenant = this.apprenant
       this.$emit("formSubmitted", this.form);
-      this.$emit("anneeFormValid", this.isValid());
+      this.$emit("anneeFormValid", v);
     },
     async isValid() {
       let valid = false;
-      if ( (this.form.annee != null && this.form.annee != '')){
+      const result = await this.v$.$validate()
+      console.log('result',result);
+      if (result) {
         valid = true;
       }
       return valid;
@@ -362,13 +389,8 @@ export default {
     goBack() {
       router.get(route("etablissements.index"));
     },
-
-    async verify() {
-     
-    },
   },
   mounted() {
-    console.log('date',typeof this.form.date_naissance)
     this.section = this.getSection(this.type);
     this.form.etablissement_section_id = this.$page.props.sections[0].sections.find(
         (el) => el.libelle == this.section

@@ -60,7 +60,7 @@
                         title: 'Libellé',
                         align: 'start',
                         sortable: false,
-                        key: 'type_frais.libelle',
+                        key: 'etablissement_type_frais.type_frais.libelle',
                     },
                     { title: 'Montant', align: 'center', key: 'montant' },
                     { title: 'Année Scolaire', align: 'center', key: 'annee.libelle' },
@@ -89,11 +89,11 @@
                 router.get(route('frais.create', this.section_id))
             },
             editItem(item){
-                //console.log('edit',item)
+                console.log('edit',item)
                 this.dialog_title = 'Modifier le frais'
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
-                this.form.type_frais_id = item.type_frais_id
+                this.form.type_frais_id = item.etablissement_type_frais.type_frais.id
                 this.form.montant = item.montant
                 this.form.annee_id = item.annee_id
                 this.dialog = true
@@ -256,9 +256,10 @@
                                                     label="Type Frais"
                                                     :items="typefrais"
                                                     variant="outlined"
-                                                    itemValue="id"
-                                                    itemTitle="libelle"
+                                                    itemValue="type_frais.id"
+                                                    itemTitle="type_frais.libelle"
                                                     v-model="form.type_frais_id"
+                                                    readonly
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
@@ -286,9 +287,9 @@
             <Datatable titleDatatable="Liste des frais" :headers="headers" :items="frais" :functionOnClickAddButton="create" >
 
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

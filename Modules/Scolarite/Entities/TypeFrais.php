@@ -14,15 +14,7 @@ class TypeFrais extends Model
 
     protected $fillable = [
         'libelle',
-        'etablissement_id',
+        'statut',
 
     ];
-    public function etablissement(): BelongsTo
-    {
-        return $this->belongsTo(Etablissement::class);
-    }
-    protected static function newFactory()
-    {
-        return \Modules\Scolarite\Database\factories\TypeFraisFactory::new();
-    }
 }
