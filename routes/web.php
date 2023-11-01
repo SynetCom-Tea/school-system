@@ -8,6 +8,7 @@ use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\CalendrierscolaireController;
 use App\Http\Controllers\MenuGestionController;
+use App\Http\Controllers\RapportController;
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -115,6 +116,7 @@ Route::prefix('calendrierscolaire')->group(function () {
 // Route::resource('calendrierscolaire/{type}', CalendrierscolaireController::class)->parameters(['type' => 'type']);
 
 Route::resource('salles', SalleController::class);
+Route::resource('rapports', RapportController::class);
 Route::resource('enseignants', EnseignantController::class)->only(['create', 'update', 'destroy']);
 Route::get('enseignants', [EnseignantController::class, 'index'])->name('enseignants.index');
 Route::post('enseignants', [EnseignantController::class, 'store'])->name('enseignants.store');

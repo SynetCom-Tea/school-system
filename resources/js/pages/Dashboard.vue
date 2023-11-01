@@ -1,4 +1,47 @@
 <script>
+// Données des notes des élèves par matière avec coefficients, note de classe et note de composition
+const students = [
+  {
+    id: 1,
+    name: "Alice",
+    grades: [
+      {
+        subject: "Mathématiques",
+        classGrade: 80,
+        compositionGrade: 90,
+        coefficient: 3
+      },
+      {
+        subject: "Français",
+        classGrade: 75,
+        compositionGrade: 85,
+        coefficient: 2
+      },
+      // Autres matières, notes de classe et de composition pour Alice
+    ],
+  },
+  {
+    id: 2,
+    name: "Bob",
+    grades: [
+      {
+        subject: "Mathématiques",
+        classGrade: 70,
+        compositionGrade: 85,
+        coefficient: 3
+      },
+      {
+        subject: "Français",
+        classGrade: 80,
+        compositionGrade: 90,
+        coefficient: 2
+      },
+      // Autres matières, notes de classe et de composition pour Bob
+    ],
+  },
+  // Autres élèves avec leurs matières, notes de classe et de composition
+];
+
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
 
@@ -146,6 +189,11 @@ export default {
           protein: 7,
         },
       ],
+      students: [
+        // Inclure les données des élèves avec notes de classe, notes de composition, matières et coefficients
+      ],
+      subjects: [], // Liste des matières uniques
+      tableHeaders: [], // En-têtes du tableau
       test: "Abou",
       isDialog: false,
       rules: {
@@ -174,9 +222,42 @@ export default {
       ],
     };
   },
-  mounted() {},
+  mounted() {
+    this.extractSubjects();
+    
+  },
 
   methods: {
+    extractSubjects() {
+      // Extraction des matières uniques à partir des données
+      const allSubjects = students.flatMap(student => student.grades.map(grade => grade.subject));
+      this.subjects = [...new Set(allSubjects)];
+      this.tableHeaders = ['Élève', ...this.subjects, 'Moyenne'];
+
+      console.log('Students',students)
+      console.log('allSubjects', allSubjects)
+      console.log('tableHeaders',this.tableHeaders)
+      console.log('this.subjects', this.subjects)
+    },
+    getGrades(student, subject) {
+      const foundGrade = student.grades.find(grade => grade.subject === subject);
+      if (foundGrade) {
+        return `Classe: ${foundGrade.classGrade}, Composition: ${foundGrade.compositionGrade}`;
+      } else {
+        return 'N/A';
+      }
+    },
+    calculateWeightedAverage(student) {
+      const totalGrades = student.grades.reduce((total, grade) => {
+        return total + (grade.classGrade + grade.compositionGrade) / 2 * grade.coefficient;
+      }, 0);
+
+      const totalCoefficients = student.grades.reduce((total, grade) => {
+        return total + grade.coefficient;
+      }, 0);
+
+      return totalCoefficients !== 0 ? (totalGrades / totalCoefficients).toFixed(2) : 'N/A';
+    },
     onClickBt() {
       this.isDialog = !this.isDialog;
     },
@@ -225,7 +306,24 @@ export default {
     </div>
     <br /><br /><br /><br /><br /><br />
    
-    
+    <div>
+      <h2>Tableau Récapitulatif des Notes par Matière avec Moyenne Ponderée</h2>
+      <v-card>
+        <v-card-title>Notes des Élèves</v-card-title>
+        <v-data-table :headers="tableHeaders" :items="students" item-key="id">
+          <template v-for="subject in subjects" v-slot:[`item.${subject}`]="{ item }">
+            <td>
+              {{ getGrades(item, subject) }}
+            </td>
+          </template>
+          <template v-slot:[`item.Moyenne`]="{ item }">
+            <td>
+              {{ calculateWeightedAverage(item) }}
+            </td>
+          </template>
+        </v-data-table>
+      </v-card>
+    </div>
 
     <Button
       variant="flat"
