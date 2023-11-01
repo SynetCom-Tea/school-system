@@ -157,7 +157,7 @@ export default {
     },
     methods: {
         create() {
-            this.format.section_id = this.type
+            this.format.section_id = this.type,
             this.format.get(route('note.attribution_admin'))
         },
         formatEvaluationLabel(item) {
@@ -172,20 +172,20 @@ export default {
                 return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
             }
             else{
-                return `${item ? item?.libelle : 'Pas de données'}`
+                return `${item ? item?.libelle : 'Pas de données'}`;
             }
         },
         rechercher() {
             router.replace(this.$page.url, {
                 data: {
-                    evaluation: this.form.evaluation
+                    evaluation: this.form.evaluation,
                 }
             });
             // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
         setClasse(a) {
             // console.log(this.form)
-            this.form.classe = null
+            this.form.classe = null,
             router.replace(this.$page.url, {
                 data: {
                     annee: a,
@@ -194,19 +194,19 @@ export default {
         },
         requete(id) {
             // console.log(this.type)
-            this.form.evaluation = null
+            this.form.evaluation = null,
             router.replace(this.$page.url, {
                 data: {
-                    classe: id
+                    classe: id,
                 }
             });
             // console.log('id',id)   
         },
         edit(item) {
             // console.log(item)
-            this.dialogEdit = true
-            this.form.id_note = item.id
-            this.form.note = item.note
+            this.dialogEdit = true,
+            this.form.id_note = item.id,
+            this.form.note = item.note,
             this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
             if(item.evaluation.enseignement_annee.niveau_matiere){
             this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
@@ -283,8 +283,7 @@ export default {
                     timerProgressBar: true,
                 });
             }
-
-        }
-    }
+        },
+    },
 }
 </script>
