@@ -246,7 +246,7 @@ class EvaluationController extends Controller
         // dd($evaluations);
         }else{
         $evaluations = DB::select("
-            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom enseignant,ev.date,t.libelle type,ea.code,
+            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom enseignant,ev.date,t.libelle type,ea.code,ev.notation,
             s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ca.annee_id annee_id
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
@@ -393,8 +393,8 @@ class EvaluationController extends Controller
         }else {
             $id_enseignement = $request->enseignement_annee_id;
         }
-        // $data = $request->all();
-        $data = ['date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+        $data = $request->all();
+        $data = ['notation'=>$request->notation,'date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
         Evaluation::create($data);
     }
 
@@ -443,7 +443,7 @@ class EvaluationController extends Controller
             $id_enseignement = $request->enseignement_annee_id;
         }
             // $data = $request->all();
-        $data = ['date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+        $data = ['notation'=>$request->notation,'date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
         // Evaluation::update($data);
         // dd($request->all());
         $evaluation->update($data);

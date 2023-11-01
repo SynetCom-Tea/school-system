@@ -20,7 +20,7 @@ import {
     mdiTimelineAlert,
     mdiContentSaveEditOutline,
     mdiEye,
-} from '@mdi/js'
+} from '@mdi/js';
 export default {
     components: {
         // Datatable,
@@ -57,7 +57,6 @@ export default {
                 mdiContentSaveEditOutline,
                 mdiEye,
             },
-
             headers: [
                 {
                     title: 'Matiere',
@@ -85,11 +84,17 @@ export default {
                     key: 'libelle'
                 },
                 {
+                    title: 'Notation',
+                    align: 'center',
+                    key: 'notation'
+                },
+                {
                     title: 'Actions',
                     align: 'center',
                     key: 'actions'
                 },
             ],
+            notation : false,
             dialog_title: 'Nouvelle Evaluation',
             dialog: false,
             dialogEdit: false,
@@ -102,7 +107,9 @@ export default {
             code: null,
             matiere :null,
             filtrer : [],
+            libelle : null,
             form: useForm({
+                notation : null,
                 section_id : null,
                 date: '',
                 pourcentage: null,
@@ -132,10 +139,10 @@ export default {
         },
         editItem(item) {
             // console.log(item)
-            this.form.id = item.id
-            this.form.date = item.date
-            this.form.pourcentage = item.pourcentage
-            this.form.periode_id = item.periode_id
+            this.form.id = item.id,
+            this.form.date = item.date,
+            this.form.pourcentage = item.pourcentage,
+            this.form.periode_id = item.periode_id,
             this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
             this.form.enseignant_id = item.enseignant_id,
@@ -145,7 +152,14 @@ export default {
             this.form.matiere  = item.matiere_id,
             this.form.ue = item.ue_id,
             this.form.niveau = item.niveau_id,
-            this.dialogEdit = true
+            this.form.notation = item.notation
+            this.libelle = this.type_evaluation.filter(el => el.id == item.type_evaluation_id)
+            if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle"){
+                this.notation = true
+            }else{
+                this.notation = false
+            }
+            this.dialogEdit = true,
             this.dialog_title = 'Modifier Evaluation',
             this.$inertia.replace(this.$page.url,{
                 data : {
@@ -264,8 +278,10 @@ export default {
             this.form.matiere = null,
             this.form.niveau = null
             this.form.classe = null
-            this.form.ue = null
-            this.dialog = false
+            this.form.ue = null,
+            this.form.notation = null
+            this.dialog = false,
+            this.notation = false
         },
         closeEdit() {
             this.form.id = null
@@ -314,6 +330,14 @@ export default {
                 }
             })
         },
+        Notation(t){
+        this.libelle = this.type_evaluation.filter(el => el.id == t)
+        if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle"){
+            this.notation = true
+        }else{
+            this.notation = false
+        }
+    },
     },
     mounted(){
         if (this.section_id==1){
@@ -325,7 +349,7 @@ export default {
         if (this.section_id ==3 || this.section_id==4){
             this.filtrer = this.type_evaluation.filter(el => el.libelle == "Examen" || el.libelle == "TP")
         }
-    }
+    },
 }
 </script>
 
@@ -355,7 +379,7 @@ export default {
                                         </TextField>
                                     </v-col>
                                     <v-col cols="3">
-                                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" @update:modelValue="Notation(form.type_evaluation_id)" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true" >
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="3">
@@ -393,6 +417,10 @@ export default {
                                         <Autocomplete :disabled="!form.annee_id"  label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                                         </Autocomplete> 
                                     </v-col>
+                                    <v-col cols="4" v-if="section_id <=2 && notation">
+                                        <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)"  label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
+                                        </TextField>
+                                    </v-col>
                                     <v-col cols="3">
                                         <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                         </TextField>    
@@ -426,7 +454,7 @@ export default {
                                         </TextField>
                                     </v-col>
                                     <v-col cols="3">
-                                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Type Evaluation" variant="outlined" item-title="libelle" item-value="id" :items="type_evaluation" v-model="form.type_evaluation_id" @update:modelValue="Notation(form.type_evaluation_id)" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="3">
@@ -463,6 +491,10 @@ export default {
                                     <v-col cols="3" v-if="section_id <=2">
                                         <Autocomplete :disabled="!form.annee_id"  label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                                         </Autocomplete> 
+                                    </v-col>
+                                    <v-col cols="3" v-if="section_id <=2 && notation">
+                                        <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation" >
+                                        </TextField>
                                     </v-col>
                                     <v-col cols="3">
                                         <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">

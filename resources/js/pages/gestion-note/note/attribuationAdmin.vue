@@ -82,6 +82,15 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
+                max: v => {
+                            if (this.evaluations[0].notation) {
+                                 return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
+                        } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id) {
+                            return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
+                        } else {
+                            return v <= 20 || "La note ne doit pas dépasser 20";
+                        }
+                    }
                 },
             form: this.$inertia.form({
                 notes: [],
@@ -138,6 +147,9 @@ export default {
         },
         formatCode(item) {
             return `${item ? item?.filiere.code : 'Pas de données'} - ${item ? item.cycle.name : 'Pas de données'} `
+        },
+        formatEnseignant(item) {
+            return `${item.matricule } - ${item.nom }  ${item.prenom}`
         },
         rechercher(e) {
             // console.log(this.eleves)
@@ -266,7 +278,7 @@ export default {
             <v-row style="margin: 20px">
                 <v-col md="2" v-if="type<=2"></v-col>
                 <v-col md="2">
-                    <Autocomplete v-model="form.enseignant" :items="enseignants" item-title="matricule" item-value="id" outlined required dense chips small-chips label="Enseignants"></Autocomplete>
+                    <Autocomplete v-model="form.enseignant" :items="enseignants" :item-title="formatEnseignant" item-value="id" outlined required dense chips small-chips label="Enseignants"></Autocomplete>
                 </v-col>
                 <v-col md="2">
                     <Autocomplete :disabled="!form.enseignant" v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="SetFiliere(form.annee)"></Autocomplete>
@@ -292,7 +304,7 @@ export default {
             <br />
             <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
                 <template v-slot:item.note="{ item, index }">
-                    <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[rules.required, rules.validator]" style="max-width: 300px"></TextField>
+                    <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[rules.required, rules.validator,rules.max]" style="max-width: 300px"></TextField>
                 </template>
             </Datatable>
             <v-card-actions>

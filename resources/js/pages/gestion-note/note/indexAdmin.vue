@@ -51,7 +51,7 @@
                         </v-row>
                         <v-row>
                             <v-col md="12">
-                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator]">
+                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator,rules.max]">
                                 </TextField>
                             </v-col>
                         </v-row>
@@ -137,7 +137,7 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                max: v => v <= 20 || "La note ne doit pas dépasser 20"
+                max: v => (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation) >= v || "La note ne doit pas dépasser " + (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation)
             },
             format: useForm({
                 section_id: null,
