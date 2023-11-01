@@ -101,14 +101,21 @@
                 router.get(route('affectationEnseignants.create', this.section_id));
             },
             editItem(item){
-
-                // router.get(route('AffectationEnseignants.edit',item.id ));
                 console.log('edit',item)
+            //     this.$emit('input',this.form.matiere)
+            // let mat=this.form.matiere;
+            // console.log('mat',this.form.matiere);
+                router.replace(this.$page.url,{data:{matiere:item.niveau_matiere.matiere.id}});
+                // router.get(route('AffectationEnseignants.edit',item.id ));
+
+
+                console.log('classes',this.classes)
                 this.dialog_title = 'Mise à jour d\'affectation de'+ " "+item.enseignant.NomComplet
+
                 this.form.id = item.id
-                this.form.matiere = item.niveau_matiere.matiere.id
-                this.form.classe = item.classe_annee.id
-                this.form.enseignant= item.enseignant.id
+                this.form.classe = item.classe_annee_id
+                this.form.matiere = item.niveau_matiere.matiere_id
+                this.form.enseignant= item.enseignant_id
                 this.dialog = true
             },
             deleteItem(item){
@@ -213,7 +220,7 @@
         },
     computed: {
         Title() {
-            console.log('eeeef',this.classes);
+            console.log('eeeef',this.enseignements);
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -279,22 +286,8 @@
                                                 </Autocomplete>
 
                                             </v-col>
-                                            <v-col cols="12" md="12" v-if="form.id ==null">
-                                                <Autocomplete
-                                                    v-model="form.matiere"
-                                                    isRequired
-                                                    itemValue="id"
-                                                    itemTitle="code"
-                                                    placeholder="Matiere"
-                                                    label="Matiere"
-                                                    @update:modelValue="setclasses()"
-                                                    :items="niveauMatieres"
-                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                                                    >
-                                                </Autocomplete>
 
-                                            </v-col>
-                                            <v-col cols="12" md="12" v-if="form.id !=null">
+                                            <v-col cols="12" md="12">
                                                 <Autocomplete
                                                     v-model="form.matiere"
                                                     isRequired
@@ -311,36 +304,22 @@
 
                                             </v-col>
 
-                                            <v-col cols="12" md="12" v-if="form.id ==null">
-                                                <Autocomplete
+                                            <v-col cols="12" md="12" >
+                                                <autocomplete
                                                     v-model="form.classe"
                                                     isRequired
-                                                    itemValue="classe.id"
-                                                    itemTitle="classe.libelle"
                                                     placeholder="Classes"
                                                     label="Classes"
-                                                    multiple
                                                     chips
                                                     :items="classes"
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    item-value="id"
+                                                    item-title="classe.libelle"
                                                     >
-                                                </Autocomplete>
+                                                </autocomplete>
 
                                             </v-col>
-                                            <v-col cols="12" md="12" v-if="form.id !=null">
-                                                <Autocomplete
-                                                    v-model="form.classe"
-                                                    isRequired
-                                                    itemValue="id"
-                                                    itemTitle="classe.libelle"
-                                                    placeholder="Classes"
-                                                    label="Classes"
-                                                    chips
-                                                    :items="classes"
-                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
-                                                    >
-                                                </Autocomplete>
-                                                </v-col>
+
 
 
                                         </v-row>
@@ -366,8 +345,8 @@
                 <template v-slot:item.list="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.list">
-                        {{ tag.matiere.nom }} => {{ tag.classe.libelle }}
-                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
+                            {{ tag.classe.libelle }} =>{{ tag.matiere.nom }}
+                            <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
                             <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiDelete" color="red">
                             </v-icon>

@@ -117,9 +117,10 @@ Route::prefix('calendrierscolaire')->group(function () {
 // Route::resource('calendrierscolaire/{type}', CalendrierscolaireController::class)->parameters(['type' => 'type']);
 
 Route::resource('salles', SalleController::class);
-Route::resource('enseignants', EnseignantController::class)->only(['create', 'update', 'destroy']);
-Route::get('enseignants', [EnseignantController::class, 'index'])->name('enseignants.index');
-Route::post('enseignants', [EnseignantController::class, 'store'])->name('enseignants.store');
+Route::resource('enseignants', EnseignantController::class)->only([ 'update', 'destroy']);
+Route::get('enseignantscreate/{type}', [EnseignantController::class, 'create'])->name('enseignants.create');
+Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');
+Route::post('enseignants/{type}', [EnseignantController::class, 'store'])->name('enseignants.store');
 Route::resource('AffectationEnseignants', AffectationEnseignantController::class)->only(['update', 'destroy']);
 Route::get('affectationEnseignants/{type}', [AffectationEnseignantController::class, 'create'])->name('affectationEnseignants.create');
 Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'index'])->name('AffectationEnseignants.index');

@@ -263,10 +263,10 @@ export default {
         </v-card-text>
         <v-card-actions class="justify-end">
       <v-spacer></v-spacer>
-      <Button  size="large" dark small type="button" color="red" @click="goBack">
+      <Button   dark small type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </Button>
-      <Button  size="large" small color="primary" @click="submit">
+      <Button   small color="primary" @click="submit">
         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
       </Button>
     </v-card-actions>

@@ -103,12 +103,11 @@
                 router.get(route('frais.create', this.section_id))
             },
             editItem(item){
-                console.log('edit',item)
-                console.log('edit',item)
+                // console.log('edit',item)
                 this.dialog_title = 'Modifier le frais'
                 this.form.id = item.id
                 this.form.niveau_id = item.niveau_id
-                this.form.type_frais_id = item.etablissement_type_frais.type_frais.id
+                this.form.type_frais_id = item.etablissement_type_frais_id
                 this.form.montant = item.montant
                 this.form.annee_id = item.annee_id
                 this.dialog = true
@@ -172,7 +171,6 @@
                     confirmButtonText: 'Oui, supprimez-le!',
                     cancelButtonText: 'Non, annulez !',
                     }).then((result) => {
-                    items.frais.forEach(item => {
                         console.log('item',item);
                     if (result.isConfirmed) {
 
@@ -208,7 +206,7 @@
                         });
                     }
                 });
-                });
+
 
 
             },
@@ -249,7 +247,7 @@
         },
         computed: {
         Title() {
-
+            console.log('frais',this.frais);
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -345,10 +343,9 @@
                                                     label="Type Frais"
                                                     :items="typefrais"
                                                     variant="outlined"
-                                                    itemValue="type_frais.id"
+                                                    itemValue="id"
                                                     itemTitle="type_frais.libelle"
                                                     v-model="form.type_frais_id"
-                                                    readonly
                                                     isRequired
                                                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                                                     >
@@ -376,8 +373,8 @@
             <Datatable titleDatatable="Liste des frais" :headers="headers" :items="frais" :functionOnClickAddButton="create" >
                 <template v-slot:item.frais="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
-                        <v-chip v-for="tag in item.columns.frais">
-                            {{ tag.type_frais.libelle}} => {{tag.montant}}
+                        <v-chip v-for="tag in item.frais">
+                            {{ tag.etablissement_type_frais.type_frais.libelle}} => {{tag.montant}}
                             <v-icon end  size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
                             <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">

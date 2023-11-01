@@ -48,7 +48,7 @@
           <v-divider></v-divider>
           <v-card-text>
             <v-row>
-              <v-col md="4"></v-col>
+              <v-col md="1"></v-col>
               <v-col md="4">
                 <Autocomplete
                   label="Enseignant"
@@ -65,10 +65,19 @@
                 >
                 </Autocomplete>
               </v-col>
+              <v-col cols="6" md="6" v-if="section_id=='1'">
+              <v-switch
+                v-model="form.importation"
+                color="#004980"
+                inset
+                :label="'Attribution des matières par classe'"
+              ></v-switch>
+            </v-col>
             </v-row>
             <!-- <v-divider></v-divider> -->
             <v-card class="mx-auto" max-width="1000">
-              <v-card-text>
+
+              <v-card-text v-if="!form.importation">
                 <!-- <v-divider></v-divider> -->
 
                 <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
@@ -138,6 +147,77 @@
                   </v-col>
                 </v-row>
               </v-card-text>
+
+              <v-card-text v-if="form.importation">
+                <!-- <v-divider></v-divider> -->
+
+                <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes">
+                  <v-col md="1"></v-col>
+                  <v-col md="4">
+                    <Autocomplete
+                      label="Classes"
+                      placeholder="Classes"
+                      class="mt-2"
+                      item-title="classe.libelle"
+                      item-value="id"
+                      isRequired
+                      :items="classe_annees"
+                      chips
+                      v-model="classe.classe"
+                      :rules="[(v) => !!v || 'Ce champ est requis!']"
+                      @update:modelValue="submitForm(classe),setmatiere(i)"
+                    >
+                    </Autocomplete>
+                  </v-col>
+
+                  <v-col md="4">
+                    <Autocomplete
+                        v-model="classe.matieres"
+                        isRequired
+                        itemValue="id"
+                        class="mt-2"
+                        itemTitle="code"
+                        placeholder="Matière"
+                        label="Matière"
+                        multiple
+                        chips
+                        :items="niveau_matieres"
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        @update:modelValue="submitForm(classe)"
+                        >
+                    </Autocomplete>
+                  </v-col>
+                  <v-col md="1">
+                    <br />
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      :disabled="!(form.classes.length > 1)"
+                      icon
+                      @click="removeRowc(classe)"
+                      size="large"
+                      small
+                      color="error"
+                    >
+                      <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                    </Button>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col offset-md="11" cols="4">
+                    <Button
+                      type="button"
+                      variant="outlined"
+                      @click="addRowc"
+                      icon
+                      size="large"
+                      color="primary"
+                    >
+                      <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                    </Button>
+                  </v-col>
+                </v-row>
+              </v-card-text>
             </v-card>
           </v-card-text>
           <v-card-actions class="justify-end">
@@ -160,7 +240,7 @@
 import axios from "axios";
   export default {
     layout: AuthenticatedLayout,
-    props: ["matieres","section_id", "classes", 'enseignants'],
+    props: ["matieres","section_id", "classes", 'enseignants', 'classe_annees','niveau_matieres'],
     components: {
       mdiPlusCircle,
       mdiCloseCircle,
@@ -173,27 +253,41 @@ import axios from "axios";
       alertSecond: true,
       icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle},
       step: 1,
-      importation: false,
+
       section: null,
       uetabs: [],
       form: useForm({
         enseignant: null,
+        importation: false,
         matieres: [],
+        classes: [],
       }),
     }),
 
     methods: {
 
-        setmatiere(){
-            console.log('enseignant',this.form.enseignant);
-            this.matieres=[];
-            this.$emit('input',this.form.enseignant)
-            let eng=this.form.enseignant;
-            router.replace(this.$page.url,{data:{enseignant:eng}});
-            console.log('fdgfggg',this.matieres);
+        // setmatiere(){
+        //     console.log('enseignant',this.form.enseignant);
+        //     this.matieres=[];
+        //     this.$emit('input',this.form.enseignant)
+        //     let eng=this.form.enseignant;
+        //     router.replace(this.$page.url,{data:{enseignant:eng}});
+        //     console.log('fdgfggg',this.matieres);
 
 
-            },
+        //     },
+
+
+            setmatiere(i){
+            console.log('classes',this.form.classes[i].classe);
+            // this.form.matieres[i].classes=[];
+           this.$emit('input',this.form.classes[i].classe)
+           let classes=this.form.classes[i].classe;
+           router.replace(this.$page.url,{data:{ classes: classes}});
+           console.log('fdgfggg',this.niveau_matieres);
+
+
+       },
         setclasses(i){
             this.form.matieres[i].classes=[];
             this.$emit('input',this.form.matieres[i].matiere)
@@ -229,18 +323,24 @@ import axios from "axios";
       resetForm(check) {
         if (check) {
           this.form.matieres = [];
+          this.form.classes = [];
           this.addRow();
         }
       },
       async submitForm(element) {
+        if(this.form.importation==false){
         await this.verify(element);
         await this.isValid();
-
+        }else{
+            await this.verifyc(element);
+            await this.isValidc();
+        }
         this.form.etablissement_section_id = this.$page.props.sections.find(
           (el) => el.section == this.section
         );
         this.$emit("formSubmitted", this.form);
         this.$emit("niveauMatiereFormValid", this.isValid());
+        this.$emit("niveauMatiereFormValid", this.isValidc());
       },
       async isValid() {
         let valid = false;
@@ -282,8 +382,48 @@ import axios from "axios";
         }
       },
 
+      async isValidc() {
+        let valid = false;
+       if (
+          !this.form.classes.find(
+            (el) =>
+              this.form.enseignant == null ||
+              this.form.enseignant == "" ||
+              this.form.classes == null ||
+              this.form.classes == "" ||
+              el.classe == null ||
+              el.classe == "" ||
+              el.matieres == "" ||
+              el.matieres == null
+          )
+        ) {
+            valid = true;
+        }
+
+        return valid;
+      },
+      addRowc() {
+        this.form.classes.push({
+            classe: null,
+            matieres: [],
+          after: null,
+        });
+      },
+      removeRowc(classe) {
+        this.form.classes = this.form.classes.filter((el) => el !== classe);
+      },
+      async verifyc(classe) {
+        const array = this.form.classes.filter(
+          (el) => el.classe !== null && el.classe == classe.classe
+        );
+        if (array.length > 1) {
+          this.removeRowc(classe);
+          this.$swal("L'élément existe déjà !");
+        }
+      },
       async submit() {
             console.log('enseignant',this.form.enseignant,'matiere', this.form.matieres);
+        if(this.form.importation==false){
             if (await this.isValid()) {
                 console.log(this.form)
                 this.form.post(route('AffectationEnseignants.store',this.section_id), {
@@ -312,11 +452,43 @@ import axios from "axios";
               });
 
             }
+        }else{
+            console.log('form',this.form)
+            if (await this.isValidc()) {
+
+                this.form.post(route('AffectationEnseignants.store',this.section_id), {
+                    onFinish: () => {
+                        this.$swal({
+                            icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
+                                title: 'Enregistrement',
+                                text: 'Affectation a été enrégistré avec succès!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                        });
+                    },
+                });
+            }else{
+                this.$swal.fire({
+                title: "Erreur",
+                text:
+                  "Veuillez remplir tous les champs du formulaire !",
+                icon: "warning",
+                confirmButtonText: "OK",
+              });
+
+            }
+        }
         },
     },
     created() {},
     mounted() {
       this.addRow();
+      this.addRowc();
       this.section = this.getSection(this.section_id);
     },
 
