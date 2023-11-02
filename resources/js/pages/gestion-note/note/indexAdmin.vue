@@ -12,9 +12,9 @@
         <br />
         <v-row>
             <v-col md="1"></v-col>
-            <v-col md="2" >
-                    <Autocomplete  v-model="form.annee" :items="annees" item-title="libelle" item-value="id"  outlined required dense chips small-chips label="Années academiques" @update:modelValue="setClasse(form.annee)"></Autocomplete>
-                </v-col>
+            <v-col md="2">
+                <Autocomplete v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="setClasse(form.annee)"></Autocomplete>
+            </v-col>
             <v-col md="3">
                 <Autocomplete v-model="form.classe" :items="classes" :item-title="formatClasseLabel" item-value="id" @update:modelValue="requete(form.classe)" outlined required dense chips small-chips label="Classes"></Autocomplete>
             </v-col>
@@ -67,8 +67,8 @@
     <v-card style="border: 2px solid #7d002c;margin: 20px">
         <v-card-title style="color: white; background-color: #7d002c">Liste des notes</v-card-title>
         <v-divider></v-divider>
-        <br/>
-        <Datatable titleDatatable="Listes des notes"  :displayAddButton="false" :items="notes" :headers="headers">
+        <br />
+        <Datatable titleDatatable="Listes des notes" :displayAddButton="false" :items="notes" :headers="headers">
             <template v-slot:item.apprenant="{ item}">
                 {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
             </template>
@@ -102,7 +102,7 @@ export default {
         mdiCloseCircle,
     },
     layout: AuthenticatedLayout,
-    props: ['classes', 'evaluations', 'notes','annees', 'type'],
+    props: ['classes', 'evaluations', 'notes', 'annees', 'type'],
     data() {
         return {
             icon: {
@@ -148,9 +148,9 @@ export default {
                 nom_prenom: null,
                 id_note: null,
                 note: null,
-                annee : null,
-                classe : null,
-                evaluation : null
+                annee: null,
+                classe: null,
+                evaluation: null
             }),
 
         }
@@ -158,7 +158,7 @@ export default {
     methods: {
         create() {
             this.format.section_id = this.type,
-            this.format.get(route('note.attribution_admin'))
+                this.format.get(route('note.attribution_admin'))
         },
         formatEvaluationLabel(item) {
             if (item.enseignement_annee.niveau_matiere) {
@@ -167,58 +167,72 @@ export default {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
             }
         },
-        formatClasseLabel(item){
+        formatClasseLabel(item) {
             if (this.type >= 3) {
                 return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
-            }
-            else{
+            } else {
                 return `${item ? item?.libelle : 'Pas de données'}`;
             }
         },
         rechercher() {
+            // this.form.evaluation = null,
             router.replace(this.$page.url, {
                 data: {
                     evaluation: this.form.evaluation,
-                }
+                },
+                onFinish: () => {
+                        // console.log('thjk')
+                        if (this.$page.props.flash ?.message ?.type == 'error') {
+                            this.$swal({
+                                icon: 'warning',
+                                title: 'Information',
+                                text: this.$page.props.flash ?.message ?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 10000,
+                                timerProgressBar: true,
+                            });
+                        }
+                    },
             });
             // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
         setClasse(a) {
             // console.log(this.form)
             this.form.classe = null,
-            router.replace(this.$page.url, {
-                data: {
-                    annee: a,
-                }
-            });
+                router.replace(this.$page.url, {
+                    data: {
+                        annee: a,
+                    }
+                });
         },
         requete(id) {
             // console.log(this.type)
             this.form.evaluation = null,
-            router.replace(this.$page.url, {
-                data: {
-                    classe: id,
-                }
-            });
+                router.replace(this.$page.url, {
+                    data: {
+                        classe: id,
+                    },
+                });
             // console.log('id',id)   
         },
         edit(item) {
             // console.log(item)
             this.dialogEdit = true,
-            this.form.id_note = item.id,
-            this.form.note = item.note,
-            this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
-            if(item.evaluation.enseignement_annee.niveau_matiere){
-            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
-            }
-            else{
-            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
+                this.form.id_note = item.id,
+                this.form.note = item.note,
+                this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
+            if (item.evaluation.enseignement_annee.niveau_matiere) {
+                this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
+            } else {
+                this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
             }
         },
         closeEdit() {
             this.dialogEdit = false
         },
-        deleteItem(item){
+        deleteItem(item) {
             this.$swal({
                 title: 'Etes-vous sûr de vouloir supprimer cette note',
                 text: "Vous ne pourrez pas revenir en arrière!!!",
@@ -232,7 +246,7 @@ export default {
                 if (result.isConfirmed) {
                     this.form.delete(route('note.destroy', item.id), {
                         onFinish: () => {
-                        if (this.$page.props.flash ?.message ?.type == 'success') {
+                            if (this.$page.props.flash ?.message ?.type == 'success') {
                                 this.$swal({
                                     icon: 'success',
                                     title: 'Suppression',
@@ -267,7 +281,6 @@ export default {
                                 timerProgressBar: true,
                             });
                         }
-
                     },
                 })
             } else {

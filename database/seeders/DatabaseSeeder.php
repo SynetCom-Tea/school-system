@@ -35,7 +35,7 @@ class DatabaseSeeder extends Seeder
             RoleSeeder::class,
             // FraisSeeder::class,
             // VersementsSeeder::class,
-            // ApprenantClasseAnneesSeeder::class,
+            ApprenantClasseAnneesSeeder::class,
             SalleSeeder::class,
             MatiereTableSeeder::class,
             NiveauMatiereSeeder::class,

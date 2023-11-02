@@ -163,7 +163,7 @@ class NoteController extends Controller
                         'evaluation_id' => $request->evaluation,
                         // 'evaluation_id' => $request->evaluation,
                         'note' => (double)$value,
-                        'statut' => 1,
+                        'statut' => 1
                     ]);
                 }else{
                     return redirect()->back()->with('message', [
@@ -193,7 +193,15 @@ class NoteController extends Controller
     {
         $note = Note::find($id);
         $note->update([
-            'note'=>(double) $request->note
+            'statut' => 0,
+            'user_id'=>Auth::user()->id
+        ]);
+        Note::create([
+            'note'=>(double) $request->note,
+            'apprenant_id' => $note->apprenant->id,
+            'date' => date('Y-m-d'),
+            'evaluation_id' => $note->evaluation_id,
+            'statut' => 1,
         ]);
         return redirect()->back()->with('message', [
             'type' => 'success',
@@ -223,7 +231,15 @@ class NoteController extends Controller
         $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) { 
             $query1->where('classe_id',$request->classe); 
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
-        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : []; 
+        $notes = $request->evaluation ? Note::where('statut',1)->where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : []; 
+        if ($request->evaluation) {
+            if ($notes->count() == 0) {
+                return redirect()->back()->with('message',[
+                    'type'=>'error',
+                    'text'=>'Aucune note n\'est attribuée à cette évaluation'
+                ]);
+            }
+        }
         return Inertia::render('gestion-note/note/indexAdmin',[
             'type'=>$request->section_id,
             'annees'=>$annee,
