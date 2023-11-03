@@ -234,21 +234,37 @@ export default {
 <template>
 <v-card>
     <Toolbar :icon="icon.mdiBookOpenVariant" toolbarTitle="Création Matières"></Toolbar>
-<v-alert
-            border="start"
-            variant="tonal"
-            color="primary"
-            type="info"
-            title="Note"
-          >
-            <li>
-              Cette section vous permet de renseigner les matières enseignées dans cet
-              établissement
-            </li>
-            <li>
-              Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
-            </li>
-          </v-alert>
+    <div style="margin: 10px">
+    <v-alert
+        v-model="alertFirst"
+        border="start"
+        variant="tonal"
+        closable
+        close-label="Close Alert"
+        color="primary"
+        type="info"
+        title="Information"
+        >
+        <li>
+            Cette section vous permet de renseigner les matières enseignées dans cet
+            établissement
+        </li>
+        <li>
+            Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
+        </li>
+    </v-alert>
+    <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+        <Button
+        style="height: 30px"
+        title="Plier la note"
+        @click="onclickAlertButton('first')"
+        variant="outlined"
+        color="primary"
+        nameButton="Relire la note"
+        >
+        </Button>
+    </div>
+</div>
     <v-card-text>
         <v-form ref="form">
             <!-- Chargement des données par importation de fichier -->

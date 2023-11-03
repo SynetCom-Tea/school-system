@@ -40,6 +40,8 @@
         props: ["matieres","section_id"],
         data() {
             return {
+                alertFirst: true,
+                alertSecond: true,
                 icons: {
                     mdiAccountSchool,
                     mdiPlus,
@@ -90,6 +92,12 @@
         },
         methods:{
 
+            onclickAlertButton(type) {
+                    if (type == "second") {
+                    this.alertSecond = true;
+                    }
+                    if (type == "first") this.alertFirst = true;
+                },
             addRow() {
                     this.form.donnees.push({
                         nom: null,
@@ -325,6 +333,7 @@
                 this.form.id = null
                 this.form.code = ""
                 this.form.nom = ""
+                this.form.donnees = []
                 this.dialog = false
             }
         },
@@ -369,43 +378,74 @@
                     <v-icon :icon="icons.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close"></v-icon>
                     </v-toolbar>
                     <v-card-text>
-            <v-form ref="form">
-            <v-row v-if="form.id==null">
-            <v-col>
-              <v-switch
-                v-model="importation"
-                color="#004980"
-                inset
-                :label="'Importation d\'un fichier pour alimenter les matières'"
-              ></v-switch>
-            </v-col>
-            <v-col v-if="importation">
-              <v-file-input
-                clearable
-                required
-                @change="handleFileUpload"
-                v-model="form.fichier_matiere"
-                label="Charger le fichier des Matières"
-                variant="solo-inverted"
-              ></v-file-input>
-            </v-col>
-            <v-col v-if="importation"
-              ><v-btn
-                class="ma-2"
-                outlined
-                type="button"
-                color="primary"
-                href="../models/echantillons/fiche_echantillonage.ods"
-                download
-              >
-                Télécharger le Modèle
-              </v-btn></v-col
-            >
-            </v-row>
+                        <div style="margin: 10px" v-if="form.id==null">
+                            <v-alert
+                                v-model="alertFirst"
+                                border="start"
+                                variant="tonal"
+                                closable
+                                close-label="Close Alert"
+                                color="primary"
+                                type="info"
+                                title="Information"
+                                size="small"
+                                >
+                                <li>
+                                    Cette section vous permet de renseigner les matières enseignées dans cet
+                                    établissement
+                                </li>
+                                <li>
+                                    Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
+                                </li>
+                            </v-alert>
+                            <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+                                <Button
+                                style="height: 30px"
+                                title="Plier la note"
+                                @click="onclickAlertButton('first')"
+                                variant="outlined"
+                                color="primary"
+                                nameButton="Relire la note"
+                                >
+                                </Button>
+                            </div>
+                        </div>
+                <v-form ref="form">
+                <v-row v-if="form.id==null">
+                <v-col>
+                <v-switch
+                    v-model="importation"
+                    color="#004980"
+                    inset
+                    :label="'Importation d\'un fichier pour alimenter les matières'"
+                ></v-switch>
+                </v-col>
+                <v-col v-if="importation">
+                <v-file-input
+                    clearable
+                    required
+                    @change="handleFileUpload"
+                    v-model="form.fichier_matiere"
+                    label="Charger le fichier des Matières"
+                    variant="solo-inverted"
+                ></v-file-input>
+                </v-col>
+                <v-col v-if="importation"
+                ><v-btn
+                    class="ma-2"
+                    outlined
+                    type="button"
+                    color="primary"
+                    href="../models/echantillons/fiche_echantillonage.ods"
+                    download
+                >
+                    Télécharger le Modèle
+                </v-btn></v-col
+                >
+                </v-row>
             <v-row >
                 <v-col cols="12" md="12" v-if="form.id!=null">
                     <text-field disabled label="Code" placeholder="Code" v-model="form.code" isRequired :rules="rules"></text-field>
-
                 </v-col>
             </v-row>
             <v-row v-if="!importation && form.id!=null">
@@ -414,7 +454,7 @@
 
                 </v-col>
             </v-row>
-            <v-card v-if="!importation">
+            <v-card v-if="!importation && form.id==null">
                 <br>
             <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
 

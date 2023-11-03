@@ -103,7 +103,6 @@ class AffectationController extends Controller
                 'niveaux' => Niveau::where('section_id',$type)->get(),
                 'ues' => Ue::where('etablissement_id',$ets_id)->get(),
                 'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
-
                     $query->where('etablissement_section_id',$table->id);})->get(),
                 'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
             ]);

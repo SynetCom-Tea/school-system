@@ -12,7 +12,8 @@ import {
     mdiCancel,
     mdiGoogleClassroom,
     mdiPlusCircle,
-    mdiCloseCircle
+    mdiCloseCircle,
+    mdiContentSave
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
@@ -27,7 +28,8 @@ export default {
                 mdiCancel,
                 mdiGoogleClassroom,
                 mdiPlusCircle,
-                mdiCloseCircle
+                mdiCloseCircle,
+                mdiContentSave
             },
 
             form: useForm({
@@ -128,30 +130,31 @@ export default {
                         <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
 
                                     <v-row>
-                                        <v-col md="1"></v-col>
-                                        <v-col md="4">
-                                            <TextField label="Code" placeholder="Code" v-model="donnee.code" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
+                                        <v-col cols="1"></v-col>
+                                        <v-col cols="4">
+                                            <TextField   class="mt-2" label="Code" placeholder="Code" v-model="donnee.code" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
                                         </v-col>
-                                        <v-col md="4">
-                                            <TextField label="Libellé" placeholder="Libellé" v-model="donnee.libelle" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
+                                        <v-col cols="4">
+                                            <TextField  class="mt-2" label="Libellé" placeholder="Libellé" v-model="donnee.libelle" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
                                         </v-col>
 
-                                        <v-col offset-md="10" md="2">
-                                            <v-btn title="supprimer la salle" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
-                                                <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                            </v-btn>
+                                        <v-col offset-md="10" cols="2">
+                                            <br>
+                                            <Button size="large"  title="supprimer la salle" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" color="error">
+                                                <v-icon :icon="icon.mdiCloseCircle" small></v-icon>
+                                            </Button >
                                         </v-col>
                                     </v-row>
 
 
                         </v-row>
                         <v-row>
-                                        <v-col md="9">
+                                        <v-col cols="9">
                                         </v-col>
-                                        <v-col  md="2">
-                                            <v-btn title="ajouter une salle" variant="outlined" icon @click="addRow()" fab small color="primary">
-                                                <v-icon :icon="icon.mdiPlusCircle"></v-icon>
-                                            </v-btn>
+                                        <v-col  offset-md="10" cols="2">
+                                            <Button size="large"  class="mb-2" title="ajouter une salle" variant="outlined" icon @click="addRow()"  color="primary">
+                                                <v-icon :icon="icon.mdiPlusCircle" small></v-icon>
+                                            </Button >
                                         </v-col>
                                     </v-row>
                     </v-card-text>
@@ -162,12 +165,12 @@ export default {
     </v-card-text>
     <v-card-actions class="justify-end">
         <v-spacer></v-spacer>
-        <v-btn dark small type="button" color="red" @click="goBack">
+        <Button variant="outlined" class="mb-2" style="height: 30px"  color="red" @click="goBack">
             <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-        </v-btn>
-        <v-btn small color="primary" @click="submit">
-            <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-        </v-btn>
+        </Button >
+        <Button  variant="outlined" class="mb-2" style="height: 30px" color="primary" @click="submit">
+            <v-icon :icon="icon.mdiContentSave" left></v-icon> Enregistrer
+        </Button >
     </v-card-actions>
 </v-card>
 </template>
