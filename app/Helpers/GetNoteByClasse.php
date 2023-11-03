@@ -22,7 +22,8 @@ if (!function_exists('getNoteByClasses')) {
                 apprenants.prenom AS prenom_apprenant,
                 apprenants.id AS id_apprenant,
                 matieres.nom AS nom_matiere,
-                niveau_matieres.coefficient AS coefficient_matiere
+                niveau_matieres.coefficient AS coefficient_matiere,
+                niveau_matieres.notation AS notation_matiere
             FROM notes
             JOIN evaluations ON notes.evaluation_id = evaluations.id
             JOIN type_evaluations ON evaluations.type_evaluation_id = type_evaluations.id

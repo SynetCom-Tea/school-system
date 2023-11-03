@@ -16,6 +16,7 @@ use Inertia\Inertia;
 use Modules\Enseignement\Http\Controllers\AffectationEnseignantController;
 use Modules\Enseignement\Http\Controllers\EnseignantController;
 use Modules\Enseignement\Http\Controllers\FilliereController;
+use Modules\Enseignement\Http\Controllers\LmdController;
 use Modules\Enseignement\Http\Controllers\UEController;
 use Modules\Scolarite\Http\Controllers\EtudiantsController;
 use Modules\Scolarite\Http\Controllers\AnneeController;
@@ -105,6 +106,7 @@ Route::resource('frais', FraisController::class)->only(['update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
 Route::get('Frais/{type}', [FraisController::class, 'create'])->name('frais.create');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
+Route::delete('frais/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
 Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
 Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
@@ -117,9 +119,10 @@ Route::prefix('calendrierscolaire')->group(function () {
 
 Route::resource('salles', SalleController::class);
 Route::resource('rapports', RapportController::class);
-Route::resource('enseignants', EnseignantController::class)->only(['create', 'update', 'destroy']);
-Route::get('enseignants', [EnseignantController::class, 'index'])->name('enseignants.index');
-Route::post('enseignants', [EnseignantController::class, 'store'])->name('enseignants.store');
+Route::resource('enseignants', EnseignantController::class)->only([ 'update', 'destroy']);
+Route::get('enseignantscreate/{type}', [EnseignantController::class, 'create'])->name('enseignants.create');
+Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');
+Route::post('enseignants/{type}', [EnseignantController::class, 'store'])->name('enseignants.store');
 Route::resource('AffectationEnseignants', AffectationEnseignantController::class)->only(['update', 'destroy']);
 Route::get('affectationEnseignants/{type}', [AffectationEnseignantController::class, 'create'])->name('affectationEnseignants.create');
 Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'index'])->name('AffectationEnseignants.index');
@@ -128,11 +131,15 @@ Route::get('AffectationEnseignants', [AffectationEnseignantController::class, 'e
 Route::resource('filieres', FilliereController::class)->only([ 'update', 'destroy']);
 Route::get('filierescreate/{type}', [FilliereController::class, 'create'])->name('filieres.create');
 Route::post('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
+Route::post('filierescycle/{type}', [FilliereController::class, 'ajout'])->name('filieres.ajout');
+Route::delete('filieressup/{type}', [FilliereController::class, 'supprimer'])->name('filieres.supprimer');
 Route::get('filieres/{type}', [FilliereController::class, 'index'])->name('filieres.index');
 Route::resource('UniteEnseignement', UEController::class)->only([ 'edit', 'update','destroy']);
 Route::get('Unité d\'enseignement create/{type}', [UEController::class, 'create'])->name('ues.create');
 Route::get('Unité d\'enseignement/{type}', [UEController::class, 'index'])->name('ues.index');
 Route::post('Unité d\'enseignement/{type}', [UEController::class, 'store'])->name('ues.store');
+Route::get('/systeme/lmd/{type}', [LmdController::class, 'index'])->name('lmd.index');
+Route::post('/systeme/lmd/store', [LmdController::class, 'store'])->name('systemelmd.store');
 
 
 require __DIR__ . '/auth.php';

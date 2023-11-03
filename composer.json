@@ -40,7 +40,8 @@
             "app/Helpers/GetClasses.php",
             "app/Helpers/AddEmploi.php",
             "app/Helpers/GetNoteByClasse.php",
-            "app/Helpers/FunctionImportant.php"
+            "app/Helpers/FunctionImportant.php",
+            "app/Helpers/CalculerMoyennePrimaire.php"
         ]
     },
     "autoload-dev": {

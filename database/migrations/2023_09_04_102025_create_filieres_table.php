@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 
@@ -28,8 +29,6 @@ return new class extends Migration
 
         Schema::create('cycle_filieres', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
-
             $table->foreignIdFor(\App\Models\Cycle::class)->nullable()->index()
                 ->references('id')->on('cycles');
             $table->foreignIdFor(\Modules\Enseignement\Entities\Filiere::class)
@@ -38,6 +37,26 @@ return new class extends Migration
             $table->softDeletes();
             $table->timestamps();
         });
+        DB::statement("ALTER TABLE cycle_filieres ADD COLUMN code varchar(255);");
+
+        DB::unprepared('
+            CREATE TRIGGER cycle_filieres_before_insert BEFORE INSERT ON cycle_filieres
+            FOR EACH ROW
+            BEGIN
+                DECLARE filiere VARCHAR(255);
+                DECLARE cycle VARCHAR(255);
+
+                SELECT filieres.name INTO filiere
+                FROM filieres
+                WHERE filieres.id = NEW.filiere_id;
+
+                SELECT cycles.name INTO cycle
+                FROM cycles
+                WHERE cycles.id = NEW.cycle_id;
+
+                SET NEW.code = CONCAT(filiere, "/", cycle);
+            END;
+        ');
     }
 
     /**

@@ -21,7 +21,7 @@
               close-label="Close Alert"
               color="primary"
               type="info"
-              title="Note"
+              title="Information"
             >
               <li>
                 Cette section vous permet de configurer les unités des enseignements de cet

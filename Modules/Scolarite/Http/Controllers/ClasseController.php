@@ -2,12 +2,14 @@
 
 namespace Modules\Scolarite\Http\Controllers;
 
+use App\Models\Annee;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use App\Models\Classe;
+use App\Models\ClasseAnnee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Niveau;
@@ -48,23 +50,80 @@ class ClasseController extends Controller
      */
     public function store(Request $request, $type)
     {
+        // dd($request);
+        $annee = Annee::where('actif',1)->first();
+        $alphabet = range('A', 'Z');
         $ets_id = Auth::user()->etablissement_id;
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
-       
+
         foreach($request->donnees as $donnee){
-            foreach($donnee['enfants'] as $enfant){
-                Classe::updateOrInsert([
-                    'code' => $enfant['code'],
-                    'libelle' => $enfant['libelle']
-                ],
-                [
-                'niveau_id' => $donnee['niveau_id'],
-                'etablissement_section_id' => $table->id
-                ]
-                );
-            }
+            if($donnee['option']=='Alphabet'){
+                $niveau=Niveau::find($donnee['niveau_id']);
+                // dd($niveau);
+                    for ($i = 1; $i <= $donnee['nombre']; $i++) {
+                        $classe=Classe::where('niveau_id',$niveau->id)->get();
+
+                        if($classe->count()!=0){
+                            $indice=$classe->count();
+                        }else{
+                            $indice=0;
+                        }
+
+                        $class=Classe::updateOrInsert([
+                            'code' => $niveau->code.' '.$alphabet[$indice],
+                            'libelle' => $niveau->libelle.' '.$alphabet[$indice],
+                        ],
+                        [
+                        'niveau_id' => $donnee['niveau_id'],
+                        'etablissement_section_id' => $table->id
+                        ]
+                        )->first();
+                        ClasseAnnee::updateOrInsert([
+                            'annee_id' => $annee->id,
+                            'classe_id' => $class->id
+                        ],
+                        [
+
+                        ]
+                        );
+                    }
+            }elseif($donnee['option']== 'Numérique'){
+
+
+                $niveau=Niveau::find($donnee['niveau_id']);
+                for ($i = 1; $i <= $donnee['nombre']; $i++) {
+                    $classe=Classe::where('niveau_id',$donnee['niveau_id'])->get();
+                    // dd($classe->count());
+                    if($classe->count()!=0){
+                        $indice=$classe->count()+1;
+                    }else{
+                        $indice=1;
+                    }
+
+                    $class=Classe::updateOrInsert([
+                        'code' => $niveau->code.' '.$indice,
+                        'libelle' => $niveau->libelle.' '.$indice,
+                    ],
+                    [
+                    'niveau_id' => $donnee['niveau_id'],
+                    'etablissement_section_id' => $table->id
+                    ]
+                    )->first();
+
+                     ClasseAnnee::updateOrInsert([
+                        'annee_id' => $annee->id,
+                        'classe_id' => $class->id
+                        ],
+                        [
+
+                        ]
+                        );
+                }
+
+                }
+
         }
-        
+
         return redirect()->route('classes.index', $type)->with('message', [
             'type' => 'success',
             'text' => "Les classes ont été créées avec succès !",
@@ -78,7 +137,7 @@ class ClasseController extends Controller
      */
     public function show($id)
     {
-    
+
     }
 
     /**

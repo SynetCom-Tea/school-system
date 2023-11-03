@@ -73,25 +73,59 @@ class RapportController extends Controller
      */
     public function create(Request $request)
     {
-        if ($request->classe != null) {
-            if($request->section_id == 1){
-                $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-                $classes = getClasses(Annee::find(2)->id, $etablissement_section);
-                foreach($classes as $classe){
-                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classe->id)->apprenants;
-                    foreach($apprenantsDeLaClasse as $appreanant){
-                        dd($appreanant->id, getNoteByClasses($classe->id, $appreanant->id), getNoteByClasses($classe->id));
+        $resultats = [];
+        $classes = [];
+        if($request->section_id == 1){
+            $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
+            $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+            foreach ($classes as $classe) {
+                $resultatsClasse = []; // Tableau pour les résultats de chaque classe
+                // dd($classes);
+                $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classe->id)->apprenants;
+            
+                foreach ($apprenantsDeLaClasse as $apprenant) {
+                    // dd($apprenant);
+                    $notes_apprenant = getNoteByClasses($classe->id, $apprenant->id);
+                    $moyenne = calculerMoyennePrimaire($notes_apprenant);
+            
+                    $details_notes = [];
+            
+                    foreach ($notes_apprenant as $note) {
+                        $details_notes[] = [
+                            'nom_matiere' => $note->nom_matiere,
+                            'notation_matiere' => $note->notation_matiere,
+                            'note' => $note->note
+                        ];
                     }
-                    // dd($apprenantsDeLaClasse[0]->pivot->classe_annee_id);
+            
+                    $resultatsClasse[] = [
+                        'classe' => $classe->id,
+                        'nom_classe' => $classe->libelle,
+                        'apprenant' => $apprenant->id,
+                        'matricule_apprenant' => $apprenant->matricule,
+                        'nom_apprenant' => $apprenant->nom,
+                        'prenom_apprenant' => $apprenant->prenom,
+                        'moyenne' => $moyenne,
+                        'details_notes' => $details_notes // Tableau des détails des notes
+                    ];
                 }
-                sleep(5);
-                dd($request->all(), $classes);
-            }else{
-                dd($request->all(), 'dd');
+            
+                $resultats[$classe->id] = $resultatsClasse; // Stocker les résultats de chaque classe dans le tableau principal
             }
+            // sleep(5);
+            // dd($resultats);
+        }else if($request->section_id == 2){
+            $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
+            $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+            if ($request->classe != null) {
+                dd('Classe existe');
+            }
+            dd($request->all(), 'dd', $classes);
         }
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
+            "resultats" => $resultats,
+            "classes" => $classes
         ]);
     }
 
