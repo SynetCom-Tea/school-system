@@ -19,6 +19,7 @@ use App\Models\SystemeLmd;
 use App\Models\TypeDocument;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\Filiere;
 use Modules\Enseignement\Entities\Ue;
 use Modules\Scolarite\Entities\Departement;
@@ -37,6 +38,8 @@ class EnseignementController extends Controller
     {
         return Inertia::render('Admin/accueil');
     }
+
+    
 
 
     // ****************************Parametrage de type frais, type document et la limite par classe par etablissement************************************
@@ -149,10 +152,22 @@ class EnseignementController extends Controller
         // dd(Auth::user());
         $ets_id = Auth::user()->etablissement_id;
         $table = DB::table('etablissement_section')->where('etablissement_id', $ets_id)->where('section_id', $type)->first();
-        $id = $table->id;
+        $etab_sec_id = $table->id;
+
+        $nbre_matieres = Matiere::where('etablissement_section_id',$etab_sec_id)->count();
+        $nbre_salles = Salle::where('etablissement_id', $ets_id)->count();
+        $nbre_classes = Classe::where('etablissement_section_id',$etab_sec_id)->count();
+        $nbre_type_frais = EtablissementTypeFrais::where('etablissement_section_id',$etab_sec_id)->count();
+        $nbre_enseignant = Enseignant::where('etablissement_id', $ets_id)->count();
+
         return Inertia::render('Admin/postConfig', [
             'type' => $type,
             'niveaux' => Niveau::where('section_id', $type)->get(),
+            'nbre_matieres' => $nbre_matieres,
+            'nbre_salles' => $nbre_salles,
+            'nbre_classes' => $nbre_classes,
+            'nbre_type_frais' => $nbre_type_frais,
+            'nbre_enseignant' => $nbre_enseignant,
         ]);
     }
 
