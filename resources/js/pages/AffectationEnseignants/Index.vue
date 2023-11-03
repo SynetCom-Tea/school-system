@@ -331,7 +331,7 @@
 
                     <v-card-actions class="justify-end">
                         <v-spacer></v-spacer>
-                        <Button color="red" variant="outlined" class="mb-2" nameButton="Annuler" title="Annuler" style="height: 30px" :prependIcon="icons.mdiCancel" @click="close"></Button>
+                        <Button color="red" variant="outlined" class="mb-2" style="height: 30px" nameButton="Annuler" title="Annuler"  :prependIcon="icons.mdiCancel" @click="close"></Button>
                         <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icons.mdiContentSave" @click="submit"></Button>
                     </v-card-actions>
                 </v-card>

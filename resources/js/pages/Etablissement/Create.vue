@@ -51,7 +51,7 @@ export default {
         console.log(this.form);
         this.form.post(route("etablissements.store"), {
           onFinish: () => {
-            this.close();
+            // this.close();
             this.$swal({
               icon: "success",
               title: "Enregistrement",

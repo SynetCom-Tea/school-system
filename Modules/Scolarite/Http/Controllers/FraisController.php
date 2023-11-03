@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Niveau;
 use App\Models\Annee;
+use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Scolarite\Entities\EtablissementTypeFrais;
 
 class FraisController extends Controller
@@ -41,7 +42,7 @@ class FraisController extends Controller
         // dd($annee_cour->id);
         $niveaux=Niveau::where('section_id',$type)->get();
         // dd($request->annee);
-       
+
             foreach($niveaux as $niveau){
                 $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau->id)->where(function ($query) use ($request,$annee_cour){
                     if($request->annee!=null){
@@ -51,9 +52,9 @@ class FraisController extends Controller
                     }
                 })->get();
 
-                
+
                 // $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',$ets_id)->where('niveau_id',$niveau->id)->where('annee_id',$request->annee)->get();
-                if ($frai->count() != 0) 
+                if ($frai->count() != 0)
                 {
                     // $key = $key - 1;
                     $tabs= [
@@ -64,7 +65,7 @@ class FraisController extends Controller
                     $frais[] = $tabs;
 
                 }
-            
+
             }
             // dd($frais);
 
@@ -90,6 +91,8 @@ class FraisController extends Controller
             'typefrais' => EtablissementTypeFrais::where('etablissement_section_id',$ets_id)->where('statut',1)->with('type_frais')->get(),
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
+            'filieres' => CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($ets_id){
+                $query->where('etablissement_section_id',$ets_id);})->get(),
             'annees' => Annee::All(),
         ]);
 
@@ -109,19 +112,37 @@ class FraisController extends Controller
         foreach($request->donnees as $donnee){
             $etab_type_frais = EtablissementTypeFrais::where('etablissement_section_id',$ets_section_id)->where('statut',1)->where('type_frais_id',$donnee['type_frais_id'])->first();
             foreach($donnee['niveau_id'] as $niv){
-                Frais::updateOrInsert([
+            if($type ==3 || $type== 4)
+               { Frais::updateOrInsert([
                     'niveau_id' => $niv,
                     'annee_id' => $request->annee_id,
-                    'etablissement_type_frais_id' => $donnee['type_frais_id']
+                    'etablissement_type_frais_id' => $donnee['type_frais_id'],
+                    'montant' => $donnee['montant'],
+                    'cycle_filiere_id' => $donnee['filiere'],
+                    'etablissement_id' => $ets_id,
                 ],
                 [
-                'montant' => $donnee['montant'],
-                'etablissement_id' => $ets_id,
                 'deleted_at'=>null,
                 'created_at' => now(), // Remplissez le champ created_at
                 'updated_at' => now() // Remplissez le champ updated_at
                 ]
-                );
+                );}else{
+
+                    Frais::updateOrInsert([
+                        'niveau_id' => $niv,
+                        'annee_id' => $request->annee_id,
+                        'etablissement_type_frais_id' => $donnee['type_frais_id'],
+                        'montant' => $donnee['montant'],
+                        'etablissement_id' => $ets_id,
+                    ],
+                    [
+                    'deleted_at'=>null,
+                    'created_at' => now(), // Remplissez le champ created_at
+                    'updated_at' => now() // Remplissez le champ updated_at
+                    ]
+                    );
+
+                }
             }
         }
 

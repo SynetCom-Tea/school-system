@@ -22,7 +22,7 @@
             close-label="Close Alert"
             color="primary"
             type="info"
-            title="Note"
+            title="Information"
           >
             <li>
               Cette section vous permet d'attribuer les matières aux
@@ -89,7 +89,7 @@
 
               <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
                 <v-row>
-                    <v-col md="5"></v-col>
+                    <v-col md="1"></v-col>
                   <v-col md="6">
                     <Autocomplete
                       label="Unité d'enseignement"
@@ -222,7 +222,7 @@
                  </v-card>
                 </v-card-text>
                 <v-row>
-                <v-col offset-md="11" cols="4">
+                <v-col offset-md="10" cols="4">
                   <Button
                     type="button"
                     variant="outlined"
@@ -241,15 +241,13 @@
 
 
           </v-card-text>
-
-        <br />
         <v-card-actions class="justify-end">
         <v-spacer></v-spacer>
-        <Button dark small type="button" color="red" @click="goBack">
+        <Button variant="outlined" class="mb-2" style="height: 30px" type="button" color="red" @click="goBack">
             <v-icon :icon="icons.mdiCancel" left></v-icon> Annuler
         </Button>
-        <Button small color="primary" @click="submit">
-            <v-icon :icon="icons.mdiCheckCircle" left></v-icon> Enregistrer
+        <Button variant="outlined" class="mb-2"  style="height: 30px" color="primary" @click="submit">
+            <v-icon :icon="icons.mdiContentSave" left></v-icon> Enregistrer
         </Button>
     </v-card-actions>
       </v-card>
@@ -260,7 +258,7 @@
 <script>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { router, useForm } from "@inertiajs/vue3";
-import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCheckCircle,mdiCancel } from "@mdi/js";
+import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCheckCircle,mdiCancel,mdiContentSave } from "@mdi/js";
 
 export default {
   props: ["type", "niveaux", "matieres", "filieres", "ues"],
@@ -269,13 +267,14 @@ export default {
     mdiCloseCircle,
     mdiCheckCircle,
     mdiInformation,
-    mdiCancel
+    mdiCancel,
+    mdiContentSave
   },
   layout: AuthenticatedLayout,
   data: () => ({
     alertFirst: true,
     alertSecond: true,
-    icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation,mdiCheckCircle,mdiCancel },
+    icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation,mdiCheckCircle,mdiCancel,mdiContentSave },
     step: 1,
     importation: false,
     section: null,
