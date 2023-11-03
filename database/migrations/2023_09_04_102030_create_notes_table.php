@@ -27,6 +27,10 @@ return new class extends Migration
             ->index()
             ->references('id')
             ->on('evaluations');
+            $table->foreignIdFor(\App\Models\User::class)->nullable()
+            ->index()
+            ->references('id')
+            ->on('users');
             $table->integer('statut')->nullable();
             $table->timestamps();
             $table->softDeletes();

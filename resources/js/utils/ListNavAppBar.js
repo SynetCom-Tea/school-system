@@ -438,7 +438,7 @@ export function listMenusBySection(page, sectionID) {
       title: "Évaluations",
       icon: mdiAccountSchool,
       link: "evaluation",
-      color: "#363600",
+      color: "#641E16",
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
       permissions: "manage_system"
@@ -456,7 +456,7 @@ export function listMenusBySection(page, sectionID) {
       title: "Notes",
       icon: mdiPencil,
       link: "note",
-      color: "#363600",
+      color: "#5F6A6A",
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
       permissions: "manage_system"

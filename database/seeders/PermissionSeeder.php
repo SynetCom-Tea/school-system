@@ -25,6 +25,7 @@ class PermissionSeeder extends Seeder
         'annee' => 'une annee',
         'salle' => 'une salle',
         'horaire' => 'un horaire',
+        'note' => 'une note'
 
     ];
     public function run(): void
