@@ -116,7 +116,7 @@ class EnseignantController extends Controller
                 foreach($Niveau_matieres as $Niveau_matiere){
 
                     if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id){
-                        dd($classe->classe->niveau_id);
+                        // dd($classe->classe->niveau_id);
                         foreach($enseignement_annee as $enseignement_anne){
                             if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
                                     $trouver=true;
@@ -133,7 +133,7 @@ class EnseignantController extends Controller
 
 
             }
-            dd('IF',$classe_annees, $classes);
+            // dd('IF',$classe_annees, $classes);
 
         }
 
