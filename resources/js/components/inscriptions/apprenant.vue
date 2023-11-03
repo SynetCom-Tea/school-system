@@ -153,8 +153,7 @@ export default {
         prenom: { required, alpha},
         sexe: { required },
         date_naissance: { required },
-        lieu_naissance: { required , alpha},
-        telephone: { numeric , minLengthValue: minLength(10), maxLengthValue: maxLength(10)}
+        lieu_naissance: { required , alpha}
       }
     }
   },

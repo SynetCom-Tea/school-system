@@ -47,6 +47,7 @@ class DatabaseSeeder extends Seeder
             // ApprenantClasseAnneesSeeder::class,
             PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
+            // EvaluationsTableSeeder::class,
             // EnseignantTableSeeder::class,
             // EnseignementAnneesTableSeeder::class,
             // EnseignantMatieresTableSeeder::class,
@@ -75,6 +76,7 @@ class DatabaseSeeder extends Seeder
         $this->call(ModelHasPermissionsTableSeeder::class);
         // $this->call(UsersTableSeeder::class);
         // $this->call(EvaluationsTableSeeder::class);
+        // $this->call(NotesTableSeeder::class);
     }
 }
 

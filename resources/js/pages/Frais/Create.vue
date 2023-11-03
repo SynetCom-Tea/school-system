@@ -161,6 +161,20 @@ export default {
                         <v-card-text>
                             <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
                                 <v-col md="1"></v-col>
+                               
+                                <v-col md="3">
+                                    <Select
+                        label="TypeFrais"
+                        :items="typefrais"
+                        variant="outlined"
+                        item-value="type_frais.id"
+                        item-title="type_frais.libelle"
+                        v-model="donnee.type_frais_id"
+                        isRequired
+                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                        >
+                    </Select>
+                                </v-col>
                                 <v-col md="3">
                                      <Select
                         label="Niveaux"
@@ -174,19 +188,6 @@ export default {
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         >
                     ></Select>
-                                </v-col>
-                                <v-col md="3">
-                                    <Select
-                        label="TypeFrais"
-                        :items="typefrais"
-                        variant="outlined"
-                        item-value="id"
-                        item-title="type_frais.libelle"
-                        v-model="donnee.type_frais_id"
-                        isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                        >
-                    </Select>
                                 </v-col>
                                 <v-col md="3">
                                     <TextField

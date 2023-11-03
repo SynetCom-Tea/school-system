@@ -2,17 +2,17 @@
 
 namespace Modules\Scolarite\Entities;
 
-use App\Models\EtablissementSection;
+use App\Models\TypeDocument;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class EtablissementTypeFrais extends Model
+class EtablissementTypeDocument extends Model
 {
     use HasFactory;
 
     protected $fillable =  [
         'etablissement_section_id',
-        'type_frais_id',
+        'type_document_id',
         'statut'
        
     ];
@@ -20,13 +20,9 @@ class EtablissementTypeFrais extends Model
     {
         return $this->belongsTo(EtablissementSection::class);
     }
-    public function type_frais()
+    public function type_document()
     {
-        return $this->belongsTo(TypeFrais::class);
+        return $this->belongsTo(TypeDocument::class);
     }
     
-    protected static function newFactory()
-    {
-        return \Modules\Scolarite\Database\factories\EtablissementTypeFraisFactory::new();
-    }
 }

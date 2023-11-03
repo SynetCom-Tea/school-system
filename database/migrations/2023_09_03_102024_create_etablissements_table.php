@@ -47,12 +47,22 @@ return new class extends Migration
             $table->foreignIdFor(\Modules\Scolarite\Entities\TypeFrais::class)
                 ->index()
                 ->references('id')->on('type_frais');
-            $table->foreignIdFor(\App\Models\Etablissement::class)
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)
                 ->index()
-                ->references('id')->on('etablissements');
+                ->references('id')->on('etablissement_section');
             $table->integer('statut')->nullable();
             $table->timestamps();
             $table->softDeletes();
+        });
+
+        Schema::create('parametres', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)
+                ->index()
+                ->references('id')->on('etablissement_section');
+            $table->integer('nbre_limite_eleve_par_classe')->nullable();
+            $table->integer('statut')->nullable();
+            $table->timestamps();
         });
 
         DB::statement("ALTER TABLE etablissement_section ADD COLUMN code varchar(255);");

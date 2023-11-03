@@ -45,8 +45,8 @@
                     label="Type de fichier"
                     :isRequired="true"
                     :items="typeDocuments"
-                    item-title="libelle"
-                    item-value="id"
+                    item-title="type_document.libelle"
+                    item-value="type_document.id"
                     v-model="document.type"
                     @update:modelValue="submitForm(document)"
                   ></Autocomplete>

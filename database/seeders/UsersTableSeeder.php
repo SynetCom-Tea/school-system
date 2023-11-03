@@ -26,15 +26,15 @@ class UsersTableSeeder extends Seeder
                 'nom' => 'super',
                 'prenom' => 'Administrateur',
                 'email_verified_at' => NULL,
-                'password' => '$2y$10$453UzcCnPH/kBR7cSXuk2uzlh3yZAAv3bbcyzX3tp2Ly5lRwSSRna',
+                'password' => '$2y$10$xFWq80MzI1if3RlwKH0jbesR27twBMvyblzdxM3dd4LcyVlCeAkM2',
                 'etablissement_id' => NULL,
                 'apprenant_id' => NULL,
                 'user_id' => NULL,
                 'enseignant_id' => NULL,
                 'tuteur_id' => NULL,
                 'remember_token' => NULL,
-                'created_at' => '2023-11-01 11:28:42',
-                'updated_at' => '2023-11-01 11:28:42',
+                'created_at' => '2023-11-01 15:36:40',
+                'updated_at' => '2023-11-01 15:36:40',
             ),
             1 => 
             array (

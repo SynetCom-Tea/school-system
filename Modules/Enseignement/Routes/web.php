@@ -43,5 +43,10 @@ Route::middleware('auth')->group(function () {
         Route::post('/configuration/submit', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'storeConfig'])->name('config.store');
         //Pour la gestion des cruds après la configuration
         Route::get('/gestion/{type}', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'gestion'])->name('admin.gestion');
+        Route::get('/parametres/{type}', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'getPageParam'])->name('param.index');
+        Route::post('/enregistrer_parametres', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'saveParam'])->name('param.save');
+
+        Route::get('/test', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'test'])->name('test.index');
+
     });
 });
