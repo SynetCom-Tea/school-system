@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="dialog" max-width="800">
+    <v-dialog v-model="dialog" max-width="900">
         <v-card v-if="data != null && typeSection == 1">
             <v-card-subtitle
                 class="mx-auto"
