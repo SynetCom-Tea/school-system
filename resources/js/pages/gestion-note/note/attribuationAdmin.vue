@@ -82,15 +82,15 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                max: v => {
-                            if (this.evaluations[0].notation) {
-                                 return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
-                        } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id) {
-                            return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
-                        } else {
-                            return v <= 20 || "La note ne doit pas dépasser 20";
-                        }
-                    }
+                // max: v => {
+                //             if (this.evaluations[0].notation) {
+                //                  return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
+                //         } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id) {
+                //             return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
+                //         } else {
+                //             return v <= 20 || "La note ne doit pas dépasser 20";
+                //         }
+                //     }
                 },
             form: this.$inertia.form({
                 notes: [],

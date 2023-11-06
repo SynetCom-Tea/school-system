@@ -139,7 +139,6 @@ class AffectationEnseignantController extends Controller
 
         // dd($all);
         // die();
-        // dd( $enseignement_annee);
 
         return Inertia::render('AffectationEnseignants/Index', [
             'niveauMatieres' => $allmatiere,

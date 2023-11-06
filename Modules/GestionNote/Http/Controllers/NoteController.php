@@ -150,6 +150,7 @@ class NoteController extends Controller
                 'text' => 'Merci de renseigner les notes!',
             ]);
         }
+        // dd($request->notes);
         foreach ($request->notes as $key => $value) {
             if($value != null){
                 $item = ApprenantClasseAnnee::where('id',$key)->with('apprenant')->get();

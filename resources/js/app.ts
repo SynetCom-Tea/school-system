@@ -45,8 +45,8 @@ import ModalDetailUpdate from '../js/components/customizedComponents/ModalDetail
 import Toolbar from '../js/components/customizedComponents/Toolbar.vue'
 import Datatable from "../js/components/customizedComponents/Datatable.vue"
 
-
-
+import "@ag-grid-community/styles/ag-grid.css";
+import "@ag-grid-community/styles/ag-theme-alpine.css";
 
 const options = {
     confirmButtonColor: "#3085d6",

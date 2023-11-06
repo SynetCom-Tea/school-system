@@ -142,11 +142,17 @@
         </v-col>
 
 
-        
+        <!-- <v-col cols="auto" style="margin-left:18px;">
+            <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
 
-            
-            
-        
+                <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
+
+                </v-img>
+                <p class="text-h6" style="text-align: center;">Affectation des matières aux niveaux</p>
+
+            </v-card>
+
+        </v-col> -->
         
           <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
                 <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('facultes.index')">
@@ -181,7 +187,7 @@
                 </v-card>
             </v-col>
             <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
+                <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
 

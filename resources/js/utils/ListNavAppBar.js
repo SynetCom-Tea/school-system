@@ -461,6 +461,24 @@ export function listMenusBySection(page, sectionID) {
       expand:false,
       permissions: "manage_system"
     },
+    {
+      title: "Génération des bulletin",
+      icon: mdiPencil,
+      link: "generations",
+      color: "#3F51B5",
+      note: "Ce menu permet d'accèder aux évaluations  section",
+      expand:false,
+      permissions: "manage_system"
+    },
+    {
+      title: "Rapport",
+      icon: mdiAccountCreditCard,
+      link: "rapports",
+      color: "#AD1457",
+      note: "Ce menu permet nn",
+      expand:false,
+      permissions: "manage_system"
+    },
   ];
   if (page?.roles[0] == "Administrateur") { result= [childrenBySection]}
   return result??[]

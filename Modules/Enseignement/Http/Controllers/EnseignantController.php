@@ -116,7 +116,7 @@ class EnseignantController extends Controller
                 foreach($Niveau_matieres as $Niveau_matiere){
 
                     if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id){
-                        // dump($classe->classe->niveau_id);
+                        // dd($classe->classe->niveau_id);
                         foreach($enseignement_annee as $enseignement_anne){
                             if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
                                     $trouver=true;
@@ -133,6 +133,7 @@ class EnseignantController extends Controller
 
 
             }
+            // dd('IF',$classe_annees, $classes);
 
         }
 
@@ -141,7 +142,7 @@ class EnseignantController extends Controller
             $matiere[]= $allmatiere;
            
 
-        //  dd($matiere);
+        // dd($classe_annees);
         return Inertia::render('Enseignants/Create', [
             'matieres'=>$matiere,
             'classes'=>$classe_annees,
