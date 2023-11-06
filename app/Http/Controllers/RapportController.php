@@ -110,13 +110,19 @@ class RapportController extends Controller
                     ];
                 }
                 usort($resultatsClasse, function($a, $b) {
+                    if ($b['moyenne'] === $a['moyenne']) {
+                        return 0; // If averages are equal, retain the same order to manage ties
+                    }
                     return $b['moyenne'] <=> $a['moyenne'];
                 });
-
+            
                 // Assign the rank to each student within the resultatsClasse array
                 $rank = 1;
+                $prevRank = 1;
                 foreach ($resultatsClasse as &$resultat) {
-                    $resultat['rang'] = $rank++;
+                    $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
+                    $prevRank = $rank;
+                    $rank++;
                 }
             
                 $resultats[$classe->id] = $resultatsClasse; // Stocker les résultats de chaque classe dans le tableau principal
@@ -154,15 +160,20 @@ class RapportController extends Controller
                         $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
                     }
 
-                    // Sort the results by moyenne_details_notes to determine the rank
                     usort($resultatsClasse, function($a, $b) {
+                        if ($b['moyenne_details_notes'] === $a['moyenne_details_notes']) {
+                            return 0; // If averages are equal, retain the same order to manage ties
+                        }
                         return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
                     });
-
+                
                     // Assign the rank to each student within the resultatsClasse array
                     $rank = 1;
+                    $prevRank = 1;
                     foreach ($resultatsClasse as &$resultat) {
-                        $resultat['rang'] = $rank++;
+                        $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
+                        $prevRank = $rank;
+                        $rank++;
                     }
                     $resultats[$classe->id] = $resultatsClasse; // Stocker les résultats de chaque classe dans le tableau principal
                 }
