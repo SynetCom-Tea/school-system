@@ -75,9 +75,7 @@ class EnseignantController extends Controller
         $classe_annee = $request->classes ? ClasseAnnee::with('classe')->where('id',$request->classes)->first():null;
         $classes_annees = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($table){
             $classe->where('etablissement_section_id',$table->id);
-        })->whereHas('annee',function($anne) use ($annee){
-            $anne->where('annee_id',$annee->id);
-        })->get();
+        })->where('annee_id',$annee->id)->get();
 
         if($classe_annee!=null){
 
@@ -106,9 +104,7 @@ class EnseignantController extends Controller
 
             $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
                 $classe->where('etablissement_section_id',$mat->etablissement_section_id);
-            })->whereHas('annee',function($anne) use ($annee){
-                $anne->where('annee_id',$annee->id);
-            })->get();
+            })->where('annee_id',$annee->id)->get();
 
             foreach($classes as $classe){
                 $trouver=false;
@@ -139,7 +135,7 @@ class EnseignantController extends Controller
 
             $allmatiere=Matiere::where('etablissement_section_id',$table->id)->get();
             $matiere[]= $allmatiere;
-           
+
 
         //  dd($matiere);
         return Inertia::render('Enseignants/Create', [
