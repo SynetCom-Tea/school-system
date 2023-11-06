@@ -1,14 +1,18 @@
 <template>
-  <v-layout>
-    <Sidebar />
-    <v-main>
-      <slot />
-    </v-main>
-  </v-layout>
+  <div>
+    <Loader />
+    <v-layout>
+      <Sidebar />
+      <v-main>
+        <slot />
+      </v-main>
+    </v-layout>
+  </div>
 </template>
 
 <script>
 import Sidebar from "../components/auth-page/SideBar.vue";
+import Loader from "../layouts/Loader.vue"
 
 import { router } from "@inertiajs/vue3";
 export default {
@@ -16,6 +20,7 @@ export default {
 
   components: {
     Sidebar,
+    Loader
   },
 
   data: () => ({

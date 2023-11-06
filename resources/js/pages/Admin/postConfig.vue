@@ -26,10 +26,6 @@
               Vous trouverez des menus qui seront inactifs à cause de certains menus qui sont vides, alors on doit les renseignés pour qu'ils soient actifs
             </li>
           </v-alert>
-
-          
-        
-
         </v-row>
         <v-row>
           <v-col cols="auto" style="margin-left:18px;">
@@ -94,6 +90,18 @@
             </v-col>
 
             <v-col cols="auto" style="margin-left:18px;">
+                <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Affectation des matières aux niveaux</p>
+
+                </v-card>
+
+            </v-col>
+
+            <v-col cols="auto" style="margin-left:18px;">
               <v-card :disabled="ensCheck"
                 elevation="6"
                 width="210"
@@ -134,7 +142,7 @@
         </v-col>
 
 
-        <v-col cols="auto" style="margin-left:18px;">
+        <!-- <v-col cols="auto" style="margin-left:18px;">
             <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
 
                 <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
@@ -144,11 +152,7 @@
 
             </v-card>
 
-        </v-col>
-
-            
-            
-        
+        </v-col> -->
         
           <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
                 <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('facultes.index')">
@@ -183,7 +187,7 @@
                 </v-card>
             </v-col>
             <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
+                <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
 
@@ -220,7 +224,7 @@ import {
 } from "@mdi/js";
 export default {
   layout: AuthenticatedLayout,
-  props: ["type", "niveaux", "lmd","nbre_matieres","nbre_salles","nbre_classes","nbre_type_frais","nbre_enseignant"],
+  props: ["type", "niveaux", "lmd","nbre_matieres","nbre_salles","nbre_classes","nbre_type_frais","nbre_enseignant","nbre_niveau_matiere"],
   components: {
     mdiAccount,
     mdiCogOutline,
@@ -240,10 +244,12 @@ export default {
     salleCheck: false,
     classeCheck: false,
     matiereCheck: false,
+    paramCheck: false,
     fraisCheck: true,
     affecEnsClaCheck: true,
     affecMatNivCheck: true,
-    paramCheck: false,
+    ensCheck: true,
+    
     ensCheck: true,
     icons: {
       mdiGoogleClassroom,
@@ -267,13 +273,16 @@ export default {
 
   created(){
     if(this.nbre_matieres != 0 && this.nbre_classes != 0){
-      this.ensCheck = false
-    }else if(this.nbre_matieres != 0 && this.nbre_classes != 0 && this.nbre_enseignant){
-      this.affecEnsClaCheck = false
-    }else if(this.nbre_type_frais != 0){
-      this.fraisCheck = false
-    }else if(this.nbre_matieres != 0){
       this.affecMatNivCheck = false
+    }
+    if(this.nbre_matieres != 0 && this.nbre_classes != 0 && this.nbre_enseignant != 0){
+      this.affecEnsClaCheck = false
+    }
+    if(this.nbre_type_frais != 0){
+      this.fraisCheck = false
+    }
+    if(this.nbre_niveau_matiere != 0 && this.nbre_classes != 0){
+      this.ensCheck = false
     }
   },
   methods: {

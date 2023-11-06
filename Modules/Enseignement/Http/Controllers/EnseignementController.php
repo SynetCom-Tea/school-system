@@ -21,6 +21,7 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\Filiere;
+use Modules\Enseignement\Entities\NiveauMatiere;
 use Modules\Enseignement\Entities\Ue;
 use Modules\Scolarite\Entities\Departement;
 use Modules\Scolarite\Entities\EtablissementTypeDocument;
@@ -159,6 +160,10 @@ class EnseignementController extends Controller
         $nbre_classes = Classe::where('etablissement_section_id',$etab_sec_id)->count();
         $nbre_type_frais = EtablissementTypeFrais::where('etablissement_section_id',$etab_sec_id)->count();
         $nbre_enseignant = Enseignant::where('etablissement_id', $ets_id)->count();
+        $nbre_niveau_matiere = NiveauMatiere::whereHas('matiere', function($query) use ($etab_sec_id){
+            $query->where('etablissement_section_id',$etab_sec_id);
+        })->count();
+        // dd('salle',$nbre_salles,'matiere',$nbre_matieres,'classe',$nbre_classes,'type frais',$nbre_type_frais,'niveau matiere',$nbre_niveau_matiere,'enseignant',$nbre_enseignant);
 
         return Inertia::render('Admin/postConfig', [
             'type' => $type,
@@ -168,6 +173,7 @@ class EnseignementController extends Controller
             'nbre_classes' => $nbre_classes,
             'nbre_type_frais' => $nbre_type_frais,
             'nbre_enseignant' => $nbre_enseignant,
+            'nbre_niveau_matiere' => $nbre_niveau_matiere,
         ]);
     }
 

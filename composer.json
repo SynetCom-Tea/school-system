@@ -41,7 +41,9 @@
             "app/Helpers/AddEmploi.php",
             "app/Helpers/GetNoteByClasse.php",
             "app/Helpers/FunctionImportant.php",
-            "app/Helpers/CalculerMoyennePrimaire.php"
+            "app/Helpers/CalculerMoyennePrimaire.php",
+            "app/Helpers/CalculerMoyenneSecondaire.php",
+            "app/Helpers/GenerationRang.php"
         ]
     },
     "autoload-dev": {

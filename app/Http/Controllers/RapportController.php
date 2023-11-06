@@ -109,6 +109,15 @@ class RapportController extends Controller
                         'details_notes' => $details_notes // Tableau des détails des notes
                     ];
                 }
+                usort($resultatsClasse, function($a, $b) {
+                    return $b['moyenne'] <=> $a['moyenne'];
+                });
+
+                // Assign the rank to each student within the resultatsClasse array
+                $rank = 1;
+                foreach ($resultatsClasse as &$resultat) {
+                    $resultat['rang'] = $rank++;
+                }
             
                 $resultats[$classe->id] = $resultatsClasse; // Stocker les résultats de chaque classe dans le tableau principal
             }
@@ -117,11 +126,50 @@ class RapportController extends Controller
         }else if($request->section_id == 2){
             $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
             $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+
             if ($request->classe != null) {
-                dd('Classe existe');
+                foreach ($classes as $classe) {
+                    $resultatsClasse = [];
+                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classe->id)->apprenants;
+                    foreach ($apprenantsDeLaClasse as $apprenant) {
+                        // dd($apprenant);
+                        $details_notes = calculerMoyenneSecondaire($classe->id, $apprenant->id);
+                        // dd($notestypeComposition, $notesDeClasses, $groupedNotes, $details_notes);
+                        $resultatsClasse[] = [
+                            'classe' => $classe->id,
+                            'nom_classe' => $classe->libelle,
+                            'apprenant' => $apprenant->id,
+                            'matricule_apprenant' => $apprenant->matricule,
+                            'nom_apprenant' => $apprenant->nom,
+                            'prenom_apprenant' => $apprenant->prenom,
+                            'details_notes' => $details_notes // Tableau des détails des notes
+                        ];
+                    }
+
+                    foreach ($resultatsClasse as &$resultat) {
+                        $totalMoyenne = 0;
+                        foreach ($resultat['details_notes'] as $details) {
+                            $totalMoyenne += $details['moyenne'];
+                        }
+                        $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
+                    }
+
+                    // Sort the results by moyenne_details_notes to determine the rank
+                    usort($resultatsClasse, function($a, $b) {
+                        return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
+                    });
+
+                    // Assign the rank to each student within the resultatsClasse array
+                    $rank = 1;
+                    foreach ($resultatsClasse as &$resultat) {
+                        $resultat['rang'] = $rank++;
+                    }
+                    $resultats[$classe->id] = $resultatsClasse; // Stocker les résultats de chaque classe dans le tableau principal
+                }
+                // dd('Classe existe', $resultats);
             }
-            dd($request->all(), 'dd', $classes);
         }
+        // dd($classes, 'dd', $resultats);
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
             "resultats" => $resultats,
