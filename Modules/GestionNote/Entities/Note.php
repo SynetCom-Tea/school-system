@@ -14,7 +14,7 @@ class Note extends Model
 {
     use HasFactory, softDeletes;
 
-    protected $fillable = ['date', 'note', 'evaluation_id', 'apprenant_id'];
+    protected $fillable = ['date', 'note', 'evaluation_id','statut','user_id', 'apprenant_id'];
 
 
     public function evaluation()

@@ -37,7 +37,7 @@ export default {
             form: useForm({
                 role_id: null,
                 name: "",
-                permissions: null,
+                permissions: [],
             }),
             icon: {
                 mdiPencil,
@@ -81,8 +81,7 @@ export default {
             // console.log(this.form)
             this.form.post(route("roles.store"), {
                 onFinish: () => {
-                    this.form = {};
-                    this.dialog = false;
+                    this.close()
                     if (this.$page.props.flashd.messages) {
                         this.$swal({
                             icon: "error",
@@ -128,8 +127,8 @@ export default {
             // console.log(this.form.role_id)
             this.form.put(route("roles.update", this.form.role_id), {
                 onFinish: () => {
-                    this.form = {};
-                    this.dialogEdit = false;
+                    this.closeEdit()
+                    this.dialogEdit = false,
 
                     this.$swal({
                         position: "top-end",
@@ -180,11 +179,15 @@ export default {
         },
         close() {
             this.dialog = false;
-            this.form = {};
+            this.form.role_id = null;
+            this.form.name = null;
+            this.form.permissions = null;
         },
         closeEdit() {
             this.dialogEdit = false;
-            this.form = {};
+            this.form.role_id = null;
+            this.form.name = null;
+            this.form.permissions = null;
         },
         setPermission(e) {
             this.$inertia.replace(this.$page.url, {
