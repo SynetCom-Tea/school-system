@@ -222,12 +222,12 @@
           </v-card-text>
           <v-card-actions class="justify-end">
       <v-spacer></v-spacer>
-      <v-btn dark small type="button" color="red" @click="goBack">
+      <Button variant="outlined" class="mb-2" style="height: 30px" small type="button" color="red" @click="goBack">
         <v-icon :icon="icons.mdiCancel" left></v-icon> Annuler
-      </v-btn>
-      <v-btn small color="primary" @click="submit">
-        <v-icon :icon="icons.mdiCheckCircle" left></v-icon> Enregistrer
-      </v-btn>
+      </Button>
+      <Button variant="outlined" class="mb-2" style="height: 30px" small color="primary" @click="submit">
+        <v-icon :icon="icons.mdiContentSave" left></v-icon> Enregistrer
+      </Button>
     </v-card-actions>
         </v-card>
       </v-container>
@@ -236,7 +236,7 @@
   <script>
   import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
   import { router, useForm } from "@inertiajs/vue3";
-  import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle } from "@mdi/js";
+  import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle,mdiContentSave } from "@mdi/js";
 import axios from "axios";
   export default {
     layout: AuthenticatedLayout,
@@ -246,12 +246,13 @@ import axios from "axios";
       mdiCloseCircle,
       mdiInformation,
       mdiCancel,
-      mdiCheckCircle
+      mdiCheckCircle,
+      mdiContentSave
     },
     data: () => ({
       alertFirst: true,
       alertSecond: true,
-      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle},
+      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle,mdiContentSave},
       step: 1,
 
       section: null,

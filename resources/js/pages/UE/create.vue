@@ -70,7 +70,7 @@
                   ></v-file-input>
                 </v-col>
                 <v-col v-if="importation"
-                  ><v-btn
+                  ><Button
                     class="ma-2"
                     outlined
                     type="button"
@@ -79,7 +79,7 @@
                     download
                   >
                     Télécharger le Model
-                  </v-btn></v-col
+                  </Button></v-col
                 >
               </v-row>
             </v-card-text>
@@ -124,7 +124,7 @@
                 </v-col>
               </v-row>
               <v-row>
-                <v-col offset-md="11" cols="4">
+                <v-col offset-md="8" cols="4">
                   <Button
                     type="button"
                     variant="outlined"
@@ -159,21 +159,21 @@
 
           <v-card-actions class="justify-end">
         <v-spacer></v-spacer>
-        <v-btn dark small type="button" color="red" @click="goBack">
+        <Button  variant="outlined" class="mb-2" style="height: 30px"  small type="button" color="red" @click="goBack">
             <v-icon :icon="icons.mdiCancel" left></v-icon> Annuler
-        </v-btn>
-        <v-btn small color="primary" @click="submit">
-            <v-icon :icon="icons.mdiCheckCircle" left></v-icon> Enregistrer
-        </v-btn>
+        </Button>
+        <Button  variant="outlined" class="mb-2" style="height: 30px"  small color="primary" @click="submit">
+            <v-icon :icon="icons.mdiContentSave" left></v-icon> Enregistrer
+        </Button>
     </v-card-actions>
         </v-card>
       </v-container>
       <!-- <v-row>
               <v-col md="5"></v-col>
               <v-col md="4">
-                  <v-btn type="submit" title="enregistrer" color="info">
+                  <Button type="submit" title="enregistrer" color="info">
                       Enregistrer
-                  </v-btn>
+                  </Button>
               </v-col>
           </v-row> -->
       <br />
@@ -183,7 +183,7 @@
   // import XLSX from "xlsx/dist/xlsx.extendscript.js";
   import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
   import { router, useForm } from "@inertiajs/vue3";
-  import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle, } from "@mdi/js";
+  import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle, mdiContentSave} from "@mdi/js";
   import * as XLSX from "xlsx/xlsx.mjs";
   export default {
     props: ["section_id"],
@@ -192,6 +192,7 @@
       mdiCheckCircle,
       mdiCloseCircle,
       mdiInformation,
+      mdiContentSave
     },
     layout: AuthenticatedLayout,
     data: () => ({
@@ -200,7 +201,7 @@
       headers: [],
       data: [],
       contentType: ["code", "nom"],
-      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation,mdiCancel, },
+      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation,mdiCancel,mdiContentSave },
       step: 1,
       importation: false,
       form: useForm({

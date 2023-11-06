@@ -20,6 +20,8 @@ export default {
     props: [],
     data() {
         return {
+            alertFirst: true,
+            alertSecond: true,
             icon: {
                 mdiPlus,
                 mdiSchool,
@@ -41,6 +43,12 @@ export default {
         this.addRow()
     },
     methods: {
+        onclickAlertButton(type) {
+        if (type == "second") {
+          this.alertSecond = true;
+        }
+        if (type == "first") this.alertFirst = true;
+      },
 
         goBack() {
             router.get(route('salles.index'))
@@ -122,6 +130,39 @@ export default {
           <v-divider></v-divider>
 
     <v-card-text>
+        <div style="margin: 10px">
+            <v-alert
+              v-model="alertFirst"
+              border="start"
+              variant="tonal"
+              closable
+              close-label="Close Alert"
+              color="primary"
+              type="info"
+              title="Information"
+            >
+              <li>
+                Cette section vous permet de configurer les salles de cet
+                établissement
+              </li>
+              <li>
+                Le formulaire sera valide si est seulement si tous les champs obligatoires
+                marqués par <span style="color: red">*</span> sont renseignés
+              </li>
+            </v-alert>
+
+            <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+              <Button
+                style="height: 30px"
+                title="Plier la note"
+                @click="onclickAlertButton('first')"
+                variant="outlined"
+                color="primary"
+                nameButton="Relire la note"
+              >
+              </Button>
+            </div>
+          </div>
         <v-form ref="form">
             <v-card-text>
                 <!-- <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des salles</v-chip> -->
@@ -129,7 +170,7 @@ export default {
                     <v-card-text>
                         <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
 
-                                    <v-row>
+                                    <v-row style="margin: 5px;">
                                         <v-col cols="1"></v-col>
                                         <v-col cols="4">
                                             <TextField   class="mt-2" label="Code" placeholder="Code" v-model="donnee.code" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
