@@ -40,6 +40,8 @@
         props: ["matieres","section_id"],
         data() {
             return {
+                alertFirst: true,
+                alertSecond: true,
                 icons: {
                     mdiAccountSchool,
                     mdiPlus,
@@ -73,6 +75,7 @@
                     id : null,
                     code: '',
                     nom: '',
+                    donnees:[],
                 }),
                 file: null,
             headers1: [],
@@ -88,7 +91,47 @@
             }
         },
         methods:{
+
+            onclickAlertButton(type) {
+                    if (type == "second") {
+                    this.alertSecond = true;
+                    }
+                    if (type == "first") this.alertFirst = true;
+                },
+            addRow() {
+                    this.form.donnees.push({
+                        nom: null,
+                        before: null,
+                        after: null
+                    });
+
+                },
+
+                removeRow(p) {
+            this.form.donnees = this.form.donnees.filter((product) => product !== p)
+        },
+
+        async verify(p) {
+            const array = this.form.donnees.filter(el => el.nom !== null && el.nom == p.nom)
+            if (array.length > 1) {
+               this.removeRow(p)
+
+                this.$swal({
+                                icon: 'error',
+                                title: 'Erreur',
+                                text: 'Cette matière existe déjà!',
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+            } else {
+                return true
+            }
+        },
             create() {
+                this.addRow();
                 this.dialog = true;
                 this.dialog_title = 'Ajouter la matière'
                 // router.get(route('matieres.create', this.section_id))
@@ -239,7 +282,7 @@
       return -1; // Retourne -1 si toutes les données sont présentes
     },
 
-            async submit() {
+ async submit() {
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
                     this.form.post(route('matieres.store', this.section_id), {
@@ -290,13 +333,14 @@
                 this.form.id = null
                 this.form.code = ""
                 this.form.nom = ""
+                this.form.donnees = []
                 this.dialog = false
             }
         },
 
         computed: {
         Title() {
-         
+
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -334,62 +378,124 @@
                     <v-icon :icon="icons.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close"></v-icon>
                     </v-toolbar>
                     <v-card-text>
-                                    <v-form ref="form">
-                                        <v-row>
-            <v-col>
-              <v-switch
-                v-model="importation"
-                color="#004980"
-                inset
-                :label="'Importation d\'un fichier pour alimenter les matières'"
-              ></v-switch>
-            </v-col>
-            <v-col v-if="importation">
-              <v-file-input
-                clearable
-                required
-                @change="handleFileUpload"
-                v-model="form.fichier_matiere"
-                label="Charger le fichier des Matières"
-                variant="solo-inverted"
-              ></v-file-input>
-            </v-col>
-            <v-col v-if="importation"
-              ><v-btn
-                class="ma-2"
-                outlined
-                type="button"
-                color="primary"
-                href="../models/echantillons/fiche_echantillonage.ods"
-                download
-              >
-                Télécharger le Modèle
-              </v-btn></v-col
-            >
-          </v-row>
-                                        <v-row >
-                                            <v-col cols="12" md="12" v-if="form.id!=null">
-                                                <text-field label="Code" placeholder="Code" v-model="form.code" isRequired :rules="rules"></text-field>
+                        <div style="margin: 10px" v-if="form.id==null">
+                            <v-alert
+                                v-model="alertFirst"
+                                border="start"
+                                variant="tonal"
+                                closable
+                                close-label="Close Alert"
+                                color="primary"
+                                type="info"
+                                title="Information"
+                                size="small"
+                                >
+                                <li>
+                                    Cette section vous permet de renseigner les matières enseignées dans cet
+                                    établissement
+                                </li>
+                                <li>
+                                    Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
+                                </li>
+                            </v-alert>
+                            <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+                                <Button
+                                style="height: 30px"
+                                title="Plier la note"
+                                @click="onclickAlertButton('first')"
+                                variant="outlined"
+                                color="primary"
+                                nameButton="Relire la note"
+                                >
+                                </Button>
+                            </div>
+                        </div>
+                <v-form ref="form">
+                <v-row v-if="form.id==null">
+                <v-col>
+                <v-switch
+                    v-model="importation"
+                    color="#004980"
+                    inset
+                    :label="'Importation d\'un fichier pour alimenter les matières'"
+                ></v-switch>
+                </v-col>
+                <v-col v-if="importation">
+                <v-file-input
+                    clearable
+                    required
+                    @change="handleFileUpload"
+                    v-model="form.fichier_matiere"
+                    label="Charger le fichier des Matières"
+                    variant="solo-inverted"
+                ></v-file-input>
+                </v-col>
+                <v-col v-if="importation"
+                ><v-btn
+                    class="ma-2"
+                    outlined
+                    type="button"
+                    color="primary"
+                    href="../models/echantillons/fiche_echantillonage.ods"
+                    download
+                >
+                    Télécharger le Modèle
+                </v-btn></v-col
+                >
+                </v-row>
+            <v-row >
+                <v-col cols="12" md="12" v-if="form.id!=null">
+                    <text-field disabled label="Code" placeholder="Code" v-model="form.code" isRequired :rules="rules"></text-field>
+                </v-col>
+            </v-row>
+            <v-row v-if="!importation && form.id!=null">
+                <v-col cols="12" md="12">
+                    <text-field label="Libellé" placeholder="Libellé" v-model="form.nom" isRequired :rules="rules"></text-field>
 
-                                            </v-col>
-                                        </v-row>
-                                        <v-row v-if="!importation">
-                                            <v-col cols="12" md="12">
-                                                <text-field label="Libellé" placeholder="Libellé" v-model="form.nom" isRequired :rules="rules"></text-field>
+                </v-col>
+            </v-row>
+            <v-card v-if="!importation && form.id==null">
+                <br>
+            <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
 
-                                            </v-col>
-                                        </v-row>
-                                    </v-form>
-                                    </v-card-text>
-                    <v-card-actions class="justify-end">
-                        <v-spacer></v-spacer>
-                        <Button color="red" variant="outlined" class="mb-2" nameButton="Annuler" title="Annuler" style="height: 30px" :prependIcon="icons.mdiCancel" @click="close"></Button>
-                        <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icons.mdiContentSave" @click="submit"></Button>
-                    </v-card-actions>
-                </v-card>
-            </template>
+                <v-row>
+                    <v-col md="2"></v-col>
+                    <v-col md="6">
+                        <TextField  class="mt-2" label="Libellé" placeholder="Libellé" v-model="donnee.nom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
+                    </v-col>
 
-                    </v-dialog>
+                    <v-col md="2">
+                        <br>
+                        <Button size="large" title="supprimer la matière" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
+                            <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                        </Button>
+                    </v-col>
+                </v-row>
+
+
+                </v-row>
+                <v-row>
+                    <v-col md="8">
+                    </v-col>
+                    <v-col md="2">
+                        <Button size="large" title="ajouter une matière" variant="outlined" icon @click="addRow()" fab small color="primary">
+                            <v-icon :icon="icons.mdiPlusCircle"></v-icon>
+                        </Button>
+                    </v-col>
+                </v-row>
+                <br>
+            </v-card>
+        </v-form>
+        </v-card-text>
+            <v-card-actions class="justify-end">
+                <v-spacer></v-spacer>
+                <Button color="red" variant="outlined" class="mb-2" nameButton="Annuler" title="Annuler" style="height: 30px" :prependIcon="icons.mdiCancel" @click="close"></Button>
+                <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icons.mdiContentSave" @click="submit"></Button>
+            </v-card-actions>
+        </v-card>
+    </template>
+
+    </v-dialog>
         <v-card-text>
             <Datatable titleDatatable="Liste des matières" :headers="headers" :items="matieres" :functionOnClickAddButton="create" >
 

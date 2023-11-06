@@ -12,6 +12,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Carbon\Carbon;
 
 class Classe extends Model
 {
@@ -22,6 +23,11 @@ class Classe extends Model
         'etablissement_section_id',
         'niveau_id'
     ];
+
+    public function getCreatedAtAttribute($value)
+    {
+        return Carbon::parse($value)->format('H:i, d M Y');
+    }
     public function etablissement_section(): BelongsTo
     {
         return $this->belongsTo(EtablissementSection::class);

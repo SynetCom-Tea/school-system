@@ -33,9 +33,9 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\TypeDocument::class)
                 ->index()
                 ->references('id')->on('type_documents');
-            $table->foreignIdFor(\App\Models\Etablissement::class)
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)
                 ->index()
-                ->references('id')->on('etablissements');
+                ->references('id')->on('etablissement_section');
             $table->string('statut')->nullable();
             $table->timestamps();
             $table->softDeletes();

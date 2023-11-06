@@ -198,12 +198,13 @@
 <script>
 // import XLSX from "xlsx/dist/xlsx.extendscript.js";
 import * as XLSX from "xlsx/xlsx.mjs";
+import { ref, inject, watch } from 'vue';
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 export default {
-  props: ["type","niveaux","apprenant","annees","formapprenant","cycleFilieres","cycles"],
+  props: ["type","niveaux","nextIndex","apprenant","annees","formapprenant","cycleFilieres","cycles","nbre_limite_eleve"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
@@ -225,6 +226,7 @@ export default {
     section: null,
     vCycle: null,
     resultClasse: [],
+    eventChange : inject('eventChange'),
     hint:'',
     form: useForm({
       apprenant: null,
@@ -237,7 +239,6 @@ export default {
     }),
   }),
   validations () {
-    console.log('ggggg',typeof this.type);
     if(this.type == '1' || this.type == '2'){
       return {
         form: {
@@ -255,6 +256,13 @@ export default {
       }
     }
   },
+  watch: {
+      // Surveillez les valeurs spécifiques ici
+      async nextIndex(){
+          await this.submitForm()
+      },
+  },
+
   computed:{
     setCycleFilieres() {
       let list = [];
@@ -275,8 +283,11 @@ export default {
     await this.submitForm()
   },
   created(){
+    
   },
+  
   methods: {
+    
     requete(){
       this.$emit('input',this.vCycle)
           router.replace(this.$page.url,{data:{cycle_id:this.vCycle}});
@@ -319,7 +330,7 @@ export default {
             if (res.data == "ERREUR") {
              
             } else if(res.data.code == 1){
-               return res.data ?? [];
+               return res.data.result ?? [];
             }else{
               return []
             }
@@ -330,7 +341,7 @@ export default {
       }else{
         this.mdVersement = 4
       }
-      if(this.resultClasse[this.resultClasse.length - 1]?.nbre >= 1){
+      if(this.resultClasse[this.resultClasse.length - 1]?.nbre >= this.nbre_limite_eleve){
         this.$swal({
             title: 'Création d\'une nouvelle classe?',
             text: "Voulez-vous créer une nouvelle classe car ''" + this.resultClasse[this.resultClasse.length - 1].classe.classe.code + "'' est pleine !",

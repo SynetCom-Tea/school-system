@@ -167,8 +167,8 @@ export function listMenus(page) {
     const section = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/gestion/1" },
       { title: "Secondaire", icon: mdiSchool, link: "/enseignement/gestion/2" },
-      { title: 'Supérieure', icon: mdiSchool, link: '/enseignement/gestion/3' },
-      { title: 'Universitaire', icon: mdiSchool, link: '/enseignement/gestion/4' },
+      { title: 'Supérieure', icon: mdiSchool, link: ' /systeme/lmd/3' },
+      { title: 'Universitaire', icon: mdiSchool, link: '/systeme/lmd/4' },
     ];
 
     if (page?.roles[0] == "Administrateur") {
@@ -223,7 +223,7 @@ MenuGestion = {
                 link: "/enseignement/permissions",
                 permissions: "manage_system",
             },
-            
+
         {
             title: "Inscription",
             icon: mdiAccountSchool,
@@ -458,6 +458,24 @@ export function listMenusBySection(page, sectionID) {
       link: "note",
       color: "#5F6A6A",
       note: "Ce menu permet d'accèder aux évaluations  section",
+      expand:false,
+      permissions: "manage_system"
+    },
+    {
+      title: "Génération des bulletin",
+      icon: mdiPencil,
+      link: "generations",
+      color: "#3F51B5",
+      note: "Ce menu permet d'accèder aux évaluations  section",
+      expand:false,
+      permissions: "manage_system"
+    },
+    {
+      title: "Rapport",
+      icon: mdiAccountCreditCard,
+      link: "rapports",
+      color: "#AD1457",
+      note: "Ce menu permet nn",
       expand:false,
       permissions: "manage_system"
     },

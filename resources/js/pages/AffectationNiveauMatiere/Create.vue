@@ -22,7 +22,7 @@
               close-label="Close Alert"
               color="primary"
               type="info"
-              title="Note"
+              title="Information"
             >
               <li>
                 Cette section vous permet de configurer les unités des enseignements de cet
@@ -351,19 +351,18 @@
 
                 this.form.post(route('affectations.store',this.section_id), {
                     onFinish: () => {
-                        // this.close()
-                        // this.$swal({
-                        //     icon: 'success',
-                        //     iconColor: '#004980',
-                        //     color: '#004980',
-                        //     title: 'Enregistrement',
-                        //     text: 'La matière a été affectée aux niveaux avec succès!',
-                        //     toast: true,
-                        //     position: 'top-end',
-                        //     showConfirmButton: false,
-                        //     timer: 5000,
-                        //     timerProgressBar: true,
-                        // });
+                        this.$swal({
+                            icon: 'success',
+                            iconColor: '#004980',
+                            color: '#004980',
+                            title: 'Enregistrement',
+                            text: 'La matière a été affectée aux niveaux avec succès!',
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 5000,
+                            timerProgressBar: true,
+                        });
                     },
                 });
             }

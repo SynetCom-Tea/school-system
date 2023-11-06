@@ -13,11 +13,12 @@ import {
    mdiCurrencyUsd,
     mdiPlusCircle,
     mdiCloseCircle,
+    mdiContentSave
 
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
-    props: ["typefrais","section_id", "niveaux","annees"],
+    props: ["typefrais","section_id", "niveaux","annees","filieres"],
     data() {
         return {
             icon: {
@@ -29,6 +30,7 @@ export default {
                 mdiCurrencyUsd,
                 mdiPlusCircle,
                 mdiCloseCircle,
+                mdiContentSave
 
             },
 
@@ -50,6 +52,7 @@ export default {
             this.form.donnees.push({
                 niveau_id: [],
                 type_frais_id: null,
+                filiere: null,
                 montant: null,
                 before: null,
                 after: null
@@ -137,80 +140,121 @@ export default {
 
     <v-card-text>
         <v-form ref="form">
-            <v-row>
+            <v-row style="height: 90px">
                 <v-col cols="4" md="4">
                 </v-col>
                 <v-col cols="4" md="4">
-                    <Select
+                    <autocomplete
                         label="Année Scolaire"
                         :items="annees"
                         variant="outlined"
+                        placeholder="Année Scolaire"
                         item-value="id"
                         item-title="libelle"
                         v-model="form.annee_id"
                         isRequired
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         >
-                    </Select>
+                    </autocomplete>
                     </v-col>
             </v-row>
 
             <v-card-text>
                     <!-- <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des frais</v-chip> -->
-                    <v-card outlined class="mb-md-2">
+                    <v-card>
                         <v-card-text>
-                            <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
-                                <v-col md="1"></v-col>
-                                <v-col md="3">
-                                     <Select
-                        label="Niveaux"
-                        :items="niveaux"
-                        variant="outlined"
-                        item-value="id"
-                        item-title="code"
-                        v-model="donnee.niveau_id"
-                        multiple
-                        isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                        >
-                    ></Select>
+                            <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees" style="height: 90px">
+                                <v-col cols="3" v-if="section_id==3 || section_id==4">
+                                    <autocomplete
+                                        label="filières"
+                                        :items="filieres"
+                                        variant="outlined"
+                                        placeholder="filières"
+                                        class="mb-2"
+                                        item-value="id"
+                                        item-title="code"
+                                        v-model="donnee.filiere"
+                                        isRequired
+                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                        >
+                                    </autocomplete>
                                 </v-col>
-                                <v-col md="3">
-                                    <Select
-                        label="TypeFrais"
-                        :items="typefrais"
-                        variant="outlined"
-                        item-value="id"
-                        item-title="type_frais.libelle"
-                        v-model="donnee.type_frais_id"
-                        isRequired
-                        :rules="[(v) => !!v || 'Ce champ est requis!']"
-                        >
-                    </Select>
+                                    <v-col cols="1" v-else></v-col>
+                                <v-col cols="3">
+                                    <autocomplete
+                                        label="TypeFrais"
+                                        :items="typefrais"
+                                        variant="outlined"
+                                        placeholder="TypeFrais"
+                                        class="mb-2"
+                                        item-value="type_frais.id"
+                                        item-title="type_frais.libelle"
+                                        v-model="donnee.type_frais_id"
+                                        isRequired
+                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                        >
+                                    </autocomplete>
                                 </v-col>
-                                <v-col md="3">
+                                <v-col cols="3">
+                                     <autocomplete
+                                    label="Niveaux"
+                                    :items="niveaux"
+                                    variant="outlined"
+                                    placeholder="Niveaux"
+                                    item-value="id"
+                                    item-title="code"
+                                    v-model="donnee.niveau_id"
+                                    multiple
+                                    chips
+                                    isRequired
+                                    class="mb-2"
+                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col cols="2" v-if="section_id==3 || section_id==4">
                                     <TextField
-                            type="number"
-                            label="Montant"
-                            placeholder="Montant"
-                            v-model="donnee.montant"
-                            isRequired
-                            :rules="[(v) => !!v || 'Ce champ est requis!']"
-                            ></TextField>
+                                        type="number"
+                                        label="Montant"
+                                        placeholder="Montant"
+                                        v-model="donnee.montant"
+                                        isRequired
+                                        class="mb-2"
+                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                    ></TextField>
                                 </v-col>
-                                <v-col md="2">
-                                    <v-btn variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
+                                <v-col cols="3" v-else>
+                                    <TextField
+                                        type="number"
+                                        label="Montant"
+                                        placeholder="Montant"
+                                        v-model="donnee.montant"
+                                        isRequired
+                                        class="mb-2"
+                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                    ></TextField>
+                                </v-col>
+                                <v-col cols="1">
+                                    <Button size="large"  variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
                                         <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                    </v-btn>
+                                    </Button >
                                 </v-col>
                             </v-row>
-                            <v-row>
+                            <v-row v-if="section_id==2 || section_id==1">
                                 <v-col md="10">
                                 </v-col>
-                                <v-col offset-md="11" md="2">
-                                    <v-btn variant="outlined" icon @click="addRow()" fab small color="primary">
+                                <v-col  md="2">
+                                    <Button size="large" variant="outlined" icon @click="addRow()" fab small color="primary">
                                         <v-icon :icon="icon.mdiPlusCircle"></v-icon>
-                                    </v-btn>
+                                    </Button >
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="section_id==3 || section_id==4">
+                                <v-col md="11">
+                                </v-col>
+                                <v-col offset-md="11" md="1">
+                                    <Button size="large" variant="outlined" icon @click="addRow()" fab small color="primary">
+                                        <v-icon :icon="icon.mdiPlusCircle"></v-icon>
+                                    </Button >
                                 </v-col>
                             </v-row>
                         </v-card-text>
@@ -220,12 +264,12 @@ export default {
         </v-card-text>
         <v-card-actions class="justify-end">
       <v-spacer></v-spacer>
-      <v-btn dark small type="button" color="red" @click="goBack">
+      <Button  variant="outlined"  class="mb-2" small type="button" style="height: 30px" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-      </v-btn>
-      <v-btn small color="primary" @click="submit">
-        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-      </v-btn>
+      </Button >
+      <Button variant="outlined" class="mb-2" small color="primary" style="height: 30px" @click="submit">
+        <v-icon :icon="icon.mdiContentSave" left></v-icon> Enregistrer
+      </Button >
     </v-card-actions>
 </v-card>
 </template>

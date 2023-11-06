@@ -41,6 +41,6 @@ class ClasseAnnee extends Model
 
     public function apprenants(): BelongsToMany
     {
-        return $this->belongsToMany(Apprenant::class);
+        return $this->belongsToMany(Apprenant::class, 'apprenant_classe_annees');
     }
 }

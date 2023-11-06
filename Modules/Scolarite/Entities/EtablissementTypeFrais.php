@@ -2,6 +2,7 @@
 
 namespace Modules\Scolarite\Entities;
 
+use App\Models\EtablissementSection;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -10,14 +11,14 @@ class EtablissementTypeFrais extends Model
     use HasFactory;
 
     protected $fillable =  [
-        'etablissement_id',
+        'etablissement_section_id',
         'type_frais_id',
         'statut'
        
     ];
-    public function etablissement()
+    public function etablissement_section()
     {
-        return $this->belongsTo(Etablissement::class);
+        return $this->belongsTo(EtablissementSection::class);
     }
     public function type_frais()
     {

@@ -41,21 +41,22 @@ class MatiereController extends Controller
      */
     public function store(Request $request, $type)
     {
-       
+        // dd($request);
         $ets_id = Auth::user()->etablissement_id;
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
 
-
+        foreach($request->donnees as $matiere){
             Matiere::updateOrInsert([
-                'nom' => $request->nom
+                'nom' => $matiere['nom'],
+                'etablissement_section_id' => $table->id,
             ],
             [
-            'etablissement_section_id' => $table->id
+
             ]
             );
 
-
+        }
 
         return redirect()->route('matieres.index', $type)->with('message', [
             'type' => 'success',
