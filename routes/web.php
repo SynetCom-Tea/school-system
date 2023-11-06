@@ -8,6 +8,7 @@ use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\CalendrierscolaireController;
 use App\Http\Controllers\MenuGestionController;
+use App\Http\Controllers\RapportController;
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -43,7 +44,7 @@ use Modules\Scolarite\Http\Controllers\DepartementController;
 Route::prefix('enseignement')->group(function () {
     Route::get('/', 'EnseignementController@index');
     // Route::resource('ues', UEController::class)->only(['index', 'create', 'store', 'edit', 'update']);
-    Route::resource('etablissements', EtablissementController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
+    // Route::resource('etablissements', EtablissementController::class)->only(['index', 'create', 'store', 'update', 'destroy']);
     Route::resource('cycles', CycleController::class)->only(['index', 'create', 'destroy', 'store', 'update']);
     Route::resource('permissions', PermissionController::class);
     Route::resource('roles', RoleController::class)->only(['index', 'store', 'update', 'destroy']);
@@ -117,6 +118,7 @@ Route::prefix('calendrierscolaire')->group(function () {
 // Route::resource('calendrierscolaire/{type}', CalendrierscolaireController::class)->parameters(['type' => 'type']);
 
 Route::resource('salles', SalleController::class);
+Route::resource('rapports', RapportController::class);
 Route::resource('enseignants', EnseignantController::class)->only([ 'update', 'destroy']);
 Route::get('enseignantscreate/{type}', [EnseignantController::class, 'create'])->name('enseignants.create');
 Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');

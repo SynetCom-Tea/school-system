@@ -39,6 +39,7 @@
               :cycles="cycles"
               :cycleFilieres="cycleFilieres"
               :niveaux="niveaux"
+              :nbre_limite_eleve="nbre_limite_eleve"
               :nextIndex="nextIndex"
               :apprenant="apprenant"
               :annees="annees"
@@ -55,6 +56,7 @@
               :cycles="cycles"
               :cycleFilieres="cycleFilieres"
               :niveaux="niveaux"
+              :nbre_limite_eleve="nbre_limite_eleve"
               :nextIndex="nextIndex"
               :formapprenant="formApprenant"
               :annees="annees"
@@ -181,7 +183,7 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
-  props: ["type", "niveaux", "typeFrais","apprenant","annees","typeDocuments","tuteurs","cycleFilieres","cycles"],
+  props: ["type", "niveaux", "typeFrais","apprenant","annees","typeDocuments","tuteurs","cycleFilieres","cycles","nbre_limite_eleve"],
   components: {
     FormWizard,
     TabContent,

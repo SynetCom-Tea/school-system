@@ -303,7 +303,7 @@ export default {
                         </v-row>
                         <v-row>
                             <v-col cols="12" md="12">
-                                <Select label="Section" :items="sections" variant="outlined" item-value="id" item-title="libelle" v-model="form.section" isMultiple chips v-if="form.type_etablissement_id == 2"></Select>
+                                <Select label="Section" :items="sections" variant="outlined" multiple item-value="id" item-title="libelle" v-model="form.section" isMultiple chips v-if="form.type_etablissement_id == 2"></Select>
                             </v-col>
                         </v-row>
                     </v-form>
@@ -344,7 +344,7 @@ export default {
                                         </template>
 
                                         <template v-slot:append>
-                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier les sections" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
                                         </template>
                                     </v-toolbar>
                                 </v-img>
@@ -356,7 +356,7 @@ export default {
                                         </template>
 
                                         <template v-slot:append>
-                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier l'établissement" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
+                                            <v-icon color="primary" :icon="icon.mdiPencil" title="Modifier les sections" style="top: 0; right: 0; display: absolute" @click="editItem(t)"></v-icon>
                                         </template>
                                     </v-toolbar>
                                 </v-img>

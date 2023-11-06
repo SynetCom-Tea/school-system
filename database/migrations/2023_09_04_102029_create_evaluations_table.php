@@ -18,6 +18,7 @@ return new class extends Migration
         Schema::create('evaluations', function (Blueprint $table) {
             $table->id();
             $table->string('date')->nullable();
+            $table->integer('notation')->nullable();
             $table->integer('pourcentage')->nullable();
             $table->integer('statut')->nullable();
             $table->foreignIdFor(\Modules\GestionNote\Entities\Periode::class)->nullable()

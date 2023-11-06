@@ -45,5 +45,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/gestion/{type}', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'gestion'])->name('admin.gestion');
         Route::get('/parametres/{type}', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'getPageParam'])->name('param.index');
         Route::post('/enregistrer_parametres', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'saveParam'])->name('param.save');
+
+        Route::get('/test', [\Modules\Enseignement\Http\Controllers\EnseignementController::class, 'test'])->name('test.index');
+
     });
 });

@@ -3,18 +3,18 @@
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
     <br>
     <div style="margin: 20px">
-        <Button class="mb-2" style="height: 40px" nameButton="Ajouter" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiPlus" @click="create">
+        <Button variant="flat" style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button-style"  nameButton="Ajouter" title="Attribution des notes" small color="primary"  :prependIcon="icon.mdiPlus" @click="create">
         </Button>
     </div>
     <v-card variant="outlined" style="border: 2px solid #7d002c;margin: 20px">
-        <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
         <v-divider></v-divider>
         <br />
         <v-row>
             <v-col md="1"></v-col>
-            <v-col md="2" >
-                    <Autocomplete  v-model="form.annee" :items="annees" item-title="libelle" item-value="id"  outlined required dense chips small-chips label="Années academiques" @update:modelValue="setClasse(form.annee)"></Autocomplete>
-                </v-col>
+            <v-col md="2">
+                <Autocomplete v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="setClasse(form.annee)"></Autocomplete>
+            </v-col>
             <v-col md="3">
                 <Autocomplete v-model="form.classe" :items="classes" :item-title="formatClasseLabel" item-value="id" @update:modelValue="requete(form.classe)" outlined required dense chips small-chips label="Classes"></Autocomplete>
             </v-col>
@@ -30,7 +30,7 @@
     <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
         <template v-slot:default="{ isActive }">
             <v-card>
-                <v-toolbar dense style="background-color: #7d002c">
+                <v-toolbar dense style="background-color: rgb(0, 73, 128)">
                     <v-toolbar-title style="color: white">
                         <v-icon left :icon="icon.mdiPencil"></v-icon> Modification
                     </v-toolbar-title>
@@ -51,7 +51,7 @@
                         </v-row>
                         <v-row>
                             <v-col md="12">
-                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator, rules.max]">
+                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator,rules.max]">
                                 </TextField>
                             </v-col>
                         </v-row>
@@ -64,17 +64,17 @@
             </v-card>
         </template>
     </v-dialog>
-    <v-card style="border: 2px solid #7d002c;margin: 20px">
-        <v-card-title style="color: white; background-color: #7d002c">Liste des notes</v-card-title>
+    <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Liste des notes</v-card-title>
         <v-divider></v-divider>
         <br />
-        <Datatable titleDatatable="Listes des notes"  :displayAddButton="false" :items="notes" :headers="headers">
+        <Datatable titleDatatable="Listes des notes" :displayAddButton="false" :items="notes" :headers="headers">
             <template v-slot:item.apprenant="{ item}">
-                {{ item.columns.apprenant.nom }} {{ item.columns.apprenant.prenom }}
+                {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
             </template>
             <template v-slot:item.action="{ item}">
-                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item.raw)"></v-icon>
-                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item.raw)"></v-icon>
+                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item)"></v-icon>
             </template>
         </Datatable>
     </v-card>
@@ -102,7 +102,7 @@ export default {
         mdiCloseCircle,
     },
     layout: AuthenticatedLayout,
-    props: ['classes', 'evaluations', 'notes','annees', 'type'],
+    props: ['classes', 'evaluations', 'notes', 'annees', 'type'],
     data() {
         return {
             icon: {
@@ -137,28 +137,28 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                max: v => v <= 20 || "La note ne doit pas dépasser 20"
+                max: v => (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation) >= v || "La note ne doit pas dépasser " + (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation)
             },
             format: useForm({
                 section_id: null,
             }),
+            type_matiere: null,
+            nom_prenom: null,
             form: useForm({
-                section_id: null,
-                type_matiere: null,
-                nom_prenom: null,
+                section_id: null, 
                 id_note: null,
                 note: null,
-                annee : null,
-                classe : null,
-                evaluation : null
+                annee: null,
+                classe: null,
+                evaluation: null
             }),
 
         }
     },
     methods: {
         create() {
-            this.format.section_id = this.type
-            this.format.get(route('note.attribution_admin'))
+            this.format.section_id = this.type,
+                this.format.get(route('note.attribution_admin'))
         },
         formatEvaluationLabel(item) {
             if (item.enseignement_annee.niveau_matiere) {
@@ -167,58 +167,72 @@ export default {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
             }
         },
-        formatClasseLabel(item){
+        formatClasseLabel(item) {
             if (this.type >= 3) {
                 return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
-            }
-            else{
-                return `${item ? item?.libelle : 'Pas de données'}`
+            } else {
+                return `${item ? item?.libelle : 'Pas de données'}`;
             }
         },
         rechercher() {
+            // this.form.evaluation = null,
             router.replace(this.$page.url, {
                 data: {
-                    evaluation: this.form.evaluation
-                }
+                    evaluation: this.form.evaluation,
+                },
+                onFinish: () => {
+                        // console.log('thjk')
+                        if (this.$page.props.flash ?.message ?.type == 'error') {
+                            this.$swal({
+                                icon: 'warning',
+                                title: 'Information',
+                                text: this.$page.props.flash ?.message ?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 10000,
+                                timerProgressBar: true,
+                            });
+                        }
+                    },
             });
             // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
         setClasse(a) {
             // console.log(this.form)
-            this.form.classe = null
-            router.replace(this.$page.url, {
-                data: {
-                    annee: a,
-                }
-            });
+            this.form.classe = null,
+                router.replace(this.$page.url, {
+                    data: {
+                        annee: a,
+                    }
+                });
         },
         requete(id) {
             // console.log(this.type)
-            this.form.evaluation = null
-            router.replace(this.$page.url, {
-                data: {
-                    classe: id
-                }
-            });
+            this.form.evaluation = null,
+                router.replace(this.$page.url, {
+                    data: {
+                        classe: id,
+                    },
+                });
             // console.log('id',id)   
         },
         edit(item) {
             // console.log(item)
-            this.dialogEdit = true
-            this.form.id_note = item.id
-            this.form.note = item.note
-            if(item.evaluation.enseignement_annee.niveau_matiere){
-            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
+            this.dialogEdit = true,
+                this.form.id_note = item.id,
+                this.form.note = item.note,
+                this.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
+            if (item.evaluation.enseignement_annee.niveau_matiere) {
+                this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
+            } else {
+                this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
             }
-            else{
-            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
-            }
-            this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
         },
         closeEdit() {
             this.dialogEdit = false
         },
-        deleteItem(item){
+        deleteItem(item) {
             this.$swal({
                 title: 'Etes-vous sûr de vouloir supprimer cette note',
                 text: "Vous ne pourrez pas revenir en arrière!!!",
@@ -232,7 +246,7 @@ export default {
                 if (result.isConfirmed) {
                     this.form.delete(route('note.destroy', item.id), {
                         onFinish: () => {
-                        if (this.$page.props.flash ?.message ?.type == 'success') {
+                            if (this.$page.props.flash ?.message ?.type == 'success') {
                                 this.$swal({
                                     icon: 'success',
                                     title: 'Suppression',
@@ -267,11 +281,10 @@ export default {
                                 timerProgressBar: true,
                             });
                         }
-
                     },
                 })
             } else {
-                this.dialogEdit = false;
+                this.dialogEdit = false
                 this.$swal({
                     icon: 'warning',
                     title: 'Attention',
@@ -283,8 +296,7 @@ export default {
                     timerProgressBar: true,
                 });
             }
-
-        }
-    }
+        },
+    },
 }
 </script>

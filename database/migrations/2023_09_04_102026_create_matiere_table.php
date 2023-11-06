@@ -64,6 +64,7 @@ return new class extends Migration
             $table->id();
             $table->string('volume_horaire')->nullable();
             $table->string('coefficient')->nullable();
+            $table->integer('notation')->nullable();
             $table->foreignIdFor(\Modules\Enseignement\Entities\Niveau::class)
                 ->index()
                 ->references('id')->on('niveaux');

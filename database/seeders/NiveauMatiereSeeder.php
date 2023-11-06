@@ -21,6 +21,7 @@ class NiveauMatiereSeeder extends Seeder
                 'volume_horaire' => 50,
                 'coefficient' => 3,
                 'niveau_id' => 10,
+                'notation'=>20,
                 'matiere_id' => 1,
 
             ),
@@ -30,6 +31,7 @@ class NiveauMatiereSeeder extends Seeder
                 'volume_horaire' => 40,
                 'coefficient' => 2,
                 'niveau_id' => 10,
+                'notation'=>20,
                 'matiere_id' => 2,
             ),
             2 =>
@@ -38,6 +40,7 @@ class NiveauMatiereSeeder extends Seeder
                 'volume_horaire' => 60,
                 'coefficient' => 5,
                 'niveau_id' => 10,
+                'notation'=>20,
                 'matiere_id' => 3,
 
             ),
@@ -47,6 +50,7 @@ class NiveauMatiereSeeder extends Seeder
                 'volume_horaire' => 30,
                 'coefficient' => 2,
                 'niveau_id' => 10,
+                'notation'=>20,
                 'matiere_id' => 9,
 
             ),
@@ -57,6 +61,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 1,
                 'niveau_id' => 3,
                 'matiere_id' => 8,
+                'notation'=>10,
 
             ),
             5 =>
@@ -66,6 +71,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 6,
+                'notation'=>20,
 
             ),
             6 =>
@@ -75,7 +81,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 7,
-
+                'notation'=>20,
             ),
             7 =>
             array(
@@ -84,7 +90,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 4,
-
+                'notation'=>20,
             ),
             8 =>
             array(
@@ -93,7 +99,7 @@ class NiveauMatiereSeeder extends Seeder
                 'coefficient' => 2,
                 'niveau_id' => 3,
                 'matiere_id' => 5,
-
+                'notation'=>20,
             ),
         ));
     }

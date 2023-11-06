@@ -4,14 +4,26 @@ import "qalendar/dist/style.css";
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiPlus, mdiTimetable } from "@mdi/js";
 import { Qalendar } from "qalendar";
+import { AgGridVue } from "@ag-grid-community/vue3";
 export default {
   layout: AuthenticatedLayout,
   components: {
     Qalendar,
+    AgGridVue,
   },
   props: ["emplois", "events", "AllClasses", "niveaux", "emplois", "sectionID"],
   data() {
     return {
+      columnDefs: [
+        { headerName: "Make", field: "make" },
+        { headerName: "Model", field: "model" },
+        { headerName: "Price", field: "price" },
+      ],
+      rowData: [
+        { make: "Toyota", model: "Celica", price: 35000 },
+        { make: "Ford", model: "Mondeo", price: 32000 },
+        { make: "Porsche", model: "Boxster", price: 72000 },
+      ],
       icon: {
         mdiPlus,
         mdiTimetable,
@@ -138,6 +150,20 @@ export default {
         </Qalendar>
       </v-card>
     </v-card-text>
+    <div>
+      <ag-grid-vue
+        class="ag-theme-alpine"
+        style="height: 500px"
+        :columnDefs="columnDefs.value"
+        :rowData="rowData.value"
+        :defaultColDef="defaultColDef"
+        rowSelection="multiple"
+        animateRows="true"
+        @cell-clicked="cellWasClicked"
+        @grid-ready="onGridReady"
+      >
+      </ag-grid-vue>
+    </div>
   </v-card>
 </template>
 
