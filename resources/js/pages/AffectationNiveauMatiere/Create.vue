@@ -130,8 +130,8 @@
                   </Button>
                 </v-col>
               </v-row>
-              <v-row>
-                <v-col offset-md="11" cols="4">
+              <v-row >
+                <v-col offset-md="10" cols="4" style="height: 90px">
                   <Button
                     type="button"
                     variant="outlined"
@@ -147,12 +147,12 @@
             </v-card-text>
             <v-card-actions class="justify-end">
                 <v-spacer></v-spacer>
-                <v-btn dark small type="button" color="red" @click="goBack">
+                <Button variant="outlined" class="mb-2" style="height: 30px" small type="button" color="red" @click="goBack">
                     <v-icon :icon="icons.mdiCancel" left></v-icon> Annuler
-                </v-btn>
-                <v-btn small color="primary" @click="submit">
-                    <v-icon :icon="icons.mdiCheckCircle" left></v-icon> Enregistrer
-                </v-btn>
+                </Button>
+                <Button variant="outlined" class="mb-2" style="height: 30px" small color="primary" @click="submit">
+                    <v-icon :icon="icons.mdiContentSave" left></v-icon> Enregistrer
+                </Button>
             </v-card-actions>
           </v-card>
           <br />
@@ -177,9 +177,9 @@
       <!-- <v-row>
               <v-col md="5"></v-col>
               <v-col md="4">
-                  <v-btn type="submit" title="enregistrer" color="info">
+                  <Button type="submit" title="enregistrer" color="info">
                       Enregistrer
-                  </v-btn>
+                  </Button>
               </v-col>
           </v-row> -->
       <br />
@@ -189,7 +189,7 @@
   // import XLSX from "xlsx/dist/xlsx.extendscript.js";
   import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
   import { router, useForm } from "@inertiajs/vue3";
-  import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCheckCircle,mdiCancel,mdiSchool } from "@mdi/js";
+  import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCheckCircle,mdiCancel,mdiSchool,mdiContentSave } from "@mdi/js";
   export default {
     layout: AuthenticatedLayout,
     props: ["section_id", "niveaux","matieres"],
@@ -199,7 +199,8 @@
       mdiInformation,
       mdiCheckCircle,
       mdiCancel,
-      mdiSchool
+      mdiSchool,
+      mdiContentSave
     },
     data: () => ({
       alertFirst: true,
@@ -207,7 +208,7 @@
       headers: [],
       data: [],
       contentType: ["code", "nom"],
-      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation,mdiCancel,mdiCheckCircle,mdiSchool },
+      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation,mdiCancel,mdiCheckCircle,mdiSchool,mdiContentSave },
       step: 1,
       importation: false,
       form: useForm({
@@ -422,7 +423,7 @@
       async verify(element) {
         if (element) {
           const array = this.form.Affectations.filter(
-            (el) => el.matiere_id !== null && el.matiere_id == element.matiere_id
+            (el) => el.matiere_id !== null && el.matiere_id == element.matiere_id && el.coefficient !== null && el.coefficient == element.coefficient && el.volume_horaire !== null && el.volume_horaire == element.volume_horaire
           );
           if (array.length > 1) {
             this.removeRow(element);

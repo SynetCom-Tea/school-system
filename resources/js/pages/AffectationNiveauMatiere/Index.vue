@@ -92,26 +92,27 @@ export default {
 
             headersup: [
                 {
-                    title: "Niveau",
-                    align: "center",
-                    key: "niveau.libelle"
-                },
-                {
                     title: "Filière/Cycle",
                     align: "center",
                     key: "cycle_filiere.code"
                 },
                 {
+                    title: "Niveau",
+                    align: "center",
+                    key: "niveau.libelle"
+                },
+
+                {
                     title: "Unités des enseignements",
                     align: "center",
                     key: "ues"
                 },
-                {
-                    title: "Matière",
-                    align: "start",
-                    sortable: false,
-                    key: "matieres",
-                },
+                // {
+                //     title: "Matière",
+                //     align: "start",
+                //     sortable: false,
+                //     key: "matieres",
+                // },
                 {
                     title: "Actions",
                     align: "center",
@@ -431,8 +432,8 @@ export default {
                 </template>
 
             <template v-slot:item.actions="{ item }">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
-                </v-icon>
+                <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
+                </v-icon> -->
                 <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>

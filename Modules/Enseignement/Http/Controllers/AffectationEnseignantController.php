@@ -414,7 +414,7 @@ class AffectationEnseignantController extends Controller
     public function update(Request $request, $id)
     {
 
-        dd($request);
+        // dd($request);
 
         $classe_annee=ClasseAnnee::with('classe')->where('id',$request->classe)->first();
         $Niveau_matiere=NiveauMatiere::where('matiere_id',$request->matiere)->where('niveau_id',$classe_annee->classe->niveau_id)->first();
