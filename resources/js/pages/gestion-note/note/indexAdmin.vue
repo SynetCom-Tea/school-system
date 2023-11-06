@@ -3,11 +3,11 @@
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
     <br>
     <div style="margin: 20px">
-        <Button class="mb-2" style="height: 40px" nameButton="Ajouter" title="Valider et Fermer la modale" small color="primary" variant="outlined" :prependIcon="icon.mdiPlus" @click="create">
+        <Button variant="flat" style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button-style"  nameButton="Ajouter" title="Attribution des notes" small color="primary"  :prependIcon="icon.mdiPlus" @click="create">
         </Button>
     </div>
     <v-card variant="outlined" style="border: 2px solid #7d002c;margin: 20px">
-        <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
         <v-divider></v-divider>
         <br />
         <v-row>
@@ -30,7 +30,7 @@
     <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
         <template v-slot:default="{ isActive }">
             <v-card>
-                <v-toolbar dense style="background-color: #7d002c">
+                <v-toolbar dense style="background-color: rgb(0, 73, 128)">
                     <v-toolbar-title style="color: white">
                         <v-icon left :icon="icon.mdiPencil"></v-icon> Modification
                     </v-toolbar-title>
@@ -64,8 +64,8 @@
             </v-card>
         </template>
     </v-dialog>
-    <v-card style="border: 2px solid #7d002c;margin: 20px">
-        <v-card-title style="color: white; background-color: #7d002c">Liste des notes</v-card-title>
+    <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Liste des notes</v-card-title>
         <v-divider></v-divider>
         <br />
         <Datatable titleDatatable="Listes des notes" :displayAddButton="false" :items="notes" :headers="headers">
@@ -142,10 +142,10 @@ export default {
             format: useForm({
                 section_id: null,
             }),
+            type_matiere: null,
+            nom_prenom: null,
             form: useForm({
-                section_id: null,
-                type_matiere: null,
-                nom_prenom: null,
+                section_id: null, 
                 id_note: null,
                 note: null,
                 annee: null,
@@ -222,11 +222,11 @@ export default {
             this.dialogEdit = true,
                 this.form.id_note = item.id,
                 this.form.note = item.note,
-                this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
+                this.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
             if (item.evaluation.enseignement_annee.niveau_matiere) {
-                this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
+                this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
             } else {
-                this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
+                this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
             }
         },
         closeEdit() {

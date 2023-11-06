@@ -286,6 +286,8 @@ class NoteController extends Controller
         }
         $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) { 
             $query1->where('classe_id',$request->classe); 
+        })->whereHas('enseignement_annee',function($enseignant) use ($request){
+            $enseignant->where('enseignant_id',$request->enseignant);
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
         // dd($request->classe);
 
