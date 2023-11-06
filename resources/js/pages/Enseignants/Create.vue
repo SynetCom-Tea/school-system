@@ -152,9 +152,9 @@
               ></v-switch>
             </v-col>
                 <v-col cols="12" md="12" v-if="!form.importation">
-               <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres">
+               <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres" >
 
-                 <v-col cols="5" md="5" style="height: 90px">
+                 <v-col cols="5" md="5" style="height: 90px" >
                    <Autocomplete
                      label="Matière"
                      placeholder="Matière"
@@ -188,7 +188,7 @@
                        >
                    </Autocomplete>
                  </v-col>
-                 <v-col  cols="2" md="2" style="height: 90px">
+                 <v-col  cols="2" md="2" >
                     <br>
                    <Button
                      type="button"
@@ -221,9 +221,9 @@
             </v-col>
 
             <v-col cols="12" md="12" v-if="form.importation && section_id=='1'">
-               <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes">
+               <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes" >
 
-                 <v-col cols="5" md="5" style="height: 90px">
+                 <v-col cols="5" md="5" style="height: 90px" >
                    <Autocomplete
                      label="Classe"
                      placeholder="Classe"
@@ -257,7 +257,7 @@
                        >
                    </Autocomplete>
                  </v-col>
-                 <v-col  cols="2" md="2" style="height: 90px">
+                 <v-col  cols="2" md="2">
                     <br>
                    <Button
                      type="button"
@@ -273,7 +273,7 @@
                    </Button>
                  </v-col>
                </v-row>
-               <v-row>
+               <v-row style="height: auto">
                  <v-col offset-md="10" cols="12">
                    <Button
                      type="button"
@@ -293,12 +293,12 @@
          </v-card-text>
          <v-card-actions class="justify-end">
      <v-spacer></v-spacer>
-     <v-btn dark small type="button" color="red" @click="goBack">
+     <Button variant="outlined" class="mb-2" style="height: 30px" small type="button" color="red" @click="goBack">
        <v-icon :icon="icons.mdiCancel" left></v-icon> Annuler
-     </v-btn>
-     <v-btn small color="primary" @click="submit">
-       <v-icon :icon="icons.mdiCheckCircle" left></v-icon> Enregistrer
-     </v-btn>
+     </Button>
+     <Button variant="outlined" class="mb-2" style="height: 30px" small color="primary" @click="submit">
+       <v-icon :icon="icons.mdiContentSave" left></v-icon> Enregistrer
+     </Button>
    </v-card-actions>
        </v-card>
      </v-container>
@@ -307,7 +307,7 @@
  <script>
  import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
  import { router, useForm } from "@inertiajs/vue3";
- import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle } from "@mdi/js";
+ import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCancel,mdiCheckCircle,mdiContentSave } from "@mdi/js";
  export default {
    layout: AuthenticatedLayout,
    props: ["matieres","section_id", "classes", 'classe_annees','niveau_matieres'],
@@ -316,12 +316,13 @@
      mdiCloseCircle,
      mdiInformation,
      mdiCancel,
-     mdiCheckCircle
+     mdiCheckCircle,
+     mdiContentSave
    },
    data: () => ({
      alertFirst: true,
      alertSecond: true,
-     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle},
+     icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle,mdiContentSave},
      step: 1,
      section: null,
      uetabs: [],

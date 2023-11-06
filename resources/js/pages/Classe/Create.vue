@@ -12,7 +12,8 @@ import {
     mdiCancel,
    mdiGoogleClassroom,
     mdiPlusCircle,
-    mdiCloseCircle
+    mdiCloseCircle,
+    mdiContentSave
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
@@ -32,7 +33,8 @@ export default {
                 mdiCancel,
                 mdiGoogleClassroom,
                 mdiPlusCircle,
-                mdiCloseCircle
+                mdiCloseCircle,
+                mdiContentSave
             },
 
             form: useForm({
@@ -263,11 +265,11 @@ export default {
         </v-card-text>
         <v-card-actions class="justify-end">
       <v-spacer></v-spacer>
-      <Button   dark small type="button" color="red" @click="goBack">
+      <Button   variant="outlined" class="mb-2" style="height: 30px" small type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </Button>
-      <Button   small color="primary" @click="submit">
-        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
+      <Button variant="outlined" class="mb-2" style="height: 30px"  small color="primary" @click="submit">
+        <v-icon :icon="icon.mdiContentSave" left></v-icon> Enregistrer
       </Button>
     </v-card-actions>
 </v-card>

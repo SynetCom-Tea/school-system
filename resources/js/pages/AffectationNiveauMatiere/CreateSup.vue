@@ -191,7 +191,7 @@
                           variant="outlined"
                           :disabled="ue.matieres ? !(ue.matieres.length > 1) : true"
                           icon
-                          @click="removeRow(ue, ue.matieres[i])"
+                          @click="removeRow(ue, ue.matieres[j])"
                           size="large"
                           small
                           color="error"
