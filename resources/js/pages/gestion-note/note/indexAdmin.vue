@@ -1,5 +1,5 @@
 <template>
-<AuthenticatedLayout>
+<!-- <AuthenticatedLayout> -->
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
     <br>
     <div style="margin: 20px">
@@ -78,7 +78,7 @@
             </template>
         </Datatable>
     </v-card>
-</AuthenticatedLayout>
+<!-- </AuthenticatedLayout> -->
 </template>
 
 <script>

@@ -75,10 +75,7 @@ class EnseignantController extends Controller
         $classe_annee = $request->classes ? ClasseAnnee::with('classe')->where('id',$request->classes)->first():null;
         $classes_annees = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($table){
             $classe->where('etablissement_section_id',$table->id);
-        })->whereHas('annee',function($anne) use ($annee){
-            $anne->where('annee_id',$annee->id);
-        })->get();
-
+        })->where('annee_id',$annee->id)->get();
         if($classe_annee!=null){
 
             $niveaumat=NiveauMatiere::with('matiere')->where('niveau_id',$classe_annee->classe->niveau_id)->get();
@@ -89,7 +86,6 @@ class EnseignantController extends Controller
                         foreach($enseignement_annee as $enseignement_anne){
                             if($enseignement_anne->classe_annee_id==$classe_annee->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
                                     $trouver=true;
-
                             }
                         }
                         if($trouver==false){

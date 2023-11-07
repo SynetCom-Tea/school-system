@@ -3,8 +3,9 @@
 namespace Modules\Enseignement\Entities;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Modules\Enseignement\Entities\EnseignementAnnee;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Enseignant extends Model
 {
@@ -17,8 +18,8 @@ class Enseignant extends Model
         return \Modules\Enseignement\Database\factories\EnseignantFactory::new();
     }
 
-    public function enseignantAnnees(): HasMany
+    public function enseignement_annees(): HasMany
     {
-        return $this->hasMany(EnseignantAnnee::class);
+        return $this->hasMany(EnseignementAnnee::class);
     }
 }
