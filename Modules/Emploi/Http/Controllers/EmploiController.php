@@ -119,7 +119,7 @@ class EmploiController extends Controller
         $dateDebut = Carbon::parse($request->date[0]);
         $dateFin = Carbon::parse($request->date[1]);
         $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
-        // dd($occurrences);
+        // dd($occurrences, $request->all());
         // dd($classeAnnee, $request->classe, Annee::find(2)->id);
         try {
             $emploi = Emploi::create([
@@ -130,11 +130,13 @@ class EmploiController extends Controller
             foreach ($occurrences as $jour => $seancesDuJour) {
                 // Vérifie s'il y a des horaires pour ce jour
                 if (count($seancesDuJour['seances']) > 0 && $seancesDuJour['seances'][0]['matiere'] != null) {
+
+                    // dd($jour, $seancesDuJour['seances'], $occurrences['Lundi']);
                     // Récupère les horaires pour ce jour
                     foreach ($seancesDuJour['seances'] as $seance) {
-                        for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
+                        // for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
                             if ($seance['matiere'] != null) {
-                                $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));
+                                // $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));
                                 // Vérifiez si $seance['salle'] existe
                                 if (isset($seance['salle'])) {
                                     $salleId = $seance['salle'];
@@ -164,12 +166,12 @@ class EmploiController extends Controller
                                         ->first()->id,
                                     'emploi_id' => $emploi->id,
                                     'salle_id' => $salleId,
-                                    'date_seance' => $dateSeance->format('Y-m-d'),
+                                    'jour' => $jour,
                                     'heure_debut' => sprintf('%02d:%02d:%02d', $seance['horaire'][0]['hours'], $seance['horaire'][0]['minutes'], $seance['horaire'][0]['seconds']),
                                     'heure_fin' => sprintf('%02d:%02d:%02d', $seance['horaire'][1]['hours'], $seance['horaire'][1]['minutes'], $seance['horaire'][1]['seconds'])
                                 ]);
                             }
-                        }
+                        // }
                     }
                 }
             }
@@ -234,28 +236,29 @@ class EmploiController extends Controller
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
-        $events = [];
+        $resultats = [];
         $emplois = [];
+        $events = [];
+        $emploiUnique = null;
         if ($request->classe != null) {
             $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id, $request->classe);
             $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->section_id, $request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->section_id, $request->classe);
-            foreach ($seances as $seance) {
-                // Extraire les heures et les minutes de heure_debut et heure_fin
-                $heureDebut = substr($seance->heure_debut, 0, 5);  // HH:MM
-                $heureFin = substr($seance->heure_fin, 0, 5);  // HH:MM
-                $event = [
-                    'title' => $seance->nom_matiere . ', ' . 'Salle de classe',
-                    'with' => $seance->enseignant_nom . ' ' . $seance->enseignant_prenom,
-                    'time' => [
-                        'start' => $seance->date_seance . ' ' . $heureDebut,
-                        'end' => $seance->date_seance . ' ' . $heureFin
-                    ],
-                    'isEditable' => true,
-                    'id' => uniqid(), // Générer un identifiant unique pour l'événement
-                    'colorScheme' => 'meetings',
-                ];
-                $events[] = $event;
+            if($request->emploi != null){
+                $emploiUnique = Emploi::find($request->emploi);
+            }else{
+                $emploiUnique = $emplois[0];
             }
+            $dateDebut = Carbon::parse($emploiUnique->date_debut);
+            $dateFin = Carbon::parse($emploiUnique->date_fin);
+            $resultats = generationCalendar($dateDebut, $dateFin, $seances);
+            // Vérification de la clé 'events' dans $resultats
+            if (isset($resultats['events'])) {
+                $events = $resultats['events'];
+            } else {
+                $events = [];
+            }
+            // dd($resultats['events']);
+            // dd($events[1],$events[567],$events[500],$events[2],$events[4],$events[300],$events[200],$events[124]);
         }
         // if($request->emploi != null){
         //     dd(Emploi::getEmploiwhitClasse($request->classe, $request->emploi));

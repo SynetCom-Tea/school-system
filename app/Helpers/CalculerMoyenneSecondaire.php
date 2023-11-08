@@ -32,7 +32,7 @@
 
             $moyenne = ($noteDeClasse + $noteDeComposition) / 2;
             $moyenneCoefficiente = ($noteDeClasseCoefficiente + $noteDeCompositionCoefficiente) / 2;
-
+            
             $details_notes[] = [
                 'nom_matiere' => $matiere,
                 'coefficient' => $coefficient,
@@ -68,5 +68,18 @@ if (!function_exists('calculateMoyenneGeneralSecondaire')) {
         }
         $averageMoyenneDetailsNotes = count($detailsNotes) > 0 ? number_format($totalMoyenne / count($detailsNotes), 2) : 0;
         return $averageMoyenneDetailsNotes;
+    }
+}
+
+if (!function_exists('ordinalSuffix')) {
+    function ordinalSuffix($num) {
+        if ($num % 10 === 1 && $num % 100 !== 11) {
+            return $num . 'er';
+        } elseif ($num % 10 === 2 && $num % 100 !== 12) {
+            return $num . 'ème';
+        } elseif ($num % 10 === 3 && $num % 100 !== 13) {
+            return $num . 'ème';
+        }
+        return $num . 'ème';
     }
 }

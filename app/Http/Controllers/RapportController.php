@@ -117,12 +117,12 @@ class RapportController extends Controller
                 });
             
                 // Assign the rank to each student within the resultatsClasse array
-                $rank = 1;
-                $prevRank = 1;
+                $rang = 1;
+                $rangPrecedent = 1;
                 foreach ($resultatsClasse as &$resultat) {
-                    $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
-                    $prevRank = $rank;
-                    $rank++;
+                    $resultat['rang'] = ordinalSuffix($rang);
+                    $rangPrecedent = $rang;
+                    $rang++;
                 }
             
                 $resultats[$classe->id] = $resultatsClasse; // Stocker les résultats de chaque classe dans le tableau principal
@@ -151,7 +151,7 @@ class RapportController extends Controller
                             'details_notes' => $details_notes // Tableau des détails des notes
                         ];
                     }
-
+                    
                     foreach ($resultatsClasse as &$resultat) {
                         $totalMoyenne = 0;
                         foreach ($resultat['details_notes'] as $details) {
