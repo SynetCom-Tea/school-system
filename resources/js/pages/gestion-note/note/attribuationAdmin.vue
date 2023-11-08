@@ -175,9 +175,10 @@ export default {
             });
         },
         setEvaluation(c) {
+            this.form.evaluation = null
             router.replace(this.$page.url, {
                 data: {
-                    classe: this.form.classe
+                    classe: c
                 }
             })
         },
@@ -315,7 +316,6 @@ export default {
             <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Saisissez les notes</v-card-title>
             <v-divider></v-divider>
             <br />
-            
             <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false" >
                 <template v-slot:item.note="{ item, index }">
                     <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!',(v) => v <= this.info || 'La note ne doit pas dépasser ' + this.info]" style="max-width: 300px"></TextField>
