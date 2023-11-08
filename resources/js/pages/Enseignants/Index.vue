@@ -60,12 +60,12 @@ export default {
           title: "Matricule",
           align: "start",
           sortable: false,
-          key: "matricule",
+          key: "enseignant.matricule",
         },
-        { title: "Nom et Prenom", align: "center", key: "NomComplet" },
-        { title: "Genre", align: "center", key: "sex" },
-        { title: "Date et Lieu de naissance", align: "center", key: "date_lieu_nais" },
-        { title: "Téléphone", align: "center", key: "telephone" },
+        { title: "Nom et Prenom", align: "center", key: "enseignant.NomComplet" },
+        { title: "Genre", align: "center", key: "enseignant.sex" },
+        { title: "Date et Lieu de naissance", align: "center", key: "enseignant.date_lieu_nais" },
+        { title: "Téléphone", align: "center", key: "enseignant.telephone" },
         { title: "Actions", align: "center", key: "actions" },
       ],
       dialog_title: "Création d'enseignant",
@@ -370,7 +370,7 @@ export default {
                     :rules="rules"
                   ></text-field>
                 </v-col>
-                <v-col cols="6" md="6"  style="height: 80px">
+                <v-col cols="6" md="6"  style="height: 80px" v-if="form.id == ''">
                     <Autocomplete
                         v-model="form.matieres"
                         isRequired
@@ -450,7 +450,7 @@ export default {
             size="small"
             class="me-2"
             title="Modifier"
-            @click="editItem(item)"
+            @click="editItem(item.enseignant)"
             :icon="icons.mdiPencil"
             color="orange"
           >
@@ -459,7 +459,7 @@ export default {
             size="small"
             class="me-2"
             title="Supprimer"
-            @click="deleteItem(item.raw)"
+            @click="deleteItem(item.enseignant)"
             :icon="icons.mdiDelete"
             color="red"
           >

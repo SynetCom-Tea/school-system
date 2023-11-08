@@ -40,7 +40,7 @@ class EnseignementController extends Controller
         return Inertia::render('Admin/accueil');
     }
 
-    
+
 
 
     // ****************************Parametrage de type frais, type document et la limite par classe par etablissement************************************
@@ -69,8 +69,8 @@ class EnseignementController extends Controller
         ",
         [
             'et_sec_id' => $et_sec_id,
-            
-        ]); 
+
+        ]);
         ;
         foreach ($request->selected_frais as $key => $type_frais_id) {
             EtablissementTypeFrais::create([
@@ -91,8 +91,8 @@ class EnseignementController extends Controller
         ",
         [
             'et_sec_id' => $et_sec_id,
-            
-        ]); 
+
+        ]);
         ;
         foreach ($request->selected_documents as $key => $type_document_id) {
             EtablissementTypeDocument::create([
@@ -126,9 +126,9 @@ class EnseignementController extends Controller
                 'text' => "Un probleme est survenu lors de l'enregistrement !",
             ]);
         }
-        
+
     }
-    
+
 
     // ********************************************************************************
 
@@ -174,6 +174,7 @@ class EnseignementController extends Controller
             'nbre_type_frais' => $nbre_type_frais,
             'nbre_enseignant' => $nbre_enseignant,
             'nbre_niveau_matiere' => $nbre_niveau_matiere,
+            'systemeLMD'=>$table->systeme_lmd_id,
         ]);
     }
 

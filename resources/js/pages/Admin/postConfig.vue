@@ -9,10 +9,10 @@
     <!-- <br> -->
     <v-card-text class="mx-auto">
         <v-row>
-           
-            
+
+
           <v-alert
-            v-model="alertFirst"
+
             border="start"
             variant="tonal"
             color="primary"
@@ -65,7 +65,7 @@
 
 
 
-            <v-col cols="auto" v-if="type == '1' || type == '2'" style="margin-left:18px;">
+            <v-col cols="auto" style="margin-left:18px;">
                 <v-card :disabled="classeCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
@@ -153,7 +153,7 @@
             </v-card>
 
         </v-col> -->
-        
+
           <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
                 <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('facultes.index')">
 
@@ -186,7 +186,7 @@
 
                 </v-card>
             </v-col>
-            <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
+            <v-col cols="auto" v-if="type <= '3' && systemeLMD !=null" style="margin-left:18px;">
                 <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
@@ -198,7 +198,7 @@
 
             </v-col>
 
-            
+
           </v-row>
 
     </v-card-text>
@@ -224,7 +224,7 @@ import {
 } from "@mdi/js";
 export default {
   layout: AuthenticatedLayout,
-  props: ["type", "niveaux", "lmd","nbre_matieres","nbre_salles","nbre_classes","nbre_type_frais","nbre_enseignant","nbre_niveau_matiere"],
+  props: ["type", "niveaux", "lmd","nbre_matieres","nbre_salles","nbre_classes","nbre_type_frais","nbre_enseignant","nbre_niveau_matiere","systemeLMD"],
   components: {
     mdiAccount,
     mdiCogOutline,
@@ -249,7 +249,7 @@ export default {
     affecEnsClaCheck: true,
     affecMatNivCheck: true,
     ensCheck: true,
-    
+
     ensCheck: true,
     icons: {
       mdiGoogleClassroom,
@@ -272,7 +272,7 @@ export default {
     }),
 
   created(){
-    if(this.nbre_matieres != 0 && this.nbre_classes != 0){
+    if(this.nbre_matieres != 0 ){
       this.affecMatNivCheck = false
     }
     if(this.nbre_matieres != 0 && this.nbre_classes != 0 && this.nbre_enseignant != 0){

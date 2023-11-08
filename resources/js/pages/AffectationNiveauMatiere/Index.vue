@@ -20,7 +20,7 @@ import {
     mdiCloseCircle,
     mdiContentSave,
     mdiCurrencyUsd,
-    mdiEye
+    mdiEye,
 } from "@mdi/js";
 export default {
     components: {
@@ -41,7 +41,7 @@ export default {
         mdiEye
     },
     layout: AuthenticatedLayout,
-    props: ["niveauMatieres", "section_id", "niveaux", "matieres"],
+    props: ["niveauMatieres", "section_id", "niveaux", "matieres","systemeLMD"],
     data() {
         return {
             icons: {
@@ -61,26 +61,38 @@ export default {
                 mdiCurrencyUsd,
                 mdiEye
             },
-            headers: [{
-                    title: "Matière",
-                    align: "start",
-                    sortable: false,
-                    key: "matiere.nom",
-                },
+            headers: [
                 {
                     title: "Niveau",
                     align: "center",
                     key: "niveau.libelle"
                 },
                 {
-                    title: "Volume Horaire",
+                    title: "Matières/Coefficients",
+                    align: "start",
+                    sortable: false,
+                    key: "matiere",
+                },
+
+                {
+                    title: "Actions",
                     align: "center",
-                    key: "volume_horaire"
+                    key: "actions"
+                },
+            ],
+
+
+            headerspri: [
+                {
+                    title: "Niveau",
+                    align: "center",
+                    key: "niveau.libelle"
                 },
                 {
-                    title: "Coefficient",
-                    align: "center",
-                    key: "coefficient"
+                    title: "Matières/Notations",
+                    align: "start",
+                    sortable: false,
+                    key: "matiere",
                 },
                 {
                     title: "Actions",
@@ -90,7 +102,7 @@ export default {
             ],
 
 
-            headersup: [
+            headersupue: [
                 {
                     title: "Filière/Cycle",
                     align: "center",
@@ -120,13 +132,46 @@ export default {
                 },
 
             ],
+
+            headersup: [
+                {
+                    title: "Filière/Cycle",
+                    align: "center",
+                    key: "cycle_filiere.code"
+                },
+                {
+                    title: "Niveau",
+                    align: "center",
+                    key: "niveau.libelle"
+                },
+
+                {
+                    title: "Les matières",
+                    align: "center",
+                    key: "matiere"
+                },
+                // {
+                //     title: "Matière",
+                //     align: "start",
+                //     sortable: false,
+                //     key: "matieres",
+                // },
+                {
+                    title: "Actions",
+                    align: "center",
+                    key: "actions"
+                },
+
+            ],
             dialog_title: "Modifier Niveau_Matière",
             dialog: false,
             target: {},
             show: false,
             form: useForm({
                 volume_horaire: "",
+                type:this.section_id,
                 coefficient: "",
+                notation: "",
                 niveau_id: "",
                 matiere_id: "",
             }),
@@ -154,10 +199,12 @@ export default {
                         this.form.niveau_id = item.niveau_id
                         this.form.volume_horaire = item.volume_horaire
                         this.form.coefficient = item.coefficient
+                        this.form.notation = item.notation
                         this.form.matiere_id = item.matiere_id
                         this.dialog = true
                     },
                     deleteItem(item) {
+                        console.log('item sup', item);
                         this.$swal({
                             title: "Es-tu sûr?",
                             text: "Vous ne pourrez pas revenir en arrière !",
@@ -169,7 +216,9 @@ export default {
                             cancelButtonText: "Non, annulez !",
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                this.form.delete(route("affectations.destroy", item.id), {
+
+                                if(this.section_id<=2){
+                                    this.form.delete(route("affectations.destroy", item.id), {
                                     onFinish: () => {
                                         if (this.$page.props.flash?.message?.type == "error") {
                                             this.$swal({
@@ -198,6 +247,39 @@ export default {
                                         }
                                     },
                                 });
+                            }else{
+                                this.form.delete(route("affectationsup.supprimer", item.id,this.section_id), {
+                                    onFinish: () => {
+                                        if (this.$page.props.flash?.message?.type == "error") {
+                                            this.$swal({
+                                                icon: "error",
+                                                title: "Suppression",
+                                                text: this.$page.props.flash?.message?.text,
+                                                toast: true,
+                                                position: "top-end",
+                                                showConfirmButton: false,
+                                                timer: 5000,
+                                                timerProgressBar: true,
+                                            });
+                                        } else if (this.$page.props.flash?.message?.type == "success") {
+                                            this.$swal({
+                                                icon: "success",
+                                                iconColor: "#004980",
+                                                color: "#004980",
+                                                title: "Suppression",
+                                                text: this.$page.props.flash?.message?.text,
+                                                toast: true,
+                                                position: "top-end",
+                                                showConfirmButton: false,
+                                                timer: 5000,
+                                                timerProgressBar: true,
+                                            });
+                                        }
+                                    },
+                                });
+
+
+                            }
                             }
                         });
                     },
@@ -239,6 +321,7 @@ export default {
                         this.form.volume_horaire = "";
                         this.form.coefficient = "";
                         this.form.matiere_id = "";
+                        this.form.notation = "";
                         this.dialog = false;
                     },
                 },
@@ -309,8 +392,11 @@ export default {
                             </v-col>
                         </v-row>
                         <v-row>
-                            <v-col cols="12" md="12">
+                            <v-col cols="12" md="12" v-if="section_id > 1">
                                 <TextField class="mt-1" type="number" label="Coefficient" placeholder="Coefficient" v-model="form.coefficient" isRequired :rules="rules"></TextField>
+                            </v-col>
+                            <v-col cols="12" md="12" v-else>
+                                <TextField class="mt-1" type="number" label="Notation" placeholder="Notation" v-model="form.notation" isRequired :rules="rules"></TextField>
                             </v-col>
                         </v-row>
                     </v-form>
@@ -335,22 +421,7 @@ export default {
                 <v-card flat class="mt-3 mb-6" >
                     <v-card>
                         <v-table dense>
-                            <thead>
-                            <tr>
-                                <th class="text-left font-weight-black">
-                                    Matières
-                                </th>
-                                <th class="text-left font-weight-black">
-                                    coefficiant
-                                </th>
-                                <th class="text-left font-weight-black">
-                                    Volume Horaire
-                                </th>
-                                <th class="text-left font-weight-black">
-                                    Actions
-                                </th>
-                                </tr>
-                             </thead>
+
                             <tbody>
                                 <tr :key="i" v-for="(t, i) in target.matieres">
                                     <td >{{ t.matiere.nom }}</td>
@@ -409,7 +480,20 @@ export default {
         </v-card>
     </v-dialog>
     <v-card-text>
-        <Datatable  v-if="section_id == 1|| section_id == 2" titleDatatable="Liste des matières par niveau" :headers="headers" :items="niveauMatieres" :functionOnClickAddButton="create">
+        <Datatable  v-if="section_id == 1" titleDatatable="Liste des matières par niveau" :headers="headerspri" :items="niveauMatieres" :functionOnClickAddButton="create">
+
+            <template v-slot:item.matiere="{ item, index}">
+                    <v-chip-group column selected-class="text-purple">
+                        <v-chip v-for="tag in item.matiere">
+                            {{ tag.matiere.nom }} => {{ 'Notation: ' }}{{ tag.notation }}
+                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange"></v-icon>
+                            <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle" >
+                            </v-icon>
+
+                        </v-chip>
+                    </v-chip-group>
+                </template>
             <template v-slot:item.actions="{ item }">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
@@ -417,14 +501,67 @@ export default {
                 </v-icon>
             </template>
         </Datatable>
+        <Datatable  v-if="section_id == 2" titleDatatable="Liste des matières par niveau" :headers="headers" :items="niveauMatieres" :functionOnClickAddButton="create">
+            <template v-slot:item.matiere="{ item, index}">
+                    <v-chip-group column selected-class="text-purple">
+                        <v-chip v-for="tag in item.matiere">
+                            {{tag.matiere.nom}} =>{{ 'Coeff: ' }} {{tag.coefficient}}
+                            <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange">
+                            </v-icon>
+                            <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle" >
+                            </v-icon>
 
-        <Datatable v-if="section_id == 3|| section_id == 4" titleDatatable="Liste des matières par niveau" :headers="headersup" :items="niveauMatieres" :functionOnClickAddButton="create">
+                        </v-chip>
+                    </v-chip-group>
+                </template>
+            <template v-slot:item.actions="{ item }">
+
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                </v-icon>
+            </template>
+        </Datatable>
+        <Datatable v-if="section_id >= 3 && systemeLMD !=null" titleDatatable="Liste des matières par niveau" :headers="headersupue" :items="niveauMatieres" :functionOnClickAddButton="create">
             <template v-slot:item.ues="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.ues">
-                            {{ tag.ue.libelle }} =>{{ 'credit: ' }} {{ tag.credit }}
-                            <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon>
-                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiDelete" color="red">
+                            {{ tag.ue.libelle }} =>
+
+                            <v-chip style="color: white; background-color: #7d002c;" :key="i" v-for="(t, i) in tag.matieres">
+                                {{ t.matiere.nom }}
+                                {{ '/ VH: ' }}{{ t.volume_horaire }}
+                                {{ ';Coeff: ' }}{{ t.coefficient }}
+                                 <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(t)" :icon="icons.mdiPencil" color="orange">
+                                </v-icon>
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(t)" :icon="icons.mdiCloseCircle">
+                                    </v-icon>
+
+                            </v-chip> {{ '   credit: ' }} {{ tag.credit }}
+
+
+                            <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">
+                            </v-icon>
+
+                        </v-chip>
+                    </v-chip-group>
+                </template>
+
+            <template v-slot:item.actions="{ item }">
+                <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
+                </v-icon> -->
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                </v-icon>
+            </template>
+        </Datatable>
+
+        <Datatable v-if="section_id >= 3 && systemeLMD ==null" titleDatatable="Liste des matières par niveau" :headers="headersup" :items="niveauMatieres" :functionOnClickAddButton="create">
+            <template v-slot:item.matiere="{ item, index}">
+                    <v-chip-group column selected-class="text-purple">
+                        <v-chip v-for="tag in item.matiere">
+                            {{ tag.matiere.nom }} =><v-chip> {{ 'VH: ' }} {{ tag.volume_horaire }}</v-chip> <v-chip>  {{ '  Coeff: ' }} {{ tag.coefficient }}</v-chip>
+                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange"></v-icon>
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">
                             </v-icon>
 
                         </v-chip>

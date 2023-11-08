@@ -17,7 +17,7 @@ import {
 } from '@mdi/js'
 export default {
     layout: AuthenticatedLayout,
-    props: ["section_id", "niveaux"],
+    props: ["section_id", "niveaux","filieres"],
     data() {
 
         return {
@@ -58,6 +58,8 @@ export default {
         addRow() {
             this.form.donnees.push({
                 niveau_id: null,
+                filiere:null,
+                niveaux:[],
                 option: null,
                 nombre: null,
                 before: null,
@@ -179,8 +181,12 @@ export default {
 
             <div style="margin: 10px">
                 <v-alert v-model="alertFirst" border="start" variant="tonal" closable close-label="Close Alert" color="primary" type="info" title="Information">
-                    <li>
-                        Cette section vous permet de créer les classes de foçon automatique en renseignant les nombres et la notation souhaiter par niveau  dans cet
+                    <li v-if="section_id <=2">
+                        Cette section vous permet de créer les classes de façon automatique en renseignant les nombres et la notation souhaiter par niveau  dans cet
+                        établissement
+                    </li>
+                    <li v-if="section_id >=3">
+                        Cette section vous permet de créer les Niveaux de façon automatique en renseignant les nombres souhaiter  dans cet
                         établissement
                     </li>
                     <li>
@@ -201,23 +207,41 @@ export default {
 
                     <v-row  :key="donnee.id" v-for="(donnee, i) in form.donnees">
                         <v-col cols="1" md="1"></v-col>
-                                <v-col cols="3" md="3" style="height: 80px">
+                                <v-col cols="4" md="4" style="height: 90px" v-if="section_id >=3">
+                                    <Autocomplete
+                                        label="Cycle/Filière"
+                                        :items="filieres"
+                                        placeholder="Cycle/Filière"
+                                        variant="outlined"
+                                        item-value="id"
+                                        class="mt-2"
+                                        item-title="code"
+                                        v-model="donnee.filiere"
+                                        isRequired
+                                        chips
+                                        :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                        >
+                                    ></Autocomplete>
+                                </v-col>
+                                <v-col cols="3" md="3" style="height: 80px" v-if="section_id <=2">
                                      <Autocomplete
                                         label="Niveau"
                                         :items="niveaux"
+                                        placeholder="Niveau"
                                         variant="outlined"
                                         item-value="id"
                                         class="mt-2"
                                         item-title="libelle"
                                         v-model="donnee.niveau_id"
                                         isRequired
+                                        chips
                                         :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
                                         >
                                     ></Autocomplete>
 
                                 </v-col>
 
-                                <v-col cols="3" md="3" style="height: 80px">
+                                <v-col cols="3" md="3" style="height: 80px" v-if="section_id <=2">
                                         <Autocomplete
                                             v-model="donnee.option"
                                             :isRequired="true"
@@ -226,12 +250,13 @@ export default {
                                             placeholder="Option"
                                             label="Option"
                                             :items="['Alphabet', 'Numérique']"
+                                            chips
                                             :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
                                         >
                                         </Autocomplete>
                                         <!-- <text-field label="Genre" placeholder="Genre" v-model="form.sex" isRequired :rules="rules"></text-field> -->
                                         </v-col>
-                                        <v-col cols="3" md="3" style="height: 80px">
+                                        <v-col cols="3" md="3" style="height: 80px" v-if="section_id <=2">
                                             <text-field
                                                 type="number"
                                                 label="Nonbre des classes"
@@ -241,6 +266,23 @@ export default {
                                                 isRequired
                                                 :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
                                             ></text-field>
+                                            </v-col>
+                                            <v-col cols="5" md="5"  v-if="section_id >=3">
+                                                <Autocomplete
+                                                    label="Niveau"
+                                                    :items="niveaux"
+                                                    placeholder="Niveau"
+                                                    variant="outlined"
+                                                    item-value="id"
+                                                    class="mt-2"
+                                                    item-title="libelle"
+                                                    v-model="donnee.niveaux"
+                                                    multiple
+                                                    chips
+                                                    isRequired
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                                    >
+                                                ></Autocomplete>
                                             </v-col>
                                 <v-col md="2">
                                     <br>

@@ -35,10 +35,13 @@ class EnseignantController extends Controller
     {
         // dd('salut');
         $ets_id = Auth::user()->etablissement_id;
-        // $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
 
-        $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
+        $enseignants= EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
+            $classe->where('etablissement_section_id',$table->id);
+        })->with('enseignant')->get();
+        // Enseignant::where('etablissement_id', $ets_id)->get();
         // View::share('type',$type);
         // dd($enseignants[0]['matricule']);
         $matiere=[];

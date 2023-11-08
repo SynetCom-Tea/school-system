@@ -24,28 +24,28 @@ class DatabaseSeeder extends Seeder
             SectionSeeder::class,
             TypeDocumentSeeder::class,
             NiveauTableSeeder::class,
-            EtablissementsTableSeeder::class,
-            EtablissementSectionTableSeeder::class,
-            ClassesTableSeeder::class,
+            // EtablissementsTableSeeder::class,
+            // EtablissementSectionTableSeeder::class,
+            // ClassesTableSeeder::class,
             AnneeScolaireSeeder::class,
-            ClasseAnneesTableSeeder::class,
-            TuteursSeeder::class,
-            ApprenantsTableSeeder::class,
+            // ClasseAnneesTableSeeder::class,
+            // TuteursSeeder::class,
+            // ApprenantsTableSeeder::class,
             // EnseignantsTableSeeder::class,
             TypeFraisSeeder::class,
             // FraisSeeder::class,
             RoleSeeder::class,
-            InscriptionsTableSeeder::class,
+            // InscriptionsTableSeeder::class,
             // VersementsTableSeeder::class,
-            ApprenantClasseAnneesTableSeeder::class,
-            SallesTableSeeder::class,
-            MatieresTableSeeder::class,
+            // ApprenantClasseAnneesTableSeeder::class,
+            // SallesTableSeeder::class,
+            // MatieresTableSeeder::class,
             // NiveauMatieresTableSeeder::class,
 
             // FraisSeeder::class,
             // VersementsSeeder::class,
             // ApprenantClasseAnneesSeeder::class,
-            PeriodeTableSeeder::class,
+            // PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
             // EvaluationsTableSeeder::class,
             // EnseignantTableSeeder::class,
@@ -60,7 +60,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(EtablissementSectionTableSeeder::class);
         // $this->call(ClassesTableSeeder::class);
         // $this->call(ClasseAnneesTableSeeder::class);
-        // $this->call(TuteursTableSeeder::class);  
+        // $this->call(TuteursTableSeeder::class);
         // $this->call(ApprenantsTableSeeder::class);
         // $this->call(EnseignantsTableSeeder::class);
         // $this->call(FraisTableSeeder::class);

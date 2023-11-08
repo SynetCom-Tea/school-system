@@ -12,6 +12,7 @@ use App\Models\Classe;
 use App\Models\ClasseAnnee;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Enseignement\Entities\Niveau;
 
 class ClasseController extends Controller
@@ -28,6 +29,8 @@ class ClasseController extends Controller
             'classes' => Classe::where('etablissement_section_id',$table->id)->get(),
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
+            'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
+                $query->where('etablissement_section_id',$table->id);})->get(),
         ]);
     }
 
@@ -37,9 +40,13 @@ class ClasseController extends Controller
      */
     public function create($type)
     {
+        $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
         return Inertia::render('Classe/Create', [
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
+            'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
+                $query->where('etablissement_section_id',$table->id);})->get(),
         ]);
     }
 
@@ -57,36 +64,37 @@ class ClasseController extends Controller
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
         foreach($request->donnees as $donnee){
-            if($donnee['option']=='Alphabet'){
-                $niveau=Niveau::find($donnee['niveau_id']);
-                // dd($niveau);
-                    for ($i = 1; $i <= $donnee['nombre']; $i++) {
-                        $classe=Classe::where('niveau_id',$niveau->id)->get();
+            if($type<=2){
+                if($donnee['option']=='Alphabet'){
+                    $niveau=Niveau::find($donnee['niveau_id']);
+                    // dd($niveau);
+                        for ($i = 1; $i <= $donnee['nombre']; $i++) {
+                            $classe=Classe::where('niveau_id',$niveau->id)->get();
 
-                        if($classe->count()!=0){
-                            $indice=$classe->count();
-                        }else{
-                            $indice=0;
+                            if($classe->count()!=0){
+                                $indice=$classe->count();
+                            }else{
+                                $indice=0;
+                            }
+
+                            $class=Classe::updateOrInsert([
+                                'code' => $niveau->code.' '.$alphabet[$indice],
+                                'libelle' => $niveau->libelle.' '.$alphabet[$indice],
+                            ],
+                            [
+                            'niveau_id' => $donnee['niveau_id'],
+                            'etablissement_section_id' => $table->id
+                            ]
+                            )->first();
+                            ClasseAnnee::updateOrInsert([
+                                'annee_id' => $annee->id,
+                                'classe_id' => $class->id
+                            ],
+                            [
+
+                            ]
+                            );
                         }
-
-                        $class=Classe::updateOrInsert([
-                            'code' => $niveau->code.' '.$alphabet[$indice],
-                            'libelle' => $niveau->libelle.' '.$alphabet[$indice],
-                        ],
-                        [
-                        'niveau_id' => $donnee['niveau_id'],
-                        'etablissement_section_id' => $table->id
-                        ]
-                        )->first();
-                        ClasseAnnee::updateOrInsert([
-                            'annee_id' => $annee->id,
-                            'classe_id' => $class->id
-                        ],
-                        [
-
-                        ]
-                        );
-                    }
             }elseif($donnee['option']== 'Numérique'){
 
 
@@ -120,7 +128,37 @@ class ClasseController extends Controller
                         );
                 }
 
-                }
+            }
+        }else{
+
+            $filiere=CycleFiliere::find($donnee['filiere']);
+            foreach ($donnee['niveaux'] as  $niveau_id) {
+                $niveau=Niveau::find($niveau_id);
+                $class=Classe::updateOrInsert([
+                    'code' => $filiere->code.'/ '.$niveau->code,
+                    'libelle' => $filiere->code.'/ '.$niveau->libelle,
+                    'niveau_id' =>$niveau->id,
+                    'cycle_filiere_id'=>$filiere->id,
+                    'etablissement_section_id' => $table->id
+                ],
+                [
+
+                ]
+                )->first();
+
+                 ClasseAnnee::updateOrInsert([
+                    'annee_id' => $annee->id,
+                    'classe_id' => $class->id
+                    ],
+                    [
+
+                    ]
+                    );
+                // dump($niveaux[$i]);
+            }
+
+
+        }
 
         }
 
