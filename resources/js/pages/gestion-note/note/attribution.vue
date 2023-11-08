@@ -228,9 +228,9 @@ export default {
 </script>
 
 <template>
-<Head title="Notes" />
+<!-- <Head title="Notes" />
 
-<AuthenticatedLayout>
+<AuthenticatedLayout> -->
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
 
     <v-card style="margin: 20px" >
@@ -283,5 +283,5 @@ export default {
             </v-card-actions>
         </v-card>
     </v-form>
-</AuthenticatedLayout>
+<!-- </AuthenticatedLayout> -->
 </template>

@@ -1,12 +1,12 @@
 <template>
-<AuthenticatedLayout>
+<!-- <AuthenticatedLayout> -->
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
     <br>
     <div style="margin: 20px">
         <Button variant="flat" style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button-style"  nameButton="Ajouter" title="Attribution des notes" small color="primary"  :prependIcon="icon.mdiPlus" @click="create">
         </Button>
     </div>
-    <v-card variant="outlined" style="border: 2px solid #7d002c;margin: 20px">
+    <v-card variant="outlined" style="border: 2px solid rgb(0, 73, 128);margin: 20px">
         <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
         <v-divider></v-divider>
         <br />
@@ -41,11 +41,11 @@
                     <v-form>
                         <v-row>
                             <v-col md="12">
-                                <TextField label="Evaluation" class="mt-1" disabled v-model="form.type_matiere">
+                                <TextField label="Evaluation" class="mt-1" disabled v-model="type_matiere">
                                 </TextField>
                             </v-col>
                             <v-col md="12">
-                                <TextField v-model="form.nom_prenom" disabled label="Nom et prenom">
+                                <TextField v-model="nom_prenom" disabled label="Nom et prenom">
                                 </TextField>
                             </v-col>
                         </v-row>
@@ -78,7 +78,7 @@
             </template>
         </Datatable>
     </v-card>
-</AuthenticatedLayout>
+<!-- </AuthenticatedLayout> -->
 </template>
 
 <script>
@@ -175,7 +175,6 @@ export default {
             }
         },
         rechercher() {
-            // this.form.evaluation = null,
             router.replace(this.$page.url, {
                 data: {
                     evaluation: this.form.evaluation,

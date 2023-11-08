@@ -160,8 +160,8 @@ export default {
 </script>
 
 <template>
-<Head title="Notes" />
-<AuthenticatedLayout>
+<!-- <Head title="Notes" />
+<AuthenticatedLayout> -->
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
     <br>
     <div style="margin: 20px">
@@ -226,5 +226,5 @@ export default {
             </template>
         </Datatable>
     </v-card>
-</AuthenticatedLayout>
+<!-- </AuthenticatedLayout> -->
 </template>

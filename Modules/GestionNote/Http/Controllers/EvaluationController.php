@@ -163,7 +163,9 @@ class EvaluationController extends Controller
         // dd($section_id);
         $regime = DB::table("etablissement_section")->where('etablissement_id',$user->etablissement_id)->where('section_id',$request->section_id)->get();
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
-        $enseignants = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get(); 
+        $enseignants = Enseignant::whereHas('enseignement_annees.classe_annee.classe',function($etat) use ($etat_section_id){
+            $etat->where('etablissement_section_id',$etat_section_id);
+        })->where('etablissement_id',Auth::user()->etablissement_id)->get(); 
         // Cycle filieres
         $filieres = $request->enseignant_id ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);
@@ -175,9 +177,7 @@ class EvaluationController extends Controller
             $enseignant->where('enseignant_id',$request->enseignant_id);
         })->get() ;
         if ($request->section_id >=3 && $request->niveau){
-            $classes = Classe::where('etablissement_section_id',$etat_section_id)->whereHas('cycle_filiere.filiere',function($filiere) use($request){
-                $filiere->where('filiere_id',$request->filiere);
-               })->whereHas('classe_annees',function($classe) use($request){
+            $classes = Classe::where('etablissement_section_id',$etat_section_id)->where('cycle_filiere_id',$request->filiere)->whereHas('classe_annees',function($classe) use($request){
                   $classe->where('annee_id',$request->annee_id);
                })->where('niveau_id',$request->niveau)->get();
         } 
@@ -196,7 +196,7 @@ class EvaluationController extends Controller
             })->get()  : [];
         }
         // dd($matieres);
-        $enseigements = $request->annee_id && $request->section_id<=2 ?  DB::select("
+        $enseigements = $request ->annee_id && $request->section_id<=2 ?  DB::select("
         SELECT ea.id,ea.code FROM enseignement_annees ea
         JOIN enseignants en ON en.id = ea.enseignant_id 
         JOIN classe_annees ca ON ca.id = ea.classe_annee_id
@@ -208,9 +208,9 @@ class EvaluationController extends Controller
         WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id AND a.id = :annee_id
         ",[
             'annee_id'=>$request->annee_id,
-           'enseignant_id'=>$request->enseignant_id,
-           'section_id'=> $request->section_id,
-           'etablissement_id'=>$user->etablissement_id
+            'enseignant_id'=>$request->enseignant_id,
+            'section_id'=> $request->section_id,
+            'etablissement_id'=>$user->etablissement_id
         ]):collect();
         
         // dd($enseigements);
@@ -223,9 +223,9 @@ class EvaluationController extends Controller
         $typeEvaluations = TypeEvaluation::all();  
         if ($request->section_id >=3){
         $evaluations = DB::select("
-            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom enseignant,ev.date,t.libelle type,
+            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.NomComplet enseignant,ev.date,t.libelle type,
             en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ca.annee_id annee_id,fnmu.niveau_id niveau_id,
-            fnmu.cycle_filiere_id filiere_id,fnmu.ue_id ue_id,c.id classe_id,m.id matiere_id,fnmu.ue_id ue_id
+            fnmu.cycle_filiere_id filiere_id,fnmu.ue_id ue_id,c.id classe_id,m.id matiere_id,fnmu.ue_id ue_id,c.libelle classe
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
             JOIN enseignants en ON en.id = ea.enseignant_id
@@ -246,8 +246,8 @@ class EvaluationController extends Controller
         // dd($evaluations);
         }else{
         $evaluations = DB::select("
-            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.nom enseignant,ev.date,t.libelle type,ea.code,ev.notation,
-            s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ca.annee_id annee_id
+            SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.NomComplet enseignant,ev.date,t.libelle type,ea.code,ev.notation,
+            s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ca.annee_id annee_id,c.libelle classe
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
             JOIN enseignants en ON en.id = ea.enseignant_id
@@ -379,38 +379,38 @@ class EvaluationController extends Controller
     { 
         // dd($request);
         if($request->ue){
-        $fnmu = FiliereNiveauMatiereUe::where('matiere_id',$request->matiere)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id',$request->ue)->get();
+            $fnmus = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id',$request->ue)->get();
         }
         else {
-            $fnmu = FiliereNiveauMatiereUe::where('matiere_id',$request->matiere)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id','=',null)->get();
+            $fnmus = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id','=',null)->get();
         }
-        // dd($fnmu[0]->id);
+        // dd($fnmus);
+        
         if ($request->section_id >=3){
-            $enseigement_anne = EnseignementAnnee::where('filiere_niveau_matiere_ue_id',$fnmu[0]->id)->where('enseignant_id',$request->enseignant_id)->whereHas('classe_annee',function($classe) use ($request){
-                $classe->where('classe_id',$request->classe)->where('annee_id',$request->annee_id);
-            })->where('niveau_matiere_id','=',null)->get();
-            $id_enseignement = $enseigement_anne[0]->id;
+                // dd($fnmu->id);
+                $enseigement_anne = EnseignementAnnee::where('filiere_niveau_matiere_ue_id',$fnmus[0]->id)->where('enseignant_id',$request->enseignant_id)->whereHas('classe_annee',function($classe) use ($request){
+                    $classe->where('classe_id',$request->classe)->where('annee_id',$request->annee_id);
+                })->where('niveau_matiere_id','=',null)->get();
+                $id_enseignement = $enseigement_anne[0]->id;
+                // dd($id_enseignement); 
+                $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$id_enseignement)->get();
+                if ($evaluation->count() == 0){
+                    $data = ['notation'=>$request->notation,'date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+                    Evaluation::create($data);
+                }
         }else {
-            $id_enseignement = $request->enseignement_annee_id;
+            foreach ($request->enseignement_annee_id as $key => $value) {
+                $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$value)->get();
+                if ($evaluation->count() == 0){
+                $data = ['notation'=>$request->notation,'date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $value , 'statut' =>0?? 'RAS'];
+                Evaluation::create($data);
+                }  
+            }
         }
+        // dd($request->enseignement_annee_id);
         // $data = $request->all();
-        $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$id_enseignement)->get();
-        if ($evaluation->count() == 0){
-        $data = ['notation'=>$request->notation,'date' => $request->date,'pourcentage' => $request->pourcentage,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
-        Evaluation::create($data);
-        return redirect()->back()->with('message', [
-            'type' => 'success',
-            'text' => "Evaluation créée avec succes",
-        ]);
-        }
-        else {
-            return redirect()->back()->with('message', [
-                'type' => 'error',
-                'text' => "Vous ne pouvez pas créer deux évaluations de même type, de même periode dans la même année avec la même matiere",
-            ]);
-        }
+        
     }
-
     /**
      * Show the specified resource.
      * @param int $id
