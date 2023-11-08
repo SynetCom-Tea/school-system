@@ -82,15 +82,15 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                // max: v => {
-                //             if (this.evaluations[0].notation) {
-                //                  return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
-                //         } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id) {
-                //             return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
-                //         } else {
-                //             return v <= 20 || "La note ne doit pas dépasser 20";
-                //         }
-                //     }
+                max: v => {
+                            if (this.evaluations[0].notation) {
+                                 return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
+                        } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id) {
+                            return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
+                        } else {
+                            return v <= 20 || "La note ne doit pas dépasser 20";
+                        }
+                    }
                 },
             form: this.$inertia.form({
                 notes: [],
@@ -105,7 +105,7 @@ export default {
                 section_id: null,
                 
             }),
-            info: ''
+            info : null
         }
     },
     created() {
@@ -152,12 +152,18 @@ export default {
             return `${item.matricule } - ${item.nom }  ${item.prenom}`
         },
         rechercher(e) {
-            // console.log(this.eleves)
             router.replace(this.$page.url, {
                 data: {
                     evaluation: e
                 }
             });
+            if (this.evaluations.filter(el => el.id == e)[0].notation != null){
+                this.info = this.evaluations.filter(el => el.id == e)[0].notation
+            }else if(this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation != null ){
+                this.info = this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere.notation 
+            } else if (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.filiere_niveau_matiere_ue_id != null || (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation == null) ){
+                this.info = 20
+            }
         },
         SetFiliere(a) {
             // console.log(this.form)
@@ -251,13 +257,16 @@ export default {
             });
         },
     },
+    // mounted(){
+    //     console.log(this.evaluations)
+    // }
 }
 </script>
 
 <template>
-<Head title="Notes" />
+<!-- <Head title="Notes" /> -->
 
-<AuthenticatedLayout>
+<!-- <AuthenticatedLayout> -->
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
 
     <v-card style="margin: 20px">
@@ -271,8 +280,8 @@ export default {
     </v-card>
     <v-form v-model="valid">
 
-        <v-card style="border: 2px solid #7d002c;margin: 20px">
-            <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
+        <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+            <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
             <v-divider></v-divider>
             <br />
             <v-row style="margin: 20px">
@@ -297,14 +306,19 @@ export default {
                 </v-col>
             </v-row>
         </v-card>
-
-        <v-card style="border: 2px solid #7d002c;margin: 20px">
-            <v-card-title style="color: white; background-color: #7d002c">Saisissez les notes</v-card-title>
+        <div style="width: 50%; padding: 10px"  v-if="form.evaluation">
+                <v-alert style="width: 50%; padding: 10px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button"    variant="tonal"  color="primary" type="info" title="Information" size="small">
+                   <u> Notation :</u> ../{{ info }}
+                </v-alert>
+            </div>
+        <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+            <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Saisissez les notes</v-card-title>
             <v-divider></v-divider>
             <br />
-            <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
+            
+            <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false" >
                 <template v-slot:item.note="{ item, index }">
-                    <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[rules.required, rules.validator,rules.max]" style="max-width: 300px"></TextField>
+                    <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!',(v) => v <= this.info || 'La note ne doit pas dépasser ' + this.info]" style="max-width: 300px"></TextField>
                 </template>
             </Datatable>
             <v-card-actions>
@@ -315,5 +329,13 @@ export default {
             </v-card-actions>
         </v-card>
     </v-form>
-</AuthenticatedLayout>
+<!-- </AuthenticatedLayout> -->
 </template>
+<style>
+.add-button:hover {
+  background-color: white;
+  box-shadow: 0px 0px 8px white;
+  transform: scale(1.05);
+  cursor: pointer;
+}
+</style>

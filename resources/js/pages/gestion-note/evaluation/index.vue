@@ -232,9 +232,9 @@ export default {
 </script>
 
 <template>
-<Head title="Dashboard" />
+<!-- <Head title="Dashboard" />
 
-<AuthenticatedLayout>
+<AuthenticatedLayout> -->
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des evaluations"></Toolbar>
     <br>
     <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="900px">
@@ -315,5 +315,5 @@ export default {
         </template>
     </Datatable>
     
-</AuthenticatedLayout>
+<!-- </AuthenticatedLayout> -->
 </template>

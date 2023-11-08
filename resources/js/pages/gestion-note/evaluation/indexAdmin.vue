@@ -64,10 +64,16 @@ export default {
                     key: 'matiere'
                 },
                 {
+                    title: 'Classe',
+                    align: 'center',
+                    key: 'classe'
+                },
+                {
                     title: 'Enseignant',
                     align: 'center',
                     key: 'enseignant'
                 },
+                
                 {
                     title: 'Date Evaluation',
                     align: 'center',
@@ -362,6 +368,7 @@ export default {
         if (this.section_id ==3 || this.section_id==4){
             this.filtrer = this.type_evaluation.filter(el => el.libelle == "Examen" || el.libelle == "TP")
         }
+        // console.log(this.evaluations)
     },
 }
 </script>

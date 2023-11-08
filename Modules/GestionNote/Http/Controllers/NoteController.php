@@ -235,6 +235,7 @@ class NoteController extends Controller
         $notes = $request->evaluation ? Note::where('statut',1)->where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : []; 
         if ($request->evaluation) {
             if ($notes->count() == 0) {
+                $notes = [];
                 return redirect()->back()->with('message',[
                     'type'=>'error',
                     'text'=>'Aucune note n\'est attribuée à cette évaluation'
@@ -257,7 +258,9 @@ class NoteController extends Controller
         $section_id = Section::where('id',$request->section_id)->get()[0]->id;
         // dd($section_id);
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
-        $enseignant = Enseignant::where('etablissement_id',Auth::user()->etablissement_id)->get(); 
+        $enseignant = Enseignant::whereHas('enseignement_annees.classe_annee.classe',function($etat) use ($etat_section_id){
+            $etat->where('etablissement_section_id',$etat_section_id);
+        })->where('etablissement_id',Auth::user()->etablissement_id)->get();  
         // Cycle filieres
         $filieres = $request->enseignant ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);

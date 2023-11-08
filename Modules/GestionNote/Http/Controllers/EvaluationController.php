@@ -225,7 +225,7 @@ class EvaluationController extends Controller
         $evaluations = DB::select("
             SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.NomComplet enseignant,ev.date,t.libelle type,
             en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ca.annee_id annee_id,fnmu.niveau_id niveau_id,
-            fnmu.cycle_filiere_id filiere_id,fnmu.ue_id ue_id,c.id classe_id,m.id matiere_id,fnmu.ue_id ue_id
+            fnmu.cycle_filiere_id filiere_id,fnmu.ue_id ue_id,c.id classe_id,m.id matiere_id,fnmu.ue_id ue_id,c.libelle classe
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
             JOIN enseignants en ON en.id = ea.enseignant_id
@@ -247,7 +247,7 @@ class EvaluationController extends Controller
         }else{
         $evaluations = DB::select("
             SELECT m.nom matiere,s.libelle section,ev.id,p.libelle,en.NomComplet enseignant,ev.date,t.libelle type,ea.code,ev.notation,
-            s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ca.annee_id annee_id
+            s.id section_id,en.id enseignant_id,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ca.annee_id annee_id,c.libelle classe
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
             JOIN enseignants en ON en.id = ea.enseignant_id
