@@ -20,6 +20,7 @@ return new class extends Migration
             $table->date('date_seance')->nullable();
             $table->time('heure_debut');
             $table->time('heure_fin');
+            $table->string('jour');
             $table->boolean('statut');
             $table->foreignIdFor(\Modules\Emploi\Entities\Horaire::class)
                 ->index()

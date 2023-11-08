@@ -43,6 +43,7 @@
             "app/Helpers/FunctionImportant.php",
             "app/Helpers/CalculerMoyennePrimaire.php",
             "app/Helpers/CalculerMoyenneSecondaire.php",
+            "app/Helpers/GenerationCalendar.php",
             "app/Helpers/GenerationRang.php"
         ]
     },

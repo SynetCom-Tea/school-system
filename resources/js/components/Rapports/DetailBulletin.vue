@@ -62,7 +62,7 @@
                     :title="'Matricule: '+data.matricule_apprenant"
                 >
                     <template v-slot:subtitle>
-                    <span class="font-weight-bold">{{ 'Nom & Prénom: ' +  data.nom_apprenant + ' ' + data.prenom_apprenant }}</span> &mdash; Moyenne: {{ data.moyenne_details_notes }}
+                    <span class="font-weight-bold">{{ 'Nom & Prénom: ' +  data.nom_apprenant + ' ' + data.prenom_apprenant }}</span> &mdash; Moyenne: {{ data.moyenne_details_notes }} - Rang {{ data.rang }}
                     </template>
                 </v-list-item>
 
@@ -128,7 +128,7 @@
         required: true
       },
       typeSection: {
-        type: Object,
+        type: null,
         required: true
       }
     },

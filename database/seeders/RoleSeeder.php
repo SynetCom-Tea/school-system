@@ -34,19 +34,7 @@ class RoleSeeder extends Seeder
                 $super_admin->assignRole($roles);
 
                 // Admin
-                $admin = User::create([
-                        'id' => 2,
-                        'email' => 'admin@univers-school.com',
-                        'password' => Hash::make('password'),
-                        'nom' => 'Admin',
-                        'etablissement_id' => 1,
-                        'prenom' => 'Etablissement',
-                        'user_id' => 1
-                ]);
-
-                $role_admin = Role::firstOrcreate(['name' => 'Administrateur']);
-                $admin->givePermissionTo(Permission::where('name', '<>','manage_system')->get());
-                $admin->assignRole($role_admin);
+               
                 /****************************************  2 éléves au collège et 2 au lycée ******************************************************/
 
                 //*Apprenant1 */
