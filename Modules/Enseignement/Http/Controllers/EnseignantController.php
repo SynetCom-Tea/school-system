@@ -35,10 +35,13 @@ class EnseignantController extends Controller
     {
         // dd('salut');
         $ets_id = Auth::user()->etablissement_id;
-        // $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
 
-        $enseignants=Enseignant::where('etablissement_id', $ets_id)->get();
+        $enseignants= EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
+            $classe->where('etablissement_section_id',$table->id);
+        })->with('enseignant')->get();
+        // Enseignant::where('etablissement_id', $ets_id)->get();
         // View::share('type',$type);
         // dd($enseignants[0]['matricule']);
         $matiere=[];
@@ -102,9 +105,7 @@ class EnseignantController extends Controller
 
             $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
                 $classe->where('etablissement_section_id',$mat->etablissement_section_id);
-            })->whereHas('annee',function($anne) use ($annee){
-                $anne->where('annee_id',$annee->id);
-            })->get();
+            })->where('annee_id',$annee->id)->get();
 
             foreach($classes as $classe){
                 $trouver=false;
@@ -136,7 +137,7 @@ class EnseignantController extends Controller
 
             $allmatiere=Matiere::where('etablissement_section_id',$table->id)->get();
             $matiere[]= $allmatiere;
-           
+
 
         // dd($classe_annees);
         return Inertia::render('Enseignants/Create', [

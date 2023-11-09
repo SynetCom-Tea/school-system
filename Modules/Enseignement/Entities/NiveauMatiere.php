@@ -12,7 +12,7 @@ class NiveauMatiere extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['volume_horaire', 'coefficient', 'niveau_id', 'matiere_id'];
+    protected $fillable = ['volume_horaire', 'coefficient', 'niveau_id', 'matiere_id','notation' ];
 
     protected static function newFactory()
     {

@@ -108,9 +108,11 @@ Route::get('Frais/{type}', [FraisController::class, 'create'])->name('frais.crea
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
 Route::delete('frais/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
 Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
+Route::delete('affectationsup/{type}', [AffectationController::class, 'supprimer'])->name('affectationsup.supprimer');
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
 Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
 Route::post('affectations/{type}', [AffectationController::class, 'store'])->name('affectations.store');
+Route::delete('frais/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
 // Route::resource('calendrierscolaire/{parameter}', CalendrierscolaireController::class);
 Route::prefix('calendrierscolaire')->group(function () {
     Route::resource('{type}', CalendrierscolaireController::class)->only(['create', 'store', 'index']);

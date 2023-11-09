@@ -327,12 +327,13 @@ export default {
                 }
             })
         },
-        setFiliere(e){
+        setFiliere(a){
             this.form.filiere = null,
             this.form.enseignement_annee_id = null
             this.$inertia.replace(this.$page.url,{
                 data : {
-                    enseignant_id: e,
+                    enseignant_id: this.form.enseignant_id,
+                    annee_id : a
                 }
             })
         },
@@ -403,7 +404,7 @@ export default {
                                         </Autocomplete> 
                                     </v-col>
                                     <v-col cols="3">
-                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setFiliere(form.enseignant_id)"      variant="outlined" :itemTitle="item => formatEnseignant(item)" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Enseignants" v-model="form.enseignant_id"  variant="outlined" :itemTitle="item => formatEnseignant(item)" item-value="id" :items="enseignants"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="3">
@@ -411,7 +412,7 @@ export default {
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="3" v-if="section_id>=3">
-                                        <Autocomplete label="Annees scolaire" v-model="form.annee_id"  variant="outlined" itemTitle="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                        <Autocomplete label="Annees scolaire" v-model="form.annee_id" @update:modelValue="setFiliere(form.annee_id)" variant="outlined" itemTitle="libelle" item-value="id" :items="annees"  :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                         </Autocomplete>
                                     </v-col>
                                     <v-col cols="3" v-if="section_id<=2">
