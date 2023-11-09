@@ -249,8 +249,6 @@ export default {
     affecEnsClaCheck: true,
     affecMatNivCheck: true,
     ensCheck: true,
-
-    ensCheck: true,
     icons: {
       mdiGoogleClassroom,
       mdiBookOpenVariant,

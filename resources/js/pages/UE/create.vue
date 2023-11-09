@@ -399,10 +399,7 @@
         }
         return valid;
       },
-      goBack() {
-        router.get(route("etablissements.index"));
-        console.log();
-      },
+     
       addRow() {
         this.form.ues.push({
           code: null,
