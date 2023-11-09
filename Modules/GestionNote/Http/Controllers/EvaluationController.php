@@ -380,7 +380,7 @@ class EvaluationController extends Controller
     public function store(Request $request)
     { 
         // dd($request);
-        if($request->ue){
+        if($request->ue){ 
             $fnmus = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id',$request->ue)->get();
         }
         else {
