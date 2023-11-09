@@ -105,12 +105,33 @@ export default {
         </div>
 
         <v-row>
-            <v-col v-for="(item, i) in getMenus" cols="4">
-                <v-card :prepend-icon="item.icon" class="mx-auto" max-width="250" :color="item.color" style="cursor: pointer" @click="goToPage(item)">
+            <v-col v-for="(item, i) in getMenus" cols="2">
+                <v-card
+                    class="mx-auto"
+                    max-width="200"
+                    style="cursor: pointer"
+                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
+                    @click="goToPage(item)"
+                >
+                    <v-img
+                        class="align-end text-white"
+                        height="150"
+                        :src="item.image"
+                        cover
+                    ></v-img>
+                    <v-card-subtitle>
+                        <div class="d-flex py-2">
+                            <v-list-item :prepend-icon="item.icon">
+                                <v-list-item-subtitle dense >{{ item.title }}</v-list-item-subtitle>
+                            </v-list-item>
+                        </div>
+                    </v-card-subtitle>
+                </v-card>
+                <!-- <v-card :prepend-icon="item.icon" class="mx-auto" max-width="250" :image="item.image" :color="item.color" style="cursor: pointer" @click="goToPage(item)">
                     <v-card-text class="py-0" :key="i">
-                        <v-card-title style="color: primary">{{ item.title }}</v-card-title>
+                        <v-card-title style="color: black">{{ item.title }}</v-card-title>
 
-                        <!-- <v-icon color="secondary" :icon="item.icon"></v-icon> -->
+                        
 
                         <div class="d-flex py-3 justify-space-between">
                             <v-list-item density="compact" :prepend-icon="icons.mdiWeatherWindy">
@@ -118,7 +139,7 @@ export default {
                             </v-list-item>
                         </div>
                     </v-card-text>
-                </v-card>
+                </v-card> -->
             </v-col>
         </v-row>
     </div>
