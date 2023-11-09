@@ -390,11 +390,12 @@ export function listMenusBySection(page, sectionID) {
      let childrenBySection = [
     {
       icon: mdiAccountGroup,
-      title: "Liste utilisateurs",
+      title: "Utilisateurs",
          link: "/users",
          color: "rgb(205,92,92)",
          note: "Ce menu permet d'accèder à la liste des utilisateurs de la section",
       expand:false,
+      image: "/assets/menusImage/users.jpg",
       permissions: "manage_system",
     },
 
@@ -405,6 +406,7 @@ export function listMenusBySection(page, sectionID) {
       color: "rgb(128,0,128)",
       note: "Ce menu permet d'accèder à la liste des inscrits de la section",
       expand:false,
+      image: "/assets/menusImage/inscription1.jpg",
       permissions: "manage_system"
     },
     {
@@ -414,6 +416,7 @@ export function listMenusBySection(page, sectionID) {
       color: "rgb(24,18,42)",
       note: "Ce menu permet d'effectuer des versements de la section",
       expand:false,
+      image: "/assets/menusImage/cash2.jpg",
       permissions: "manage_system",
     },
     {
@@ -423,6 +426,7 @@ export function listMenusBySection(page, sectionID) {
       color: "rgb(75,0,130)",
       note: "Ce menu permet d'accèder à la liste des emplois de la section",
       expand:false,
+      image: "/assets/menusImage/emploi2.png",
       permissions: "manage_system",
     },
     {
@@ -432,6 +436,7 @@ export function listMenusBySection(page, sectionID) {
       color: "#795c9d",
       note: "Ce menu permet d'ajouter un nouvel emploi de temps",
       expand:false,
+      image: "/assets/menusImage/calendar1.png",
       permissions: "manage_system",
        },
       {
@@ -441,6 +446,7 @@ export function listMenusBySection(page, sectionID) {
       color: "#641E16",
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
+      image: "/assets/menusImage/note12.png",
       permissions: "manage_system"
     },
     {
@@ -450,6 +456,7 @@ export function listMenusBySection(page, sectionID) {
       color: "#AD1457",
       note: "Ce menu permet d'ajouter les absences",
       expand:false,
+      image: "/assets/menusImage/emploi3.png",
       permissions: "manage_system"
     },
       {
@@ -459,6 +466,7 @@ export function listMenusBySection(page, sectionID) {
       color: "#5F6A6A",
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
+      image: "/assets/menusImage/note4.png",
       permissions: "manage_system"
     },
     {
@@ -468,6 +476,7 @@ export function listMenusBySection(page, sectionID) {
       color: "#3F51B5",
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
+      image: "/assets/menusImage/rapport3.png",
       permissions: "manage_system"
     },
     {
@@ -477,6 +486,7 @@ export function listMenusBySection(page, sectionID) {
       color: "#AD1457",
       note: "Ce menu permet nn",
       expand:false,
+      image: "/assets/menusImage/rapport.png",
       permissions: "manage_system"
     },
   ];
