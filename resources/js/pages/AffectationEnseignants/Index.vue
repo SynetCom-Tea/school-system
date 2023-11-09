@@ -72,6 +72,7 @@
 
                 form: useForm({
                     id:null,
+                    type:this.section_id,
                     matiere:null,
                     classe:null,
                     enseignant: null,

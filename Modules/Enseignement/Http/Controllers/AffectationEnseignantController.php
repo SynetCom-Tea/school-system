@@ -122,26 +122,45 @@ class AffectationEnseignantController extends Controller
             $trouver=false;
             if($type<=2){
                 $Niveau_matieres=NiveauMatiere::where('matiere_id',$mat->id)->get();
-            }else{
-                $Niveau_matieres=FiliereNiveauMatiereUe::where('matiere_id',$mat->id)->get();
-            }
-            foreach($Niveau_matieres as $Niveau_matiere){
+                foreach($Niveau_matieres as $Niveau_matiere){
 
-                if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id){
-                    // dump($classe->classe->niveau_id);
-                    foreach($enseignement_annee as $enseignement_anne){
-                        if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
-                                $trouver=true;
+                    if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id){
+                        // dump($classe->classe->niveau_id);
+                        foreach($enseignement_annee as $enseignement_anne){
+                            if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
+                                    $trouver=true;
 
+                            }
+                        }
+                        if($trouver==false){
+                            $classe_annees[]=$classe;
                         }
                     }
-                    if($trouver==false){
-                        $classe_annees[]=$classe;
-                    }
+
+
                 }
+            }else{
+                $Niveau_matieres=FiliereNiveauMatiereUe::where('matiere_id',$mat->id)->get();
+
+                foreach($Niveau_matieres as $Niveau_matiere){
+
+                    if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id &&  $classe->classe->cycle_filiere_id== $Niveau_matiere->cycle_filiere_id){
+                        // dump($classe->classe->niveau_id);
+                        foreach($enseignement_annee as $enseignement_anne){
+                            if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
+                                    $trouver=true;
+
+                            }
+                        }
+                        if($trouver==false){
+                            $classe_annees[]=$classe;
+                        }
+                    }
 
 
+                }
             }
+
 
 
         }
@@ -468,8 +487,10 @@ class AffectationEnseignantController extends Controller
         // dd($request);
 
         $classe_annee=ClasseAnnee::with('classe')->where('id',$request->classe)->first();
-        $Niveau_matiere=NiveauMatiere::where('matiere_id',$request->matiere)->where('niveau_id',$classe_annee->classe->niveau_id)->first();
+
         // dd($classe_annee->classe->niveau_id);
+               if($request->type<=2){
+                $Niveau_matiere=NiveauMatiere::where('matiere_id',$request->matiere)->where('niveau_id',$classe_annee->classe->niveau_id)->first();
                 EnseignementAnnee::updateOrInsert([
                     'niveau_matiere_id' => $Niveau_matiere->id,
                     'classe_annee_id' => $classe_annee->id,
@@ -481,6 +502,19 @@ class AffectationEnseignantController extends Controller
                     'updated_at' => now() // Remplissez le champ updated_at
                 ]
                 );
+            }else{
+                $Niveau_matiere=FiliereNiveauMatiereUe::where('matiere_id',$request->matiere)->where('niveau_id',$classe_annee->classe->niveau_id)->first();
+                EnseignementAnnee::updateOrInsert([
+                    'filiere_niveau_matiere_ue_id' => $Niveau_matiere->id,
+                    'classe_annee_id' => $classe_annee->id,
+                    'enseignant_id' => $request->enseignant,
+                ],
+                [
+                    'created_at' => now(), // Remplissez le champ created_at
+                    'updated_at' => now() // Remplissez le champ updated_at
+                ]
+                );
+            }
 
 
 
