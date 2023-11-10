@@ -31,7 +31,7 @@ class AffectationController extends Controller
         $cycle_filieres= CycleFiliere::with('cycle','filiere')->whereHas('filiere',function ($query) use ($table){
             $query->where('etablissement_section_id',$table->id);})->get();
         if($type >=3 && $table->systeme_lmd_id!=null ){
-            $ues=Ue::where('etablissement_id',$ets_id)->get();
+            $ues=Ue::where('etablissement_section_id',$table->id)->get();
             foreach($cycle_filieres as $cycle_filiere){
                 foreach($niveaux as $niveau){
                     $niveauMt=[];
@@ -132,7 +132,7 @@ class AffectationController extends Controller
             return Inertia::render('AffectationNiveauMatiere/CreateSup', [
                 'type' => $type,
                 'niveaux' => Niveau::where('section_id',$type)->get(),
-                'ues' => Ue::where('etablissement_id',$ets_id)->get(),
+                'ues' => Ue::where('etablissement_section_id',$table->id)->get(),
                 'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
                     $query->where('etablissement_section_id',$table->id);})->get(),
                 'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
@@ -157,13 +157,10 @@ class AffectationController extends Controller
      */
     public function store(Request $request, $type)
     {
+        $ets_id = Auth::user()->etablissement_id;
+        $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
-        if($type==3){
-            // dd($request);
-            $ets_id = Auth::user()->etablissement_id;
-            $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
-
-            if($table->systeme_lmd_id !=null){
+        if($type>=3 && $table->systeme_lmd_id !=null){
                 // dd($request->ues);
                 foreach($request->ues as $ues){
                     // dd($classe);
@@ -181,10 +178,11 @@ class AffectationController extends Controller
                             'volume_horaire' => $matiere['volume_horaire'],
                             'coefficient' => $matiere['coefficient']
                         ]
-                    );
+                        );
                     }
-                 }
-            }else{
+                }
+        }else if($type>=3 && $table->systeme_lmd_id ==null){
+                dd($type);
                 foreach($request->Affectations as $Affectation){
                     foreach($Affectation['niveau_id'] as $niv){
 
@@ -199,11 +197,11 @@ class AffectationController extends Controller
                     }
                 }
 
-            }
-        }else{
+
+        }else if($type==1){
             foreach($request->Affectations as $Affectation){
             foreach($Affectation['niveau_id'] as $niv){
-                if($type==1){
+
                     NiveauMatiere::updateOrInsert([
                         'matiere_id' => $Affectation['matiere_id'],
                         'niveau_id' => $niv,
@@ -212,7 +210,11 @@ class AffectationController extends Controller
                         ],
                         []
                     );
-                }else{
+                }
+            }
+        }else{
+            foreach($request->Affectations as $Affectation){
+                foreach($Affectation['niveau_id'] as $niv){
                     NiveauMatiere::updateOrInsert([
                             'matiere_id' => $Affectation['matiere_id'],
                             'niveau_id' => $niv,
@@ -224,7 +226,7 @@ class AffectationController extends Controller
                 }
 
             }
-    }}
+        }
         return redirect()->route('affectations.index', $type)->with('message', [
             'type' => 'success',
             'text' => "La matière a été affectée aux niveaux avec succès !",

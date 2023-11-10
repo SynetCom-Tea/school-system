@@ -446,7 +446,7 @@ export default {
     },
     async verifyUe(element) {
       if (element) {
-        const array = this.form.ues.filter((el) => el.ue !== null && el.ue == element.ue);
+        const array = this.form.ues.filter((el) => el.code_ue !== null && el.code_ue == element.code_ue|| el.nom_ue !== null && el.nom_ue == element.nom_ue);
         if (array.length > 1) {
           this.removeRowUe(element);
           this.$swal("L'élément existe déjà !");
