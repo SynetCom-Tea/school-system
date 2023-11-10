@@ -21,6 +21,7 @@ return new class extends Migration
             $table->integer('notation')->nullable();
             $table->integer('pourcentage')->nullable();
             $table->integer('statut')->nullable();
+            $table->string('session')->nullable();
             $table->foreignIdFor(\Modules\GestionNote\Entities\Periode::class)->nullable()
                 ->index()
                 ->references('id')
