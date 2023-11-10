@@ -66,13 +66,13 @@ class AffectationController extends Controller
             }
 
     // dd($niveauMat);
-    return Inertia::render('AffectationNiveauMatiere/Index', [
-        'niveauMatieres' => $niveauMat,
-        'section_id' => $type,
-        'niveaux' => Niveau::where('section_id',$type)->get(),
-        'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
-        'systemeLMD'=>$table->systeme_lmd_id,
-    ]);     // dd($niveauMat);
+            return Inertia::render('AffectationNiveauMatiere/Index', [
+                'niveauMatieres' => $niveauMat,
+                'section_id' => $type,
+                'niveaux' => Niveau::where('section_id',$type)->get(),
+                'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+                'systemeLMD'=>$table->systeme_lmd_id,
+            ]);     // dd($niveauMat);
     }else {
         if($type <= 2){
             foreach($niveaux as $niveau){
@@ -164,18 +164,23 @@ class AffectationController extends Controller
             $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
             if($table->systeme_lmd_id !=null){
+                // dd($request->ues);
                 foreach($request->ues as $ues){
+                    // dd($classe);
+                    $ue=Ue::create(['code' => $ues['code_ue'], 'libelle' => $ues['nom_ue'], 'etablissement_section_id' =>  $table->id,]);
                     foreach($ues['matieres'] as $matiere){
                         // dd($matiere);
                         FiliereNiveauMatiereUe::updateOrInsert([
                             'matiere_id' => $matiere['matiere'],
                             'niveau_id' => $request->niveau,
-                            'ue_id' => $ues['ue'],
+                            'ue_id' => $ue->id,
                             'cycle_filiere_id' => $request->filiere,
+
+                        ],
+                        [
                             'volume_horaire' => $matiere['volume_horaire'],
                             'coefficient' => $matiere['coefficient']
-                        ],
-                        []
+                        ]
                     );
                     }
                  }

@@ -350,9 +350,8 @@ export default {
     ></Toolbar>
     <br>
 <v-card variant="outlined" style="border: 2px solid #7d002c">
-    <v-card-title style="color: white; background-color: #7d002c"
-            >GESTION DES MATIERES PAR NIVEAUX</v-card-title
-          >
+    <v-card-title style="color: white; background-color: #7d002c" v-if="systemeLMD==null">GESTION DES MATIERES PAR NIVEAUX</v-card-title>
+            <v-card-title style="color: white; background-color: #7d002c" v-else>GESTION DES UNITES DES ENSEIGNEMENTS</v-card-title>
           <v-divider></v-divider>
       <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
         <template v-slot:default="{ isActive }">

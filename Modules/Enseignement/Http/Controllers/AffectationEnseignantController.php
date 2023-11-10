@@ -337,7 +337,7 @@ class AffectationEnseignantController extends Controller
                         if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id && $classe->classe->cycle_filiere_id== $Niveau_matiere->cycle_filiere_id){
                             // dump($classe->classe->niveau_id);
                             foreach($enseignement_annee as $enseignement_anne){
-                                if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
+                                if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->filiere_niveau_matiere_ue_id== $Niveau_matiere->id ){
                                         $trouver=true;
 
                                 }

@@ -357,7 +357,7 @@
                             {{ tag.classe.libelle }} =>{{ tag.matiere.nom }}
                             <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
-                            <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiDelete" color="red">
+                            <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiCloseCircle" >
                             </v-icon>
 
                         </v-chip>
