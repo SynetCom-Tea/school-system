@@ -308,6 +308,7 @@
                     placeholder="Année scolaire"
                     chips
                     v-model="form.annee"
+                    @update:modelValue="setannee()"
                     >
                 </Autocomplete>
             </v-col>
