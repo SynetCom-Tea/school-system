@@ -19,8 +19,10 @@ use App\Models\SystemeLmd;
 use App\Models\TypeDocument;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
+use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\Filiere;
+use Modules\Enseignement\Entities\FiliereNiveauMatiereUe;
 use Modules\Enseignement\Entities\NiveauMatiere;
 use Modules\Enseignement\Entities\Ue;
 use Modules\Scolarite\Entities\Departement;
@@ -160,7 +162,18 @@ class EnseignementController extends Controller
         $nbre_classes = Classe::where('etablissement_section_id',$etab_sec_id)->count();
         $nbre_type_frais = EtablissementTypeFrais::where('etablissement_section_id',$etab_sec_id)->count();
         $nbre_enseignant = Enseignant::where('etablissement_id', $ets_id)->count();
-        $nbre_niveau_matiere = NiveauMatiere::whereHas('matiere', function($query) use ($etab_sec_id){
+        if($type<=2){
+            $nbre_niveau_matiere = NiveauMatiere::whereHas('matiere', function($query) use ($etab_sec_id){
+                $query->where('etablissement_section_id',$etab_sec_id);
+            })->count();
+        }else{
+            $nbre_niveau_matiere = FiliereNiveauMatiereUe::whereHas('matiere', function($query) use ($etab_sec_id){
+                $query->where('etablissement_section_id',$etab_sec_id);
+            })->count();
+        }
+
+
+        $nbre_cycle_filiere = CycleFiliere::whereHas('filiere', function($query) use ($etab_sec_id){
             $query->where('etablissement_section_id',$etab_sec_id);
         })->count();
         // dd('salle',$nbre_salles,'matiere',$nbre_matieres,'classe',$nbre_classes,'type frais',$nbre_type_frais,'niveau matiere',$nbre_niveau_matiere,'enseignant',$nbre_enseignant);
@@ -174,6 +187,7 @@ class EnseignementController extends Controller
             'nbre_type_frais' => $nbre_type_frais,
             'nbre_enseignant' => $nbre_enseignant,
             'nbre_niveau_matiere' => $nbre_niveau_matiere,
+            'nbre_cycle_filiere' =>$nbre_cycle_filiere,
             'systemeLMD'=>$table->systeme_lmd_id,
         ]);
     }

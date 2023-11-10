@@ -94,7 +94,7 @@
             let mat=this.form.matiere;
             console.log('mat',this.form.matiere);
             router.replace(this.$page.url,{data:{matiere:mat}});
-            console.log('fdgfggg',this.classes);
+            // console.log('fdgfggg',this.classes);
 
 
         },
@@ -114,7 +114,7 @@
                 // router.get(route('AffectationEnseignants.edit',item.id ));
 
 
-                console.log('classes',this.classes)
+                // console.log('classes',this.classes)
                 this.dialog_title = 'Mise à jour d\'affectation de'+ " "+item.enseignant.NomComplet
 
                 this.form.id = item.id
@@ -229,7 +229,7 @@
         },
     computed: {
         Title() {
-            console.log('eeeef',this.enseignements);
+            // console.log('eeeef',this.enseignements);
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -357,7 +357,7 @@
                             {{ tag.classe.libelle }} =>{{ tag.matiere.nom }}
                             <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
-                            <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiDelete" color="red">
+                            <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiCloseCircle" >
                             </v-icon>
 
                         </v-chip>

@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\EtablissementSection;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -15,8 +16,8 @@ return new class extends Migration
             $table->id();
             $table->string('code')->nullable();
             $table->string('libelle')->nullable();
-            $table->foreignIdFor(\App\Models\Etablissement::class)->nullable()
-                ->index()->references('id')->on('etablissements');
+            $table->foreignIdFor(EtablissementSection::class)->nullable()
+                ->index()->references('id')->on('etablissement_section');
             $table->timestamps();
         });
     }

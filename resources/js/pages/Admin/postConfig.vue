@@ -89,13 +89,35 @@
 
             </v-col>
 
-            <v-col cols="auto" style="margin-left:18px;">
+            <v-col cols="auto" style="margin-left:18px;" v-if="systemeLMD == null">
                 <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/affectation.png'" class="text-white">
 
                     </v-img>
                     <p class="text-h6" style="text-align: center;">Affectation des matières aux niveaux</p>
+
+                </v-card>
+
+            </v-col>
+            <!-- <v-col cols="auto" v-if="type <= '3' && systemeLMD !=null" style="margin-left:18px;">
+                <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des codes Ues</p>
+
+                </v-card>
+
+            </v-col> -->
+            <v-col cols="auto" style="margin-left:18px;" v-if="systemeLMD != null">
+                <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('affectations.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:80px;" :src="'/assets/ue.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des Unités d'enseignements</p>
 
                 </v-card>
 
@@ -186,17 +208,7 @@
 
                 </v-card>
             </v-col>
-            <v-col cols="auto" v-if="type <= '3' && systemeLMD !=null" style="margin-left:18px;">
-                <v-card :disabled="affecMatNivCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('ues.index',type)">
 
-                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/ue.png'" class="text-white">
-
-                    </v-img>
-                    <p class="text-h6" style="text-align: center;">Gestion des Ues</p>
-
-                </v-card>
-
-            </v-col>
 
 
           </v-row>
@@ -224,7 +236,7 @@ import {
 } from "@mdi/js";
 export default {
   layout: AuthenticatedLayout,
-  props: ["type", "niveaux", "lmd","nbre_matieres","nbre_salles","nbre_classes","nbre_type_frais","nbre_enseignant","nbre_niveau_matiere","systemeLMD"],
+  props: ["type", "niveaux", "lmd","nbre_matieres","nbre_salles","nbre_classes","nbre_type_frais","nbre_enseignant","nbre_niveau_matiere","systemeLMD","nbre_cycle_filiere"],
   components: {
     mdiAccount,
     mdiCogOutline,
@@ -270,10 +282,16 @@ export default {
     }),
 
   created(){
-    if(this.nbre_matieres != 0 ){
-      this.affecMatNivCheck = false
+   if(this.systemeLMD==null){
+        if(this.nbre_matieres != 0 ){
+        this.affecMatNivCheck = false
+        }
+    }else{
+        if(this.nbre_matieres != 0 && this.nbre_cycle_filiere != 0 ){
+        this.affecMatNivCheck = false
+        }
     }
-    if(this.nbre_matieres != 0 && this.nbre_classes != 0 && this.nbre_enseignant != 0){
+    if(this.nbre_niveau_matiere != 0 && this.nbre_classes != 0 && this.nbre_enseignant != 0){
       this.affecEnsClaCheck = false
     }
     if(this.nbre_type_frais != 0){
