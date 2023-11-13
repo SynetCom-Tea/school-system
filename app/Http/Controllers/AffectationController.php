@@ -26,46 +26,44 @@ class AffectationController extends Controller
     {
         $ets_id = Auth::user()->etablissement_id;
         $niveauMat=collect();
+        $niveaux= Niveau::where('section_id',$type)->get();
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
-        if($type==3 || $type==4){
         $cycle_filieres= CycleFiliere::with('cycle','filiere')->whereHas('filiere',function ($query) use ($table){
-
             $query->where('etablissement_section_id',$table->id);})->get();
-            $niveaux= Niveau::where('section_id',$type)->get();
+        if($type >=3 && $table->systeme_lmd_id!=null ){
             $ues=Ue::where('etablissement_id',$ets_id)->get();
-        foreach($cycle_filieres as $cycle_filiere){
-
-            foreach($niveaux as $niveau){
-                $niveauMt=[];
-                foreach($ues as $ue){
-                $niveauM= FiliereNiveauMatiereUe::with('matiere','niveau','ue','cycle_filiere')->whereHas('matiere',function ($query) use ($table){
-                    $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
-                    $query->where('section_id',$type);})->where('cycle_filiere_id', $cycle_filiere->id)->where('niveau_id', $niveau->id)->where('ue_id', $ue->id)->get();
-                    if ($niveauM->count() != 0) {
-                        $credit=0;
-                        foreach( $niveauM as  $niveaumat){
-                            $credit=$credit+$niveaumat->coefficient;
+            foreach($cycle_filieres as $cycle_filiere){
+                foreach($niveaux as $niveau){
+                    $niveauMt=[];
+                    foreach($ues as $ue){
+                    $niveauM= FiliereNiveauMatiereUe::with('matiere','niveau','ue','cycle_filiere')->whereHas('matiere',function ($query) use ($table){
+                        $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
+                        $query->where('section_id',$type);})->where('cycle_filiere_id', $cycle_filiere->id)->where('niveau_id', $niveau->id)->where('ue_id', $ue->id)->get();
+                        if ($niveauM->count() != 0) {
+                            $credit=0;
+                            foreach( $niveauM as  $niveaumat){
+                                $credit=$credit+$niveaumat->coefficient;
+                            }
+                            $niveauMt[]=[
+                                'matieres'=>$niveauM,
+                                'ue' => $ue,
+                                'credit'=>$credit
+                            ];
                         }
-                        $niveauMt[]=[
-                            'matieres'=>$niveauM,
-                            'ue' => $ue,
-                            'credit'=>$credit
+                    }
+                    if (count($niveauMt) != 0) {
+                        // $key = $key - 1;
+                        $tabs= [
+                            'ues'=>$niveauMt,
+                            'cycle_filiere' =>$cycle_filiere,
+                            'niveau' => $niveau,
+
                         ];
+                        $niveauMat[] = $tabs;
                     }
                 }
-                    if (count($niveauMt) != 0) {
-                // $key = $key - 1;
-                $tabs= [
-                    'ues'=>$niveauMt,
-                    'cycle_filiere' =>$cycle_filiere,
-                    'niveau' => $niveau,
 
-                ];
-                $niveauMat[] = $tabs;
-                }
-        }
-
-    }
+            }
 
     // dd($niveauMat);
     return Inertia::render('AffectationNiveauMatiere/Index', [
@@ -73,21 +71,54 @@ class AffectationController extends Controller
         'section_id' => $type,
         'niveaux' => Niveau::where('section_id',$type)->get(),
         'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+        'systemeLMD'=>$table->systeme_lmd_id,
     ]);     // dd($niveauMat);
     }else {
+        if($type <= 2){
+            foreach($niveaux as $niveau){
 
-        $niveauMat = NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
+                $niveauMt= NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
 
-            $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
+                $query->where('etablissement_section_id',$table->id);})->where('niveau_id',$niveau->id)->get();
 
-            $query->where('section_id',$type);})->get();}
+                if ($niveauMt->count() != 0) {
 
+                    $niveauMat[]=[
+                        'matiere'=>$niveauMt,
+                        'niveau' => $niveau,
+                    ];
+                }
+            }
+        }else{
+            foreach($cycle_filieres as $cycle_filiere){
+                foreach($niveaux as $niveau){
+
+                    $niveauMt= FiliereNiveauMatiereUe::with('matiere','niveau','cycle_filiere')->whereHas('matiere',function ($query) use ($table){
+                        $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
+                        $query->where('section_id',$type);})->where('cycle_filiere_id', $cycle_filiere->id)->where('niveau_id', $niveau->id)->get();
+
+                    if ($niveauMt->count() != 0) {
+
+                        $niveauMat[]=[
+                            'matiere'=>$niveauMt,
+                            'niveau' => $niveau,
+                            'cycle_filiere' => $cycle_filiere,
+                        ];
+                    }
+                }
+            }
+        }
+        // dd($niveauMat);
         return Inertia::render('AffectationNiveauMatiere/Index', [
             'niveauMatieres' => $niveauMat,
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
             'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+            'systemeLMD'=>$table->systeme_lmd_id,
         ]);
+    }
+
+
     }
 
     /**
@@ -111,6 +142,9 @@ class AffectationController extends Controller
                 'section_id' => $type,
                 'niveaux' => Niveau::where('section_id',$type)->get(),
                 'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
+                'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
+                    $query->where('etablissement_section_id',$table->id);})->get(),
+                'systemeLMD'=>$table->systeme_lmd_id,
             ]);
 
 
@@ -126,31 +160,64 @@ class AffectationController extends Controller
 
         if($type==3){
             // dd($request);
-            foreach($request->ues as $ues){
+            $ets_id = Auth::user()->etablissement_id;
+            $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
-                foreach($ues['matieres'] as $matiere){
-                    // dd($matiere);
-                    FiliereNiveauMatiereUe::updateOrInsert([
-                        'matiere_id' => $matiere['matiere'],
-                        'niveau_id' => $request->niveau,
-                        'ue_id' => $ues['ue'],
-                        'cycle_filiere_id' => $request->filiere,
-                    ],
-                    ['volume_horaire' => $matiere['volume_horaire'],
-                    'coefficient' => $matiere['coefficient']]
-                );
+            if($table->systeme_lmd_id !=null){
+                foreach($request->ues as $ues){
+                    foreach($ues['matieres'] as $matiere){
+                        // dd($matiere);
+                        FiliereNiveauMatiereUe::updateOrInsert([
+                            'matiere_id' => $matiere['matiere'],
+                            'niveau_id' => $request->niveau,
+                            'ue_id' => $ues['ue'],
+                            'cycle_filiere_id' => $request->filiere,
+                            'volume_horaire' => $matiere['volume_horaire'],
+                            'coefficient' => $matiere['coefficient']
+                        ],
+                        []
+                    );
+                    }
+                 }
+            }else{
+                foreach($request->Affectations as $Affectation){
+                    foreach($Affectation['niveau_id'] as $niv){
+
+                        FiliereNiveauMatiereUe::updateOrInsert([
+                                'matiere_id' => $Affectation['matiere_id'],
+                                'niveau_id' => $niv,
+                                'volume_horaire' => $Affectation['volume_horaire'],
+                                'coefficient' => $Affectation['coefficient'],
+                                'cycle_filiere_id' => $request->filiere,
+                                ],
+                                []);
+                    }
                 }
+
             }
         }else{
             foreach($request->Affectations as $Affectation){
             foreach($Affectation['niveau_id'] as $niv){
-                NiveauMatiere::updateOrInsert([
-                    'matiere_id' => $Affectation['matiere_id'],
-                    'niveau_id' => $niv
-                ],
-                ['volume_horaire' => $Affectation['volume_horaire'],
-                'coefficient' => $Affectation['coefficient']]
-            );
+                if($type==1){
+                    NiveauMatiere::updateOrInsert([
+                        'matiere_id' => $Affectation['matiere_id'],
+                        'niveau_id' => $niv,
+                        'volume_horaire' => $Affectation['volume_horaire'],
+                        'notation' => $Affectation['coefficient']
+                        ],
+                        []
+                    );
+                }else{
+                    NiveauMatiere::updateOrInsert([
+                            'matiere_id' => $Affectation['matiere_id'],
+                            'niveau_id' => $niv,
+                            'volume_horaire' => $Affectation['volume_horaire'],
+                            'coefficient' => $Affectation['coefficient'],
+                            ],
+                            []
+                        );
+                }
+
             }
     }}
         return redirect()->route('affectations.index', $type)->with('message', [
@@ -180,10 +247,19 @@ class AffectationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        $aff = NiveauMatiere::find($id);
-        $aff->update($request->all());
-        $table = Niveau::where('id',$aff->niveau_id)->first();
-        return redirect()->route('affectations.index', $table->section_id);
+        // dd($request->type);
+        if($request->type<=2){
+            $aff = NiveauMatiere::find($id);
+            $aff->update($request->all());
+            $table = Niveau::where('id',$aff->niveau_id)->first();
+            return redirect()->route('affectations.index', $table->section_id);
+        }else{
+            $aff = FiliereNiveauMatiereUe::find($id);
+            $aff->update($request->all());
+            $table = Niveau::where('id',$aff->niveau_id)->first();
+            return redirect()->route('affectations.index', $table->section_id);
+
+        }
     }
 
     /**
@@ -192,9 +268,36 @@ class AffectationController extends Controller
     public function destroy(string $id)
     {
         try{
-            $aff = NiveauMatiere::find($id);
-            $table = Niveau::where('id',$aff->niveau_id)->first();
-            $aff->delete();
+
+                $aff = NiveauMatiere::find($id);
+                $table = Niveau::where('id',$aff->niveau_id)->first();
+                $aff->delete();
+
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                //dd($e->getCode());
+                return redirect()->route('affectations.index',$table->section_id)->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer la matière de ce niveau!",
+                ]);
+
+            }
+        }
+        return redirect()->route('affectations.index',$table->section_id)->with('message', [
+            'type' => 'success',
+            'text' => "La matière a été supprimée de ce niveau avec succès !",
+        ]);
+    }
+
+
+    public function supprimer($id)
+    {
+        try{
+                $aff = FiliereNiveauMatiereUe::find($id);
+                $table = Niveau::where('id',$aff->niveau_id)->first();
+                $aff->delete();
+
         }
         catch(\Illuminate\Database\QueryException $e){
             if($e->getCode() == "23000"){

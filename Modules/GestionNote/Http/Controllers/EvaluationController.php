@@ -167,10 +167,12 @@ class EvaluationController extends Controller
             $etat->where('etablissement_section_id',$etat_section_id);
         })->where('etablissement_id',Auth::user()->etablissement_id)->get(); 
         // Cycle filieres
-        $filieres = $request->enseignant_id ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
+        $filieres = $request->annee_id ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);
         })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant_id);
+        })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.classe_annee',function($anne) use($request){
+            $anne->where('annee_id',$request->annee_id);
         })->with('filiere','cycle')->get() : [];
         $ues = Ue::where('etablissement_id',Auth::user()->etablissement_id)->get();
         $niveaux = Niveau::where('section_id',$request->section_id)->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
@@ -378,7 +380,7 @@ class EvaluationController extends Controller
     public function store(Request $request)
     { 
         // dd($request);
-        if($request->ue){
+        if($request->ue){ 
             $fnmus = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->where('ue_id',$request->ue)->get();
         }
         else {

@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
             // FraisSeeder::class,
             // VersementsSeeder::class,
             // ApprenantClasseAnneesSeeder::class,
-            PeriodeTableSeeder::class,
+            // PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
             // EvaluationsTableSeeder::class,
             // EnseignantTableSeeder::class,
@@ -60,7 +60,7 @@ class DatabaseSeeder extends Seeder
         // $this->call(EtablissementSectionTableSeeder::class);
         // $this->call(ClassesTableSeeder::class);
         // $this->call(ClasseAnneesTableSeeder::class);
-        // $this->call(TuteursTableSeeder::class);  
+        // $this->call(TuteursTableSeeder::class);
         // $this->call(ApprenantsTableSeeder::class);
         // $this->call(EnseignantsTableSeeder::class);
         // $this->call(FraisTableSeeder::class);

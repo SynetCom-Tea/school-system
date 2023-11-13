@@ -72,6 +72,7 @@
 
                 form: useForm({
                     id:null,
+                    type:this.section_id,
                     matiere:null,
                     classe:null,
                     enseignant: null,
@@ -105,7 +106,11 @@
             //     this.$emit('input',this.form.matiere)
             // let mat=this.form.matiere;
             // console.log('mat',this.form.matiere);
+            if(this.section_id<=2){
                 router.replace(this.$page.url,{data:{matiere:item.niveau_matiere.matiere.id}});
+            }else{
+                router.replace(this.$page.url,{data:{matiere:item.filiere_niveau_matiere_ue.matiere.id}});
+            }
                 // router.get(route('AffectationEnseignants.edit',item.id ));
 
 
@@ -114,7 +119,11 @@
 
                 this.form.id = item.id
                 this.form.classe = item.classe_annee_id
-                this.form.matiere = item.niveau_matiere.matiere_id
+                if(this.section_id<=2){
+                     this.form.matiere = item.niveau_matiere.matiere_id
+                }else{
+                    this.form.matiere = item.filiere_niveau_matiere_ue.matiere_id
+                }
                 this.form.enseignant= item.enseignant_id
                 this.dialog = true
             },

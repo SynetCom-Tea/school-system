@@ -232,6 +232,7 @@ class NoteController extends Controller
         $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) { 
             $query1->where('classe_id',$request->classe); 
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
+        // dd($classes);
         $notes = $request->evaluation ? Note::where('statut',1)->where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : []; 
         if ($request->evaluation) {
             if ($notes->count() == 0) {

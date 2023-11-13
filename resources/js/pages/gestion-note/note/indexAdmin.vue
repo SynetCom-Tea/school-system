@@ -168,7 +168,7 @@ export default {
             }
         },
         formatClasseLabel(item) {
-            if (this.type >= 3) {
+            if (this.type >= 3 && item?.cycle_filiere_id != null) {
                 return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
             } else {
                 return `${item ? item?.libelle : 'Pas de données'}`;

@@ -51,7 +51,30 @@
 
 
             <v-card-text >
+                <v-row v-if="section_id==3">
+                    <v-col  md="3"></v-col>
+                    <v-col md="4" >
+                  <Autocomplete
+                    :items="filieres"
+                    variant="outlined"
+                    item-value="id"
+                    item-title="code"
+                    v-model="form.filiere"
+                    @update:modelValue="submitForm(affectation)"
+                    placeholder="Cycle/Filière"
+                    isRequired
+                    @change="verify(affectation)"
+                    label="Cycle/Filière"
+                    class="mt-2"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                  >
+                  </Autocomplete>
+                </v-col>
+
+                </v-row>
               <v-row disabled :key="affectation.id" v-for="(affectation, i) in form.Affectations">
+
+
                 <v-col md="3">
                   <Autocomplete
                     :items="matieres"
@@ -102,7 +125,20 @@
                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></TextField>
                 </v-col>
-                <v-col md="2">
+                <v-col md="2" v-if="section_id==1">
+                  <TextField
+                    label="Notation"
+                    class="mt-2"
+                    :isRequired="true"
+                    placeholder="Notation"
+                    v-model="affectation.coefficient"
+                    @change="verify(affectation)"
+                    @update:modelValue="submitForm(affectation)"
+                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                  ></TextField>
+                </v-col>
+
+                <v-col md="2" v-else>
                   <TextField
                     label="Coefficient"
                     class="mt-2"
@@ -192,7 +228,7 @@
   import { mdiCloseCircle, mdiPlusCircle, mdiInformation,mdiCheckCircle,mdiCancel,mdiSchool,mdiContentSave } from "@mdi/js";
   export default {
     layout: AuthenticatedLayout,
-    props: ["section_id", "niveaux","matieres"],
+    props: ["section_id", "niveaux","matieres","filieres"],
     components: {
       mdiPlusCircle,
       mdiCloseCircle,
@@ -212,6 +248,7 @@
       step: 1,
       importation: false,
       form: useForm({
+        filiere:'',
         Affectations: [],
       }),
     }),
