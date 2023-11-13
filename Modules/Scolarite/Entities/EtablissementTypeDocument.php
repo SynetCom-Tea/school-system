@@ -13,6 +13,7 @@ class EtablissementTypeDocument extends Model
     protected $fillable =  [
         'etablissement_section_id',
         'type_document_id',
+        'obligatoire',
         'statut'
        
     ];

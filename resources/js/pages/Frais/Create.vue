@@ -187,7 +187,7 @@ export default {
                                         variant="outlined"
                                         placeholder="TypeFrais"
                                         class="mb-2"
-                                        item-value="type_frais.id"
+                                        item-value="id"
                                         item-title="type_frais.libelle"
                                         v-model="donnee.type_frais_id"
                                         isRequired

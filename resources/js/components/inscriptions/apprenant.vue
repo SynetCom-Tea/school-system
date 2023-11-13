@@ -199,9 +199,9 @@ export default {
       }
       return valid;
     },
-    goBack() {
-      router.get(route("etablissements.index"));
-    },
+    // goBack() {
+    //   router.get(route("etablissements.index"));
+    // },
   },
   mounted() {
     this.section = this.getSection(this.type);

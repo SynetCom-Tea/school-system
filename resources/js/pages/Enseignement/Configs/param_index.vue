@@ -103,7 +103,14 @@
                             item-value="id"
                             show-select
                             class="elevation-1"
-                        ></v-data-table>
+                        >
+                        <template v-slot:item.obligatoire="{ item }">
+                            <v-checkbox
+                                v-model="item.obligatoire"
+                                :label="`${item.obligatoire}` == 'true' ? 'Oui' : 'Non'"
+                            ></v-checkbox>
+                        </template>
+                    </v-data-table>
                     </v-row>
                 </v-expansion-panel-text>
             </v-expansion-panel>
@@ -226,6 +233,7 @@
         },
         headers: [
           { title: 'Libelle', key: 'libelle' },
+          { title: 'Obligatoire', key: 'obligatoire' },
         ],
         items_frais: [],
         items_documents: [],
@@ -233,24 +241,12 @@
             nbre_limite: null,
             selected_frais: [],
             selected_documents: [],
+            selected_obligatoires: [],
             section: null
         }),
     }),
     created(){
-        if (this.liste_frais && this.liste_frais.length > 0) {
-            this.form.selected_frais = this.liste_frais.map((e)=>{
-                this.items_frais.push(e.type_frais.libelle)
-                return e.type_frais?.id
-            })
-        }
-        if (this.liste_document && this.liste_document.length > 0) {
-            this.form.selected_documents = this.liste_document.map((e)=>{
-                this.items_documents.push(e.type_document.libelle)
-                return e.type_document?.id
-            }) 
-        }
-        this.form.nbre_limite = this.nbre ? this.nbre : null
-        console.log(this.form.selected_frais,this.items_frais,this.form.selected_documents,this.items_documents);
+        this.createdHandler()
     },
     computed: {
         Title() {
@@ -268,6 +264,32 @@
         },
     },
     methods: {
+        createdHandler() {
+            console.log('liste_document',this.liste_document,'type_document',this.type_documents);
+            if (this.liste_frais && this.liste_frais.length > 0) {
+                this.form.selected_frais = this.liste_frais.map((e)=>{
+                    this.items_frais.push(e.type_frais.libelle)
+                    return e.type_frais?.id
+                })
+            }
+            if (this.liste_document && this.liste_document.length > 0) {
+                this.form.selected_documents = this.liste_document.map((e)=>{
+                    if(e){
+                        let find = this.type_documents.find((el)=> el.id == e.type_document.id)
+                        if(e.obligatoire == 1){
+                            find.obligatoire = true
+                        }
+                    }
+                    this.items_documents.push(e.type_document.libelle)
+                    return e.type_document?.id
+                }) 
+            }
+            this.form.nbre_limite = this.nbre ? this.nbre : null
+            console.log('type_document',this.type_documents,this.form.selected_frais,this.items_frais,this.form.selected_documents,this.items_documents);
+    
+            // // Vous pouvez ajouter une logique ici pour gérer les mises à jour du champ de saisie.
+            // console.log(`Mise à jour de customField pour l'élément ${item.id} : ${item.obligatoire}`);
+        },
         rowClickFrais(ids){
             let tabs = this.type_frais.filter((el) => ids.includes(el.id))
             this.items_frais = tabs.map((e)=>{
@@ -281,11 +303,11 @@
             })
         },
         submit(){
-            if(this.form.selected_frais.length == 0 || this.form.selected_documents.length == 0 || this.form.nbre_limite == null){
+            if(this.form.selected_frais.length == 0 || this.form.selected_documents.length == 0 ){
                 this.$swal({
                     icon: 'error',
                     title: 'Echec de l\'enregistrement',
-                    text: 'Les deux tableaux doivent avoir au moins une ligne cochée et le nombre limite renseigné',
+                    text: 'Les deux tableaux doivent avoir au moins une ligne cochée',
                     toast: true,
                     position: 'top-end',
                     showConfirmButton: false,
@@ -305,6 +327,10 @@
                     }).then((result) => {
                     if (result.isConfirmed) {
                         this.form.section = this.type
+                        let tabs = this.type_documents.filter(item => item.obligatoire);
+                        this.form.selected_obligatoires = tabs.map((e)=> {
+                            return e.id
+                        })
                        this.form.post(route('param.save'), {
                         onFinish: () => {
                             if(this.$page.props.flash?.message?.type == 'error'){
@@ -319,6 +345,7 @@
                                 timerProgressBar: true,
                             });
                             }else if(this.$page.props.flash?.message?.type == 'success'){
+                                this.createdHandler();
                                 this.$swal({
                                 icon: 'success',
                                 iconColor: '#004980',

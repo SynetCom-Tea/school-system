@@ -96,13 +96,15 @@ class VersementController extends Controller
         // dd($request->all());
         if($request->inscription){
             $inscription = Inscription::find($request->inscription);
-            if($request->tous_frais == '0'){
+            if(!isset($request->tous_frais) || $request->tous_frais == '0'){
                 $etab_type_frais = EtablissementTypeFrais::where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section))->where('statut',1)->where('type_frais_id',$request->type_frais)->first();
+                $frais = Frais::where('etablissement_type_frais_id',$etab_type_frais->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
+            
             }else{
                 $etab_type_frais = EtablissementTypeFrais::where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section))->where('statut',1)->with('type_frais')->get();
+                $frais = null;
             }
-           
-            $frais = $request->tous_frais !== '0' ? null : Frais::where('etablissement_type_frais_id',$etab_type_frais->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
+            // dd($etab_type_frais);
             // dd($etab_type_frais,$frais);
             if(!is_null($frais)){
                 $versement = Versement::create([

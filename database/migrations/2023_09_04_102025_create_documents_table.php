@@ -36,6 +36,7 @@ return new class extends Migration
             $table->foreignIdFor(\App\Models\EtablissementSection::class)
                 ->index()
                 ->references('id')->on('etablissement_section');
+            $table->integer('obligatoire')->nullable();
             $table->string('statut')->nullable();
             $table->timestamps();
             $table->softDeletes();
