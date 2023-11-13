@@ -64,7 +64,7 @@ class Emploi extends Model
             ->join('emplois', 'seances.emploi_id', '=', 'emplois.id')
             ->where('enseignement_annees.classe_annee_id', $classe)
             ->where('emplois.id', $emploiId)
-            ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom')
+            ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom', 'emplois.date_debut', 'emplois.date_fin')
             ->get();
         } elseif($section == 3 || $section == 4){
             $seances = Seance::join('enseignement_annees', 'seances.filiere_niveau_matiere_ue_id', '=', 'enseignement_annees.filiere_niveau_matiere_ue_id')
@@ -72,7 +72,7 @@ class Emploi extends Model
             ->join('emplois', 'seances.emploi_id', '=', 'emplois.id')
             ->where('enseignement_annees.classe_annee_id', $classe)
             ->where('emplois.id', $emploiId)
-            ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom')
+            ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom',  'emplois.date_debut', 'emplois.date_fin')
             ->get();
         }
         return $seances;

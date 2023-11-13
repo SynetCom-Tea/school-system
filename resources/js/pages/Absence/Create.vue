@@ -14,7 +14,7 @@ import {
   mdiMenuDown,
 } from "@mdi/js";
 export default {
-  props: ["sectionEnquestion", "filieres", "props_cycles", "cycle_filieres", "filiere_niveau_matiere_ues"],
+  props: ["sectionEnquestion", "filieres", "props_cycles", "cycle_filieres", "filiere_niveau_matiere_ues", "apprenants", "seancesMapped"],
   layout: AuthenticatedLayout,
   data() {
     return {
@@ -37,6 +37,7 @@ export default {
       cycles: [],
       activeStep: 1,
       form: useForm({
+        absences: [],
         section: null,
         niveau: null,
         classe: null,
@@ -49,10 +50,10 @@ export default {
     //   router.get(route("emplois.index"));
     // },
     setClasse(niveau) {
-        console.log(this.$page.props.classes)
+      console.log(this.$page.props.classes)
       this.classes = this.$page.props.classes.filter((classe) => classe.niveau_id == niveau);
     },
-    setSeance(classe) {
+    setAprenants(classe) {
       this.$inertia.replace(this.$page.url, {
         data: {
           classe: classe,
@@ -76,6 +77,15 @@ export default {
     setNiveau(niveauIds) {
       // Filtrer les niveaux en fonction des niveauIds
       this.niveaux = this.$page.props.niveaux.filter((n) => niveauIds.includes(n.id));
+    },
+    addRow() {
+      this.form.absences.push({
+        before: null,
+        after: null,
+      });
+    },
+    removeRow(p) {
+      this.form.absences = this.form.absences.filter((seance) => seance !== p);
     },
     submit() {
       console.log(this.form);
@@ -114,6 +124,7 @@ export default {
   },
   mounted() {
     this.form.section = this.sectionEnquestion.id
+    this.addRow();
   },
 };
 </script>
@@ -183,16 +194,57 @@ export default {
                       v-model="form.classe"
                       :items="classes"
                       :disabled="!form.niveau"
+                      @update:modelValue="setAprenants(form.classe)"
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
                   </v-col>
-                  <v-col>
-                    
-                  </v-col>
-                  
                 </v-row>
-                
+                <v-row
+                        v-for="(absence, absenceIndex) in form.absences"
+                        :key="absenceIndex"
+                        dense
+                      >
+                      <v-col md="5">
+                        <autocomplete
+                          label="Apprenant"
+                          v-model="absence.apprenant"
+                          :items="apprenants"
+                          :disabled="!form.classe"
+                          item-title="nom_prenom"
+                          item-value="id"
+                        ></autocomplete>
+                      </v-col>
+                        <v-col md="5">
+                          <autocomplete
+                            dense
+                            :disabled="!absence.apprenant"
+                            label="Matiere / Heure"
+                            item-title="nom_matiere_heure_debut"
+                            item-value="niveau_matiere_id"
+                            :items="seancesMapped"
+                            v-model="absence.matiere"
+                          >
+                          </autocomplete>
+                        </v-col>
+                        <v-col md="1">
+                          <v-icon
+                            color="error"
+                            :disabled="!(form.absences.length > 1)"
+                            @click="removeRow(absence)"
+                            :icon="icon.mdiCloseCircle"
+                          ></v-icon>
+                        </v-col>
+                      </v-row>
+                      <v-row dense>
+                        <v-col offset-md="11" md="1">
+                          <v-icon
+                            color="success"
+                            @click="addRow()"
+                            :icon="icon.mdiPlusCircle"
+                          ></v-icon>
+                        </v-col>
+                      </v-row>
               </v-card-text>
               <v-card-actions class="justify-end">
                 <v-spacer></v-spacer>

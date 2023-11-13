@@ -7,7 +7,7 @@ export default {
   components: {
     
   },
-  props: ["absences", "sectionID"],
+  props: ["absences", "sectionID", "niveaux"],
   data() {
     return {
       icons: {

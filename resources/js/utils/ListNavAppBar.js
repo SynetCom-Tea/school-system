@@ -470,7 +470,7 @@ export function listMenusBySection(page, sectionID) {
       permissions: "manage_system"
     },
     {
-      title: "Génération des bulletin",
+      title: "Bulletins",
       icon: mdiPencil,
       link: "generations",
       color: "#3F51B5",
