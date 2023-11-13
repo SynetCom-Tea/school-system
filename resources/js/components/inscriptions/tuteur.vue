@@ -232,10 +232,9 @@
         form: {
           tuteurs: {
             $each: helpers.forEach({
-            nom: { required, alpha },
-            prenom: { required, alpha },
-            sexe: { required },
-            tel: { required, regex: helpers.regex(/^\d{2}-\d{2}-\d{2}-\d{2}$/) }
+            nom: { alpha },
+            prenom: { alpha },
+            tel: { regex: helpers.regex(/^\d{2}-\d{2}-\d{2}-\d{2}$/) }
             })
         }
       }

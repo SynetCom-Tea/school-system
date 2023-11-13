@@ -27,7 +27,6 @@ import 'sweetalert2/dist/sweetalert2.min.css';
 import { store } from './store'
 import { VStepper } from 'vuetify/labs/VStepper'
 
-import { createWebHistory, createRouter,createWebHashHistory} from "vue-router";
 import LoginComponent from "./components/auth-page/Login.component.vue";
 
 import TextField from "../js/Components/customizedComponents/TextField.vue"
@@ -44,9 +43,6 @@ import Select from '../js/components/customizedComponents/Select.vue'
 import ModalDetailUpdate from '../js/components/customizedComponents/ModalDetailUpdate.vue'
 import Toolbar from '../js/components/customizedComponents/Toolbar.vue'
 import Datatable from "../js/components/customizedComponents/Datatable.vue"
-
-import "@ag-grid-community/styles/ag-grid.css";
-import "@ag-grid-community/styles/ag-theme-alpine.css";
 
 const options = {
     confirmButtonColor: "#3085d6",

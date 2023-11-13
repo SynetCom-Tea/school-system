@@ -72,7 +72,7 @@
         style="margin: 10px; border: 2px solid #7d002c; padding: 10px; border-radius: 25px"
         class="mt-3"
       >
-        <Datatable :displaySearch="false" :titleDatatable="inscriptions[0].versements.length == 0 ? 'Inscription inactive' : 'Les versements de '+inscriptions[0].apprenant.nom + ' ' + inscriptions[0].apprenant.prenom+' de l\'année academique '+ inscriptions[0].annee.libelle + ' immatriculé sous le N° '+inscriptions[0].apprenant.matricule" :headers="section == '1' || section == '2' ? headers : headers_sup" :items="inscriptions[0].versements"  :functionOnClickAddButton="create" :libelleButton="'Versement'">
+        <Datatable :displaySearch="false" :titleDatatable="inscriptions[0].versements.length == 0 ? 'Inscription inactive' : 'Les versements de '+inscriptions[0].apprenant.nom + ' ' + inscriptions[0].apprenant.prenom+' de l\'année academique '+ inscriptions[0].annee.libelle + ' immatriculé sous le N° '+inscriptions[0].apprenant.matricule" :headers="headers" :items="inscriptions[0].versements"  :functionOnClickAddButton="create" :libelleButton="'Versement'">
             <!-- <template v-slot:item.list="{ item, index}">
                 <v-chip-group column selected-class="text-purple">
                     <v-chip v-for="tag in item.columns.list">
@@ -97,11 +97,7 @@
             </template>
         </Datatable>
       </div>
-
-
       <!-- Exemple dialog -->
-
-    
   <v-row justify="center">
     <v-dialog
       v-model="dialog"
@@ -258,7 +254,6 @@
   import { router, useForm } from "@inertiajs/vue3";
   import { inject, provide, computed } from "vue";
   import { AtomSpinner,ScalingSquaresSpinner,HollowDotsSpinner, HalfCircleSpinner } from 'epic-spinners'
-  import Vue3Html2pdf from 'vue3-html2pdf/src/vue3-html2pdf.vue'
   import {
     mdiChevronLeft,
     mdiChevronRight,
@@ -288,7 +283,6 @@
       ScalingSquaresSpinner,
       HollowDotsSpinner,
       HalfCircleSpinner,
-      Vue3Html2pdf,
       mdiAccountCircle,
       mdiAccountSchool,
       mdiCurrencyUsd,

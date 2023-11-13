@@ -94,14 +94,16 @@ class EnseignementController extends Controller
             
         ]); 
         ;
-        foreach ($request->selected_documents as $key => $type_document_id) {
+        foreach ($request->selected_documents as $type_document_id) {
+            // Vérifiez si l'ID existe dans le deuxième tableau
+            $obligatoire = in_array($type_document_id, $request->selected_obligatoires) ? 1 : 0;
+        
             EtablissementTypeDocument::create([
                 'type_document_id' => $type_document_id,
                 'etablissement_section_id' => $et_sec_id,
+                'obligatoire' => $obligatoire,
                 'statut' => 1
             ]);
-
-            # code...
         }
 
         /////////////////////// fin type document ///////////////////////

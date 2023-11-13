@@ -132,7 +132,7 @@
                     item-value="id"
                     class="mt-3"
                     v-model="vCycle"
-                    @update:modelValue="requete()"
+                    @update:modelValue="requete(),submitForm()"
                   ></Autocomplete>
                 </v-col>
                 <v-col cols="1"></v-col>
@@ -146,6 +146,7 @@
                     item-title="code_libelle"
                     item-value="id"
                     v-model="form.cycle_filiere"
+                    @update:modelValue="submitForm()"
                     :items="setCycleFilieres"
                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
@@ -198,7 +199,6 @@
 <script>
 // import XLSX from "xlsx/dist/xlsx.extendscript.js";
 import * as XLSX from "xlsx/xlsx.mjs";
-import { ref, inject, watch } from 'vue';
 import { router, useForm } from "@inertiajs/vue3";
 import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 import { useVuelidate } from '@vuelidate/core';
@@ -226,7 +226,6 @@ export default {
     section: null,
     vCycle: null,
     resultClasse: [],
-    eventChange : inject('eventChange'),
     hint:'',
     form: useForm({
       apprenant: null,
@@ -292,30 +291,6 @@ export default {
       this.$emit('input',this.vCycle)
           router.replace(this.$page.url,{data:{cycle_id:this.vCycle}});
     },
-    // setHint(){
-    //   let frais = 0
-    //   this.$emit('input',this.form.versement)
-    //   axios
-    //     .get(
-    //       route("getfrais", {
-    //         niveau: this.form.niveau,
-    //         annee: this.form.annee
-    //       })
-    //     )
-    //     .then((res) => {
-    //       console.log('res',res.data)
-    //       if (typeof res.data == "string" || typeof res.data == "undefined") {
-            
-    //       } else {
-    //           frais = res.data ?? [];
-    //           let r = frais - this.form.versement
-    //           this.hint = 'Il vous reste '+ r + ' FCFA à payer sur ' + frais + ' FCFA'
-    //           if(r < 0){
-    //             this.form.versement = 0
-    //           }
-    //       }
-    //     });
-    // },
     async checkClasseExist(niveau) {
       if (niveau) {
         this.resultClasse = await axios
