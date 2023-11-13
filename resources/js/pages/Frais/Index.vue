@@ -36,7 +36,7 @@
             mdiCurrencyUsd
         },
         layout: AuthenticatedLayout,
-        props: ["frais","section_id", "niveaux","annees","typefrais"],
+        props: ["frais","section_id", "niveaux","annees","typefrais","filieres","filieres_annee"],
         data() {
             return {
                 icons: {
@@ -76,6 +76,7 @@
                     type_frais_id: '',
                     montant: '',
                     annee:null,
+                    filiere:null,
                     niveau_id: '',
                     annee_id: '',
                 }),
@@ -90,11 +91,12 @@
         methods:{
 
             setannee(){
-            console.log('matiere',this.form.annee);
-            // this.form.matieres[i].classes=[];
-           this.$emit('input',this.form.annee)
-           let mat=this.form.annee;
-           router.replace(this.$page.url,{data:{annee:mat}});
+                console.log('matiere',this.form.annee);
+                // this.form.matieres[i].classes=[];
+            this.$emit('input',this.form.annee)
+            let an=this.form.annee;
+            let fil=this.form.filiere;
+            router.replace(this.$page.url,{data:{annee:an,filiere:fil}});
         //    console.log('fdgfggg',this.classes);
 
 
@@ -247,7 +249,11 @@
         },
         computed: {
         Title() {
-            console.log('frais',this.frais);
+            this.form.annee=this.filieres_annee.annee.id
+            if(this.section_id>=3 && this.filieres_annee.filiere!=null){
+                this.form.filiere=this.filieres_annee.filiere.id
+            }
+            console.log('frais',this.filieres_annee);
         switch (this.section_id) {
             case "1":
             return "SECTION PRIMAIRE";
@@ -276,8 +282,9 @@
           <v-divider></v-divider>
           <br>
         <v-row>
-            <v-col cols="7" md="7" style="height: 80px"></v-col>
-            <v-col  cols="4" md="4" style="height: 80px">
+            <v-col cols="7" md="7" style="height: 80px" v-if="section_id <=2"></v-col>
+            <v-col cols="2" md="2" style="height: 80px" v-if="section_id >=3"></v-col>
+            <v-col  cols="4" md="4" style="height: 80px" v-if="section_id <=2">
                 <Autocomplete
                     label="Année scolaire"
                     :items="annees"
@@ -287,6 +294,34 @@
                     placeholder="Année scolaire"
                     chips
                     v-model="form.annee"
+                    @update:modelValue="setannee()"
+                    >
+                </Autocomplete>
+            </v-col>
+            <v-col  cols="3" md="3" style="height: 80px" v-if="section_id >=3">
+                <Autocomplete
+                    label="Année scolaire"
+                    :items="annees"
+                    variant="outlined"
+                    itemValue="id"
+                    itemTitle="libelle"
+                    placeholder="Année scolaire"
+                    chips
+                    v-model="form.annee"
+                    @update:modelValue="setannee()"
+                    >
+                </Autocomplete>
+            </v-col>
+            <v-col  cols="6" md="6" style="height: 80px" v-if="section_id >=3">
+                <Autocomplete
+                    label="Cycle/Filiere"
+                    :items="filieres"
+                    variant="outlined"
+                    itemValue="id"
+                    itemTitle="code"
+                    placeholder="Cycle/Filiere"
+                    chips
+                    v-model="form.filiere"
                     @update:modelValue="setannee()"
                     >
                 </Autocomplete>

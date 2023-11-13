@@ -9,7 +9,7 @@
     <v-container fluid>
       <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c"
-          >AFFECTATION DE MATIÈRES AUX NIVEAUX</v-card-title
+          >AJOUT DES UNITES DES ENSEIGNEMENTS</v-card-title
         >
         <v-divider></v-divider>
         <br />
@@ -89,19 +89,28 @@
 
               <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
                 <v-row>
-                    <v-col md="1"></v-col>
-                  <v-col md="6">
-                    <Autocomplete
-                      label="Unité d'enseignement"
-                      class="mt-2"
-                      item-title="libelle"
-                      item-value="id"
-                      :items="ues"
-                      v-model="ue.ue"
-                      @update:modelValue="submitForm(form.ues[i], null, null)"
-                      chips
-                    >
-                    </Autocomplete>
+                    <v-col md="2"></v-col>
+                  <v-col md="4">
+                    <TextField
+                          label="Code UE"
+                          class="mt-2"
+                          placeholder="Code UE"
+                          isRequired
+                          v-model="ue.code_ue"
+                          @update:modelValue="submitForm(form.ues[i], null, null)"
+                        ></TextField>
+
+                  </v-col>
+                  <v-col md="4">
+                    <TextField
+                          label="Nom UE"
+                          class="mt-2"
+                          placeholder="Nom UE"
+                          isRequired
+                          v-model="ue.nom_ue"
+                          @update:modelValue="submitForm(form.ues[i], null, null)"
+                        ></TextField>
+
                   </v-col>
                   <!-- <v-col md="3">
                     <TextField
@@ -289,7 +298,7 @@ export default {
 
   methods: {
     goBack() {
-            router.get(route('affectations.index', this.section_id))
+            router.get(route('affectations.index',this.type))
         },
     onclickAlertButton(type) {
       if (type == "second") {
@@ -352,13 +361,16 @@ export default {
       this.$emit("niveauMatiereSupFormValid", this.isValid());
     },
     async checkNiveauMatiereForm() {
+        console.log("salut");
       let valid = true;
       for (let i = 0; i < this.form.ues.length; i++) {
         const ue = this.form.ues[i];
         if (
-          !ue.ue ||
-          ue.ue == "" ||
-          ue.ue == null
+
+          ue.code_ue == "" ||
+          ue.code_ue == null||
+          ue.nom_ue == "" ||
+          ue.nom_ue == null
 
         ) {
           valid = false;
@@ -407,6 +419,8 @@ export default {
     addRowUe() {
       this.form.ues.push({
         ue_id: null,
+        code_ue:null,
+        nom_ue:null,
         // credit: 0,
         // volume_horaire: 0,
         matieres: [],
@@ -432,7 +446,7 @@ export default {
     },
     async verifyUe(element) {
       if (element) {
-        const array = this.form.ues.filter((el) => el.ue !== null && el.ue == element.ue);
+        const array = this.form.ues.filter((el) => el.code_ue !== null && el.code_ue == element.code_ue|| el.nom_ue !== null && el.nom_ue == element.nom_ue);
         if (array.length > 1) {
           this.removeRowUe(element);
           this.$swal("L'élément existe déjà !");

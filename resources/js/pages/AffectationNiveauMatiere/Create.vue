@@ -442,7 +442,7 @@
         return valid;
       },
       goBack() {
-            router.get(route('affectations.index', this.section_id))
+            router.get(route('affectations.index',this.section_id))
         },
       addRow() {
         this.form.Affectations.push({

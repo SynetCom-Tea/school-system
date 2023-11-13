@@ -19,6 +19,7 @@ use Inertia\Inertia;
 use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\EnseignantMatiere;
 use Modules\Enseignement\Entities\EnseignementAnnee;
+use Modules\Enseignement\Entities\FiliereNiveauMatiereUe;
 use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\NiveauMatiere;
 use Spatie\LaravelIgnition\Recorders\DumpRecorder\Dump;
@@ -38,17 +39,26 @@ class EnseignantController extends Controller
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
 
-        $enseignants= EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
-            $classe->where('etablissement_section_id',$table->id);
-        })->with('enseignant')->get();
-        // Enseignant::where('etablissement_id', $ets_id)->get();
+        $enseignants=[];
+
+        $Allenseignant=Enseignant::where('etablissement_id', $ets_id)->get();
+        foreach($Allenseignant as $enseignant){
+            $ens= EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
+                $classe->where('etablissement_section_id',$table->id);
+            })->where('enseignant_id',$enseignant->id)->with('enseignant')->first();
+            if($ens!=null){
+                $enseignants[]=$ens;
+            }
+        }
+
+
         // View::share('type',$type);
         // dd($enseignants[0]['matricule']);
         $matiere=[];
-        $etablissement_section_id= DB::table('etablissement_section')->where('etablissement_id', $ets_id)->get();
-        foreach($etablissement_section_id as $etablissement_section){
-            $matiere[]=Matiere::where('etablissement_section_id' ,$etablissement_section->id)->get();
-        }
+
+        $allmatiere=Matiere::where('etablissement_section_id',$table->id)->get();
+        $matiere[]= $allmatiere;
+
         // dd($matiere);
         return Inertia::render('Enseignants/Index', [
             'enseignants' => $enseignants,
@@ -71,7 +81,7 @@ class EnseignantController extends Controller
         // $matiere=[];
         $classe_annees=[];
         $niveaumatieres=[];
-        $etablissement_section_id= DB::table('etablissement_section')->where('etablissement_id', $ets_id)->get();
+        // $etablissement_section_id= DB::table('etablissement_section')->where('etablissement_id', $ets_id)->get();
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
         $mat = $request->matiere ? Matiere::where('id',$request->matiere)->first():null;
@@ -102,29 +112,54 @@ class EnseignantController extends Controller
 
         if($mat!=null){
 
-
             $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
                 $classe->where('etablissement_section_id',$mat->etablissement_section_id);
-            })->where('annee_id',$annee->id)->get();
+            })->whereHas('annee',function($anne) use ($annee){
+                $anne->where('annee_id',$annee->id);
+            })->get();
+            // $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
+            //     $classe->where('etablissement_section_id',$mat->etablissement_section_id);
+            // })->where('annee_id',$annee->id)->get();
 
             foreach($classes as $classe){
                 $trouver=false;
-                $Niveau_matieres=NiveauMatiere::where('matiere_id',$mat->id)->get();
+                if($type<=2){
+                    $Niveau_matieres=NiveauMatiere::where('matiere_id',$mat->id)->get();
+                }else{
+                    $Niveau_matieres=FiliereNiveauMatiereUe::where('matiere_id',$mat->id)->get();
+                }
                 foreach($Niveau_matieres as $Niveau_matiere){
+                    if($type<=2){
+                        if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id){
+                            // dd($classe->classe->niveau_id);
+                            foreach($enseignement_annee as $enseignement_anne){
+                                if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
+                                        $trouver=true;
 
-                    if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id){
-                        // dd($classe->classe->niveau_id);
-                        foreach($enseignement_annee as $enseignement_anne){
-                            if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->niveau_matiere_id== $Niveau_matiere->id ){
-                                    $trouver=true;
-
+                                }
+                            }
+                            if($trouver==false){
+                                $classe_annees[]=$classe;
                             }
                         }
-                        if($trouver==false){
-                            $classe_annees[]=$classe;
-                        }
-                    }
+                    }else{
 
+                            if( $classe->classe->niveau_id== $Niveau_matiere->niveau_id && $classe->classe->cycle_filiere_id== $Niveau_matiere->cycle_filiere_id){
+
+                                foreach($enseignement_annee as $enseignement_anne){
+                                    // dump($enseignement_anne->niveau_matiere_id== $Niveau_matiere->id, $Niveau_matieres);
+                                    if($enseignement_anne->classe_annee_id==$classe->id &&  $enseignement_anne->filiere_niveau_matiere_ue_id== $Niveau_matiere->id ){
+                                            $trouver=true;
+
+                                    }
+                                }
+                                // dd($trouver);
+                                if($trouver==false){
+                                    $classe_annees[]=$classe;
+                                }
+                            }
+
+                        }
 
                 }
 
@@ -187,55 +222,56 @@ class EnseignantController extends Controller
         $data['matricule']=$mat;
         $enseig=Enseignant::create($data);
        if($request->importation==true){
-        foreach($request->classes as $classe){
-            // EnseignantMatiere::create([
-            //     'enseignant_id' => $enseig->id,
-            //     'matiere_id' => $matiere['matiere'],
-            // ]);
+            foreach($request->classes as $classe){
+                // EnseignantMatiere::create([
+                //     'enseignant_id' => $enseig->id,
+                //     'matiere_id' => $matiere['matiere'],
+                // ]);
 
 
-            // dd($Niveau_matieres);
-            foreach($classe['matieres'] as $matiere){
+                // dd($Niveau_matieres);
+                foreach($classe['matieres'] as $matiere){
 
-                // $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
-                // $Niveau_matiere=NiveauMatiere::where('matiere_id',$matiere['matiere'])->where('niveau_id',$classe_annee->classe->niveau_id)->first();
+                    // $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
+                    // $Niveau_matiere=NiveauMatiere::where('matiere_id',$matiere['matiere'])->where('niveau_id',$classe_annee->classe->niveau_id)->first();
 
 
-                        EnseignementAnnee::updateOrInsert([
-                            'niveau_matiere_id' =>$matiere,
-                            'classe_annee_id' => $classe['classe'],
-                            'enseignant_id' => $enseig->id,
+                            EnseignementAnnee::updateOrInsert([
+                                'niveau_matiere_id' =>$matiere,
+                                'classe_annee_id' => $classe['classe'],
+                                'enseignant_id' => $enseig->id,
 
-                        ],
-                        [
-                            'created_at' => now(), // Remplissez le champ created_at
-                            'updated_at' => now() // Remplissez le champ updated_at
-                        ]
-                        );
+                            ],
+                            [
+                                'created_at' => now(), // Remplissez le champ created_at
+                                'updated_at' => now() // Remplissez le champ updated_at
+                            ]
+                            );
 
-                // dd($classe);
+                    // dd($classe);
+                }
             }
-        }
 
         }else{
-        foreach($request->matieres as $matiere){
-            // EnseignantMatiere::create([
-            //     'enseignant_id' => $enseig->id,
-            //     'matiere_id' => $matiere['matiere'],
-            // ]);
+            foreach($request->matieres as $matiere){
+                // EnseignantMatiere::create([
+                //     'enseignant_id' => $enseig->id,
+                //     'matiere_id' => $matiere['matiere'],
+                // ]);
 
 
-            // dd($Niveau_matieres);
-            foreach($matiere['classes'] as $classe){
+                // dd($Niveau_matieres);
+                foreach($matiere['classes'] as $classe){
 
-                $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
-                $Niveau_matiere=NiveauMatiere::where('matiere_id',$matiere['matiere'])->where('niveau_id',$classe_annee->classe->niveau_id)->first();
-
-
+                    $classe_annee=ClasseAnnee::with('classe')->where('id',$classe)->first();
+                    if($type<=2){
+                        $Niveau_matieres=NiveauMatiere::where('matiere_id',$matiere['matiere'])->where('niveau_id',$classe_annee->classe->niveau_id)->get();
+                        foreach($Niveau_matieres as $Niveau_matiere){
+                        if($classe_annee->classe->niveau_id== $Niveau_matiere->niveau_id){
                         EnseignementAnnee::updateOrInsert([
                             'niveau_matiere_id' => $Niveau_matiere->id,
                             'classe_annee_id' => $classe_annee->id,
-                            'enseignant_id' => $enseig->id,
+                            'enseignant_id' =>  $enseig->id,
 
                         ],
                         [
@@ -243,10 +279,31 @@ class EnseignantController extends Controller
                             'updated_at' => now() // Remplissez le champ updated_at
                         ]
                         );
+                        }
+                    }
+                    }else{
+                        $Niveau_matieres=FiliereNiveauMatiereUe::where('matiere_id',$matiere['matiere'])->where('niveau_id',$classe_annee->classe->niveau_id)->get();
+                        foreach($Niveau_matieres as $Niveau_matiere){
+                            if( $classe_annee->classe->niveau_id == $Niveau_matiere->niveau_id && $classe_annee->classe->cycle_filiere_id== $Niveau_matiere->cycle_filiere_id){
+                                    EnseignementAnnee::updateOrInsert([
+                                        'filiere_niveau_matiere_ue_id' => $Niveau_matiere->id,
+                                        'classe_annee_id' => $classe_annee->id,
+                                        'enseignant_id' =>  $enseig->id,
 
-                // dd($classe);
+                                    ],
+                                    [
+                                        'created_at' => now(), // Remplissez le champ created_at
+                                        'updated_at' => now() // Remplissez le champ updated_at
+                                    ]
+                                    );
+                            }
+                        }
+                    }
+
+                    // dd($classe);
+                }
             }
-        }}
+        }
 
         if ($data['compte']==true) {
             $user=['email'=>$request['email'],'password' => Hash::make('password') ,'nom'=>$data['nom'],'prenom'=>$data['prenom'],'etablissement_id'=>$data['etablissement_id'],'user_id '=>Auth::user()->id,'enseignant_id'=>$enseig['id']];
