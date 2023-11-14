@@ -105,7 +105,7 @@ class VersementController extends Controller
                 $frais = null;
             }
             // dd($etab_type_frais);
-            // dd($etab_type_frais,$frais);
+            //dd($etab_type_frais,$frais);
             if(!is_null($frais)){
                 $versement = Versement::create([
                     'inscription_id' => $inscription->id,
@@ -118,6 +118,7 @@ class VersementController extends Controller
                     # code...
                     
                     $f = Frais::where('etablissement_type_frais_id',$value->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
+                    // dd($inscription->annee_id, $value->id, $inscription->niveau_id);
                     $v = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->get();
                     if($v->count() > 0){
                         $sv = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->sum('montant');

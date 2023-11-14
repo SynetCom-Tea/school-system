@@ -43,10 +43,6 @@ class FraisController extends Controller
         $niveaux=Niveau::where('section_id',$type)->get();
         // dd($request->annee);
             $filieres_annee=[];
-        $frai_cyclefiliere=Frais::with('niveau')->where('etablissement_id',Auth::user()->etablissement_id)->whereHas('niveau',function ($query) use ($type){
-            $query->where('section_id',$type);})->where('annee_id',$annee_cour->id)->latest()->first();
-            // dd($frai_cyclefiliere);
-            $filiere = $request->filiere ? CycleFiliere::where('id',$request->filiere)->first():CycleFiliere::find($frai_cyclefiliere->cycle_filiere_id);;
             foreach($niveaux as $niveau){
              if($type<=2){
                 $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau->id)->where(function ($query) use ($request,$annee_cour){
@@ -72,6 +68,11 @@ class FraisController extends Controller
                 }
             }else{
 
+                    $frai_cyclefiliere=Frais::with('niveau')->where('etablissement_id',Auth::user()->etablissement_id)->whereHas('niveau',function ($query) use ($type){
+                    $query->where('section_id',$type);})->where('annee_id',$annee_cour->id)->latest()->first();
+                    // dd($frai_cyclefiliere);
+                    $filiere = $request->filiere ? CycleFiliere::where('id',$request->filiere)->first():CycleFiliere::find($frai_cyclefiliere->cycle_filiere_id);
+                    
                     $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau->id)->where(function ($query) use ($request,$annee_cour){
                         if($request->annee!=null){
                             return $query->where('annee_id',$request->annee);
