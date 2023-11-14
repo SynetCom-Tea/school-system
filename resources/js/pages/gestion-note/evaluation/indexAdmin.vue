@@ -352,13 +352,6 @@ export default {
             })
         },
         Notation(t) {
-            this.form.enseignant_id = null,
-            this.form.annee_id = null,
-            this.form.filiere = null,
-            this.form.matiere = null,
-            this.form.niveau = null
-            this.form.classe = null
-            this.form.ue = null,
             this.libelle = this.type_evaluation.filter(el => el.id == t)
             if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle") {
                 this.notation = true
@@ -411,11 +404,7 @@ export default {
                                     <Autocomplete label="Type Evaluation" variant="outlined" itemTitle="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" @update:modelValue="Notation(form.type_evaluation_id)" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                     </Autocomplete>
                                 </v-col>
-                                <v-col cols="3" v-if="section_id>=3 && (form.type_evaluation_id == 3 || form.type_evaluation_id == 7)">
-                                    <Autocomplete label="Enseignants" v-model="form.enseignant_id" variant="outlined" :itemTitle="item => formatEnseignant(item)" item-value="id" :items="enseignants" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
-                                    </Autocomplete>
-                                </v-col>
-                                <v-col cols="3" v-if="section_id<=2">
+                                <v-col cols="3" >
                                     <Autocomplete label="Enseignants" v-model="form.enseignant_id" variant="outlined" :itemTitle="item => formatEnseignant(item)" item-value="id" :items="enseignants" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                     </Autocomplete>
                                 </v-col>
@@ -434,16 +423,16 @@ export default {
                                 <v-col md="3" v-if="section_id>=3">
                                     <Autocomplete :disabled="!form.type_evaluation_id" v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                 </v-col>
-                                <v-col md="3" v-if="regime[0].regime_evaluation && section_id>=3 && (form.type_evaluation_id == 3 || form.type_evaluation_id == 7)">
+                                <v-col md="3" v-if="regime[0].regime_evaluation && section_id>=3">
                                     <Autocomplete v-model="form.ue" :items="ues" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Unités d'enseignement"></Autocomplete>
                                 </v-col>
-                                <v-col md="3" v-if="section_id>=3 && (form.type_evaluation_id == 3 || form.type_evaluation_id == 7)">
+                                <v-col md="3" v-if="section_id>=3 ">
                                     <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
                                 </v-col>
-                                <v-col md="3" v-if="section_id>=3 && (form.type_evaluation_id == 3 || form.type_evaluation_id == 7)">
+                                <v-col md="3" v-if="section_id>=3 ">
                                     <Autocomplete v-model="form.classe" :items="classes" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Classes"></Autocomplete>
                                 </v-col>
-                                <v-col md="3" v-if="section_id>=3 && (form.type_evaluation_id == 3 || form.type_evaluation_id == 7)">
+                                <v-col md="3" v-if="section_id>=3 ">
                                     <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense small-chips label="Matieres" chips clearable></Autocomplete>
                                 </v-col>
                                 <v-col cols="3" v-if="section_id <=2">
@@ -454,7 +443,7 @@ export default {
                                     <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
                                     </TextField>
                                 </v-col>
-                                <v-col cols="3"  v-if="regime[0].regime_evaluation && section_id>=3 && (form.type_evaluation_id == 3 || form.type_evaluation_id == 7)">
+                                <v-col cols="3"  v-if="regime[0].regime_evaluation && section_id>=3 ">
                                     <TextField  :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                                     </TextField>
                                 </v-col>

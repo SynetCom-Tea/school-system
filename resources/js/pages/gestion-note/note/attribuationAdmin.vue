@@ -63,13 +63,13 @@ export default {
             dialogConfirmation: false,
             searchQuery: null,
             headers: [{
-                    title: '#',
+                    title: 'Matricule',
                     align: 'start',
                     key: 'matricule',
                     sortable: false,
                 },
                 {
-                    title: "Nom",
+                    title: "Nom et Prénom",
                     align: "center",
                     key: "nom_complete"
                 },

@@ -173,10 +173,8 @@ class EvaluationController extends Controller
             $enseignant->where('enseignant_id',$request->enseignant_id);
         })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.classe_annee',function($anne) use($request){
             $anne->where('annee_id',$request->annee_id);
-        })->with('filiere','cycle')->get() : CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
-            $filiere->where('etablissement_section_id',$etat_section_id);
-        })->with('filiere','cycle')->get();
-        $ues = Ue::where('etablissement_id',Auth::user()->etablissement_id)->get();
+        })->with('filiere','cycle')->get() : [];
+        $ues = Ue::where('etablissement_section_id',$etat_section_id)->get();
         $niveaux = Niveau::where('section_id',$request->section_id)->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant_id);
         })->get() ;
