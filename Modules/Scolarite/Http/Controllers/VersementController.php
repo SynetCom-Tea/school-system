@@ -134,9 +134,10 @@ class VersementController extends Controller
                     'date_versement' => date('Y-m-d'),
                 ]);
             }else{
+                // dd($etab_type_frais);
                 foreach ($etab_type_frais as $key => $value) {
                     # code...
-
+                    // dump($value);
                     $f = Frais::where('etablissement_type_frais_id',$value->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->
                     where(function($query) use ($inscription){
                         if($inscription->cycle_filiere_id == null){
@@ -145,28 +146,31 @@ class VersementController extends Controller
                             $query->where('cycle_filiere_id',$inscription->cycle_filiere_id);
                         }
                    })->first();
-                //  dd($inscription->id,$value);
-                    $v = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->get();
-                    // dd($v);
-                    if($v->count() > 0){
-                        $sv = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->sum('montant');
-                        // dump($etab_type_frais,$f->montant,$sv);
-                        if((float)$f->montant > (float)$sv){
-                            $dfm = (float)$f->montant - (float)$sv;
+
+                    //  dd($inscription->id,$value);
+                    if(!is_null($f)){
+                        $v = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->get();
+                        // dd($v);
+                        if($v->count() > 0){
+                            $sv = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->sum('montant');
+                            // dump($etab_type_frais,$f->montant,$sv);
+                            if((float)$f->montant > (float)$sv){
+                                $dfm = (float)$f->montant - (float)$sv;
+                                Versement::create([
+                                    'inscription_id' => $inscription->id,
+                                    'frais_id' => $f->id,
+                                    'montant' => (float)$dfm,
+                                    'date_versement' => date('Y-m-d'),
+                                ]);
+                            }
+                        }else{
                             Versement::create([
                                 'inscription_id' => $inscription->id,
                                 'frais_id' => $f->id,
-                                'montant' => (float)$dfm,
+                                'montant' => (float)$f->montant,
                                 'date_versement' => date('Y-m-d'),
                             ]);
                         }
-                    }else{
-                        Versement::create([
-                            'inscription_id' => $inscription->id,
-                            'frais_id' => $f->id,
-                            'montant' => (float)$f->montant,
-                            'date_versement' => date('Y-m-d'),
-                        ]);
                     }
                 }
                 // die();

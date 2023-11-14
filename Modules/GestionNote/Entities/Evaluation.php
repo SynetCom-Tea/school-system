@@ -16,7 +16,7 @@ class Evaluation extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['date','notation', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id','enseignement_annee_id'];
+    protected $fillable = ['session','date','notation', 'pourcentage', 'statut', 'periode_id', 'type_evaluation_id','enseignement_annee_id'];
 
 
     public function type_evaluation()

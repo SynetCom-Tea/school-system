@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 
-class ApprenantClasseAnneesTableSeeder extends Seeder
+class ApprenantTuteursTableSeeder extends Seeder
 {
 
     /**
@@ -16,14 +16,14 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
     {
         
 
-        \DB::table('apprenant_classe_annees')->delete();
+        \DB::table('apprenant_tuteurs')->delete();
         
-        \DB::table('apprenant_classe_annees')->insert(array (
+        \DB::table('apprenant_tuteurs')->insert(array (
             0 => 
             array (
                 'id' => 1,
-                'classe_annee_id' => 1,
                 'apprenant_id' => 1,
+                'tuteur_id' => 1,
                 'created_at' => '2023-11-13 12:10:22',
                 'updated_at' => '2023-11-13 12:10:22',
                 'deleted_at' => NULL,
@@ -31,8 +31,8 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
             1 => 
             array (
                 'id' => 2,
-                'classe_annee_id' => 1,
                 'apprenant_id' => 2,
+                'tuteur_id' => 2,
                 'created_at' => '2023-11-13 12:11:36',
                 'updated_at' => '2023-11-13 12:11:36',
                 'deleted_at' => NULL,
@@ -40,8 +40,8 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
             2 => 
             array (
                 'id' => 3,
-                'classe_annee_id' => 1,
                 'apprenant_id' => 3,
+                'tuteur_id' => 3,
                 'created_at' => '2023-11-13 12:16:25',
                 'updated_at' => '2023-11-13 12:16:25',
                 'deleted_at' => NULL,
@@ -49,8 +49,8 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
             3 => 
             array (
                 'id' => 4,
-                'classe_annee_id' => 1,
                 'apprenant_id' => 4,
+                'tuteur_id' => 4,
                 'created_at' => '2023-11-13 12:19:04',
                 'updated_at' => '2023-11-13 12:19:04',
                 'deleted_at' => NULL,
@@ -58,8 +58,8 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
             4 => 
             array (
                 'id' => 5,
-                'classe_annee_id' => 15,
                 'apprenant_id' => 5,
+                'tuteur_id' => 5,
                 'created_at' => '2023-11-13 13:20:45',
                 'updated_at' => '2023-11-13 13:20:45',
                 'deleted_at' => NULL,
@@ -67,8 +67,8 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
             5 => 
             array (
                 'id' => 6,
-                'classe_annee_id' => 15,
                 'apprenant_id' => 6,
+                'tuteur_id' => 6,
                 'created_at' => '2023-11-13 13:22:13',
                 'updated_at' => '2023-11-13 13:22:13',
                 'deleted_at' => NULL,
@@ -76,8 +76,8 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
             6 => 
             array (
                 'id' => 7,
-                'classe_annee_id' => 15,
                 'apprenant_id' => 7,
+                'tuteur_id' => 7,
                 'created_at' => '2023-11-13 13:24:20',
                 'updated_at' => '2023-11-13 13:24:20',
                 'deleted_at' => NULL,
@@ -85,35 +85,35 @@ class ApprenantClasseAnneesTableSeeder extends Seeder
             7 => 
             array (
                 'id' => 8,
-                'classe_annee_id' => 20,
                 'apprenant_id' => 8,
-                'created_at' => NULL,
-                'updated_at' => NULL,
+                'tuteur_id' => 8,
+                'created_at' => '2023-11-13 14:10:51',
+                'updated_at' => '2023-11-13 14:10:51',
                 'deleted_at' => NULL,
             ),
             8 => 
             array (
                 'id' => 9,
-                'classe_annee_id' => 20,
                 'apprenant_id' => 9,
-                'created_at' => NULL,
-                'updated_at' => NULL,
+                'tuteur_id' => 9,
+                'created_at' => '2023-11-13 14:12:18',
+                'updated_at' => '2023-11-13 14:12:18',
                 'deleted_at' => NULL,
             ),
             9 => 
             array (
                 'id' => 10,
-                'classe_annee_id' => 20,
                 'apprenant_id' => 10,
-                'created_at' => NULL,
-                'updated_at' => NULL,
+                'tuteur_id' => 10,
+                'created_at' => '2023-11-13 14:13:49',
+                'updated_at' => '2023-11-13 14:13:49',
                 'deleted_at' => NULL,
             ),
             10 => 
             array (
                 'id' => 11,
-                'classe_annee_id' => 20,
                 'apprenant_id' => 11,
+                'tuteur_id' => 11,
                 'created_at' => '2023-11-14 10:33:37',
                 'updated_at' => '2023-11-14 10:33:37',
                 'deleted_at' => NULL,

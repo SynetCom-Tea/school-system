@@ -29,7 +29,8 @@ class EtablissementSectionTableSeeder extends Seeder
                 'configuration' => NULL,
                 'created_at' => NULL,
                 'updated_at' => NULL,
-                'code' => 'Bakaye/Primaire',
+                'code' => 'Groupe IAT/Primaire',
+                'statutLmd' => 0,
             ),
             1 => 
             array (
@@ -41,31 +42,21 @@ class EtablissementSectionTableSeeder extends Seeder
                 'configuration' => NULL,
                 'created_at' => NULL,
                 'updated_at' => NULL,
-                'code' => 'Bakaye/Secondaire',
+                'code' => 'Groupe IAT/Secondaire',
+                'statutLmd' => 0,
             ),
             2 => 
             array (
                 'id' => 3,
-                'regime_evaluation' => NULL,
+                'regime_evaluation' => 1,
                 'etablissement_id' => 1,
                 'section_id' => 3,
-                'systeme_lmd_id' => NULL,
+                'systeme_lmd_id' => 1,
                 'configuration' => NULL,
                 'created_at' => NULL,
                 'updated_at' => NULL,
-                'code' => 'Bakaye/Supérieure',
-            ),
-            3 => 
-            array (
-                'id' => 4,
-                'regime_evaluation' => NULL,
-                'etablissement_id' => 1,
-                'section_id' => 4,
-                'systeme_lmd_id' => NULL,
-                'configuration' => NULL,
-                'created_at' => NULL,
-                'updated_at' => NULL,
-                'code' => 'Bakaye/Universitaire',
+                'code' => 'Groupe IAT/Supérieure',
+                'statutLmd' => 1,
             ),
         ));
         

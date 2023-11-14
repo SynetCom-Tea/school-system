@@ -48,7 +48,7 @@ export default {
         getMenus() {
             let list = this.listMenusBySection(this.authPage, 1);
             console.log(list)
-            return list[0] ?? [];
+            return list[0] ??[];
         },
     },
     methods: {
@@ -76,13 +76,13 @@ export default {
                 this.form.get(route("absences.index"));
             }
             if (item.link == "note") {
-             this.form.get(route("note.index_admin"));
+                this.form.get(route("note.index_admin"));
             }
             if (item.link == "rapports") {
-             this.form.get(route("rapports.index"));
+                this.form.get(route("rapports.index"));
             }
             if (item.link == "generations") {
-             this.form.get(route("rapports.create"));
+                this.form.get(route("rapports.create"));
             }
         },
         onClickExpland(item) {
@@ -106,23 +106,12 @@ export default {
 
         <v-row>
             <v-col v-for="(item, i) in getMenus" cols="2">
-                <v-card
-                    class="mx-auto"
-                    max-width="200"
-                    style="cursor: pointer"
-                    gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)"
-                    @click="goToPage(item)"
-                >
-                    <v-img
-                        class="align-end text-white"
-                        height="150"
-                        :src="item.image"
-                        cover
-                    ></v-img>
+                <v-card class="mx-auto" max-width="200" style="cursor: pointer" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" @click="goToPage(item)">
+                    <v-img class="align-end text-white" height="150" :src="item.image" cover></v-img>
                     <v-card-subtitle>
                         <div class="d-flex py-2">
                             <v-list-item :prepend-icon="item.icon">
-                                <v-list-item-subtitle dense >{{ item.title }}</v-list-item-subtitle>
+                                <v-list-item-subtitle dense>{{ item.title }}</v-list-item-subtitle>
                             </v-list-item>
                         </div>
                     </v-card-subtitle>
@@ -130,8 +119,6 @@ export default {
                 <!-- <v-card :prepend-icon="item.icon" class="mx-auto" max-width="250" :image="item.image" :color="item.color" style="cursor: pointer" @click="goToPage(item)">
                     <v-card-text class="py-0" :key="i">
                         <v-card-title style="color: black">{{ item.title }}</v-card-title>
-
-                        
 
                         <div class="d-flex py-3 justify-space-between">
                             <v-list-item density="compact" :prepend-icon="icons.mdiWeatherWindy">
