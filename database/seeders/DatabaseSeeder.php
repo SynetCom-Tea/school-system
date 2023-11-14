@@ -45,7 +45,7 @@ class DatabaseSeeder extends Seeder
             // FraisSeeder::class,
             // VersementsSeeder::class,
             // ApprenantClasseAnneesSeeder::class,
-            // PeriodeTableSeeder::class,
+             PeriodeTableSeeder::class,
             TypeEvaluationTableSeeder::class,
             // EvaluationsTableSeeder::class,
             // EnseignantTableSeeder::class,
