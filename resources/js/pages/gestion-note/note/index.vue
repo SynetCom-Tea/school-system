@@ -32,7 +32,7 @@ export default {
             },
             dialogEdit: false,
             headers: [{
-                    title: '#',
+                    title: 'Matricule',
                     align: 'start',
                     key: 'apprenant.matricule',
                     sortable: false,
@@ -74,6 +74,7 @@ export default {
             this.form.get(route('note.attribution'))
         },
         edit(item) {
+            // console.log(item)
             this.dialogEdit = true
             this.form.id_note = item.id
             this.form.note = item.note
@@ -81,7 +82,7 @@ export default {
             this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
             }
             else{
-            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue_id.matiere.nom
+            this.form.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
             }
             this.form.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
         },
@@ -169,8 +170,8 @@ export default {
         </Button>
     </div>
 
-    <v-card variant="outlined" style="border: 2px solid #7d002c;margin: 20px">
-        <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
+    <v-card variant="outlined" style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
         <v-divider></v-divider>
         <br />
         <FiltreAffichageNote :classes="classes" :evaluations="evaluations" :type="type"></FiltreAffichageNote>
@@ -178,7 +179,7 @@ export default {
     <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
         <template v-slot:default="{ isActive }">
             <v-card>
-                <v-toolbar dense style="background-color: #7d002c">
+                <v-toolbar dense style="background-color: rgb(0, 73, 128)">
                     <v-toolbar-title style="color: white">
                         <v-icon left :icon="icon.mdiPencil"></v-icon> Modification
                     </v-toolbar-title>
@@ -212,17 +213,17 @@ export default {
             </v-card>
         </template>
     </v-dialog>
-    <v-card style="border: 2px solid #7d002c;margin: 20px">
-        <v-card-title style="color: white; background-color: #7d002c">Liste des notes</v-card-title>
+    <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Liste des notes</v-card-title>
         <v-divider></v-divider>
         <br />
         <Datatable titleDatatable="Listes des notes"  :displayAddButton="false" :items="notes" :headers="headers">
             <template v-slot:item.apprenant="{ item}">
-                {{ item.columns.apprenant.nom }} {{ item.columns.apprenant.prenom }}
+                {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
             </template>
             <template v-slot:item.action="{ item}">
-                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item.raw)"></v-icon>
-                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item.raw)"></v-icon>
+                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item)"></v-icon>
             </template>
         </Datatable>
     </v-card>

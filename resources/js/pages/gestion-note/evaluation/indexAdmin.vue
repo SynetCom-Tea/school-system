@@ -414,7 +414,7 @@ export default {
                                     <Autocomplete  v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3 ">
-                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
+                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3 ">
                                     <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense small-chips label="Matieres" chips clearable></Autocomplete>
@@ -485,7 +485,7 @@ export default {
                                     <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
+                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
                                     <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres"></Autocomplete>

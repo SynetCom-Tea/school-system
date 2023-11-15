@@ -13,16 +13,20 @@
 
 Route::prefix('gestionnote')->group(function() {
     Route::get('/', 'GestionNoteController@index');
-    Route::get('/evaluation/{type}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'index']);
-    Route::post('/evaluation',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'store'])->name('evaluation.store');
+    // debut Enseignant Evaluation
+        Route::get('/evaluation/{type}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'index']);
+        Route::post('/evaluation/enseignant',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'save'])->name('evaluation.save');
+    // Fin Enseignant Evaluation
     Route::put('/evaluation/{id}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'update'])->name('evaluation.update');
     Route::delete('/evaluation/{id}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'destroy'])->name('evaluation.destroy');
     // Affichage de notes
     // Route::get('/note/affichage',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'index'])->name('note.affichage');
     // Route::get('/note/attribution',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attribution'])->name('note.attribution');
     // Route::post('/note/enregistrer',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'store'])->name('note.save');
-    Route::get('/admin',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'indexAdmin'])->name('evaluation.index_admin');
-    
+    // Admin debut Evaluation
+        Route::get('/admin',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'indexAdmin'])->name('evaluation.index_admin');
+        Route::post('/evaluation',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'store'])->name('evaluation.store');
+    // Fin Admin Evaluation
     Route::get('/note/{type}',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'index'])->name('note.affichage');
     Route::get('/attribution/note',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attribution'])->name('note.attribution');
     Route::post('/enregistrer/note',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'store'])->name('note.save');
