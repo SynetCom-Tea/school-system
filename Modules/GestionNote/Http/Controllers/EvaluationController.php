@@ -51,13 +51,12 @@ class EvaluationController extends Controller
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
         // dd($enseigements);
         $periodes = [];
-        if($type==1){
+        if($type == 1){
             $periodes = Periode::where('type',"Trimestre")->get();
         }else{
             $periodes =  Periode::where('type',"Semestre")->get();
         }
         $regime = DB::table("etablissement_section")->where('etablissement_id',$user->etablissement_id)->where('section_id',$type)->get();
-        $typeEvaluations = TypeEvaluation::all();
         $filieres =  CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);
         })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($user){
@@ -136,7 +135,8 @@ class EvaluationController extends Controller
         ]);
         $evaluation_universites = DB::select("
             SELECT m.nom matiere,c.code code,e.NomComplet enseignant,ev.date,t.libelle type,p.libelle periode,
-            ev.pourcentage,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ev.id id
+            ev.pourcentage,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ev.id id,
+            fnmu.cycle_filiere_id filiere,fnmu.matiere_id matiere_id,fnmu.niveau_id niveau,ev.session,ev.pourcentage
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
             JOIN enseignants e ON e.id = ea.enseignant_id
@@ -149,10 +149,10 @@ class EvaluationController extends Controller
             JOIN type_evaluations t ON t.id = ev.type_evaluation_id
             JOIN periodes p ON p.id = ev.periode_id
             WHERE e.id = :enseignant_id AND s.id = :section_id
-    ",[
+        ",[
         'enseignant_id'=>$user->enseignant_id,
-       'section_id'=>4
-    ]);
+        'section_id'=>4
+        ]);
         return Inertia::render('gestion-note/evaluation/index', [
             'evaluation_primaires'=>$evaluation_primaires,
             'evaluation_secondaires'=>$evaluation_secondaires,
@@ -160,7 +160,7 @@ class EvaluationController extends Controller
             'evaluation_universites'=>$evaluation_universites,
             'types'=>$type,
             'periodes'=>$periodes,
-            'type_evaluation'=>$typeEvaluations,
+            'type_evaluation'=>TypeEvaluation::all(),
             'regime'=>$regime,
             'enseignements'=>$enseigements,
             'filieres'=>$filieres,
