@@ -16,7 +16,8 @@ Route::prefix('gestionnote')->group(function() {
     // debut Enseignant Evaluation
         Route::get('/evaluation/{type}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'index']);
         Route::post('/evaluation/enseignant',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'save'])->name('evaluation.save');
-    // Fin Enseignant Evaluation
+        Route::put('/evaluation/enseignant/{id}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'modifie'])->name('evaluation.modifie');
+        // Fin Enseignant Evaluation
     Route::put('/evaluation/{id}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'update'])->name('evaluation.update');
     Route::delete('/evaluation/{id}',[\Modules\GestionNote\Http\Controllers\EvaluationController::class,'destroy'])->name('evaluation.destroy');
     // Affichage de notes

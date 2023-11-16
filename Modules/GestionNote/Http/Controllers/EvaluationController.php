@@ -116,7 +116,8 @@ class EvaluationController extends Controller
         // dd($evaluation_secondaires);
         $evaluation_superieures = DB::select("
             SELECT m.nom matiere,c.code code,e.NomComplet enseignant,ev.date,t.libelle type,p.libelle periode,
-            ev.pourcentage,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ev.id
+            ev.pourcentage,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ev.id,
+            fnmu.cycle_filiere_id filiere,fnmu.matiere_id matiere_id,fnmu.niveau_id niveau,ev.session,ev.pourcentage
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
             JOIN enseignants e ON e.id = ea.enseignant_id
@@ -196,6 +197,27 @@ class EvaluationController extends Controller
                 }
             }
         }
+    }
+
+    public function modifie(Request $request,$id){
+        $evaluation = Evaluation::find($id);
+        
+        // dd($fnmu[0]->id);
+        if ($request->section_id >=3){
+        $fnmu = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get();
+            $classe_id = Classe::where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get()[0]->id;
+            $enseigement_anne = EnseignementAnnee::where('filiere_niveau_matiere_ue_id',$fnmu[0]->id)->where('enseignant_id',$request->enseignant_id)->whereHas('classe_annee',function($classe) use ($request,$classe_id){
+                $classe->where('classe_id',$classe_id)->where('annee_id',$request->annee_id);
+            })->where('niveau_matiere_id','=',null)->get();
+            $id_enseignement = $enseigement_anne[0]->id;
+        }else {
+            $id_enseignement = $request->enseignement_annee_id;
+        }
+        // $data = $request->all();
+        $data = ['pourcentage'=>$request->pourcentage, 'session'=>$request->session,'notation'=>$request->notation,'date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+        // Evaluation::update($data);
+        // dd($request->all());
+        $evaluation->update($data);
     }
 
     public function indexAdmin(Request $request)

@@ -190,10 +190,14 @@ export default {
                     <v-form>
                         <v-row>
                             <v-col md="12">
+                                <h4>Evaluation</h4>
+                                {{  form.type_matiere}}
                                 <TextField label="Evaluation" class="mt-1" disabled v-model="form.type_matiere">
                                 </TextField>
                             </v-col>
                             <v-col md="12">
+                                <h4>Nom et Prenom</h4>
+                                {{  form.nom_prenom }}
                                 <TextField v-model="form.nom_prenom" disabled label="Nom et prenom">
                                 </TextField>
                             </v-col>

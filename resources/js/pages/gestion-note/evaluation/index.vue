@@ -86,9 +86,9 @@ export default {
                     key: 'periode'
                 },
                 {
-                    title: 'Pourcentage',
+                    title: 'Session',
                     align: 'center',
-                    key: 'pourcentage'
+                    key: 'session'
                 },
                 {
                     title: 'Actions',
@@ -101,6 +101,7 @@ export default {
             dialog: false,
             filtrer : [],
             form: useForm({
+                id : null,
                 date: '',
                 pourcentage: null,
                 type_evaluation_id: null,
@@ -125,15 +126,26 @@ export default {
             return `${item.filiere.code } - ${item.cycle.name } `
         },
         editItem(item) {
-            // console.log('code', item.code)
+            // console.log('item', item)
             this.form.id = item.id
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage
-            this.form.periode_id = item.periode_id
+            this.form.periode_id = item.periode_id,
+            this.form.filiere = item.filiere,
+            this.form.matiere = item.matiere_id,
+            this.form.niveau = item.niveau
             this.form.type_evaluation_id = item.type_evaluation_id
-            this.form.enseignement_annee_id = item.enseignement_annee_id
+            this.form.enseignement_annee_id = item.enseignement_annee_id,
+            this.form.session = item.session
             this.dialog = true
             this.dialog_title = 'Modifier Evaluation' + ' ' + item.code
+            router.replace(this.$page.url, {
+                data: {
+                    niveau: item.niveau,
+                    filiere: item.filiere,
+                }
+            })
+
         },
         deleteItem(item) {
             this.$swal({
@@ -219,7 +231,7 @@ export default {
                     type_evaluation_id,
                     enseignement_annee_id
                 } = this.form
-                this.form.put(route('evaluation.update', this.form.id), {
+                this.form.put(route('evaluation.modifie', this.form.id), {
                     onFinish: () => {
                         this.close()
                         this.$swal({
@@ -331,33 +343,33 @@ export default {
     </v-dialog>
     <Datatable v-if="types == 1" titleDatatable="Listes des evaluations (section primaire)" :headers="headers" :items="evaluation_primaires" :functionOnClickAddButton="create">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small" color="warning"  title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            <v-icon size="small" color="warning"  title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error"  @click="deleteItem(item)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>
     <Datatable v-if="types == 2" titleDatatable="Listes des evaluations section secondaire " :headers="headers" :items="evaluation_secondaires" :functionOnClickAddButton="create">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small"  color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            <v-icon size="small"  color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error"  @click="deleteItem(item)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>
     <Datatable v-if="types == 3" titleDatatable="Listes des evaluations (section superieure) " :headers="headers" :items="evaluation_superieures" :functionOnClickAddButton="create">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error" @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error" @click="deleteItem(item)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>
     <Datatable v-if="types == 4" titleDatatable="Listes des evaluations (section université)" :headers="headers" :items="evaluation_universites" :functionOnClickAddButton="create">
         <template v-slot:[`item.actions`]="{ item }">
-            <v-icon size="small"  color="warning"  title="Modifier" class="me-2" @click="editItem(item.raw)" :icon="icon.mdiPencil">
+            <v-icon size="small"  color="warning"  title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
             </v-icon>
-            <v-icon size="small" color="error"  @click="deleteItem(item.raw)" :icon="icon.mdiDelete">
+            <v-icon size="small" color="error"  @click="deleteItem(item)" :icon="icon.mdiDelete">
             </v-icon>
         </template>
     </Datatable>
