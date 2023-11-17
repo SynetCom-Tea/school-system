@@ -46,7 +46,7 @@ return new class extends Migration
                 DECLARE filiere VARCHAR(255);
                 DECLARE cycle VARCHAR(255);
 
-                SELECT filieres.name INTO filiere
+                SELECT filieres.code INTO filiere
                 FROM filieres
                 WHERE filieres.id = NEW.filiere_id;
 
