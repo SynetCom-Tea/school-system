@@ -152,15 +152,15 @@
         <!-- Debut du tableau -->
         <table style="margin-top: 100px; font-size: 13px;">
             <thead>
-                <tr style="text-align:center;" valign="center">
+            <tr style="text-align:center;" valign="center">
                     <th style="text-align: left;"><b>Disciplines</b></th>
                     <th width="30">MC<br>/20</th>
                     <th width="30">NC<br>/20</th>
                     <th width="30">MG<br>/20</th>
-                    <th width="40">Coef</th>
-                    <th width="70">Moy ceof</th>
-                    <th width="25">Rang</th>
-                    <th width="100">Appréciation</th>
+                    <th width="35">Coef</th>
+                    <th width="40">Moy ceof</th>
+                    <th width="35">Rang</th>
+                    <th width="70">Appréciation</th>
                     <th width="100">Signature</th>
                 </tr>
             </thead>
@@ -170,17 +170,17 @@
                 @endphp
                 @foreach($donnee['detail'] as $line)
                     @php
-                        $total = $total + $line->moyenneCoefficiente;
+                        $total = $total + $line->moyenne_coefficiente;
                     @endphp
                     <tr>
-                        <td><b>{{$line->nom_matiere}}</b></td>
+                    <td><b>{{$line->nom_matiere}}</b></td>
                         <td style="text-align:center;" width="30">{{$line->note_de_classe}}</td>
                         <td style="text-align:center;" width="30">{{$line->note_de_composition}}</td>
                         <td style="text-align:center;" width="30">{{$line->moyenne}}</td>
-                        <td style="text-align:center;" width="40">{{$line->coefficient}}</td>
+                        <td style="text-align:center;" width="35">{{$line->coefficient}}</td>
                         <td style="text-align:center;" width="40">{{$line->moyenne_coefficiente}}</td>
-                        <td style="text-align:center;" width="70"></td>
-                        <td style="text-align:center;" width="100">
+                        <td style="text-align:center;" width="35"></td>
+                        <td style="text-align:center;" width="70">
                             @if($line->moyenne <= 2)
                             NULL
                             @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
@@ -241,7 +241,7 @@
            
             <tr>    
                 <td width="153"  height="20" colspan=3>
-                    <input type="checkbox"><label>Bonne</label><br>
+                    <input type="checkbox">&nbsp;&nbsp;&nbsp;<label>Bonne</label><br>
                     <input type="checkbox"><label>Avertissement</label><br>
                     <input type="checkbox"><label>Blâme</label><br>
                     <label></label><br>
@@ -257,7 +257,7 @@
                     <input type="checkbox"><label>Non inscrit(e)</label><br>
                     <label></label><br>
                 </td>
-                <td style="text-align:center" valign="center" width="153"  height="20" colspan=3><span style="color:green">R.A.S </span> / <span style="color:red;">  2</span></td>
+                <td style="text-align:center" valign="center" width="153"  height="20" colspan=3><span style="color:green">R.A.S</span></td>
             </tr>
         </table>
         <!-- <div style="margin-top: 5px;">

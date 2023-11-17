@@ -150,17 +150,17 @@
         <!-- Fin informations sur le professeur et rang -->
 
         <!-- Debut du tableau -->
-        <table style="margin-top: 100px; font-size: 13px;">
+        <table style="margin-top: 100px; font-size: 13px; width:100%">
             <thead>
                 <tr style="text-align:center;" valign="center">
                     <th style="text-align: left;"><b>Disciplines</b></th>
                     <th width="30">MC<br>/20</th>
                     <th width="30">NC<br>/20</th>
                     <th width="30">MG<br>/20</th>
-                    <th width="40">Coef</th>
-                    <th width="70">Moy ceof</th>
-                    <th width="25">Rang</th>
-                    <th width="100">Appréciation</th>
+                    <th width="35">Coef</th>
+                    <th width="40">Moy ceof</th>
+                    <th width="35">Rang</th>
+                    <th width="70">Appréciation</th>
                     <th width="100">Signature</th>
                 </tr>
             </thead>
@@ -170,17 +170,17 @@
                 @endphp
                 @foreach($detail as $line)
                     @php
-                        $total = $total + $line->moyenneCoefficiente;
+                        $total = $total + $line->moyenne_coefficiente;
                     @endphp
                     <tr>
                         <td><b>{{$line->nom_matiere}}</b></td>
                         <td style="text-align:center;" width="30">{{$line->note_de_classe}}</td>
                         <td style="text-align:center;" width="30">{{$line->note_de_composition}}</td>
                         <td style="text-align:center;" width="30">{{$line->moyenne}}</td>
-                        <td style="text-align:center;" width="40">{{$line->coefficient}}</td>
+                        <td style="text-align:center;" width="35">{{$line->coefficient}}</td>
                         <td style="text-align:center;" width="40">{{$line->moyenne_coefficiente}}</td>
-                        <td style="text-align:center;" width="70"></td>
-                        <td style="text-align:center;" width="100">
+                        <td style="text-align:center;" width="35"></td>
+                        <td style="text-align:center;" width="70">
                             @if($line->moyenne <= 2)
                             NULL
                             @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
@@ -263,21 +263,13 @@
         <!-- <div style="margin-top: 5px;">
             <b style="font-size: 13px;">Appréciation du proviseur&nbsp;</b> 
         </div> -->
-        <table style="font-size: 13px;margin-left: 5px; border:0;">
-            <tr >
-                <td style="text-align: left; border-right: 0; border-bottom: 0; border-left: 0; border-top:0" class="50p">
-                    <b style="font-size: 13px; margin: 5px;">Appréciation du proviseur</b><br>
-                </td>
-                <td style="text-align: center; border-bottom:0; border-right: 0; border-top:0" class="50p">
-                    <b style="font-size: 13px; margin: 5px;">Visa des parents</b><br>
-                </td>
-            </tr>
-        </table>
         
-
-    <div style="margin-top: 15px;">
-
-    </div>
+        <div style="text-align: left; margin-top:20; position:absolute;">
+            <b style="font-size: 13px; margin: 5px;">Appréciation du proviseur</b><br>
+        </div>
+        <div style="margin-left: 600px; position:absolute; margin-top:20">
+            <b style="font-size: 13px; margin: 5px;">Visa des parents</b><br>
+        </div>
    
     
 </body>
