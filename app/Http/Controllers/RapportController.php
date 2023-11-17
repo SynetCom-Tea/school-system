@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Annee;
+use App\Models\Classe;
 use App\Models\ClasseAnnee;
+use App\Models\Etablissement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -12,8 +14,43 @@ use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Note;
 
+use PDF;
+
 class RapportController extends Controller
 {
+
+    public function bulletin(Request $request)
+    {
+        // dd($request->all());
+        $etab = Etablissement::find(Auth::user()->etablissement_id);
+        if($request->type == 0){
+            $cl = Classe::find($request->id['classe']);
+            $n = Niveau::find($cl->niveau_id);
+            // dd($n);
+            $data = [
+                'etablissement' => $etab,
+                'item' => $request->id,
+                'niveau' => $n,
+                'section' => $request->section,
+                'title' => 'Bulletin Semestriel',
+                'date' => date('m/d/Y'),
+            ];
+        }else{
+            $data = [
+                'etablissement' => $etab,
+                'section' => $request->section,
+                'title' => 'Bulletin Semestriel',
+                'date' => date('m/d/Y'),
+            ];
+        }
+        
+        
+        // dd($data['item']['details_notes']);
+
+        $pdf = PDF::loadView('bulletin', $data);
+
+        return $pdf->stream('itsolutionstuff.pdf');
+    }
     /**
      * Display a listing of the resource.
      */

@@ -47,6 +47,9 @@
             />
           </v-card>
         </tab-content>
+
+
+
         <!-- Tabs 2 -->
         <tab-content :title="tabTitle2" :before-change="beforeChange">
           <v-card flat v-show="apprenant == null && !loadingWizard">
@@ -77,7 +80,7 @@
         </tab-content>
 
         <!-- Tabs 3 -->
-        <tab-content :title="tabTitle3" :before-change="beforeChange" v-if="apprenant == null">
+        <tab-content :title="tabTitle3" v-if="apprenant == null" :before-change="beforeChange" >
           <v-card flat v-show="!loadingWizard">
             <tuteur-form
               @formSubmitted="getTuteurForm"
@@ -183,6 +186,7 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
+  emits: ['formSubmitted'],
   props: ["type", "niveaux", "typeFrais","apprenant","annees","typeDocuments","tuteurs","cycleFilieres","cycles","nbre_limite_eleve"],
   components: {
     FormWizard,
@@ -324,7 +328,9 @@ export default {
       this.formApprenant = donnees;
     },
     getAnneeForm(donnees) {
-      this.formAnnee = donnees;
+      if(donnees.annee != null){
+        this.formAnnee = donnees;
+      }
     },
     getTuteurForm(donnees) {
       this.formTuteur = donnees;
@@ -415,7 +421,6 @@ export default {
         : { disabled: true };
     },
     Title() {
-      console.log(this.type);
       switch (this.type) {
         case 1:
           return "SECTION PRIMAIRE";

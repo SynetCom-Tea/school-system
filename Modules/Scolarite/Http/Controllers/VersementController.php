@@ -236,8 +236,12 @@ class VersementController extends Controller
     public function index(Request $request)
     {
         // dd($request->all());
+        $type_frais = Frais::whereHas('etablissement_type_frais',function($query) use ($request){
+            $query->where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id))->where('statut',1);
+        })->groupBy('etablissement_type_frais_id')->with('etablissement_type_frais.type_frais')->get();
 
-        $type_frais = EtablissementTypeFrais::where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id))->where('statut',1)->with('type_frais')->get();
+        // dd($type_frais);
+        // $type_frais = EtablissementTypeFrais::where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id))->where('statut',1)->with('type_frais')->get();
         // dd($result);
         return Inertia::render('versement/index',[
             'section' => $request->section_id,

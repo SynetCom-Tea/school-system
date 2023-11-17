@@ -94,12 +94,7 @@ export default {
             this.dialog = false;
         },
         printItem(item) {
-            // Générer le PDF à partir des données de l'étudiant
-            // const pdfDataUri = this.generatePdfFromData(item);
-
-            // Afficher le PDF dans le composant PdfPrinter
-            this.apprenantData = pdfDataUri;
-            this.printPdf = true;
+            console.log('item print',item);
         }
     },
     mounted(){
@@ -122,6 +117,7 @@ export default {
             Générer
             </v-btn>
         </div>
+       
          <v-col md="4" v-if="classes.length != 0">
             <autocomplete
             label="Classe"
@@ -134,18 +130,32 @@ export default {
             item-value="id"
             ></autocomplete>
         </v-col>
+        <v-col md="4" v-if="classe">
+            
+            <a :href="route('bulletin', { type: 1, classe: classe, section: sectionID })" target="__blank">
+                <v-btn
+                :append-icon="icons.mdiPrinter"
+                color="deep-purple-accent-4"
+                >
+                Imprimer bulletins de la classe
+                </v-btn>
+                    
+            </a>
+        </v-col>
         <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :displayAddButton="false" >
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Imprimer" @click="printItem(item)" :icon="icons.mdiPrinter" color="info">
-                </v-icon>
+                <a :href="route('bulletin', { type: 0, id: item, section: sectionID })" target="__blank">
+                    <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
+                </a>
                 <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
                 </v-icon>
             </template>
         </Datatable>
         <Datatable v-if="classes.length !== 0 && (sectionID == 2)" titleDatatable="Liste des élèves" :headers="headersSecondaire" :items="data" :displayAddButton="false" >
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Imprimer" @click="printItem(item)" :icon="icons.mdiPrinter" color="info">
-                </v-icon>
+                <a :href="route('bulletin', { id: item, section: sectionID })" target="__blank">
+                    <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
+                </a>
                 <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
                 </v-icon>
             </template>

@@ -128,8 +128,8 @@
                 >
                 <Autocomplete 
                     :items="type_frais"
-                    item-title="type_frais.libelle"
-                    item-value="type_frais.id"
+                    item-title="etablissement_type_frais.type_frais.libelle"
+                    item-value="etablissement_type_frais.type_frais.id"
                     label="Frais"
                     isRequired
                     v-model="form.type_frais"
