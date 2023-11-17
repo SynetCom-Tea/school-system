@@ -125,7 +125,7 @@ class VersementController extends Controller
                 $frais = null;
             }
             // dd($etab_type_frais);
-            // dd($etab_type_frais,$frais);
+            //dd($etab_type_frais,$frais);
             if(!is_null($frais)){
                 $versement = Versement::create([
                     'inscription_id' => $inscription->id,

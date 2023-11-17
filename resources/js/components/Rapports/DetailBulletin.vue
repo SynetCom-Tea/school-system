@@ -56,7 +56,7 @@
                 max-width="425"
             >
                 <v-list lines="two">
-                <v-list-subheader>{{ 'Classe: ' + data.nom_classe }}</v-list-subheader>
+                <v-list-subheader>{{data.periode +' ' +  'Classe: ' + data.nom_classe }}</v-list-subheader>
 
                 <v-list-item
                     :title="'Matricule: '+data.matricule_apprenant"

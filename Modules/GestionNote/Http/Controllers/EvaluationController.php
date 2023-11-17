@@ -177,7 +177,7 @@ class EvaluationController extends Controller
         $ues = Ue::where('etablissement_section_id',$etat_section_id)->get();
         $niveaux = Niveau::where('section_id',$request->section_id)->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant_id);
-        })->get() ;
+        })->get();
         if ($request->section_id >=3 && $request->niveau){
             $classes = Classe::where('etablissement_section_id',$etat_section_id)->where('cycle_filiere_id',$request->filiere)->whereHas('classe_annees',function($classe) use($request){
                   $classe->where('annee_id',$request->annee_id);

@@ -144,7 +144,7 @@ export default {
         </v-col>
         <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :displayAddButton="false" >
             <template v-slot:item.actions="{item}">
-                <a :href="route('bulletin', { type: 0, id: item, section: sectionID })" target="__blank">
+                <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
                     <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
                 </a>
                 <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
@@ -153,7 +153,7 @@ export default {
         </Datatable>
         <Datatable v-if="classes.length !== 0 && (sectionID == 2)" titleDatatable="Liste des élèves" :headers="headersSecondaire" :items="data" :displayAddButton="false" >
             <template v-slot:item.actions="{item}">
-                <a :href="route('bulletin', { id: item, section: sectionID })" target="__blank">
+                <a :href="route('bulletin', { type: 0, id: 205, section: sectionID })" target="__blank">
                     <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
                 </a>
                 <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">

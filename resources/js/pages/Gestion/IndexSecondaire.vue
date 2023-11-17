@@ -71,6 +71,9 @@ export default {
             if (item.link == "emploisCreate") {
                 this.form.get(route("calendar.index"));
             }
+            if (item.link == "absences") {
+                this.form.get(route("absences.index"));
+            }
             if (item.link == "evaluation") {
                 this.form.get(route("evaluation.index_admin"));
             }

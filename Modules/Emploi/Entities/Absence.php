@@ -10,7 +10,7 @@ class Absence extends Model
 {
     use HasFactory;
 
-    protected $fillable = [];
+    protected $fillable = ['apprenant_id', 'seance_id', 'journee'];
     
     protected static function newFactory()
     {

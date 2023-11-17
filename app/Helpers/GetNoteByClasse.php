@@ -32,7 +32,8 @@ if (!function_exists('getNoteByClasses')) {
             JOIN niveau_matieres ON niveau_matieres.id = enseignement_annees.niveau_matiere_id
             JOIN apprenants ON notes.apprenant_id = apprenants.id
             JOIN matieres ON niveau_matieres.matiere_id = matieres.id
-            WHERE classe_annee_id = :classe_annee_id";
+            WHERE classe_annee_id = :classe_annee_id
+            AND notes.statut = 1";
 
         $parameters = ['classe_annee_id' => $classe];
 
