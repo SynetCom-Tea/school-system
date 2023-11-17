@@ -11,11 +11,13 @@
  if (!function_exists('calculerMoyenneSecondaire')) {
     function calculerMoyenneSecondaire($classeID, $apprenantID) {
         $notes_apprenant = getNoteByClasses($classeID, $apprenantID);
+        // dd($notes_apprenant);
         $notestypeComposition = collect($notes_apprenant)->where('type_evaluation', 'Composition');
         $notesDeClasses = collect($notes_apprenant)->whereIn('type_evaluation', ['Interrogation', 'Devoir Surveillé', 'Devoir']);
         $groupedNotes = $notesDeClasses->groupBy('nom_matiere');
         $details_notes = [];
         foreach ($groupedNotes as $matiere => $notes) {
+            // dd($notes);
             $compositionNotes = $notestypeComposition->where('nom_matiere', $matiere);
 
             // Calculate total notes and average note
@@ -35,6 +37,7 @@
             
             $details_notes[] = [
                 'nom_matiere' => $matiere,
+                'periodes' => $notes->first()->periode,
                 'coefficient' => $coefficient,
                 'noteDeClasse' => $noteDeClasse,
                 'noteDeClasseCoefficiente' => $noteDeClasseCoefficiente,

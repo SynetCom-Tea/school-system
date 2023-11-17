@@ -22,17 +22,17 @@ class EtablissementsTableSeeder extends Seeder
             0 => 
             array (
                 'id' => 1,
-                'name' => 'Bakaye',
-                'email' => 'bakaye@gmail.com',
-                'adresse' => 'Bobiel',
-                'telephone' => '"96123654"',
-                'ville' => 'Niamey',
+                'name' => 'Groupe IAT',
+                'email' => 'iat@niger.edu',
+                'adresse' => 'Niamey-niger',
+                'telephone' => '"98776655"',
+                'ville' => 'NIAMEY',
                 'statut' => 1,
-                'logo' => NULL,
+                'logo' => 'iat-logo.png',
                 'type_etablissement_id' => 2,
                 'deleted_at' => NULL,
-                'created_at' => '2023-10-26 12:09:57',
-                'updated_at' => '2023-10-26 12:09:57',
+                'created_at' => '2023-11-13 11:50:53',
+                'updated_at' => '2023-11-13 11:50:53',
             ),
         ));
         

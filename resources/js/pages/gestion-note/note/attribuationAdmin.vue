@@ -63,13 +63,13 @@ export default {
             dialogConfirmation: false,
             searchQuery: null,
             headers: [{
-                    title: '#',
+                    title: 'Matricule',
                     align: 'start',
                     key: 'matricule',
                     sortable: false,
                 },
                 {
-                    title: "Nom",
+                    title: "Nom et Prénom",
                     align: "center",
                     key: "nom_complete"
                 },
@@ -137,12 +137,12 @@ export default {
     methods: {
         formatEvaluationLabel(item) {
             // console.log(item.enseignement_annee.niveau_matiere)
-            if (item.enseignement_annee.niveau_matiere) {
+            if (item.enseignement_annee.niveau_matiere != null) {
                 // Concatenate the relevant properties for the label
                 // console.log(item.type_evaluation.libelle)
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
             } else {
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} - ${item ? item?.session: ''}`;
             }
         },
         formatCode(item) {

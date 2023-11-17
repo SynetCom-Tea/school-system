@@ -38,7 +38,16 @@ class FraisController extends Controller
 
         //     $query->where('section_id',$type);})->get();
         $frais=[];
+        $filiere = null;
         $annee_cour=Annee::where('actif',1)->first();
+        if ($type>=3 ) {
+            $frai_cyclefiliere=Frais::with('niveau')->where('etablissement_id',Auth::user()->etablissement_id)->whereHas('niveau',function ($query) use ($type){
+                $query->where('section_id',$type);})->where('annee_id',$annee_cour->id)->latest()->first();
+            //  dd($frai_cyclefiliere);
+                if($frai_cyclefiliere != []){
+                    $filiere = CycleFiliere::find($frai_cyclefiliere->cycle_filiere_id)->id;
+                }
+            }
         // dd($annee_cour->id);
         $niveaux=Niveau::where('section_id',$type)->get();
         // dd($request->annee);
@@ -68,20 +77,21 @@ class FraisController extends Controller
                 }
             }else{
 
-                    $frai_cyclefiliere=Frais::with('niveau')->where('etablissement_id',Auth::user()->etablissement_id)->whereHas('niveau',function ($query) use ($type){
-                    $query->where('section_id',$type);})->where('annee_id',$annee_cour->id)->latest()->first();
-                    // dd($frai_cyclefiliere);
-                    $filiere = $request->filiere ? CycleFiliere::where('id',$request->filiere)->first():CycleFiliere::find($frai_cyclefiliere->cycle_filiere_id);
-                    
-                    $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau->id)->where(function ($query) use ($request,$annee_cour){
+                    $frai= Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau->id)->where(function ($query) use ($request,$annee_cour){
                         if($request->annee!=null){
                             return $query->where('annee_id',$request->annee);
                         }else{
                             return $query->where('annee_id',$annee_cour->id);
                         }
-                    })->where('cycle_filiere_id',$filiere->id)->get();
+                    })->where(function ($query) use ($request,$filiere){
+                        if($request->filiere != null){
+                            return  $query->where('cycle_filiere_id',$request->filiere);
+                        }else{
+                            return  $query->where('cycle_filiere_id',$filiere);
+                        }
+                        })->get();
 
-
+                        // dump($frai);
                     // $frai=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->where('etablissement_id',$ets_id)->where('niveau_id',$niveau->id)->where('annee_id',$request->annee)->get();
                     if ($frai->count() != 0)
                     {
@@ -104,7 +114,7 @@ class FraisController extends Controller
          if($type>=3){
                 $filieres_annee=[
                     'annee'=>$request->annee ? Annee::find( $request->annee) : $annee_cour,
-                    'filiere'=>$filiere,
+                    'filiere'=>$request->filiere?CycleFiliere::find($request->filiere):CycleFiliere::find($filiere)   ,
                 ];
         }else{
             $filieres_annee=[

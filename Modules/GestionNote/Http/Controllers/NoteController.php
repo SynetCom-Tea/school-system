@@ -30,7 +30,7 @@ class NoteController extends Controller
      */
     public function index(Request $request,$type)
     {
-        
+
         $annee = Annee::max('id');
         $user = Auth::user();
         $evaluations = [];
@@ -47,13 +47,13 @@ class NoteController extends Controller
         })->with('niveau','cycle_filiere.filiere')->get();
         // dd($classes);
         $evaluations = $request->classe ?  Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$user) {
-            $query->where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee', function ($query1) use ($request) { 
-                $query1->where('classe_id',$request->classe); 
+            $query->where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee', function ($query1) use ($request) {
+                $query1->where('classe_id',$request->classe);
             });
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : collect();
-        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : []; 
+        $notes = $request->evaluation ? Note::where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : [];
         // dd($notes);
-        // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée       
+        // requete pour recuperer les classes qu'un professeur intervient dans une annee donnée
         return Inertia::render('gestion-note/note/index',[
             'type'=>$type,
             'classes' => $classes,
@@ -93,8 +93,8 @@ class NoteController extends Controller
             })->get() ;
         // dd($classes);
         $evaluations = $request->classe ?  Evaluation::whereHas('enseignement_annee', function ($query) use ($request,$user) {
-            $query->where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee', function ($query1) use ($request) { 
-                $query1->where('classe_id',$request->classe); 
+            $query->where('enseignant_id',$user->enseignant_id)->whereHas('classe_annee', function ($query1) use ($request) {
+                $query1->where('classe_id',$request->classe);
             });
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : collect();
         // dd($evaluations);
@@ -102,8 +102,8 @@ class NoteController extends Controller
             $classeAnne->where('classe_id',$request->classe);
         })->where('evaluation_id',$request->evaluation)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
-        $eleves = $request->evaluation ? ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request,$annee) { 
-            $query->where('classe_id',$request->classe)->where('annee_id',$annee); 
+        $eleves = $request->evaluation ? ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request,$annee) {
+            $query->where('classe_id',$request->classe)->where('annee_id',$annee);
         })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get() : collect();
         // dd($eleves);
         $customizingEleves = $eleves->map(
@@ -123,7 +123,7 @@ class NoteController extends Controller
             'classes' => $classes,
             'evaluations'=>$evaluations,
             'eleves' => $customizingEleves ? $customizingEleves : null,
-            'niveaux'=>$niveaux,    
+            'niveaux'=>$niveaux,
             // 'eleves' => $eleves ? $eleves : null
         ]);
     }
@@ -171,8 +171,8 @@ class NoteController extends Controller
                         'type' => 'error',
                         'text' => 'Vous avez déjâ attribué des notes à ces eleves!',
                     ]);
-                } 
-            } 
+                }
+            }
         }
         // die();
         return redirect()->back()->with('message', [
@@ -228,12 +228,12 @@ class NoteController extends Controller
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
         $classes = $request->annee ? Classe::where('etablissement_section_id',$etat_section_id)->whereHas('classe_annees',function($classe) use($request){
                   $classe->where('annee_id',$request->annee);
-               })->with('niveau','cycle_filiere.filiere')->get() : [] ; 
-        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) { 
-            $query1->where('classe_id',$request->classe); 
+               })->with('niveau','cycle_filiere.filiere')->get() : [] ;
+        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) {
+            $query1->where('classe_id',$request->classe);
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
         // dd($classes);
-        $notes = $request->evaluation ? Note::where('statut',1)->where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : []; 
+        $notes = $request->evaluation ? Note::where('statut',1)->where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : [];
         if ($request->evaluation) {
             if ($notes->count() == 0) {
                 $notes = [];
@@ -261,7 +261,7 @@ class NoteController extends Controller
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
         $enseignant = Enseignant::whereHas('enseignement_annees.classe_annee.classe',function($etat) use ($etat_section_id){
             $etat->where('etablissement_section_id',$etat_section_id);
-        })->where('etablissement_id',Auth::user()->etablissement_id)->get();  
+        })->where('etablissement_id',Auth::user()->etablissement_id)->get();
         // Cycle filieres
         $filieres = $request->enseignant ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);
@@ -289,8 +289,8 @@ class NoteController extends Controller
              })->get();
             //  dd($classes);
         }
-        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) { 
-            $query1->where('classe_id',$request->classe); 
+        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) {
+            $query1->where('classe_id',$request->classe);
         })->whereHas('enseignement_annee',function($enseignant) use ($request){
             $enseignant->where('enseignant_id',$request->enseignant);
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
@@ -300,8 +300,8 @@ class NoteController extends Controller
             $classeAnne->where('classe_id',$request->classe);
         })->where('evaluation_id',$request->evaluation)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
-        $eleves = $request->evaluation ? ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) { 
-            $query->where('classe_id',$request->classe); 
+        $eleves = $request->evaluation ? ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
+            $query->where('classe_id',$request->classe);
         })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get() : collect();
         // dd($eleves);
         $customizingEleves = $eleves->map(

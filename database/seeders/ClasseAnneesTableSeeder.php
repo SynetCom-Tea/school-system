@@ -105,8 +105,8 @@ class ClasseAnneesTableSeeder extends Seeder
                 'id' => 10,
                 'annee_id' => 2,
                 'classe_id' => 10,
-                'created_at' => '2023-10-28 07:30:11',
-                'updated_at' => '2023-10-28 07:30:11',
+                'created_at' => NULL,
+                'updated_at' => NULL,
                 'deleted_at' => NULL,
             ),
             10 => 
@@ -159,6 +159,177 @@ class ClasseAnneesTableSeeder extends Seeder
                 'id' => 16,
                 'annee_id' => 2,
                 'classe_id' => 16,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            16 => 
+            array (
+                'id' => 17,
+                'annee_id' => 2,
+                'classe_id' => 17,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            17 => 
+            array (
+                'id' => 18,
+                'annee_id' => 2,
+                'classe_id' => 18,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            18 => 
+            array (
+                'id' => 19,
+                'annee_id' => 2,
+                'classe_id' => 19,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            19 => 
+            array (
+                'id' => 20,
+                'annee_id' => 2,
+                'classe_id' => 20,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            20 => 
+            array (
+                'id' => 21,
+                'annee_id' => 2,
+                'classe_id' => 21,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            21 => 
+            array (
+                'id' => 22,
+                'annee_id' => 2,
+                'classe_id' => 22,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            22 => 
+            array (
+                'id' => 23,
+                'annee_id' => 2,
+                'classe_id' => 23,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            23 => 
+            array (
+                'id' => 24,
+                'annee_id' => 2,
+                'classe_id' => 24,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            24 => 
+            array (
+                'id' => 25,
+                'annee_id' => 2,
+                'classe_id' => 25,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            25 => 
+            array (
+                'id' => 26,
+                'annee_id' => 2,
+                'classe_id' => 26,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            26 => 
+            array (
+                'id' => 27,
+                'annee_id' => 2,
+                'classe_id' => 27,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            27 => 
+            array (
+                'id' => 28,
+                'annee_id' => 2,
+                'classe_id' => 28,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            28 => 
+            array (
+                'id' => 29,
+                'annee_id' => 2,
+                'classe_id' => 29,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            29 => 
+            array (
+                'id' => 30,
+                'annee_id' => 2,
+                'classe_id' => 30,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            30 => 
+            array (
+                'id' => 31,
+                'annee_id' => 2,
+                'classe_id' => 31,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            31 => 
+            array (
+                'id' => 32,
+                'annee_id' => 2,
+                'classe_id' => 32,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            32 => 
+            array (
+                'id' => 33,
+                'annee_id' => 2,
+                'classe_id' => 33,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            33 => 
+            array (
+                'id' => 34,
+                'annee_id' => 2,
+                'classe_id' => 34,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            34 => 
+            array (
+                'id' => 35,
+                'annee_id' => 2,
+                'classe_id' => 35,
                 'created_at' => NULL,
                 'updated_at' => NULL,
                 'deleted_at' => NULL,

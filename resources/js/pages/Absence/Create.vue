@@ -14,7 +14,7 @@ import {
   mdiMenuDown,
 } from "@mdi/js";
 export default {
-  props: ["sectionEnquestion", "filieres", "props_cycles", "cycle_filieres", "filiere_niveau_matiere_ues", "apprenants", "seancesMapped"],
+  props: ["sectionEnquestion", "filieres", "props_cycles", "cycle_filieres", "filiere_niveau_matiere_ues", "apprenants", "seances_mapped", "niveauxSe"],
   layout: AuthenticatedLayout,
   data() {
     return {
@@ -47,10 +47,10 @@ export default {
   },
   methods: {
     // goBack() {
-    //   router.get(route("emplois.index"));
+    //   router.get(route("absences.index"));
     // },
     setClasse(niveau) {
-      console.log(this.$page.props.classes)
+      // console.log(this.$page.props.classes)
       this.classes = this.$page.props.classes.filter((classe) => classe.niveau_id == niveau);
     },
     setAprenants(classe) {
@@ -59,6 +59,7 @@ export default {
           classe: classe,
         }
       })
+      console.log('seances_mapped',typeof this.seances_mapped)
     },
     setCycle(filiere){
       this.cycles = this.$page.props.props_cycles.filter((cycle) => {
@@ -67,21 +68,24 @@ export default {
         let fnmu = this.$page.props.filiere_niveau_matiere_ues.filter((f_n_m_u) => cycleIds.includes(f_n_m_u.cycle_filiere_id));
         const niveauIds = fnmu.map((item) => item.niveau_id);
         const matiereIds = fnmu.map((item) => item.matiere_id);
-        this.matieres = this.$page.props.matieres.filter((matiere) => matiereIds.includes(matiere.id))
+        const cycleFiliereIds = cf.map((item) => item.id);
+        // this.matieres = this.$page.props.matieres.filter((matiere) => matiereIds.includes(matiere.id))
         this.setNiveau(niveauIds);
-        this.niveaux = this.$page.props.niveaux.filter((n) => niveauIds.includes(n.id));
+        this.classes = this.$page.props.classes.filter((classe) => classe.niveau_id == niveau);
+        this.niveaux = this.$page.props.niveauxSe.filter((n) => niveauIds.includes(n.id));
+        console.log(fnmu, niveauIds, this.$page.props.niveauxSe, cycleFiliereIds)
         return cycleIds.includes(cycle.id);
       });
-      console.log(this.niveaux)
+      // console.log(this.niveaux)
     },
     setNiveau(niveauIds) {
       // Filtrer les niveaux en fonction des niveauIds
-      this.niveaux = this.$page.props.niveaux.filter((n) => niveauIds.includes(n.id));
+      this.niveaux = this.$page.props.niveauxSe.filter((n) => niveauIds.includes(n.id));
     },
     addRow() {
       this.form.absences.push({
-        before: null,
-        after: null,
+        seance: null,
+        ensalle: "Non",
       });
     },
     removeRow(p) {
@@ -89,7 +93,7 @@ export default {
     },
     submit() {
       console.log(this.form);
-      this.form.post(route("emplois.store"), {
+      this.form.post(route("absences.store"), {
         // onFinish: () => this.form.reset(),
         onError: (error) => {
           // Logique à exécuter en cas d'erreur
@@ -205,7 +209,7 @@ export default {
                         :key="absenceIndex"
                         dense
                       >
-                      <v-col md="5">
+                      <v-col md="53">
                         <autocomplete
                           label="Apprenant"
                           v-model="absence.apprenant"
@@ -215,26 +219,37 @@ export default {
                           item-value="id"
                         ></autocomplete>
                       </v-col>
-                        <v-col md="5">
-                          <autocomplete
-                            dense
-                            :disabled="!absence.apprenant"
-                            label="Matiere / Heure"
-                            item-title="nom_matiere_heure_debut"
-                            item-value="niveau_matiere_id"
-                            :items="seancesMapped"
-                            v-model="absence.matiere"
-                          >
-                          </autocomplete>
-                        </v-col>
-                        <v-col md="1">
-                          <v-icon
-                            color="error"
-                            :disabled="!(form.absences.length > 1)"
-                            @click="removeRow(absence)"
-                            :icon="icon.mdiCloseCircle"
-                          ></v-icon>
-                        </v-col>
+                      <v-col md="3">
+                        <v-switch
+                          v-model="absence.ensalle"
+                          hide-details
+                          :disabled="!absence.apprenant"
+                          true-value="Oui"
+                          false-value="Non"
+                          :label="`Absent toute la journée ?: ${absence.ensalle}`"
+                        ></v-switch>
+                      </v-col>
+                      <v-col md="4">
+                        <autocomplete
+                          dense
+                          :disabled="!absence.apprenant"
+                          v-if="absence.ensalle == 'Non'"
+                          label="Matiere / Heure"
+                          item-title="nom_matiere_heure_debut"
+                          item-value="id"
+                          :items="seances_mapped"
+                          v-model="absence.seance"
+                        >
+                        </autocomplete>
+                      </v-col>
+                      <v-col offset-md="11" md="1">
+                        <v-icon
+                          color="error"
+                          :disabled="!(form.absences.length > 1)"
+                          @click="removeRow(absence)"
+                          :icon="icon.mdiCloseCircle"
+                        ></v-icon>
+                      </v-col>
                       </v-row>
                       <v-row dense>
                         <v-col offset-md="11" md="1">

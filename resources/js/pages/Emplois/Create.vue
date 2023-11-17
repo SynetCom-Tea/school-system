@@ -66,16 +66,19 @@ export default {
     setCycle(filiere){
       this.cycles = this.$page.props.props_cycles.filter((cycle) => {
         let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
+        const cycleFiliereIds = cf.map((item) => item.id);
+        let fnmu = this.$page.props.filiere_niveau_matiere_ues.filter((f_n_m_u) => cycleFiliereIds.includes(f_n_m_u.cycle_filiere_id));
         const cycleIds = cf.map((item) => item.cycle_id);
-        let fnmu = this.$page.props.filiere_niveau_matiere_ues.filter((f_n_m_u) => cycleIds.includes(f_n_m_u.cycle_filiere_id));
         const niveauIds = fnmu.map((item) => item.niveau_id);
         const matiereIds = fnmu.map((item) => item.matiere_id);
         this.matieres = this.$page.props.matieres.filter((matiere) => matiereIds.includes(matiere.id))
         this.setNiveau(niveauIds);
         this.niveaux = this.$page.props.niveaux.filter((n) => niveauIds.includes(n.id));
+        const classes = this.$page.props.classes.filter((classe) => cycleFiliereIds.includes(classe.cycle_filiere_id));
+        this.classes = classes.filter((classe) => niveauIds.includes(classe.niveau_id));
+        console.log()
         return cycleIds.includes(cycle.id);
       });
-      console.log(this.niveaux)
     },
     setNiveau(niveauIds) {
       // Filtrer les niveaux en fonction des niveauIds
@@ -155,7 +158,7 @@ export default {
             <v-card outlined>
               <v-card-text id="heit">
                 <v-row dense>
-                  <v-col v-if="sectionEnquestion.id == 3  || sectionEnquestion.id == 4" md="3">
+                  <v-col v-if="sectionEnquestion.id == 3  || sectionEnquestion.id == 4" md="5">
                     <autocomplete
                       label="Filière"
                       v-model="form.filiere"
@@ -165,7 +168,7 @@ export default {
                       item-value="id"
                     ></autocomplete>
                   </v-col>
-                  <v-col v-if="sectionEnquestion.id == 3  || sectionEnquestion.id == 4" md="3">
+                  <!-- <v-col v-if="sectionEnquestion.id == 3  || sectionEnquestion.id == 4" md="3">
                     <autocomplete
                       label="Cycle"
                       v-model="form.cycle"
@@ -175,7 +178,7 @@ export default {
                       item-title="name"
                       item-value="id"
                     ></autocomplete>
-                  </v-col>
+                  </v-col> -->
                   <v-col v-if="sectionEnquestion.id == 1 || sectionEnquestion.id == 2" md="4">
                     <autocomplete
                       label="Niveau"
@@ -186,7 +189,7 @@ export default {
                       item-value="id"
                     ></autocomplete>
                   </v-col>
-                  <v-col v-if="sectionEnquestion.id == 3  || sectionEnquestion.id == 4" md="3">
+                  <!-- <v-col v-if="sectionEnquestion.id == 3  || sectionEnquestion.id == 4" md="3">
                     <autocomplete
                       label="Niveau"
                       v-model="form.niveau"
@@ -196,13 +199,23 @@ export default {
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
-                  </v-col>
-                  <v-col md="3">
+                  </v-col> -->
+                  <v-col v-if="sectionEnquestion.id == 1 || sectionEnquestion.id == 2" md="3">
                     <autocomplete
                       label="Classe"
                       v-model="form.classe"
                       :items="classes"
                       :disabled="!form.niveau"
+                      item-title="libelle"
+                      item-value="id"
+                    ></autocomplete>
+                  </v-col>
+                  <v-col v-if="sectionEnquestion.id == 3  || sectionEnquestion.id == 4" md="7">
+                    <autocomplete
+                      label="Classe"
+                      v-model="form.classe"
+                      :items="classes"
+                      :disabled="!form.filiere"
                       item-title="libelle"
                       item-value="id"
                     ></autocomplete>
