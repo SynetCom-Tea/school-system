@@ -44,7 +44,8 @@
             "app/Helpers/CalculerMoyennePrimaire.php",
             "app/Helpers/CalculerMoyenneSecondaire.php",
             "app/Helpers/GenerationCalendar.php",
-            "app/Helpers/GenerationRang.php"
+            "app/Helpers/GenerationRang.php",
+            "app/Helpers/CalculerResultatsClasse.php"
         ]
     },
     "autoload-dev": {

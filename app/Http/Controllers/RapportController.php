@@ -141,51 +141,7 @@ class RapportController extends Controller
                 // foreach ($classes as $classe) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
-                    $resultatsClasse = [];
-                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants;
-    
-                    foreach ($apprenantsDeLaClasse as $apprenant) {
-                        $details_notes = calculerMoyenneSecondaire($request->classe, $apprenant->id);
-    
-                        $resultatsClasse[$apprenant->id] = [
-                            'classe' => $request->classe,
-                            'periode' => $details_notes[0]['periodes'],
-                            'nom_classe' => $classes->find($request->classe)->libelle,
-                            'apprenant' => $apprenant->id,
-                            'matricule_apprenant' => $apprenant->matricule,
-                            'nom_apprenant' => $apprenant->nom,
-                            'prenom_apprenant' => $apprenant->prenom,
-                            'details_notes' => $details_notes, // Tableau des détails des notes
-                        ];
-                    }
-    
-                    // Transformer le tableau associatif en tableau indexé pour trier
-                    $resultatsClasse = array_values($resultatsClasse);
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $totalMoyenne = 0;
-    
-                        foreach ($resultat['details_notes'] as $details) {
-                            $totalMoyenne += $details['moyenne'];
-                        }
-    
-                        $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
-                    }
-    
-                    usort($resultatsClasse, function($a, $b) {
-                        return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
-                    });
-    
-                    $rank = 1;
-                    $prevRank = 1;
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
-                        $prevRank = $rank;
-                        $rank++;
-                    }
-    
-                    $resultats = $resultatsClasse;
+                    $resultats = calculerResultatsClasse($request->classe);
 
                     foreach ($resultats as &$resultat) {
                         // dd($resultat, $resultats);
@@ -216,51 +172,7 @@ class RapportController extends Controller
                     }
                     // dd($historiqueBulletincheck, $resultats[0]['periode']);
                 } else {
-                    $resultatsClasse = [];
-                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants;
-    
-                    foreach ($apprenantsDeLaClasse as $apprenant) {
-                        $details_notes = calculerMoyenneSecondaire($request->classe, $apprenant->id);
-    
-                        $resultatsClasse[$apprenant->id] = [
-                            'classe' => $request->classe,
-                            'periode' => $details_notes[0]['periodes'],
-                            'nom_classe' => $classes->find($request->classe)->libelle,
-                            'apprenant' => $apprenant->id,
-                            'matricule_apprenant' => $apprenant->matricule,
-                            'nom_apprenant' => $apprenant->nom,
-                            'prenom_apprenant' => $apprenant->prenom,
-                            'details_notes' => $details_notes, // Tableau des détails des notes
-                        ];
-                    }
-    
-                    // Transformer le tableau associatif en tableau indexé pour trier
-                    $resultatsClasse = array_values($resultatsClasse);
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $totalMoyenne = 0;
-    
-                        foreach ($resultat['details_notes'] as $details) {
-                            $totalMoyenne += $details['moyenne'];
-                        }
-    
-                        $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
-                    }
-    
-                    usort($resultatsClasse, function($a, $b) {
-                        return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
-                    });
-    
-                    $rank = 1;
-                    $prevRank = 1;
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
-                        $prevRank = $rank;
-                        $rank++;
-                    }
-    
-                    $resultats = $resultatsClasse;
+                    $resultats = calculerResultatsClasse($request->classe);
                 }
             }
         }
