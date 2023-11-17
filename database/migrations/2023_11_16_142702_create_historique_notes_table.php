@@ -25,6 +25,7 @@ return new class extends Migration
             $table->string('note_de_composition_coefficiente');
             $table->string('moyenne');
             $table->string('moyenne_coefficiente');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

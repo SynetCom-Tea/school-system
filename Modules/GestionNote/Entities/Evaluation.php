@@ -32,7 +32,7 @@ class Evaluation extends Model
     {
         return $this->belongsTo(Periode::class);
     }
-    
+
     public static function getDetailEvaluationInferiere($etablissement_id,$evaluation_id){
         $evaluations = Evaluation::join('enseignement_annees','evaluations.enseignement_annee_id','=','enseignement_annees.id')
                                 ->join('enseignants','enseignement_annees.enseignant_id','=','enseignants.id')

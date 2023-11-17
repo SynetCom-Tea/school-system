@@ -375,13 +375,13 @@ export default {
                     <v-form ref="form">
                         <v-row>
                             <v-col cols="12" md="12">
-                                <Select label="Matière" :items="matieres" variant="outlined" class="mt-1" itemValue="id" itemTitle="nom" v-model="form.matiere_id" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                <Select disabled="true" label="Matière" :items="matieres" variant="outlined" class="mt-1" itemValue="id" itemTitle="nom" v-model="form.matiere_id" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
                                 </Select>
                             </v-col>
                         </v-row>
                         <v-row>
                             <v-col cols="12" md="12">
-                                <Select label="Niveau" :items="niveaux" variant="outlined" itemValue="id" itemTitle="libelle" v-model="form.niveau_id" class="mt-1" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                <Select  disabled="true" label="Niveau"  :items="niveaux" variant="outlined" itemValue="id" itemTitle="libelle" v-model="form.niveau_id" class="mt-1" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
                                 </Select>
                             </v-col>
                         </v-row>

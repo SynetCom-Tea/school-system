@@ -97,13 +97,13 @@
                     :items="niveaux"
                     variant="outlined"
                     item-value="id"
-                    item-title="libelle"
+                    item-title="code"
                     v-model="affectation.niveau_id"
                     @update:modelValue="submitForm(affectation)"
                     placeholder="Niveaux"
                     isRequired
                     multiple
-                    ships
+                    chips
                     @change="verify(affectation)"
                     label="Niveaux"
                     class="mt-2"

@@ -7,16 +7,16 @@
     <v-card variant="outlined" style="border: 2px solid #7d002c">
         <v-card-title style="color: white; background-color: #7d002c">Parametrage</v-card-title>
         <v-divider></v-divider>
-        <div style="margin: 10px">
+        <div style="margin: 10px;font-size: 16px;">
             <v-alert v-model="alertFirst" border="start" variant="tonal" color="primary" type="info" title="Note">
                 <li>
-                    Cette section vous permet de configurer les matieres enseignées dans cet
-                    établissement
+                    Cette section vous permet de configurer les <b>TYPE DE FRAIS, DOCUMENTS et NOMBRE LIMITE</b> des élèves autorisés dans une seule classe
                 </li>
                 <li>
-                    Le formulaire sera valide <strong>si et seulement si </strong>tous les
-                    champs obligatoires marqués par <span style="color: red">*</span> sont
-                    renseignés
+                    Le formulaire sera valide <strong>si et seulement si </strong>les deux tableaux ont au moins un element coché
+                </li>
+                <li>
+                    Un type de frais déjà utilisé dans frais ne pourra pas être décocher
                 </li>
             </v-alert>
         </div>
@@ -53,7 +53,7 @@
                 <v-expansion-panel-text>
                     <v-data-table
                         v-model="form.selected_frais"
-                        :headers="headers"
+                        :headers="headers_frais"
                         :items="type_frais"
                         @update:modelValue="rowClickFrais(form.selected_frais)"
                         item-value="id"
@@ -97,7 +97,7 @@
                         <v-spacer></v-spacer>
                         <v-data-table
                             v-model="form.selected_documents"
-                            :headers="headers"
+                            :headers="headers_documents"
                             :items="type_documents"
                             @update:modelValue="rowClickDocument(form.selected_documents)"
                             item-value="id"
@@ -162,6 +162,7 @@
                 <v-btn
                 variant="text"
                 color="secondary"
+                @click="retour"
                 >
                 Annuler
                 </v-btn>
@@ -231,7 +232,10 @@
             mdiContentSave,
             mdiCurrencyUsd,
         },
-        headers: [
+        headers_frais: [
+          { title: 'Libelle', key: 'libelle' },
+        ],
+        headers_documents: [
           { title: 'Libelle', key: 'libelle' },
           { title: 'Obligatoire', key: 'obligatoire' },
         ],
@@ -265,6 +269,8 @@
     },
     methods: {
         createdHandler() {
+            this.items_frais = [],
+            this.items_documents = [],
             console.log('liste_document',this.liste_document,'type_document',this.type_documents);
             if (this.liste_frais && this.liste_frais.length > 0) {
                 this.form.selected_frais = this.liste_frais.map((e)=>{
@@ -301,6 +307,9 @@
             this.items_documents = tabs.map((e)=>{
                 return e.libelle
             })
+        },
+        retour(){
+            router.get(route('admin.gestion',this.type))
         },
         submit(){
             if(this.form.selected_frais.length == 0 || this.form.selected_documents.length == 0 ){

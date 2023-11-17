@@ -66,6 +66,7 @@ class InscriptionController extends Controller
     {
         // dd($request);
         $apprenant = json_decode($request->query('apprenant'));
+        // dd($apprenant);
         $section = json_decode($request->query('section'));
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $section);
         $p = Parametre::where('etablissement_section_id',$etablissement_section)->first();
@@ -282,6 +283,7 @@ class InscriptionController extends Controller
 
     public function generateCodeInscription($donnees)
     {
+        // dd($donnees);
         $mat = "";
         $s = substr($this->getNameSection($donnees['section']), 0, 1);
         $words = preg_split(
@@ -335,7 +337,6 @@ class InscriptionController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-
         /////////////////////////////  matricule  ///////////////////////
         $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $request->section)->first();
         $matricule = $this->generateMatricule($request->all());
@@ -345,200 +346,218 @@ class InscriptionController extends Controller
 
         $tabs = EtablissementTypeDocument::where('etablissement_section_id',$et_sec_id)->where('obligatoire','1')->where('statut','1')->with('type_document')->get()->pluck('type_document_id')->unique()->values()->all();
 
-        if (isset($request->documents['documents'])) {
-            $p = collect($request->documents['documents'])->map(function($e){
-                return (int)$e['type'];
-            })->toArray();
-        }else{
-            $p = [];
-        }
-        $i = array_intersect($p,$tabs);
-        // dd($tabs,$p,$i);
-        if(count($i) != count($tabs)){
-            return redirect()->back()->with('message', [
-                'type' => 'error',
-                'text' => 'Merci de renseigner tous les documents obligatoires',
-            ]);
+        if($request->apprenants){
+            if (isset($request->documents['documents'])) {
+                $p = collect($request->documents['documents'])->map(function($e){
+                    return (int)$e['type'];
+                })->toArray();
+            }else{
+                $p = [];
+            }
+            $i = array_intersect($p,$tabs);
+            // dd($tabs,$p,$i);
+            if(count($i) != count($tabs)){
+                return redirect()->back()->with('message', [
+                    'type' => 'error',
+                    'text' => 'Merci de renseigner tous les documents obligatoires',
+                ]);
+            }
         }
 
         // dd('ca a passé');
-        if($request->apprenants){
-            $find = Apprenant::where('nom',$request->apprenants['nom'])->where('prenom',$request->apprenants['prenom'])->where('sexe',$request->apprenants['sexe'])
-            ->where('date_naissance',$request->apprenants['date_naissance'])->where('lieu_naissance',$request->apprenants['lieu_naissance'])->where('telephone',$request->apprenants['telephone'])
-            ->where('etablissement_id',Auth::user()->etablissement_id)->first();
-            if($find == null){
-                $item_apprenant = Apprenant::create([
-                    'matricule' => $matricule,
-                    'nom' => $request->apprenants['nom'],
-                    'prenom' => $request->apprenants['prenom'],
-                    'sexe' => $request->apprenants['sexe'],
-                    'date_naissance' => $request->apprenants['date_naissance'],
-                    'lieu_naissance' => $request->apprenants['lieu_naissance'],
-                    'telephone' => $request->apprenants['telephone'],
-                    'etablissement_id' => Auth::user()->etablissement_id
-                ]);
-                $id_apprenant = $item_apprenant->id;
+        try {
+            // Démarrez la transaction
+            DB::beginTransaction();
+        
+            if($request->apprenants){
+                $find = Apprenant::where('nom',$request->apprenants['nom'])->where('prenom',$request->apprenants['prenom'])->where('sexe',$request->apprenants['sexe'])
+                ->where('date_naissance',$request->apprenants['date_naissance'])->where('lieu_naissance',$request->apprenants['lieu_naissance'])->where('telephone',$request->apprenants['telephone'])
+                ->where('etablissement_id',Auth::user()->etablissement_id)->first();
+                if($find == null){
+                    $item_apprenant = Apprenant::create([
+                        'matricule' => $matricule,
+                        'nom' => $request->apprenants['nom'],
+                        'prenom' => $request->apprenants['prenom'],
+                        'sexe' => $request->apprenants['sexe'],
+                        'date_naissance' => $request->apprenants['date_naissance'],
+                        'lieu_naissance' => $request->apprenants['lieu_naissance'],
+                        'telephone' => $request->apprenants['telephone'],
+                        'etablissement_id' => Auth::user()->etablissement_id
+                    ]);
+                    $id_apprenant = $item_apprenant->id;
+                }else{
+                    $id_apprenant = $find->id;
+                }
             }else{
-                $id_apprenant = $find->id;
+                $id_apprenant = $request->annees['apprenant']['more']['apprenant']['id'];
             }
-        }else{
-            $id_apprenant = $request->annees['apprenant']['more']['apprenant']['id'];
-        }
-        // dd($id_apprenant);
+            // dd($id_apprenant);
 
-        // Inscription
+            // Inscription
+            // dd($request->tuteurs);
 
 
-        $check = Inscription::where('annee_id',$request->annees['annee'])->where('apprenant_id',$id_apprenant)->get();
 
-        if($check->count() == 0){
+            $check = Inscription::where('annee_id',$request->annees['annee'])->where('apprenant_id',$id_apprenant)->get();
+
+            if($check->count() == 0){
+                if($request->section == '1' || $request->section == '2'){
+                    $inscription = Inscription::create([
+                        'code' => $code_inscription,
+                        'date_inscription' => date('Y-m-d'),
+                        'annee_id' => $request->annees['annee'],
+                        'niveau_id' => $request->annees['niveau'],
+                        'apprenant_id' => $id_apprenant,
+                        'statut' => 0
+                    ]);
+                }elseif($request->section == '3' || $request->section == '4'){
+                    $inscription = Inscription::create([
+                        'code' => $code_inscription,
+                        'date_inscription' => date('Y-m-d'),
+                        'annee_id' => $request->annees['annee'],
+                        'niveau_id' => $request->annees['niveau'],
+                        'cycle_filiere_id' => $request->annees['cycle_filiere'],
+                        'apprenant_id' => $id_apprenant,
+                        'statut' => 0
+                    ]);
+                }
+            }else{
+                return redirect()->back()->with('message', [
+                    'type' => 'error',
+                    'text' => 'Cette inscription existe déjà',
+                ]);
+            }
+            $classe = null;
+            $niv = Niveau::find($request->annees['niveau']);
             if($request->section == '1' || $request->section == '2'){
-                $inscription = Inscription::create([
-                    'code' => $code_inscription,
-                    'date_inscription' => date('Y-m-d'),
-                    'annee_id' => $request->annees['annee'],
-                    'niveau_id' => $request->annees['niveau'],
-                    'apprenant_id' => $id_apprenant,
-                    'statut' => 0
-                ]);
+
+                if($request->annees['classe'] == null){
+
+                    if($niv->code != '6e' && $niv->code != '5e' && $niv->code != '4e' && $niv->code != '3e' )
+                    {
+                        $cod = '1';
+                    }else{
+                        $cod = 'A';
+                    }
+                    $cl = Classe::create([
+                        'code' => $niv->code.$cod,
+                        'libelle' => $niv->libelle.$cod,
+                        'niveau_id' => $request->annees['niveau'],
+                        'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
+                    ]);
+                    $classe = $cl->id;
+                }else{
+                    $classe = $request->annees['classe'];
+                }
             }elseif($request->section == '3' || $request->section == '4'){
-                $inscription = Inscription::create([
-                    'code' => $code_inscription,
-                    'date_inscription' => date('Y-m-d'),
-                    'annee_id' => $request->annees['annee'],
-                    'niveau_id' => $request->annees['niveau'],
-                    'cycle_filiere_id' => $request->annees['cycle_filiere'],
-                    'apprenant_id' => $id_apprenant,
-                    'statut' => 0
-                ]);
+
+                $classe = Classe::where('niveau_id',$request->annees['niveau'])->where('etablissement_section_id',$request->annees['etablissement_section_id']['id'])->where('cycle_filiere_id',$request->annees['cycle_filiere'])->first();
+                if(is_null($classe)){
+                    $cycleFiliere = CycleFiliere::find($request->annees['cycle_filiere']);
+                    $cl = Classe::create([
+                        'code' => $cycleFiliere->code.' - '.$niv->code,
+                        'libelle' => $cycleFiliere->code.' - '.$niv->libelle,
+                        'niveau_id' => $request->annees['niveau'],
+                        'cycle_filiere_id' => $request->annees['cycle_filiere'],
+                        'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
+                    ]);
+                    $classe = $cl->id;
+                }else{
+                    $classe = $classe->id;
+                }
+
             }
-        }else{
+
+
+
+            $checkAnneeClasse = ClasseAnnee::where('annee_id',$request->annees['annee'])->where('classe_id',$classe)->first();
+
+            $classe_annee = null;
+            if($checkAnneeClasse == null){
+                $classe_annee = ClasseAnnee::create([
+                    'annee_id' => $request->annees['annee'],
+                    'classe_id' => $classe
+                ]);
+            }else{
+                $classe_annee = $checkAnneeClasse;
+            }
+
+
+            ApprenantClasseAnnee::create([
+                'classe_annee_id' => $classe_annee->id,
+                'apprenant_id' => $id_apprenant
+            ]);
+
+
+            // Versement
+
+
+            // Versement::create([
+            //     'inscription_id' => $inscription->id,
+            //     'frais_id' => $frais->id,
+            //     'montant' => $request->annees['versement'],
+            //     'date_versement' => date('Y-m-d')
+            // ]);
+
+            // Tuteur
+            if($request->tuteurs){
+                if($request->tuteurs['selection'] !== true){
+                    foreach($request->tuteurs['tuteurs'] as $tuteur){
+                        $item_tuteur = Tuteur::create([
+                            'nom' => $tuteur['nom'],
+                            'prenom' => $tuteur['prenom'],
+                            'telephone' => $tuteur['tel'],
+                            // 'adresse' => $tuteur['adresse'],
+                            'email' => $tuteur['email'],
+                            'sexe' => $tuteur['sexe'],
+                        ]);
+                        ApprenantTuteur::create([
+                            'apprenant_id' => $id_apprenant,
+                            'tuteur_id' => $item_tuteur['id'],
+                        ]);
+                    }
+                }else{
+                    for($i = 0; $i < count($request->tuteurs['selectTuteurs']); $i++){
+                        // dd($id_apprenant,$request->tuteurs['selectTuteurs'][$i]);
+                        ApprenantTuteur::create([
+                            'apprenant_id' => $id_apprenant,
+                            'tuteur_id' => $request->tuteurs['selectTuteurs'][$i],
+                        ]);
+                    }
+                }
+            }
+            if (isset($request->documents['documents'])) {
+                foreach($request->documents['documents'] as $document){
+                    // dd($document);
+                    if(isset($document['file'][0])){
+                        $file_name = $document['file'][0]->getClientOriginalName();
+                        $document['file'][0]->move('test/', $document['file'][0]->getClientOriginalName());
+                    }else{
+                        $file_name = null;
+                    }
+                    $item_tuteur = Document::create([
+                        'type_document_id' => $document['type'],
+                        'apprenant_id' => $id_apprenant,
+                        'file' => $file_name,
+                    ]);
+                }
+            }
+            return redirect()->back()->with('message', [
+                'type' => 'success',
+                'text' => 'Inscription effectuée avec succès',
+            ]);
+
+        } catch (\Exception $e) {
+            // En cas d'erreur, annulez la transaction
+            DB::rollback();
             return redirect()->back()->with('message', [
                 'type' => 'error',
-                'text' => 'Cette inscription existe déjà',
+                'text' => throw $e,
             ]);
+            // Gérez l'erreur (log, renvoyez une réponse, etc.)
+            throw $e;
         }
-        $classe = null;
-        $niv = Niveau::find($request->annees['niveau']);
-        if($request->section == '1' || $request->section == '2'){
-
-            if($request->annees['classe'] == null){
-
-                if($niv->code != '6e' && $niv->code != '5e' && $niv->code != '4e' && $niv->code != '3e' )
-                {
-                    $cod = '1';
-                }else{
-                    $cod = 'A';
-                }
-                $cl = Classe::create([
-                    'code' => $niv->code.$cod,
-                    'libelle' => $niv->libelle.$cod,
-                    'niveau_id' => $request->annees['niveau'],
-                    'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
-                ]);
-                $classe = $cl->id;
-            }else{
-                $classe = $request->annees['classe'];
-            }
-        }elseif($request->section == '3' || $request->section == '4'){
-
-            $classe = Classe::where('niveau_id',$request->annees['niveau'])->where('etablissement_section_id',$request->annees['etablissement_section_id']['id'])->where('cycle_filiere_id',$request->annees['cycle_filiere'])->first();
-            if(is_null($classe)){
-                $cycleFiliere = CycleFiliere::find($request->annees['cycle_filiere']);
-                $cl = Classe::create([
-                    'code' => $cycleFiliere->code.' - '.$niv->code,
-                    'libelle' => $cycleFiliere->code.' - '.$niv->libelle,
-                    'niveau_id' => $request->annees['niveau'],
-                    'cycle_filiere_id' => $request->annees['cycle_filiere'],
-                    'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
-                ]);
-                $classe = $cl->id;
-            }else{
-                $classe = $classe->id;
-            }
-
-        }
-
-
-
-        $checkAnneeClasse = ClasseAnnee::where('annee_id',$request->annees['annee'])->where('classe_id',$classe)->first();
-
-        $classe_annee = null;
-        if($checkAnneeClasse == null){
-            $classe_annee = ClasseAnnee::create([
-                'annee_id' => $request->annees['annee'],
-                'classe_id' => $classe
-            ]);
-        }else{
-            $classe_annee = $checkAnneeClasse;
-        }
-
-
-        ApprenantClasseAnnee::create([
-            'classe_annee_id' => $classe_annee->id,
-            'apprenant_id' => $id_apprenant
-        ]);
-
-
-        // Versement
-
-
-        // Versement::create([
-        //     'inscription_id' => $inscription->id,
-        //     'frais_id' => $frais->id,
-        //     'montant' => $request->annees['versement'],
-        //     'date_versement' => date('Y-m-d')
-        // ]);
-
-        // Tuteur
-        if($request->tuteurs){
-            if($request->tuteurs['selection'] !== '1'){
-                foreach($request->tuteurs['tuteurs'] as $tuteur){
-                    $item_tuteur = Tuteur::create([
-                        'nom' => $tuteur['nom'],
-                        'prenom' => $tuteur['prenom'],
-                        'telephone' => $tuteur['tel'],
-                        // 'adresse' => $tuteur['adresse'],
-                        'email' => $tuteur['email'],
-                        'sexe' => $tuteur['sexe'],
-                    ]);
-                    ApprenantTuteur::create([
-                        'apprenant_id' => $id_apprenant,
-                        'tuteur_id' => $item_tuteur['id'],
-                    ]);
-                }
-            }else{
-                for($i = 0; $i < count($request->tuteurs['selectTuteurs']); $i++){
-                    ApprenantTuteur::create([
-                        'apprenant_id' => $id_apprenant,
-                        'tuteur_id' => $request->tuteurs['selectTuteurs'][$i],
-                    ]);
-                }
-            }
-        }
-        if (isset($request->documents['documents'])) {
-            foreach($request->documents['documents'] as $document){
-                // dd($document);
-                if(isset($document['file'][0])){
-                    $file_name = $document['file'][0]->getClientOriginalName();
-                    $document['file'][0]->move('test/', $document['file'][0]->getClientOriginalName());
-                }else{
-                    $file_name = null;
-                }
-                $item_tuteur = Document::create([
-                    'type_document_id' => $document['type'],
-                    'apprenant_id' => $id_apprenant,
-                    'file' => $file_name,
-                ]);
-            }
-        }
-
-
-
-        return redirect()->back()->with('message', [
-            'type' => 'success',
-            'text' => 'Inscription effectuée avec succès',
-        ]);
+  
     }
 
     /**

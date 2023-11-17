@@ -599,6 +599,7 @@ export default {
      
     },
     addNewInscription(item){
+      // console.log('ismoooo',item)
       // router.post('/scolarite/inscription/page/',{apprenant:item});
       router.get(route("inscriptionPage", {apprenant: JSON.stringify(item), section: JSON.stringify(this.vSectionID)}))
     },

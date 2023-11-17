@@ -28,6 +28,7 @@ return new class extends Migration
             $table->string('nom_classe');
             $table->string('moyenne_details_notes');
             $table->string('rang');
+            $table->softDeletes();
             $table->timestamps();
         });
     }

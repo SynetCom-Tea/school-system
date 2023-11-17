@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Annee;
+use App\Models\Classe;
 use App\Models\ClasseAnnee;
+use App\Models\Etablissement;
 use App\Models\HistoriqueBulletin;
 use App\Models\HistoriqueNote;
 use Illuminate\Http\Request;
@@ -15,8 +17,66 @@ use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Note;
 use Modules\GestionNote\Entities\Periode;
 
+use PDF;
+
 class RapportController extends Controller
 {
+
+    public function bulletin(Request $request)
+    {
+        // dd($request->all());
+        $etab = Etablissement::find(Auth::user()->etablissement_id);
+        if($request->type == 0){
+            $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null) : null;
+            $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
+            // dd($bulletin,$detail);
+            $data = [
+                'etablissement' => $etab,
+                'bulletin' => $bulletin,
+                'detail' => $detail,
+                'section' => $request->section,
+                'title' => 'Bulletin Semestriel',
+                'date' => date('m/d/Y'),
+            ];
+
+            $pdf = PDF::loadView('bulletin', $data);
+
+        }elseif($request->type == 1){
+            $tabs = [];
+            $annee_encours = getAnneeEncours();
+            $bulletins = $request->classe ?  HistoriqueBulletin::where('statut',1)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
+                $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
+            })->with('classe_annee.annee','classe_annee.classe.niveau')->get() : [];
+
+            foreach ($bulletins as $key => $bulletin) {
+                $details = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
+                $tabs[$bulletin->apprenant_id]=[
+                    'classe' => $bulletin->classe_annee->classe,
+                    'bulletin' => $bulletin,
+                    'detail' => $details,
+                ];
+            }
+            
+            // dd($tabs);
+            $request->classe;
+            $data = [
+                'etablissement' => $etab,
+                'section' => $request->section,
+                'donnees' => $tabs,
+                'title' => 'Bulletin Semestriel',
+                'date' => date('m/d/Y'),
+            ];
+
+            $pdf = PDF::loadView('bulletin_par_classe', $data);
+        }
+        
+        
+        // dd($data['item']['details_notes']);
+
+        
+
+        return $pdf->stream('itsolutionstuff.pdf');
+    }
     /**
      * Display a listing of the resource.
      */
