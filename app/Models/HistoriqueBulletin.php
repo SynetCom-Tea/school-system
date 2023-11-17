@@ -9,8 +9,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class HistoriqueBulletin extends Model
 {
-    use HasFactory, SoftDeletes;
-    protected $fillable = ['apprenant_id', 'classe_annee_id', 'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe', 'moyenne_details_notes', 'rang'];
+    use HasFactory;
+    protected $fillable = ['statut','apprenant_id', 'classe_annee_id', 'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe', 'moyenne_details_notes', 'rang'];
 
     public function apprenant()
     {

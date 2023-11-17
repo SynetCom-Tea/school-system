@@ -10,7 +10,7 @@ export default {
         DetailBulletin
     },
     layout: AuthenticatedLayout,
-    props: ["sectionID", "classes", "resultats"],
+    props: ["sectionID", "classes", "resultats", "periodes",],
     data: () => ({
         icons: {
         mdiDatabaseSync,
@@ -52,6 +52,7 @@ export default {
         dialog: false,
         overlay: false,
         classe: null,
+        periode: null,
         printPdf: false
     }),
     watch: {
@@ -69,8 +70,12 @@ export default {
     },
     methods: {
         generate() {
-            const filteredResults = this.resultats[this.classe];
-            this.data = this.resultats[this.classe];
+            this.$inertia.replace(this.$page.url, {
+                data: { classe: this.classe, periode: this.periode }
+            });
+            console.log('ojjj', this.classes.length, (this.classes.length !== 0))
+            const filteredResults = this.resultats;
+            this.data = this.resultats;
             console.log('filteredResults',filteredResults)
         },
         setData(classe){
@@ -79,10 +84,7 @@ export default {
                 this.data = this.resultats[classe];
                 console.log('daza',this.data);
             }else if(this.sectionID == 2){
-                this.$inertia.replace(this.$page.url, {
-                    data: { classe: classe }
-                });
-                console.log('ojjj', this.classes.length, (this.classes.length !== 0))
+               
             }
         },
         openBulletinDialog(item) {
@@ -112,28 +114,44 @@ export default {
   <v-card>
     <Toolbar :icon="icons.mdiDatabaseSync" toolbarTitle="Génération des bulletins"></Toolbar>
     <v-card-text>
-        <div class="text-center" v-if="sectionID != 1">
-            <v-btn
-            :append-icon="icons.mdiTimerSync"
-            color="deep-purple-accent-4"
-            @click="generate"
-            :disabled="classes.length === 0"
-            >
-            Générer
-            </v-btn>
-        </div>
-         <v-col md="4" v-if="classes.length != 0">
-            <autocomplete
-            label="Classe"
-            v-model="classe"
-            :items="classes"
-            @update:modelValue="setData(classe)"
-            class="mt-4"
-            isRequired
-            item-title="libelle"
-            item-value="id"
-            ></autocomplete>
-        </v-col>
+        <!-- <div class="text-center">
+            
+        </div> -->
+        <v-row>
+            <v-col md="4" v-if="classes.length != 0">
+                <autocomplete
+                label="Classe"
+                v-model="classe"
+                :items="classes"
+                @update:modelValue="setData(classe)"
+                class="mt-4"
+                isRequired
+                item-title="libelle"
+                item-value="id"
+                ></autocomplete>
+            </v-col>
+            <v-col cols="4">
+                <autocomplete 
+                    class="mt-4" 
+                    v-model="periode" 
+                    label="Periodes" 
+                    itemTitle="libelle" 
+                    itemValue="id" 
+                    :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe" chips clearable>
+                </autocomplete>
+            </v-col>
+            <v-col md="4"  v-if="sectionID != 1">
+                <v-btn
+                class="mt-4"
+                :append-icon="icons.mdiTimerSync"
+                color="deep-purple-accent-4"
+                @click="generate"
+                :disabled="!periode"
+                >
+                Générer
+                </v-btn>
+            </v-col>
+        </v-row>
         <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :displayAddButton="false" >
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Imprimer" @click="printItem(item)" :icon="icons.mdiPrinter" color="info">

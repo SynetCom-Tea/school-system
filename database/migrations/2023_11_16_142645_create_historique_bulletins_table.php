@@ -15,6 +15,7 @@ return new class extends Migration
     {
         Schema::create('historique_bulletins', function (Blueprint $table) {
             $table->id();
+            $table->boolean('statut')->default(1);
             $table->foreignIdFor(Apprenant::class)
                 ->index()
                 ->references('id')->on('apprenants');
