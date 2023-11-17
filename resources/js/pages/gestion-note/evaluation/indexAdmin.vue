@@ -39,7 +39,7 @@ export default {
         mdiEye,
     },
     layout: AuthenticatedLayout,
-    props: ['ues', 'regime', 'matieres', 'classes', 'niveaux', "evaluations", "types", "evaluation_id", "periodes", "type_evaluation", "enseignements", 'section', 'enseignants', 'section_id', 'annees', 'filieres'],
+    props: [ 'regime', 'matieres',  'niveaux', "evaluations", "types", "evaluation_id", "periodes", "type_evaluation", "enseignements", 'section', 'enseignants', 'section_id', 'annees', 'filieres'],
     data() {
         return {
             icon: {
@@ -118,17 +118,14 @@ export default {
                 notation: null,
                 section_id: null,
                 date: '',
-                pourcentage: null,
                 type_evaluation_id: null,
                 periode_id: null,
                 enseignement_annee_id: null,
                 enseignant_id: null,
                 annee_id: null,
                 filiere: null,
-                classe: null,
                 matieres: null,
                 niveau: null,
-                ue: null,
             }),
         }
     },
@@ -147,16 +144,14 @@ export default {
             // console.log(item)
             this.form.id = item.id,
                 this.form.date = item.date,
-                this.form.pourcentage = item.pourcentage,
                 this.form.periode_id = item.periode_id,
                 this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
             this.form.enseignant_id = item.enseignant_id,
                 this.form.annee_id = item.annee_id,
                 this.form.filiere = item.filiere_id,
-                this.form.classe = item.classe_id,
-                this.form.matiere = item.matiere_id,
-                this.form.ue = item.ue_id,
+                this.form.matieres = item.matiere_id,
+                this.form.session = item.session
                 this.form.niveau = item.niveau_id,
                 this.form.notation = item.notation
             this.libelle = this.type_evaluation.filter(el => el.id == item.type_evaluation_id)
@@ -174,7 +169,6 @@ export default {
                         // section_id : this.section_id,
                         niveau: item.niveau_id,
                         filiere: item.filiere_id,
-                        ue: item.ue_id
                     }
                 })
         },
@@ -268,7 +262,7 @@ export default {
                 this.form.section_id = this.section_id
                 this.form.put(route('evaluation.update', this.form.id), {
                     onFinish: () => {
-                        this.close()
+                        // this.close()
                         this.closeEdit()
                         this.$swal({
                             icon: 'success',
@@ -288,25 +282,24 @@ export default {
         close() {
             this.form.id = null
             this.form.date = null
-            this.form.pourcentage = null
             this.form.periode_id = null
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
             this.form.enseignant_id = null,
             this.form.annee_id = null,
             this.form.filiere = null,
-            this.form.matiere = null,
+            this.form.matieres = null,
             this.form.niveau = null
-            this.form.classe = null
-            this.form.ue = null,
+            this.form.session = null
                 this.form.notation = null
             this.dialog = false,
                 this.notation = false
         },
         closeEdit() {
             this.form.id = null
+            this.form.session = null
+            this.form.matieres = null,
             this.form.date = null
-            this.form.pourcentage = null
             this.form.periode_id = null
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
@@ -315,8 +308,6 @@ export default {
                 this.form.filiere = null,
                 this.form.matiere = null,
                 this.form.niveau = null
-            this.form.classe = null
-            this.form.ue = null
             this.dialogEdit = false
         },
         setMatiere(a) {
@@ -347,13 +338,12 @@ export default {
                     niveau: n,
                     filiere: this.form.filiere,
                     annee_id: this.form.annee_id,
-                    ue: this.form.ue
                 }
             })
         },
         Notation(t) {
             this.libelle = this.type_evaluation.filter(el => el.id == t)
-            if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle") {
+            if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle"|| this.libelle[0].libelle == "Composition") {
                 this.notation = true
             } else {
                 this.notation = false
@@ -421,16 +411,10 @@ export default {
                                     </Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete :disabled="!form.type_evaluation_id" v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
-                                </v-col>
-                                <v-col md="3" v-if="regime[0].regime_evaluation && section_id>=3">
-                                    <Autocomplete v-model="form.ue" :items="ues" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Unités d'enseignement"></Autocomplete>
+                                    <Autocomplete  v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3 ">
-                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
-                                </v-col>
-                                <v-col md="3" v-if="section_id>=3 ">
-                                    <Autocomplete v-model="form.classe" :items="classes" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Classes"></Autocomplete>
+                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3 ">
                                     <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense small-chips label="Matieres" chips clearable></Autocomplete>
@@ -443,12 +427,8 @@ export default {
                                     <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
                                     </TextField>
                                 </v-col>
-                                <v-col cols="3"  v-if="regime[0].regime_evaluation && section_id>=3 ">
-                                    <TextField  :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                                    </TextField>
-                                </v-col>
                                 <v-col cols="3" v-if="section_id>=3" >
-                                    <v-radio-group inline label="Sessions ?" v-model="form.session">
+                                    <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
                                         <v-radio label="1ère" value="Prémiere session"></v-radio>
                                         <v-radio label="2ème" value="deuxiéme session"></v-radio>
                                     </v-radio-group>
@@ -504,17 +484,11 @@ export default {
                                 <v-col md="3" v-if="section_id>=3">
                                     <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                 </v-col>
-                                <v-col md="3" v-if="section_id>=3 && regime[0].regime_evaluation ">
-                                    <Autocomplete v-model="form.ue" :items="ues" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Unités d'enseignement"></Autocomplete>
+                                <v-col md="3" v-if="section_id>=3">
+                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
-                                </v-col>
-                                <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.classe" :items="classes" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Classes"></Autocomplete>
-                                </v-col>
-                                <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.matiere" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres"></Autocomplete>
+                                    <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres"></Autocomplete>
                                 </v-col>
                                 <v-col cols="3" v-if="section_id <=2">
                                     <Autocomplete :disabled="!form.annee_id" label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
@@ -524,9 +498,11 @@ export default {
                                     <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
                                     </TextField>
                                 </v-col>
-                                <v-col cols="3">
-                                    <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                                    </TextField>
+                                <v-col cols="3" v-if="section_id>=3" >
+                                    <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
+                                        <v-radio label="1ère" value="Prémiere session"></v-radio>
+                                        <v-radio label="2ème" value="deuxiéme session"></v-radio>
+                                    </v-radio-group>
                                 </v-col>
                             </v-row>
                         </v-container>
