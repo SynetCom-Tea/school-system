@@ -76,48 +76,61 @@ export default {
         //         after: null
         //     })
         // },
-        removeRow(p) {
-            this.form.donnees = this.form.donnees.filter((product) => product !== p)
-        },
-        removeChild(p,enfant) {
-            p.enfants = p.enfants.filter((product) => product !== enfant)
-        },
-        async verify(p) {
-            const array = this.form.donnees.filter((el) => el.niveau_id !== null && el.niveau_id == p.niveau_id)
-            if (array.length > 1) {
-               this.removeRow(p)
-                this.$swal({
-                                icon: 'error',
-                                title: 'Erreur',
-                                text: 'Ce niveau existe déjà!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-            } else {
-                return true
-            }
-        },
-        async verifyChild(p,enfant) {
-            const array = p.enfants.filter((el) => el.libelle !== null && el.libelle == enfant.libelle || el.code == enfant.code)
-            if (array.length > 1) {
-               this.removeChild(p,enfant)
-                this.$swal({
-                                icon: 'error',
-                                title: 'Erreur',
-                                text: 'Cette classe existe déjà!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-            } else {
-                return true
-            }
-        },
+
+        removeRow(classe) {
+       this.form.donnees = this.form.donnees.filter((el) => el !== classe);
+     },
+     async verify(classe) {
+       const array = this.form.donnees.filter(
+         (el) => el.niveau_id !== null && el.niveau_id == classe.niveau_id
+       );
+       if (array.length > 1) {
+         this.removeRow(classe);
+         this.$swal("L'élément existe déjà !");
+       }
+     },
+        // removeRow(p) {
+        //     this.form.donnees = this.form.donnees.filter((product) => product !== p)
+        // },
+        // removeChild(p,enfant) {
+        //     p.enfants = p.enfants.filter((product) => product !== enfant)
+        // },
+        // async verify(p) {
+        //     const array = this.form.donnees.filter((el) => el.niveau_id !== null && el.niveau_id == p.niveau_id)
+        //     if (array.length > 1) {
+        //        this.removeRow(p)
+        //         this.$swal({
+        //                         icon: 'error',
+        //                         title: 'Erreur',
+        //                         text: 'Ce niveau existe déjà!',
+        //                         toast: true,
+        //                         position: 'top-end',
+        //                         showConfirmButton: false,
+        //                         timer: 5000,
+        //                         timerProgressBar: true,
+        //                     });
+        //     } else {
+        //         return true
+        //     }
+        // },
+        // async verifyChild(p,enfant) {
+        //     const array = p.enfants.filter((el) => el.libelle !== null && el.libelle == enfant.libelle || el.code == enfant.code)
+        //     if (array.length > 1) {
+        //        this.removeChild(p,enfant)
+        //         this.$swal({
+        //                         icon: 'error',
+        //                         title: 'Erreur',
+        //                         text: 'Cette classe existe déjà!',
+        //                         toast: true,
+        //                         position: 'top-end',
+        //                         showConfirmButton: false,
+        //                         timer: 5000,
+        //                         timerProgressBar: true,
+        //                     });
+        //     } else {
+        //         return true
+        //     }
+        // },
         async submit() {
             const {
                 valid
@@ -219,7 +232,8 @@ export default {
                                         v-model="donnee.filiere"
                                         isRequired
                                         chips
-                                        :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                            @update:modelValue=" verify(donnee)"
                                         >
                                     ></Autocomplete>
                                 </v-col>
@@ -235,7 +249,8 @@ export default {
                                         v-model="donnee.niveau_id"
                                         isRequired
                                         chips
-                                        :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                        :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                        @update:modelValue=" verify(donnee)"
                                         >
                                     ></Autocomplete>
 
@@ -251,7 +266,8 @@ export default {
                                             label="Option"
                                             :items="['Alphabet', 'Numérique']"
                                             chips
-                                            :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                            :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                            @update:modelValue=" verify(donnee)"
                                         >
                                         </Autocomplete>
                                         <!-- <text-field label="Genre" placeholder="Genre" v-model="form.sex" isRequired :rules="rules"></text-field> -->
@@ -264,7 +280,8 @@ export default {
                                                 placeholder="Nonbre des classes"
                                                 v-model="donnee.nombre"
                                                 isRequired
-                                                :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                                :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                @update:modelValue=" verify(donnee)"
                                             ></text-field>
                                             </v-col>
                                             <v-col cols="5" md="5"  v-if="section_id >=3">
@@ -280,7 +297,8 @@ export default {
                                                     multiple
                                                     chips
                                                     isRequired
-                                                    :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"
+                                                    :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                                    @update:modelValue=" verify(donnee)"
                                                     >
                                                 ></Autocomplete>
                                             </v-col>

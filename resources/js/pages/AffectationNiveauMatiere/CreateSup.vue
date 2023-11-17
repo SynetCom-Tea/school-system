@@ -72,7 +72,7 @@
               <v-col md="5">
                 <Autocomplete
                   label="Niveaux"
-                  item-title="libelle"
+                  item-title="code"
                   item-value="id"
                   :items="niveaux"
                   v-model="form.niveau"
@@ -85,12 +85,16 @@
         <!-- </v-card-text>
           <v-card-text> -->
             <!-- <v-divider></v-divider> -->
-            <v-card class="mx-auto" max-width="800" >
+            <v-card >
 
-              <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
+              <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues" class="test">
+                <v-card class="mx-auto" max-width="900" >
+                    <v-card-title style="color:#7d002c; background-color:  white"
+          >Unité d'enseignement</v-card-title>
+          <v-divider></v-divider>
                 <v-row>
-                    <v-col md="2"></v-col>
-                  <v-col md="4">
+                    <v-col md="1"></v-col>
+                  <v-col md="5">
                     <TextField
                           label="Code UE"
                           class="mt-2"
@@ -101,7 +105,7 @@
                         ></TextField>
 
                   </v-col>
-                  <v-col md="4">
+                  <v-col md="5">
                     <TextField
                           label="Nom UE"
                           class="mt-2"
@@ -156,7 +160,7 @@
                 </v-row>
                 <!-- <v-divider></v-divider> -->
 
-                <v-card class="mx-auto" max-width="600" >
+                <v-card class="mx-auto" max-width="800" >
 
                   <v-card-text>
                     <v-row disabled :key="matiere.id" v-for="(matiere, j) in ue.matieres">
@@ -228,10 +232,13 @@
                     </v-row>
                   </v-card-text>
                   <br />
-                 </v-card>
+            </v-card>
+            <br>
+            <br>
+        </v-card>
                 </v-card-text>
                 <v-row>
-                <v-col offset-md="10" cols="4">
+                <v-col offset-md="11" cols="4">
                   <Button
                     type="button"
                     variant="outlined"
@@ -245,7 +252,7 @@
                 </v-col>
               </v-row>
               <br />
-                </v-card>
+    </v-card>
 
 
 

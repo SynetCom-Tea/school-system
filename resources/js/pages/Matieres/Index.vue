@@ -229,6 +229,7 @@ export default {
 
                             if (typeof missingDataIndex === "number") {
                                 this.$swal.fire({
+                                    class:"alert",
                                     title: "Validé",
                                     text: "Votre fichier est valide!",
                                     icon: "success",
@@ -240,6 +241,7 @@ export default {
                                 const ligne = missingDataIndex.rowIndex + 2;
                                 const colonne = missingDataIndex.columnIndex + 1;
                                 this.$swal.fire({
+                                    class:"alert",
                                     title: "Erreur",
                                     text: "Données manquantes à la ligne " +
                                         ligne +
@@ -254,6 +256,7 @@ export default {
                             this.form.fichier_matiere = null;
                             //this.submitForm(null);
                             this.$swal.fire({
+                                class:"alert",
                                 title: "Erreur",
                                 text: "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaité veuillez corriger !",
                                 icon: "warning",
@@ -379,7 +382,7 @@ export default {
 <v-card variant="outlined" style="border: 2px solid #7d002c">
     <v-card-title style="color: white; background-color: #7d002c">GESTION DES MATIERES</v-card-title>
     <v-divider></v-divider>
-    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="700px">
+    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="700px" class="dialog">
         <template v-slot:default="{ isActive }">
             <v-card>
                 <v-toolbar dense style="background-color: #7d002c">
@@ -405,6 +408,7 @@ export default {
                             </Button>
                         </div>
                     </div>
+
                     <v-form ref="form">
                         <v-row v-if="form.id==null">
                             <v-col>
@@ -486,5 +490,13 @@ export default {
 </template>
 
 <style>
+    .alert{
 
+        z-index: 1000; /* Lower z-index than the dialog */
+    }
+
+    .dialog{
+
+        z-index: 0; /* Lower z-index than the dialog */
+    }
 </style>
