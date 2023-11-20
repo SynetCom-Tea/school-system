@@ -1,4 +1,4 @@
-
+@foreach($donnees as $donnee)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -100,8 +100,8 @@
         <div style="position:absolute;margin-top:10px;margin-left:500px">
         <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : 2023-2024</i>&nbsp;&nbsp;</b><br>
                     <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : I</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">SECTION : @if($section == '1') Primaire @elseif($section == '2' and $bulletin->classe_annee->classe->niveau->id <= 10) Collège @else Lycée @endif</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$bulletin->classe_annee->classe->niveau->libelle}}</i>&nbsp;&nbsp;</b><br>
+                    <b><i style="font-size: 13px; margin: 5px;">SECTION : @if($section == '1') Primaire @elseif($section == '2' and $donnee['bulletin']->classe_annee->classe->niveau->id <= 10) Collège @else Lycée @endif</i>&nbsp;&nbsp;</b><br>
+                    <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$donnee['bulletin']->classe_annee->classe->niveau->libelle}}</i>&nbsp;&nbsp;</b><br>
                     <b><i style="font-size: 13px; margin: 5px;">Rédouble : <span style="color:green">Jamais Rédoublé</span></i>&nbsp;&nbsp;</b><br>
         </div>
     </div>
@@ -117,8 +117,8 @@
                 <div style="text-align: right; border-bottom:0; border-right: 0; border-top:0" class="50p">
                     <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : 2023-2024</i>&nbsp;&nbsp;</b><br>
                     <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : I</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">SECTION : @if($section == '1') Primaire @elseif($section == '2' and $bulletin->classe_annee->classe->niveau->id <= 10) Collège @else Lycée @endif</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$bulletin->classe_annee->classe->niveau->code}}</i>&nbsp;&nbsp;</b><br>
+                    <b><i style="font-size: 13px; margin: 5px;">SECTION : @if($section == '1') Primaire @elseif($section == '2' and $donnee['bulletin']->classe_annee->classe->niveau->id <= 10) Collège @else Lycée @endif</i>&nbsp;&nbsp;</b><br>
+                    <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$donnee['bulletin']->classe_annee->classe->niveau->code}}</i>&nbsp;&nbsp;</b><br>
                     <b><i style="font-size: 13px; margin: 5px;">Rédouble : <span style="color:green">Jamais Rédoublé</span></i>&nbsp;&nbsp;</b><br>
                 </div>
                 <div style="margin-bottom: 20px; position:relative text-align:right; margin-top:10px;">
@@ -132,19 +132,19 @@
             <b style="font-size: 20px;">BULLETIN DE NOTES</b> 
         </div>
         <div style="margin-left: 260px; width: 210px; height: 30px; margin-top: 10px;">
-            <b style="font-size: 20px;">Classe de : {{$bulletin->nom_classe}}</b> 
+            <b style="font-size: 20px;">Classe de : {{$donnee['bulletin']->nom_classe}}</b> 
         </div>
         <!-- fin titre du bulletin -->
 
         <!-- Informations sur le professeur et rang -->
         <div style="margin-top: 10px; position:absolute">
             <b style="font-size: 13px;">Prof responsable de la classe : <span style="color:green">NON DEFINI</span></b> <br>
-            <b style="font-size: 13px;">Nom et Prénom de l'élève : {{$bulletin->nom_prenom_apprenant}}</b> <br>
-            <b style="font-size: 13px;">Moyenne obtenue : {{$bulletin->moyenne_details_notes}} / 20</b>
+            <b style="font-size: 13px;">Nom et Prénom de l'élève : {{$donnee['bulletin']->nom_prenom_apprenant}}</b> <br>
+            <b style="font-size: 13px;">Moyenne obtenue : {{$donnee['bulletin']->moyenne_details_notes}} / 20</b>
         </div>
        
         <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
-            <b style="font-size: 13px;">Rang : {{ $bulletin->rang}}</b>
+            <b style="font-size: 13px;">Rang : {{ $donnee['bulletin']->rang}}</b>
         </div>
        
         <!-- Fin informations sur le professeur et rang -->
@@ -152,15 +152,15 @@
         <!-- Debut du tableau -->
         <table style="margin-top: 100px; font-size: 13px;">
             <thead>
-                <tr style="text-align:center;" valign="center">
+            <tr style="text-align:center;" valign="center">
                     <th style="text-align: left;"><b>Disciplines</b></th>
                     <th width="30">MC<br>/20</th>
                     <th width="30">NC<br>/20</th>
                     <th width="30">MG<br>/20</th>
-                    <th width="40">Coef</th>
-                    <th width="70">Moy ceof</th>
-                    <th width="25">Rang</th>
-                    <th width="100">Appréciation</th>
+                    <th width="35">Coef</th>
+                    <th width="40">Moy ceof</th>
+                    <th width="35">Rang</th>
+                    <th width="70">Appréciation</th>
                     <th width="100">Signature</th>
                 </tr>
             </thead>
@@ -168,19 +168,19 @@
                 @php
                 $total = 0;
                 @endphp
-                @foreach($detail as $line)
+                @foreach($donnee['detail'] as $line)
                     @php
-                        $total = $total + $line->moyenneCoefficiente;
+                        $total = $total + $line->moyenne_coefficiente;
                     @endphp
                     <tr>
-                        <td><b>{{$line->nom_matiere}}</b></td>
+                    <td><b>{{$line->nom_matiere}}</b></td>
                         <td style="text-align:center;" width="30">{{$line->note_de_classe}}</td>
                         <td style="text-align:center;" width="30">{{$line->note_de_composition}}</td>
                         <td style="text-align:center;" width="30">{{$line->moyenne}}</td>
-                        <td style="text-align:center;" width="40">{{$line->coefficient}}</td>
+                        <td style="text-align:center;" width="35">{{$line->coefficient}}</td>
                         <td style="text-align:center;" width="40">{{$line->moyenne_coefficiente}}</td>
-                        <td style="text-align:center;" width="70"></td>
-                        <td style="text-align:center;" width="100">
+                        <td style="text-align:center;" width="35"></td>
+                        <td style="text-align:center;" width="70">
                             @if($line->moyenne <= 2)
                             NULL
                             @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
@@ -216,7 +216,7 @@
                 
                 <tr>
                     <td><b>Moyenne 1er semestre</b></td>
-                    <td style="text-align:center" colspan="8">{{$bulletin->moyenne_details_notes}}</td>
+                    <td style="text-align:center" colspan="8">{{$donnee['bulletin']->moyenne_details_notes}}</td>
                 </tr>
                
                 <tr>
@@ -241,7 +241,7 @@
            
             <tr>    
                 <td width="153"  height="20" colspan=3>
-                    <input type="checkbox"><label>Bonne</label><br>
+                    <input type="checkbox">&nbsp;&nbsp;&nbsp;<label>Bonne</label><br>
                     <input type="checkbox"><label>Avertissement</label><br>
                     <input type="checkbox"><label>Blâme</label><br>
                     <label></label><br>
@@ -257,7 +257,7 @@
                     <input type="checkbox"><label>Non inscrit(e)</label><br>
                     <label></label><br>
                 </td>
-                <td style="text-align:center" valign="center" width="153"  height="20" colspan=3><span style="color:green">R.A.S </span> / <span style="color:red;">  2</span></td>
+                <td style="text-align:center" valign="center" width="153"  height="20" colspan=3><span style="color:green">R.A.S</span></td>
             </tr>
         </table>
         <!-- <div style="margin-top: 5px;">
@@ -282,3 +282,4 @@
     
 </body>
 </html>
+@endforeach
