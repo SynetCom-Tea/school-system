@@ -119,7 +119,37 @@
         <b style="font-size: 13px;">Moyenne obtenue : 14 / 20</b>
     </div>
 
-    
+    <table style="margin-top: 50px; position:absolute">
+    <thead>
+        <tr>
+            <th colspan="3">Unités d'Enseignement</th>
+            <th colspan="3">Matieres constitutives de l'UE</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Code</td>
+            <td>Intitulé</td>
+            <td>Crédit</td>
+            <td>Intitulés</td>
+            <td>Crédit</td>
+            <td>note</td>
+        </tr>
+        <!-- les données -->
+        <tr>
+            <td>101</td>
+            <td>UE1</td>
+            <td>5</td>
+            <td>101</td>
+            <td>UE1</td>
+            <td>5</td>
+            
+        </tr>
+        <!-- les données -->
+
+        <!-- Ajoutez d'autres lignes de données au besoin -->
+    </tbody>
+</table>
        
      
    
