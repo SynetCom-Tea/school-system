@@ -15,6 +15,7 @@ use Inertia\Inertia;
 use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Note;
+use Modules\GestionNote\Entities\Periode;
 
 use PDF;
 
@@ -25,49 +26,50 @@ class RapportController extends Controller
     {
         // dd($request->all());
         $etab = Etablissement::find(Auth::user()->etablissement_id);
-        if($request->type == 0){
-            $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null) : null;
-            $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
-            // dd($bulletin,$detail);
-            $data = [
-                'etablissement' => $etab,
-                'bulletin' => $bulletin,
-                'detail' => $detail,
-                'section' => $request->section,
-                'title' => 'Bulletin Semestriel',
-                'date' => date('m/d/Y'),
-            ];
+        $pdf = PDF::loadView('superieur/bulletin');
+        // if($request->type == 0){
+        //     $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null) : null;
+        //     $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
+        //     // dd($bulletin,$detail);
+        //     $data = [
+        //         'etablissement' => $etab,
+        //         'bulletin' => $bulletin,
+        //         'detail' => $detail,
+        //         'section' => $request->section,
+        //         'title' => 'Bulletin Semestriel',
+        //         'date' => date('m/d/Y'),
+        //     ];
 
-            $pdf = PDF::loadView('bulletin', $data);
+        //     $pdf = PDF::loadView('secondaire/bulletin', $data);
 
-        }elseif($request->type == 1){
-            $tabs = [];
-            $annee_encours = getAnneeEncours();
-            $bulletins = $request->classe ?  HistoriqueBulletin::where('statut',1)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
-                $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
-            })->with('classe_annee.annee','classe_annee.classe.niveau')->get() : [];
+        // }elseif($request->type == 1){
+        //     $tabs = [];
+        //     $annee_encours = getAnneeEncours();
+        //     $bulletins = $request->classe ?  HistoriqueBulletin::where('statut',1)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
+        //         $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
+        //     })->with('classe_annee.annee','classe_annee.classe.niveau')->get() : [];
 
-            foreach ($bulletins as $key => $bulletin) {
-                $details = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
-                $tabs[$bulletin->apprenant_id]=[
-                    'classe' => $bulletin->classe_annee->classe,
-                    'bulletin' => $bulletin,
-                    'detail' => $details,
-                ];
-            }
+        //     foreach ($bulletins as $key => $bulletin) {
+        //         $details = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
+        //         $tabs[$bulletin->apprenant_id]=[
+        //             'classe' => $bulletin->classe_annee->classe,
+        //             'bulletin' => $bulletin,
+        //             'detail' => $details,
+        //         ];
+        //     }
             
-            // dd($tabs);
-            $request->classe;
-            $data = [
-                'etablissement' => $etab,
-                'section' => $request->section,
-                'donnees' => $tabs,
-                'title' => 'Bulletin Semestriel',
-                'date' => date('m/d/Y'),
-            ];
+        //     // dd($tabs);
+        //     $request->classe;
+        //     $data = [
+        //         'etablissement' => $etab,
+        //         'section' => $request->section,
+        //         'donnees' => $tabs,
+        //         'title' => 'Bulletin Semestriel',
+        //         'date' => date('m/d/Y'),
+        //     ];
 
-            $pdf = PDF::loadView('bulletin_par_classe', $data);
-        }
+        //     $pdf = PDF::loadView('secondaire/bulletin_par_classe', $data);
+        // }
         
         
         // dd($data['item']['details_notes']);
@@ -137,6 +139,7 @@ class RapportController extends Controller
     {
         $resultats = [];
         $classes = [];
+        $periode = [];
         if($request->section_id == 1){
             $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
             $classes = getClasses(Annee::find(2)->id, $etablissement_section);
@@ -194,89 +197,131 @@ class RapportController extends Controller
         }else if($request->section_id == 2){
             $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
             $classes = getClasses(Annee::find(2)->id, $etablissement_section);
-
+            $periode = $request->section_id ? Periode::where('type',"Semestre")->get():collect();
             if ($request->classe != null) {
                 // foreach ($classes as $classe) {
+                $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                if ($historiqueBulletincheck->isEmpty()) {
                     $resultatsClasse = [];
-                $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants;
-
-                foreach ($apprenantsDeLaClasse as $apprenant) {
-                    $details_notes = calculerMoyenneSecondaire($request->classe, $apprenant->id);
-
-                    $resultatsClasse[$apprenant->id] = [
-                        'classe' => $request->classe,
-                        'periode' => $details_notes[0]['periodes'],
-                        'nom_classe' => $classes->find($request->classe)->libelle,
-                        'apprenant' => $apprenant->id,
-                        'matricule_apprenant' => $apprenant->matricule,
-                        'nom_apprenant' => $apprenant->nom,
-                        'prenom_apprenant' => $apprenant->prenom,
-                        'details_notes' => $details_notes, // Tableau des détails des notes
-                    ];
-                }
-
-                // Transformer le tableau associatif en tableau indexé pour trier
-                $resultatsClasse = array_values($resultatsClasse);
-
-                foreach ($resultatsClasse as &$resultat) {
-                    $totalMoyenne = 0;
-
-                    foreach ($resultat['details_notes'] as $details) {
-                        $totalMoyenne += $details['moyenne'];
+                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants;
+    
+                    foreach ($apprenantsDeLaClasse as $apprenant) {
+                        $details_notes = calculerMoyenneSecondaire($request->classe, $apprenant->id);
+    
+                        $resultatsClasse[$apprenant->id] = [
+                            'classe' => $request->classe,
+                            'periode' => $details_notes[0]['periodes'],
+                            'nom_classe' => $classes->find($request->classe)->libelle,
+                            'apprenant' => $apprenant->id,
+                            'matricule_apprenant' => $apprenant->matricule,
+                            'nom_apprenant' => $apprenant->nom,
+                            'prenom_apprenant' => $apprenant->prenom,
+                            'details_notes' => $details_notes, // Tableau des détails des notes
+                        ];
                     }
+    
+                    // Transformer le tableau associatif en tableau indexé pour trier
+                    $resultatsClasse = array_values($resultatsClasse);
+    
+                    foreach ($resultatsClasse as &$resultat) {
+                        $totalMoyenne = 0;
+    
+                        foreach ($resultat['details_notes'] as $details) {
+                            $totalMoyenne += $details['moyenne'];
+                        }
+    
+                        $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
+                    }
+    
+                    usort($resultatsClasse, function($a, $b) {
+                        return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
+                    });
+    
+                    $rank = 1;
+                    $prevRank = 1;
+    
+                    foreach ($resultatsClasse as &$resultat) {
+                        $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
+                        $prevRank = $rank;
+                        $rank++;
+                    }
+    
+                    $resultats = $resultatsClasse;
 
-                    $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
-                }
-
-                usort($resultatsClasse, function($a, $b) {
-                    return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
-                });
-
-                // Assigner le rang à chaque étudiant dans le tableau $resultatsClasse
-                $rank = 1;
-                $prevRank = 1;
-
-                foreach ($resultatsClasse as &$resultat) {
-                    $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
-                    $prevRank = $rank;
-                    $rank++;
-                }
-
-                $resultats = $resultatsClasse;
-                // Stocker les résultats de chaque classe dans le tableau principal
-                // }
-                // $classeFiltre = $request->classe;
-                // $resultatsFiltres = array_filter($resultats, function ($resultat) use ($classeFiltre) {
-                //     dd($resultat['apprenant']);
-                //     return $resultat['classe'] == $classeFiltre;
-                // });
-                // dd($resultatsClasse, $resultats);
-                foreach ($resultats as &$resultat) {
-                    // dd($resultat, $resultats);
-                    $historiqueBulletin = HistoriqueBulletin::create([
-                        'apprenant_id' => $resultat['apprenant'],
-                        'nom_classe' => $resultat['nom_classe'],
-                        'periode' => $resultat['periode'],
-                        'classe_annee_id' => $resultat['classe'],
-                        'matricule_apprenant' => $resultat['matricule_apprenant'],
-                        'nom_prenom_apprenant' => $resultat['nom_apprenant'] . ' ' . $resultat['prenom_apprenant'],
-                        'moyenne_details_notes' => $resultat['moyenne_details_notes'],
-                        'rang' => $resultat['rang'],
-                    ]);
-
-                    foreach ($resultat['details_notes'] as $detailNote) {
-                        HistoriqueNote::create([
-                            'historique_bulletin_id' => $historiqueBulletin->id,
-                            'nom_matiere' => $detailNote['nom_matiere'],
-                            'coefficient' => $detailNote['coefficient'],
-                            'note_de_classe' => $detailNote['noteDeClasse'],
-                            'note_de_classe_coefficiente' => $detailNote['noteDeClasseCoefficiente'],
-                            'note_de_composition' => $detailNote['noteDeComposition'],
-                            'note_de_composition_coefficiente' => $detailNote['noteDeCompositionCoefficiente'],
-                            'moyenne' => $detailNote['moyenne'],
-                            'moyenne_coefficiente' => $detailNote['moyenneCoefficiente'],
+                    foreach ($resultats as &$resultat) {
+                        // dd($resultat, $resultats);
+                        $historiqueBulletin = HistoriqueBulletin::create([
+                            'apprenant_id' => $resultat['apprenant'],
+                            'nom_classe' => $resultat['nom_classe'],
+                            'periode' => $resultat['periode'],
+                            'classe_annee_id' => $resultat['classe'],
+                            'matricule_apprenant' => $resultat['matricule_apprenant'],
+                            'nom_prenom_apprenant' => $resultat['nom_apprenant'] . ' ' . $resultat['prenom_apprenant'],
+                            'moyenne_details_notes' => $resultat['moyenne_details_notes'],
+                            'rang' => $resultat['rang'],
                         ]);
+
+                        foreach ($resultat['details_notes'] as $detailNote) {
+                            HistoriqueNote::create([
+                                'historique_bulletin_id' => $historiqueBulletin->id,
+                                'nom_matiere' => $detailNote['nom_matiere'],
+                                'coefficient' => $detailNote['coefficient'],
+                                'note_de_classe' => $detailNote['noteDeClasse'],
+                                'note_de_classe_coefficiente' => $detailNote['noteDeClasseCoefficiente'],
+                                'note_de_composition' => $detailNote['noteDeComposition'],
+                                'note_de_composition_coefficiente' => $detailNote['noteDeCompositionCoefficiente'],
+                                'moyenne' => $detailNote['moyenne'],
+                                'moyenne_coefficiente' => $detailNote['moyenneCoefficiente'],
+                            ]);
+                        }
                     }
+                    // dd($historiqueBulletincheck, $resultats[0]['periode']);
+                } else {
+                    $resultatsClasse = [];
+                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants;
+    
+                    foreach ($apprenantsDeLaClasse as $apprenant) {
+                        $details_notes = calculerMoyenneSecondaire($request->classe, $apprenant->id);
+    
+                        $resultatsClasse[$apprenant->id] = [
+                            'classe' => $request->classe,
+                            'periode' => $details_notes[0]['periodes'],
+                            'nom_classe' => $classes->find($request->classe)->libelle,
+                            'apprenant' => $apprenant->id,
+                            'matricule_apprenant' => $apprenant->matricule,
+                            'nom_apprenant' => $apprenant->nom,
+                            'prenom_apprenant' => $apprenant->prenom,
+                            'details_notes' => $details_notes, // Tableau des détails des notes
+                        ];
+                    }
+    
+                    // Transformer le tableau associatif en tableau indexé pour trier
+                    $resultatsClasse = array_values($resultatsClasse);
+    
+                    foreach ($resultatsClasse as &$resultat) {
+                        $totalMoyenne = 0;
+    
+                        foreach ($resultat['details_notes'] as $details) {
+                            $totalMoyenne += $details['moyenne'];
+                        }
+    
+                        $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
+                    }
+    
+                    usort($resultatsClasse, function($a, $b) {
+                        return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
+                    });
+    
+                    $rank = 1;
+                    $prevRank = 1;
+    
+                    foreach ($resultatsClasse as &$resultat) {
+                        $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
+                        $prevRank = $rank;
+                        $rank++;
+                    }
+    
+                    $resultats = $resultatsClasse;
                 }
             }
         }
@@ -284,7 +329,8 @@ class RapportController extends Controller
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
             "resultats" => $resultats,
-            "classes" => $classes
+            "classes" => $classes,
+            'periodes'=>$periode,
         ]);
     }
 

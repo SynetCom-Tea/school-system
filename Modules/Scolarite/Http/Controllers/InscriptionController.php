@@ -542,14 +542,19 @@ class InscriptionController extends Controller
                     ]);
                 }
             }
+
+            DB::commit();
             return redirect()->back()->with('message', [
                 'type' => 'success',
                 'text' => 'Inscription effectuée avec succès',
             ]);
 
+          
+        
+
         } catch (\Exception $e) {
             // En cas d'erreur, annulez la transaction
-            DB::rollback();
+            // DB::rollback();
             return redirect()->back()->with('message', [
                 'type' => 'error',
                 'text' => throw $e,

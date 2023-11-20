@@ -270,7 +270,7 @@ export default {
           if (element) {
               list.push({
               ...element,
-              code_libelle: element.cycle.name + " - " + element.filiere.name,
+              code_libelle: element.code,
               });
           }
           });
