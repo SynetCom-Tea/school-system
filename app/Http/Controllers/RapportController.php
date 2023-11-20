@@ -261,43 +261,21 @@ class RapportController extends Controller
                 if ($historiqueBulletincheck->isEmpty()) {
                     $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id);
                     foreach ($resultatsyy as &$resultat) {
-                        // dd($resultat, $resultats);
-                        $historiqueBulletin = HistoriqueBulletin::create([
-                            'apprenant_id' => $resultat['apprenant'],
-                            'nom_classe' => $resultat['nom_classe'],
-                            'periode' => $resultat['periode'],
-                            'classe_annee_id' => $resultat['classe'],
-                            'matricule_apprenant' => $resultat['matricule_apprenant'],
-                            'nom_prenom_apprenant' => $resultat['nom_apprenant'] . ' ' . $resultat['prenom_apprenant'],
-                            'moyenne_details_notes' => $resultat['moyenne'],
-                            'total_coefficient' => $resultat['total_coefficient'],
-                            'somme_note_generale' => $resultat['somme_note_generale'],
-                            'somme_note_generale_coefficient' => $resultat['somme_note_generale_coefficient'],
-                            'total_volume_horaire' => $resultat['total_volume_horaire'],
-                            'rang' => $resultat['rang'],
-                        ]);
-
-                        foreach ($resultat['details_notes'] as $detailNote) {
-                            HistoriqueNote::create([
-                                'historique_bulletin_id' => $historiqueBulletin->id,
-                                'nom_eu' => $detailNote['nom_eu'],
-                                'nom_matiere' => $detailNote['nom_matiere'],
-                                'coefficient' => $detailNote['coefficient_matiere'],
-                                'volume_horaire_matiere' => $detailNote['volume_horaire_matiere'],
-                                'note_origine_devoir' => $detailNote['note_origine_devoir'],
-                                'note_origine_examen' => $detailNote['note_origine_examen'],
-                                'note_devoir_pourcentage' => $detailNote['note_devoir'],
-                                'note_examen_pourcentage' => $detailNote['note_examen'],
-                                'note_generale' => $detailNote['note_generale'],
-                                'note_generale_coefficiente' => $detailNote['note_generale_coefficiente'],
-                            ]);
-                        }
+                        ajouterHistoriqueBulletin($resultat);
                     }
-                    $resultats = HistoriqueBulletin::with('historique_notes')->where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
-                    // dd($resultats);
-                }else{
-                    $resultats = HistoriqueBulletin::with('historique_notes')->where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
-                    // dd('NotEmpty',$resultats);
+                }
+                $resultats = HistoriqueBulletin::with('historique_notes')
+                    ->where('classe_annee_id', $request->classe)
+                    ->where('periode', Periode::find($request->periode)->libelle)
+                    ->get();
+                // Itérer sur chaque historique bulletin
+                
+                foreach ($resultats as $historiqueBulletin) {
+                    // Grouper les historique_notes par nom_eu
+                    $historiqueNotesGroupedByNomEu = $historiqueBulletin->historique_notes->groupBy('nom_eu');
+                
+                    // Mettre à jour la propriété historique_notes de l'historique bulletin avec les données groupées
+                    $historiqueBulletin->historiqueNotesGroupedByNomEu = $historiqueNotesGroupedByNomEu;
                 }
             }
         }
