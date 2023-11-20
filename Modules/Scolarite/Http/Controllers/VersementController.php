@@ -125,7 +125,7 @@ class VersementController extends Controller
                 $frais = null;
             }
             // dd($etab_type_frais);
-            // dd($etab_type_frais,$frais);
+            //dd($etab_type_frais,$frais);
             if(!is_null($frais)){
                 $versement = Versement::create([
                     'inscription_id' => $inscription->id,
@@ -137,33 +137,15 @@ class VersementController extends Controller
                 // dd($etab_type_frais);
                 foreach ($etab_type_frais as $key => $value) {
                     # code...
-                    // dump($value);
-                    $f = Frais::where('etablissement_type_frais_id',$value->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->
-                    where(function($query) use ($inscription){
-                        if($inscription->cycle_filiere_id == null){
-
-                        }else{
-                            $query->where('cycle_filiere_id',$inscription->cycle_filiere_id);
-                        }
-                   })->first();
-
-                    //  dd($inscription->id,$value);
-                    if(!is_null($f)){
-                        $v = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->get();
-                        // dd($v);
-                        if($v->count() > 0){
-                            $sv = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->sum('montant');
-                            // dump($etab_type_frais,$f->montant,$sv);
-                            if((float)$f->montant > (float)$sv){
-                                $dfm = (float)$f->montant - (float)$sv;
-                                Versement::create([
-                                    'inscription_id' => $inscription->id,
-                                    'frais_id' => $f->id,
-                                    'montant' => (float)$dfm,
-                                    'date_versement' => date('Y-m-d'),
-                                ]);
-                            }
-                        }else{
+                    
+                    $f = Frais::where('etablissement_type_frais_id',$value->id)->where('annee_id',$inscription->annee_id)->where('niveau_id',$inscription->niveau_id)->first();
+                    // dd($inscription->annee_id, $value->id, $inscription->niveau_id);
+                    $v = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->get();
+                    if($v->count() > 0){
+                        $sv = Versement::where('frais_id',$f->id)->where('inscription_id',$inscription->id)->sum('montant');
+                        // dump($etab_type_frais,$f->montant,$sv);
+                        if((float)$f->montant > (float)$sv){
+                            $dfm = (float)$f->montant - (float)$sv;
                             Versement::create([
                                 'inscription_id' => $inscription->id,
                                 'frais_id' => $f->id,

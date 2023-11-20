@@ -51,7 +51,7 @@
                         </v-row>
                         <v-row>
                             <v-col md="12">
-                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator,rules.max]">
+                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator]">
                                 </TextField>
                             </v-col>
                         </v-row>
@@ -113,13 +113,14 @@ export default {
             },
             dialogEdit: false,
             headers: [{
-                    title: '#',
+                
+                    title: 'Matricule',
                     align: 'start',
                     key: 'apprenant.matricule',
                     sortable: false,
                 },
                 {
-                    title: "Nom",
+                    title: "Nom et Prénom",
                     align: "center",
                     key: "apprenant"
                 },
@@ -137,7 +138,7 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                max: v => (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation) >= v || "La note ne doit pas dépasser " + (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation)
+                // max: v => (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation) >= v || "La note ne doit pas dépasser " + (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation)
             },
             format: useForm({
                 section_id: null,

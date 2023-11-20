@@ -342,6 +342,12 @@ class NoteController extends Controller
         })->where('evaluation_id',$request->evaluation)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
         if ($request->evaluation){
+            // $eval = Evaluation::find($request->evaluation)->with('enseignement_annee.filiere_niveau_matiere_ue.matiere')->get()->first();
+            // // dd($eval->enseignement_annee);
+            // $evaluation_id = Evaluation::where('periode_id',$eval->periode_id)->where('type_evaluation_id',$eval->type_evaluation_id)->where('session','Prémiere session')->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($eval){
+            //     $matiere->where('matiere_id',)
+            // })->get();
+            // dd($evaluation_id);
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                 $query->where('classe_id',$request->classe);
             })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();

@@ -145,11 +145,8 @@ export default {
     },
     methods: {
         formatEvaluationLabel(item) {
-            // console.log(item.enseignement_annee.niveau_matiere)
             if (item.enseignement_annee.niveau_matiere != null) {
-                // Concatenate the relevant properties for the label
-                // console.log(item.type_evaluation.libelle)
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
             } else {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} - ${item ? item?.session: ''}`;
             }
@@ -274,7 +271,7 @@ export default {
                 confirmButtonColor: "orange",
                 cancelButtonColor: "#d33",
                 confirmButtonText: "Oui, sauvegarde-le!",
-                cancelButtonText: "Non, annulez !",
+                cancelButtonText: "Non, annulez!",
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.submit();
@@ -292,25 +289,29 @@ export default {
         if (this.type == 3 || this.type == 4) {
             this.filtrer = this.type_evaluation.filter(el => el.libelle == "Examen" || el.libelle == "TP" || el.libelle == "Devoir")
         }
-        // console.log(this.evaluations)
     },
 }
 </script>
 
 <template>
-<!-- <Head title="Notes" /> -->
-
-<!-- <AuthenticatedLayout> -->
 <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
+<br>
+<div style="margin: 20px">
+    <v-alert v-model="alertFirst" border="start" variant="tonal" closable close-label="Close Alert" color="primary" type="info" title="Information">
+        <li>
+            Le boutton <strong> "AJOUTER" </strong> pour créer une nouvelle évaluation si celle-ci n'existe pas
+        </li>
+        <!-- <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li> -->
+    </v-alert>
+</div>
 <v-form v-model="valid">
-
     <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
         <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
         <v-divider></v-divider>
         <br />
         <v-row style="margin: 20px">
             <v-col md="1"></v-col>
-            <v-col md="2">
+            <v-col md="2">63
                 <Autocomplete v-model="form.enseignant" :items="enseignants" :item-title="formatEnseignant" item-value="id" outlined required dense chips small-chips label="Enseignants"></Autocomplete>
             </v-col>
             <v-col md="2">
@@ -323,61 +324,51 @@ export default {
                 <Autocomplete @click="snackbar = true" v-model="form.evaluation" :disabled="question || !form.classe " :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(form.evaluation)"></Autocomplete>
             </v-col>
             <v-col md="2">
-                <v-switch :disabled="!form.classe" v-model="question" @click="Approver" label="Oui!" color="primary" inset></v-switch>
+                <v-switch v-model="question" @click="Approver" label="Ajouter" color="primary" inset></v-switch>
             </v-col>
         </v-row>
-        <div class="text-center ma-2">
-            <v-snackbar v-model="snackbar" location="right" color="orange" rounded="pill" :timeout="3000">
-                Si l'évaluation n'existe pas Clickez sur le boutton "Oui" pour la crée!!!
-                <template v-slot:actions>
-                    <v-btn color="red" variant="text">
-                    </v-btn>
-                </template>
-            </v-snackbar>
-        </div>
-            <v-card style="border: 2px solid rgb(0, 73, 128);margin: 60px" v-if="question">
-                <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Informations de l'évaluation</v-card-title>
-                <v-divider></v-divider>
-                <br />
-                <v-row style="margin: 20px" >
-                    <v-col md="1"></v-col>
-                    <v-col cols="3">
-                        <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                        </TextField>
-                    </v-col>
-                    <v-col cols="3">
-                        <Autocomplete label="Type Evaluation" variant="outlined" itemTitle="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
-                        </Autocomplete>
-                    </v-col>
-                    <v-col cols="3">
-                        <Autocomplete label="Periodes" variant="outlined" itemTitle="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
-                        </Autocomplete>
-                    </v-col>
-
-                </v-row>
-                <v-row style="margin: 20px" >
-                    <v-col md="1"></v-col>
-                    <v-col cols="2" v-if="type <=2">
-                        <Autocomplete label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
-                        </Autocomplete>
-                    </v-col>
-                    <v-col md="2" v-if="type>=3">
-                        <Autocomplete v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
-                    </v-col>
-                    <v-col md="2" v-if="type>=3 ">
-                        <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
-                    </v-col>
-                    <v-col md="2" v-if="type>=3 ">
-                        <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense small-chips label="Matieres" chips clearable></Autocomplete>
-                    </v-col>
-                    <v-col cols="3" v-if="type>=3">
-                        <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
-                            <v-radio label="1ère" value="Prémiere session"></v-radio>
-                            <v-radio label="2ème" value="deuxiéme session"></v-radio>
-                        </v-radio-group>
-                    </v-col>
-                </v-row>
-            </v-card>
+        <v-card style="border: 2px solid rgb(0, 73, 128);margin: 60px" v-if="question">
+            <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Informations de l'évaluation</v-card-title>
+            <v-divider></v-divider>
+            <br />
+            <v-row style="margin: 20px">
+                <v-col md="1"></v-col>
+                <v-col cols="3">
+                    <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                    </TextField>
+                </v-col>
+                <v-col cols="3">
+                    <Autocomplete label="Type Evaluation" variant="outlined" itemTitle="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                    </Autocomplete>
+                </v-col>
+                <v-col cols="3">
+                    <Autocomplete label="Periodes" variant="outlined" itemTitle="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                    </Autocomplete>
+                </v-col>
+            </v-row>
+            <v-row style="margin: 20px">
+                <v-col md="1"></v-col>
+                <v-col cols="2" v-if="type <=2">
+                    <Autocomplete label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                    </Autocomplete>
+                </v-col>
+                <v-col md="2" v-if="type>=3">
+                    <Autocomplete v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                </v-col>
+                <v-col md="2" v-if="type>=3 ">
+                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
+                </v-col>
+                <v-col md="2" v-if="type>=3 ">
+                    <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense small-chips label="Matieres" chips clearable></Autocomplete>
+                </v-col>
+                <v-col cols="3" v-if="type>=3">
+                    <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        <v-radio label="1ère" value="Prémiere session"></v-radio>
+                        <v-radio label="2ème" value="deuxiéme session"></v-radio>
+                    </v-radio-group>
+                </v-col>
+            </v-row>
+        </v-card>
     </v-card>
     <div style="width: 50%; padding: 10px" v-if="form.evaluation">
         <v-alert style="width: 50%; padding: 10px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button" variant="tonal" color="primary" type="info" title="Information" size="small">
@@ -401,7 +392,6 @@ export default {
         </v-card-actions>
     </v-card>
 </v-form>
-<!-- </AuthenticatedLayout> -->
 </template>
 
 <style>
