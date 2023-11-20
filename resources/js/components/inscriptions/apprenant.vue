@@ -36,7 +36,7 @@
                 placeholder="Nom"
                 @update:modelValue="submitForm()"
                 v-model="form.nom"
-                :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z]+$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
+                :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z\s]*$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
               ></TextField>
             </v-col>
             <v-col cols="4">
@@ -46,7 +46,7 @@
                 @update:modelValue="submitForm()"
                 placeholder="Prénom"
                 v-model="form.prenom"
-                :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z]+$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
+                :rules="[(v) => !!v || 'Ce champ est requis!',(v) => /^[a-zA-Z\s]*$/.test(v) || 'Ce champ doit contenir uniquement des lettres']"
               ></TextField>
             </v-col>
             <v-col cols="4">
@@ -149,8 +149,8 @@ export default {
   validations () {
     return {
       form: {
-        nom: { required, alpha},
-        prenom: { required, alpha},
+        nom: { required, regex: /^[a-zA-Z\s]*$/ },
+        prenom: { required, regex: /^[a-zA-Z\s]*$/ },
         sexe: { required },
         date_naissance: { required },
         lieu_naissance: { required , alpha}
