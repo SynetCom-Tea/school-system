@@ -5,7 +5,6 @@ namespace Modules\GestionNote\Entities;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-// use Modules\GestionNote\Entities\Evaluation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Modules\Enseignement\Entities\EnseignementAnnee;

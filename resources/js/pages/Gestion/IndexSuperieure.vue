@@ -67,6 +67,12 @@ export default {
       if (item.link == "note") {
         this.form.get(route("note.index_admin"));
       }
+      if (item.link == "rapports") {
+        this.form.get(route("rapports.index"));
+      }
+      if (item.link == "generations") {
+        this.form.get(route("rapports.create"));
+      }
     },
     onClickExpland(item) {
       let vExpand = item.expand;

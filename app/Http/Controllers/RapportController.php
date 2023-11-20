@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Annee;
 use App\Models\Classe;
 use App\Models\ClasseAnnee;
+use App\Models\Cycle;
 use App\Models\Etablissement;
 use App\Models\HistoriqueBulletin;
 use App\Models\HistoriqueNote;
@@ -12,6 +13,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use Modules\Enseignement\Entities\Filiere;
 use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Note;
@@ -83,6 +85,8 @@ class RapportController extends Controller
      */
     public function index(Request $request)
     {
+        $note_devoirs = [];
+        $note_examens = [];
         $headers = [];
         $notes_reforme = [];
         $note_compositions = [];
@@ -92,12 +96,19 @@ class RapportController extends Controller
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         if ($request->classe != null) {
-            $notes_reforme = getNoteByClasses($request->classe);
+            $notes_reforme = getNoteByClasses($request->classe, $request->section_id);
+            // dd($notes_reforme, $request->classe);
             if($request->section_id == 1){
                 
             }
             if($request->section_id == 2){
-
+                $note_compositions = collect($notes_reforme)->where('type_evaluation', 'Composition')->values();
+                $note_interrogations = collect($notes_reforme)->where('type_evaluation', 'Interrogation')->values();
+                $note_devoir_surveilles = collect($notes_reforme)->where('type_evaluation', 'Devoir Surveillé')->values();
+            }if($request->section_id == 3){
+                $note_devoirs = collect($notes_reforme)->where('type_evaluation', 'Examen')->values();
+                $note_examens = collect($notes_reforme)->where('type_evaluation', 'Devoir')->values();
+                //dd($note_devoirs, $note_examens);
             }
             $headers = [
                 [
@@ -116,9 +127,7 @@ class RapportController extends Controller
                     'key' => $mat, // Utilisation d'une clé unique pour chaque matière
                 ];
             }
-            $note_compositions = collect($notes_reforme)->where('type_evaluation', 'Composition')->values();
-            $note_interrogations = collect($notes_reforme)->where('type_evaluation', 'Interrogation')->values();
-            $note_devoir_surveilles = collect($notes_reforme)->where('type_evaluation', 'Devoir Surveillé')->values();
+            //dd($headers);
         }
         return Inertia::render('Rapport/Index', [
             "sectionID" => $request->section_id,
@@ -128,7 +137,9 @@ class RapportController extends Controller
             "AllClasses" => $classes,
             "note_compositions" => $note_compositions,
             "note_interrogations" => $note_interrogations,
-            "note_devoir_surveilles" => $note_devoir_surveilles
+            "note_devoir_surveilles" => $note_devoir_surveilles,
+            "note_devoirs" => $note_devoirs,
+            "note_examens" => $note_examens
         ]);
     }
 
@@ -140,9 +151,11 @@ class RapportController extends Controller
         $resultats = [];
         $classes = [];
         $periode = [];
+        $filieres = [];
+        $cycle_filieres = [];
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
+        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         if($request->section_id == 1){
-            $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-            $classes = getClasses(Annee::find(2)->id, $etablissement_section);
             foreach ($classes as $classe) {
                 $resultatsClasse = []; // Tableau pour les résultats de chaque classe
                 // dd($classes);
@@ -195,58 +208,12 @@ class RapportController extends Controller
             // sleep(5);
             // dd($resultats);
         }else if($request->section_id == 2){
-            $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-            $classes = getClasses(Annee::find(2)->id, $etablissement_section);
             $periode = $request->section_id ? Periode::where('type',"Semestre")->get():collect();
             if ($request->classe != null) {
                 // foreach ($classes as $classe) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
-                    $resultatsClasse = [];
-                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants;
-    
-                    foreach ($apprenantsDeLaClasse as $apprenant) {
-                        $details_notes = calculerMoyenneSecondaire($request->classe, $apprenant->id);
-    
-                        $resultatsClasse[$apprenant->id] = [
-                            'classe' => $request->classe,
-                            'periode' => $details_notes[0]['periodes'],
-                            'nom_classe' => $classes->find($request->classe)->libelle,
-                            'apprenant' => $apprenant->id,
-                            'matricule_apprenant' => $apprenant->matricule,
-                            'nom_apprenant' => $apprenant->nom,
-                            'prenom_apprenant' => $apprenant->prenom,
-                            'details_notes' => $details_notes, // Tableau des détails des notes
-                        ];
-                    }
-    
-                    // Transformer le tableau associatif en tableau indexé pour trier
-                    $resultatsClasse = array_values($resultatsClasse);
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $totalMoyenne = 0;
-    
-                        foreach ($resultat['details_notes'] as $details) {
-                            $totalMoyenne += $details['moyenne'];
-                        }
-    
-                        $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
-                    }
-    
-                    usort($resultatsClasse, function($a, $b) {
-                        return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
-                    });
-    
-                    $rank = 1;
-                    $prevRank = 1;
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
-                        $prevRank = $rank;
-                        $rank++;
-                    }
-    
-                    $resultats = $resultatsClasse;
+                    $resultats = calculerResultatsClasse($request->classe);
 
                     foreach ($resultats as &$resultat) {
                         // dd($resultat, $resultats);
@@ -277,51 +244,57 @@ class RapportController extends Controller
                     }
                     // dd($historiqueBulletincheck, $resultats[0]['periode']);
                 } else {
-                    $resultatsClasse = [];
-                    $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants;
-    
-                    foreach ($apprenantsDeLaClasse as $apprenant) {
-                        $details_notes = calculerMoyenneSecondaire($request->classe, $apprenant->id);
-    
-                        $resultatsClasse[$apprenant->id] = [
-                            'classe' => $request->classe,
-                            'periode' => $details_notes[0]['periodes'],
-                            'nom_classe' => $classes->find($request->classe)->libelle,
-                            'apprenant' => $apprenant->id,
-                            'matricule_apprenant' => $apprenant->matricule,
-                            'nom_apprenant' => $apprenant->nom,
-                            'prenom_apprenant' => $apprenant->prenom,
-                            'details_notes' => $details_notes, // Tableau des détails des notes
-                        ];
-                    }
-    
-                    // Transformer le tableau associatif en tableau indexé pour trier
-                    $resultatsClasse = array_values($resultatsClasse);
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $totalMoyenne = 0;
-    
-                        foreach ($resultat['details_notes'] as $details) {
-                            $totalMoyenne += $details['moyenne'];
+                    $resultats = calculerResultatsClasse($request->classe);
+                }
+            }
+        }else if($request->section_id == 3){
+            $periode = Periode::where('type',"Semestre")->get();
+            $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
+            $cycle_filieres = DB::table('cycle_filieres')
+                ->whereIn('filiere_id', $filieres->pluck('id'))
+                ->get();
+            if ($request->classe != null) {
+                $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                if ($historiqueBulletincheck->isEmpty()) {
+                    $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id);
+                    foreach ($resultatsyy as &$resultat) {
+                        // dd($resultat, $resultats);
+                        $historiqueBulletin = HistoriqueBulletin::create([
+                            'apprenant_id' => $resultat['apprenant'],
+                            'nom_classe' => $resultat['nom_classe'],
+                            'periode' => $resultat['periode'],
+                            'classe_annee_id' => $resultat['classe'],
+                            'matricule_apprenant' => $resultat['matricule_apprenant'],
+                            'nom_prenom_apprenant' => $resultat['nom_apprenant'] . ' ' . $resultat['prenom_apprenant'],
+                            'moyenne_details_notes' => $resultat['moyenne'],
+                            'total_coefficient' => $resultat['total_coefficient'],
+                            'somme_note_generale' => $resultat['somme_note_generale'],
+                            'somme_note_generale_coefficient' => $resultat['somme_note_generale_coefficient'],
+                            'total_volume_horaire' => $resultat['total_volume_horaire'],
+                            'rang' => $resultat['rang'],
+                        ]);
+
+                        foreach ($resultat['details_notes'] as $detailNote) {
+                            HistoriqueNote::create([
+                                'historique_bulletin_id' => $historiqueBulletin->id,
+                                'nom_eu' => $detailNote['nom_eu'],
+                                'nom_matiere' => $detailNote['nom_matiere'],
+                                'coefficient' => $detailNote['coefficient_matiere'],
+                                'volume_horaire_matiere' => $detailNote['volume_horaire_matiere'],
+                                'note_origine_devoir' => $detailNote['note_origine_devoir'],
+                                'note_origine_examen' => $detailNote['note_origine_examen'],
+                                'note_devoir_pourcentage' => $detailNote['note_devoir'],
+                                'note_examen_pourcentage' => $detailNote['note_examen'],
+                                'note_generale' => $detailNote['note_generale'],
+                                'note_generale_coefficiente' => $detailNote['note_generale_coefficiente'],
+                            ]);
                         }
-    
-                        $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
                     }
-    
-                    usort($resultatsClasse, function($a, $b) {
-                        return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
-                    });
-    
-                    $rank = 1;
-                    $prevRank = 1;
-    
-                    foreach ($resultatsClasse as &$resultat) {
-                        $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
-                        $prevRank = $rank;
-                        $rank++;
-                    }
-    
-                    $resultats = $resultatsClasse;
+                    $resultats = HistoriqueBulletin::with('historique_notes')->where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                    // dd($resultats);
+                }else{
+                    $resultats = HistoriqueBulletin::with('historique_notes')->where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                    // dd('NotEmpty',$resultats);
                 }
             }
         }
@@ -330,7 +303,9 @@ class RapportController extends Controller
             "sectionID" => $request->section_id,
             "resultats" => $resultats,
             "classes" => $classes,
-            'periodes'=>$periode,
+            'periodes'=> $periode,
+            "filieres" => $filieres,
+            "cycle_filieres" => $cycle_filieres
         ]);
     }
 

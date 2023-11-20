@@ -334,6 +334,24 @@ class ClasseAnneesTableSeeder extends Seeder
                 'updated_at' => NULL,
                 'deleted_at' => NULL,
             ),
+            35 => 
+            array (
+                'id' => 36,
+                'annee_id' => 2,
+                'classe_id' => 36,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            36 => 
+            array (
+                'id' => 37,
+                'annee_id' => 2,
+                'classe_id' => 37,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
         ));
         
         

@@ -17,14 +17,22 @@ return new class extends Migration
             $table->foreignIdFor(HistoriqueBulletin::class)
                 ->index()
                 ->references('id')->on('historique_bulletins');
+            $table->string('nom_eu')->nullable();
             $table->string('nom_matiere');
             $table->string('coefficient');
-            $table->double('note_de_classe');
-            $table->double('note_de_classe_coefficiente');
-            $table->string('note_de_composition');
-            $table->string('note_de_composition_coefficiente');
-            $table->string('moyenne');
-            $table->string('moyenne_coefficiente');
+            $table->double('note_de_classe')->nullable();
+            $table->double('note_de_classe_coefficiente')->nullable();
+            $table->string('note_de_composition')->nullable();
+            $table->string('note_de_composition_coefficiente')->nullable();
+            $table->string('moyenne')->nullable();
+            $table->string('moyenne_coefficiente')->nullable();
+            $table->double('note_origine_devoir')->nullable();
+            $table->double('note_origine_examen')->nullable();
+            $table->string('note_devoir_pourcentage')->nullable();
+            $table->string('note_examen_pourcentage')->nullable();
+            $table->string('volume_horaire_matiere')->nullable();
+            $table->string('note_generale')->nullable();
+            $table->string('note_generale_coefficiente')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });

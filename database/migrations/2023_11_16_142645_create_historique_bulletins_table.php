@@ -28,6 +28,10 @@ return new class extends Migration
             $table->string('nom_classe');
             $table->string('moyenne_details_notes');
             $table->string('rang');
+            $table->string('total_volume_horaire')->nullable();
+            $table->string('total_coefficient')->nullable();
+            $table->string('somme_note_generale')->nullable();
+            $table->string('somme_note_generale_coefficient')->nullable();
             $table->softDeletes();
             $table->timestamps();
         });
