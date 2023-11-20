@@ -367,7 +367,7 @@ class InscriptionController extends Controller
         // dd('ca a passé');
         try {
             // Démarrez la transaction
-            DB::beginTransaction();
+            // DB::beginTransaction();
         
             if($request->apprenants){
                 $find = Apprenant::where('nom',$request->apprenants['nom'])->where('prenom',$request->apprenants['prenom'])->where('sexe',$request->apprenants['sexe'])

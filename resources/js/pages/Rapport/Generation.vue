@@ -10,7 +10,7 @@ export default {
         DetailBulletin
     },
     layout: AuthenticatedLayout,
-    props: ["sectionID", "classes", "resultats", "periodes",],
+    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres"],
     data: () => ({
         icons: {
         mdiDatabaseSync,
@@ -49,9 +49,11 @@ export default {
         data: [],
         detailData: null,
         apprenantData: [],
+        classes: [],
         dialog: false,
         overlay: false,
         classe: null,
+        filiere: null,
         periode: null,
         printPdf: false
     }),
@@ -87,6 +89,11 @@ export default {
                
             }
         },
+        setClasse(filiere){
+            let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
+            const cycleFiliereIds = cf.map((item) => item.id);
+            this.classes = this.$page.props.classes.filter((classe) => cycleFiliereIds.includes(classe.cycle_filiere_id));
+        },
         openBulletinDialog(item) {
             this.detailData = item;
             console.log('Po',item)
@@ -112,8 +119,54 @@ export default {
         <!-- <div class="text-center">
             
         </div> -->
-        <v-row>
-            <v-col md="4" v-if="classes.length != 0">
+        <v-row v-if="sectionID == 3  || sectionID == 4">
+            <v-col md="5">
+                <autocomplete
+                    label="Filière"
+                    v-model="filiere"
+                    class="mt-4"
+                    :items="$page.props.filieres"
+                    @update:modelValue="setClasse(filiere)"
+                    item-title="name"
+                    item-value="id"
+                ></autocomplete>
+            </v-col>
+            <v-col md="3" v-if="filiere">
+                <autocomplete
+                label="Classe"
+                v-model="classe"
+                :items="classes"
+                @update:modelValue="setData(classe)"
+                class="mt-4"
+                isRequired
+                item-title="libelle"
+                item-value="id"
+                ></autocomplete>
+            </v-col>
+            <v-col cols="2">
+                <autocomplete 
+                    class="mt-4" 
+                    v-model="periode" 
+                    label="Periodes" 
+                    itemTitle="libelle" 
+                    itemValue="id" 
+                    :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe" chips clearable>
+                </autocomplete>
+            </v-col>
+            <v-col md="2"  v-if="sectionID != 1">
+                <v-btn
+                class="mt-4"
+                :append-icon="icons.mdiTimerSync"
+                color="deep-purple-accent-4"
+                @click="generate"
+                :disabled="!periode"
+                >
+                Générer
+                </v-btn>
+            </v-col>
+        </v-row>
+        <v-row v-if="sectionID == 1  || sectionID == 2">
+            <v-col md="4" v-if="filiere">
                 <autocomplete
                 label="Classe"
                 v-model="classe"
