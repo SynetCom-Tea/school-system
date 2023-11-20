@@ -162,6 +162,71 @@ class TuteursTableSeeder extends Seeder
                 'updated_at' => '2023-11-14 10:33:37',
                 'deleted_at' => NULL,
             ),
+            11 => 
+            array (
+                'id' => 14,
+                'nom' => NULL,
+                'prenom' => NULL,
+                'telephone' => NULL,
+                'adresse' => NULL,
+                'email' => NULL,
+                'sexe' => NULL,
+                'created_at' => '2023-11-20 11:23:31',
+                'updated_at' => '2023-11-20 11:23:31',
+                'deleted_at' => NULL,
+            ),
+            12 => 
+            array (
+                'id' => 15,
+                'nom' => NULL,
+                'prenom' => NULL,
+                'telephone' => NULL,
+                'adresse' => NULL,
+                'email' => NULL,
+                'sexe' => NULL,
+                'created_at' => '2023-11-20 11:32:13',
+                'updated_at' => '2023-11-20 11:32:13',
+                'deleted_at' => NULL,
+            ),
+            13 => 
+            array (
+                'id' => 16,
+                'nom' => NULL,
+                'prenom' => NULL,
+                'telephone' => NULL,
+                'adresse' => NULL,
+                'email' => NULL,
+                'sexe' => NULL,
+                'created_at' => '2023-11-20 11:32:57',
+                'updated_at' => '2023-11-20 11:32:57',
+                'deleted_at' => NULL,
+            ),
+            14 => 
+            array (
+                'id' => 17,
+                'nom' => NULL,
+                'prenom' => NULL,
+                'telephone' => NULL,
+                'adresse' => NULL,
+                'email' => NULL,
+                'sexe' => NULL,
+                'created_at' => '2023-11-20 11:33:45',
+                'updated_at' => '2023-11-20 11:33:45',
+                'deleted_at' => NULL,
+            ),
+            15 => 
+            array (
+                'id' => 18,
+                'nom' => NULL,
+                'prenom' => NULL,
+                'telephone' => NULL,
+                'adresse' => NULL,
+                'email' => NULL,
+                'sexe' => NULL,
+                'created_at' => '2023-11-20 11:35:13',
+                'updated_at' => '2023-11-20 11:35:13',
+                'deleted_at' => NULL,
+            ),
         ));
         
         

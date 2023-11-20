@@ -256,37 +256,45 @@ class RapportController extends Controller
             if ($request->classe != null) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
-                    $resultats = calculerResultatsClasseSuperieure($request->classe, $request->section_id);
-                    // foreach ($resultats as &$resultat) {
-                    //     // dd($resultat, $resultats);
-                    //     $historiqueBulletin = HistoriqueBulletin::create([
-                    //         'apprenant_id' => $resultat['apprenant'],
-                    //         'nom_classe' => $resultat['nom_classe'],
-                    //         'periode' => $resultat['periode'],
-                    //         'classe_annee_id' => $resultat['classe'],
-                    //         'matricule_apprenant' => $resultat['matricule_apprenant'],
-                    //         'nom_prenom_apprenant' => $resultat['nom_apprenant'] . ' ' . $resultat['prenom_apprenant'],
-                    //         'moyenne_details_notes' => $resultat['moyenne_details_notes'],
-                    //         'rang' => $resultat['rang'],
-                    //     ]);
+                    $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id);
+                    foreach ($resultatsyy as &$resultat) {
+                        // dd($resultat, $resultats);
+                        $historiqueBulletin = HistoriqueBulletin::create([
+                            'apprenant_id' => $resultat['apprenant'],
+                            'nom_classe' => $resultat['nom_classe'],
+                            'periode' => $resultat['periode'],
+                            'classe_annee_id' => $resultat['classe'],
+                            'matricule_apprenant' => $resultat['matricule_apprenant'],
+                            'nom_prenom_apprenant' => $resultat['nom_apprenant'] . ' ' . $resultat['prenom_apprenant'],
+                            'moyenne_details_notes' => $resultat['moyenne'],
+                            'total_coefficient' => $resultat['total_coefficient'],
+                            'somme_note_generale' => $resultat['somme_note_generale'],
+                            'somme_note_generale_coefficient' => $resultat['somme_note_generale_coefficient'],
+                            'total_volume_horaire' => $resultat['total_volume_horaire'],
+                            'rang' => $resultat['rang'],
+                        ]);
 
-                    //     foreach ($resultat['details_notes'] as $detailNote) {
-                    //         HistoriqueNote::create([
-                    //             'historique_bulletin_id' => $historiqueBulletin->id,
-                    //             'nom_matiere' => $detailNote['nom_matiere'],
-                    //             'coefficient' => $detailNote['coefficient'],
-                    //             'note_de_classe' => $detailNote['noteDeClasse'],
-                    //             'note_de_classe_coefficiente' => $detailNote['noteDeClasseCoefficiente'],
-                    //             'note_de_composition' => $detailNote['noteDeComposition'],
-                    //             'note_de_composition_coefficiente' => $detailNote['noteDeCompositionCoefficiente'],
-                    //             'moyenne' => $detailNote['moyenne'],
-                    //             'moyenne_coefficiente' => $detailNote['moyenneCoefficiente'],
-                    //         ]);
-                    //     }
-                    // }
-                    dd($resultats);
+                        foreach ($resultat['details_notes'] as $detailNote) {
+                            HistoriqueNote::create([
+                                'historique_bulletin_id' => $historiqueBulletin->id,
+                                'nom_eu' => $detailNote['nom_eu'],
+                                'nom_matiere' => $detailNote['nom_matiere'],
+                                'coefficient' => $detailNote['coefficient_matiere'],
+                                'volume_horaire_matiere' => $detailNote['volume_horaire_matiere'],
+                                'note_origine_devoir' => $detailNote['note_origine_devoir'],
+                                'note_origine_examen' => $detailNote['note_origine_examen'],
+                                'note_devoir_pourcentage' => $detailNote['note_devoir'],
+                                'note_examen_pourcentage' => $detailNote['note_examen'],
+                                'note_generale' => $detailNote['note_generale'],
+                                'note_generale_coefficiente' => $detailNote['note_generale_coefficiente'],
+                            ]);
+                        }
+                    }
+                    $resultats = HistoriqueBulletin::with('historique_notes')->where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                    // dd($resultats);
                 }else{
-                    dd('NotEmpty');
+                    $resultats = HistoriqueBulletin::with('historique_notes')->where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                    // dd('NotEmpty',$resultats);
                 }
             }
         }

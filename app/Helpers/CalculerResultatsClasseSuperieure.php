@@ -61,3 +61,19 @@ if (!function_exists('calculerRangApprenants')) {
         return $resultatsClasse;
     }
 }
+
+if (!function_exists('calculerMoyenneClasse')) {
+    function calculerMoyenneClasse($resultatsClasse) {
+        $totalMoyenneGenerale = 0;
+        $nombreApprenants = count($resultatsClasse);
+
+        foreach ($resultatsClasse as $resultat) {
+            $totalMoyenneGenerale += $resultat['moyenne'];
+        }
+
+        // Éviter une division par zéro
+        $moyenneClasse = ($nombreApprenants > 0) ? ($totalMoyenneGenerale / $nombreApprenants) : 0;
+
+        return $moyenneClasse;
+    }
+}

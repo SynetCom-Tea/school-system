@@ -53,6 +53,23 @@ class UsersTableSeeder extends Seeder
                 'created_at' => '2023-11-13 11:50:53',
                 'updated_at' => '2023-11-13 11:50:53',
             ),
+            2 => 
+            array (
+                'id' => 3,
+                'email' => 'admin@hetech.com',
+                'nom' => 'Malick',
+                'prenom' => 'Moctar',
+                'email_verified_at' => NULL,
+                'password' => '$2y$10$LuxfHbvyx4xtCsM.FoKrs.IkxSRPjG5SPYwAIo9.Gd55Bn7DliTLu',
+                'etablissement_id' => 2,
+                'apprenant_id' => NULL,
+                'user_id' => 1,
+                'enseignant_id' => NULL,
+                'tuteur_id' => NULL,
+                'remember_token' => NULL,
+                'created_at' => '2023-11-20 09:39:57',
+                'updated_at' => '2023-11-20 09:39:57',
+            ),
         ));
         
         

@@ -336,7 +336,7 @@ class InscriptionController extends Controller
      */
     public function store(Request $request)
     {
-        dd($request->all());
+        // dd($request->all());
         /////////////////////////////  matricule  ///////////////////////
         $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $request->section)->first();
         $matricule = $this->generateMatricule($request->all());

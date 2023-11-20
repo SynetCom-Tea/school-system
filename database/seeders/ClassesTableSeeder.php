@@ -439,6 +439,30 @@ class ClassesTableSeeder extends Seeder
                 'updated_at' => NULL,
                 'deleted_at' => NULL,
             ),
+            35 => 
+            array (
+                'id' => 36,
+                'code' => 'MIAGE/2e cycle/ 1ère année',
+                'libelle' => 'MIAGE/2e cycle/ Prémiere Année',
+                'etablissement_section_id' => 4,
+                'niveau_id' => 19,
+                'cycle_filiere_id' => 7,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
+            36 => 
+            array (
+                'id' => 37,
+                'code' => 'MIAGE/2e cycle/ 2e année',
+                'libelle' => 'MIAGE/2e cycle/ Deuxieme Année',
+                'etablissement_section_id' => 4,
+                'niveau_id' => 20,
+                'cycle_filiere_id' => 7,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'deleted_at' => NULL,
+            ),
         ));
         
         

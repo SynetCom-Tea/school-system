@@ -129,6 +129,61 @@ class EtablissementTypeDocumentsTableSeeder extends Seeder
                 'updated_at' => '2023-11-13 13:42:27',
                 'deleted_at' => NULL,
             ),
+            10 => 
+            array (
+                'id' => 11,
+                'type_document_id' => 1,
+                'etablissement_section_id' => 4,
+                'obligatoire' => 0,
+                'statut' => '1',
+                'created_at' => '2023-11-20 09:41:22',
+                'updated_at' => '2023-11-20 09:41:22',
+                'deleted_at' => NULL,
+            ),
+            11 => 
+            array (
+                'id' => 12,
+                'type_document_id' => 2,
+                'etablissement_section_id' => 4,
+                'obligatoire' => 0,
+                'statut' => '1',
+                'created_at' => '2023-11-20 09:41:22',
+                'updated_at' => '2023-11-20 09:41:22',
+                'deleted_at' => NULL,
+            ),
+            12 => 
+            array (
+                'id' => 13,
+                'type_document_id' => 4,
+                'etablissement_section_id' => 4,
+                'obligatoire' => 0,
+                'statut' => '1',
+                'created_at' => '2023-11-20 09:41:22',
+                'updated_at' => '2023-11-20 09:41:22',
+                'deleted_at' => NULL,
+            ),
+            13 => 
+            array (
+                'id' => 14,
+                'type_document_id' => 5,
+                'etablissement_section_id' => 4,
+                'obligatoire' => 0,
+                'statut' => '1',
+                'created_at' => '2023-11-20 09:41:22',
+                'updated_at' => '2023-11-20 09:41:22',
+                'deleted_at' => NULL,
+            ),
+            14 => 
+            array (
+                'id' => 15,
+                'type_document_id' => 3,
+                'etablissement_section_id' => 4,
+                'obligatoire' => 0,
+                'statut' => '1',
+                'created_at' => '2023-11-20 09:41:23',
+                'updated_at' => '2023-11-20 09:41:23',
+                'deleted_at' => NULL,
+            ),
         ));
         
         

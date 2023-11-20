@@ -109,6 +109,26 @@ class EtablissementTypeFraisTableSeeder extends Seeder
                 'updated_at' => '2023-11-13 13:42:27',
                 'deleted_at' => NULL,
             ),
+            9 => 
+            array (
+                'id' => 10,
+                'type_frais_id' => 1,
+                'etablissement_section_id' => 4,
+                'statut' => 1,
+                'created_at' => '2023-11-20 09:41:22',
+                'updated_at' => '2023-11-20 09:41:22',
+                'deleted_at' => NULL,
+            ),
+            10 => 
+            array (
+                'id' => 11,
+                'type_frais_id' => 2,
+                'etablissement_section_id' => 4,
+                'statut' => 1,
+                'created_at' => '2023-11-20 09:41:22',
+                'updated_at' => '2023-11-20 09:41:22',
+                'deleted_at' => NULL,
+            ),
         ));
         
         
