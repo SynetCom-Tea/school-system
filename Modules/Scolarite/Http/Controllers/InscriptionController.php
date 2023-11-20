@@ -455,8 +455,8 @@ class InscriptionController extends Controller
                 if(is_null($classe)){
                     $cycleFiliere = CycleFiliere::find($request->annees['cycle_filiere']);
                     $cl = Classe::create([
-                        'code' => $cycleFiliere->code.' - '.$niv->code,
-                        'libelle' => $cycleFiliere->code.' - '.$niv->libelle,
+                        'code' => $cycleFiliere->code.'/ '.$niv->code,
+                        'libelle' => $cycleFiliere->code.'/ '.$niv->libelle,
                         'niveau_id' => $request->annees['niveau'],
                         'cycle_filiere_id' => $request->annees['cycle_filiere'],
                         'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
