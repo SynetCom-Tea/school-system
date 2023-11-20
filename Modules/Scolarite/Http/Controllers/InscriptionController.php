@@ -336,7 +336,7 @@ class InscriptionController extends Controller
      */
     public function store(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         /////////////////////////////  matricule  ///////////////////////
         $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $request->section)->first();
         $matricule = $this->generateMatricule($request->all());
@@ -451,7 +451,7 @@ class InscriptionController extends Controller
                 }
             }elseif($request->section == '3' || $request->section == '4'){
 
-                $classe = Classe::where('niveau_id',$request->annees['niveau'])->where('etablissement_section_id',$request->annees['etablissement_section_id']['id'])->where('cycle_filiere_id',$request->annees['cycle_filiere'])->first();
+                $classe = Classe::where('niveau_id',$request->annees['niveau'])->where('etablissement_section_id',$et_sec_id)->where('cycle_filiere_id',$request->annees['cycle_filiere'])->first();
                 if(is_null($classe)){
                     $cycleFiliere = CycleFiliere::find($request->annees['cycle_filiere']);
                     $cl = Classe::create([
@@ -500,7 +500,7 @@ class InscriptionController extends Controller
             // ]);
 
             // Tuteur
-            if($request->tuteurs){
+            if($request->tuteurs['tuteurs']){
                 if($request->tuteurs['selection'] !== true){
                     foreach($request->tuteurs['tuteurs'] as $tuteur){
                         $item_tuteur = Tuteur::create([
