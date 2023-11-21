@@ -47,7 +47,7 @@ class RapportController extends Controller
                 $pdf = PDF::loadView('secondaire/bulletin', $data);
 
             }else if($request->section == '3' || $request->section == '4'){
-                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','historique_notes','classe_annee.classe.niveau')->first() : null) : null;
+                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->first() : null) : null;
                 // $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 $bulletin->groupUe = $bulletin->historique_notes->groupBy('nom_eu');
                 // foreach ($bulletin->groupUe as $ue => $note) {
