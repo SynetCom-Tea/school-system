@@ -132,9 +132,16 @@
     
 
     <div style="margin-top: 10px; position:absolute">
+    <b style="font-size: 13px;">Matricule :</b> {{$bulletin->matricule_apprenant }} <br>
+
+        <!-- <b style="font-size: 13px;">Prof responsable de la classe : <span style="color:green">NON DEFINI</span></b> <br> -->
+        <b style="font-size: 13px;">Moyenne obtenue : {{$bulletin->moyenne_details_notes}} / 20</b>
+    </div>
+    <div style="margin-top: 10px; margin-left: 400px; position:absolute">
         <!-- <b style="font-size: 13px;">Prof responsable de la classe : <span style="color:green">NON DEFINI</span></b> <br> -->
         <b style="font-size: 13px;">Nom et Prénom de l'étudiant :</b> {{$bulletin->nom_prenom_apprenant }} <br>
-        <b style="font-size: 13px;">Moyenne obtenue : {{$bulletin->moyenne_details_notes}} / 20</b>
+
+        <b style="font-size: 13px;">Rang : {{$bulletin->rang}}e / 20</b>
     </div>
 
     <table style="margin-top: 60px; position:absolute; font-size: 13px;text-align:center;">
