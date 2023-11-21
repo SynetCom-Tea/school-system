@@ -500,9 +500,19 @@ class InscriptionController extends Controller
             // ]);
 
             // Tuteur
-            if($request->tuteurs['tuteurs']){
-                if($request->tuteurs['selection'] !== true){
-                    foreach($request->tuteurs['tuteurs'] as $tuteur){
+
+
+            if ($request->tuteurs['selection'] !== true) {
+                foreach ($request->tuteurs['tuteurs'] as $tuteur) {
+                    if (
+                        $tuteur['nom'] === null &&
+                        $tuteur['prenom'] === null &&
+                        $tuteur['tel'] === null &&
+                        $tuteur['sexe'] === null &&
+                        $tuteur['email'] === null
+                    ) {
+                        
+                    } else {
                         $item_tuteur = Tuteur::create([
                             'nom' => $tuteur['nom'],
                             'prenom' => $tuteur['prenom'],
@@ -516,16 +526,48 @@ class InscriptionController extends Controller
                             'tuteur_id' => $item_tuteur['id'],
                         ]);
                     }
-                }else{
-                    for($i = 0; $i < count($request->tuteurs['selectTuteurs']); $i++){
-                        // dd($id_apprenant,$request->tuteurs['selectTuteurs'][$i]);
-                        ApprenantTuteur::create([
-                            'apprenant_id' => $id_apprenant,
-                            'tuteur_id' => $request->tuteurs['selectTuteurs'][$i],
-                        ]);
-                    }
+                }
+            } else {
+                for($i = 0; $i < count($request->tuteurs['selectTuteurs']); $i++){
+                    // dd($id_apprenant,$request->tuteurs['selectTuteurs'][$i]);
+                    ApprenantTuteur::create([
+                        'apprenant_id' => $id_apprenant,
+                        'tuteur_id' => $request->tuteurs['selectTuteurs'][$i],
+                    ]);
                 }
             }
+
+
+
+            // if($request->tuteurs['tuteurs']){
+            //     if($request->tuteurs['selection'] !== true){
+            //         foreach($request->tuteurs['tuteurs'] as $tuteur){
+            //             $item_tuteur = Tuteur::create([
+            //                 'nom' => $tuteur['nom'],
+            //                 'prenom' => $tuteur['prenom'],
+            //                 'telephone' => $tuteur['tel'],
+            //                 // 'adresse' => $tuteur['adresse'],
+            //                 'email' => $tuteur['email'],
+            //                 'sexe' => $tuteur['sexe'],
+            //             ]);
+            //             ApprenantTuteur::create([
+            //                 'apprenant_id' => $id_apprenant,
+            //                 'tuteur_id' => $item_tuteur['id'],
+            //             ]);
+            //         }
+            //     }else{
+            //         for($i = 0; $i < count($request->tuteurs['selectTuteurs']); $i++){
+            //             // dd($id_apprenant,$request->tuteurs['selectTuteurs'][$i]);
+            //             ApprenantTuteur::create([
+            //                 'apprenant_id' => $id_apprenant,
+            //                 'tuteur_id' => $request->tuteurs['selectTuteurs'][$i],
+            //             ]);
+            //         }
+            //     }
+            // }
+
+
+
             if (isset($request->documents['documents'])) {
                 foreach($request->documents['documents'] as $document){
                     // dd($document);
