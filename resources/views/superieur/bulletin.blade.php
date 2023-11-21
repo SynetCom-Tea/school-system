@@ -87,22 +87,40 @@
         
     <div>
         <div style="position:absolute; margin-top:10px;">
-        <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">MINISTERE DE L'EDUCATION NATIONALE</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">DREN NIAMEY</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">DDEN NIAMEY IV</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">IESG NY IV</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">Groupe IAT</i></b><br>
+            @if($section == '1' || $section == '2')
+            <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">MINISTERE DE L'EDUCATION NATIONALE</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">DREN NIAMEY</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">DDEN NIAMEY IV</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">IESG NY IV</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
+            @endif
+            @if($section == '3' || $section == '4')
+            <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">MINISTERE DE L'ENSEIGNEMENT SUPERIEUR</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$bulletin->classe_annee->classe->niveau->libelle}} </i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">FILIERE : {{$bulletin->nom_classe }} </i>&nbsp;&nbsp;</b><br>
+
+            @endif
+            
         </div>
         <div style="position:absolute;margin-top:10px;margin-left:300px">
         <img style="max-width:50%; height:auto" src="logos/iat-logo.png" alt="Logo de l'entreprise">
         </div>
-        <div style="position:absolute;margin-top:10px;margin-left:490px">
-        <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : 2023-2024</i>&nbsp;&nbsp;</b><br>
-            <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : I</i>&nbsp;&nbsp;</b><br>
-            <b><i style="font-size: 13px; margin: 5px;">SECTION : Supérieur</i>&nbsp;&nbsp;</b><br>
-            <b><i style="font-size: 13px; margin: 5px;">NIVEAU : 1er Cycle 1ère année </i>&nbsp;&nbsp;</b><br>
-            <b><i style="font-size: 13px; margin: 5px;">FILIERE : Informatique de Gestion </i>&nbsp;&nbsp;</b><br>
+        <div style="position:absolute;margin-top:10px;margin-left:480px">
+        @if($section == '1' || $section == '2')
+            <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : {{$bulletin->classe_annee->annee->libelle}}</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : {{$bulletin->periode }}</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">SECTION :  @if($section == '1') Primaire @elseif($section == '2') Sécondaire @elseif($section == '3') Supérieur @endif</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$bulletin->classe_annee->classe->niveau->libelle}} </i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">FILIERE : {{$bulletin->nom_classe }} </i>&nbsp;&nbsp;</b><br>
+        @endif
+        @if($section == '3' || $section == '4')
+        
+            <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : {{$bulletin->periode }}</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">SECTION :  @if($section == '1') Primaire @elseif($section == '2') Sécondaire @elseif($section == '3') Supérieur @endif</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
+        @endif
         </div>
     </div>
                
@@ -115,36 +133,44 @@
 
     <div style="margin-top: 10px; position:absolute">
         <!-- <b style="font-size: 13px;">Prof responsable de la classe : <span style="color:green">NON DEFINI</span></b> <br> -->
-        <b style="font-size: 13px;">Nom et Prénom de l'étudiant :</b> Ismael Nouri <br>
-        <b style="font-size: 13px;">Moyenne obtenue : 14 / 20</b>
+        <b style="font-size: 13px;">Nom et Prénom de l'étudiant :</b> {{$bulletin->nom_prenom_apprenant }} <br>
+        <b style="font-size: 13px;">Moyenne obtenue : {{$bulletin->moyenne_details_notes}} / 20</b>
     </div>
 
-    <table style="margin-top: 50px; position:absolute">
+    <table style="margin-top: 60px; position:absolute; font-size: 13px;text-align:center;">
     <thead>
         <tr>
-            <th colspan="3">Unités d'Enseignement</th>
-            <th colspan="3">Matieres constitutives de l'UE</th>
+            <th>Unités d'Enseignement</th>
+            <th colspan="2">Matieres constitutives de l'UE</th>
         </tr>
     </thead>
     <tbody>
         <tr>
-            <td>Code</td>
+            <!-- <td>Code</td> -->
             <td>Intitulé</td>
-            <td>Crédit</td>
+            <!-- <td>Crédit</td> -->
             <td>Intitulés</td>
-            <td>Crédit</td>
-            <td>note</td>
+            <td>Crédit / Note</td>
         </tr>
         <!-- les données -->
+        @foreach($bulletin->groupUe as $nom => $ue)
         <tr>
-            <td>101</td>
-            <td>UE1</td>
-            <td>5</td>
-            <td>101</td>
-            <td>UE1</td>
-            <td>5</td>
-            
+            <!-- <td>101</td> -->
+            <td>{{$nom}}</td>
+            <!-- <td>5</td> -->
+            <td colspan="2">
+                <table>
+                @foreach($ue as $ligne)
+                    <tr>
+                        <td>{{$ligne->nom_matiere}}</td>
+                        <td style="text-align:center;">{{$ligne->coefficient}}</td>
+                        <td style="text-align:center;">{{$ligne->note_generale}}</td>
+                    </tr>
+                @endforeach
+                </table>
+            </td>
         </tr>
+        @endforeach
         <!-- les données -->
 
         <!-- Ajoutez d'autres lignes de données au besoin -->
