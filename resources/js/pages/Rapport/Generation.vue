@@ -181,7 +181,7 @@ export default {
             </v-col>
         </v-row>
         <v-row v-if="sectionID == 1  || sectionID == 2">
-            <v-col md="4" v-if="filiere">
+            <v-col md="4">
                 <autocomplete
                 label="Classe"
                 v-model="classe"
