@@ -182,8 +182,9 @@
                        label="Classes"
                        multiple
                        chips
-                       :items="classes"
+                       :items="classetabs[i]"
                        :rules="rules"
+                       @click="classeset(i)"
                        @update:modelValue="submitForm(matiere)"
                        >
                    </Autocomplete>
@@ -322,6 +323,7 @@
    data: () => ({
      alertFirst: true,
      alertSecond: true,
+     classetabs:{},
      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle,mdiContentSave},
      step: 1,
      section: null,
@@ -369,6 +371,10 @@
 
 
        },
+       classeset(i){
+            this.classetabs[i]=this.classes;
+            console.log('fdgfggg',this.classetabs);
+        },
        goBack() {
            router.get(route('enseignants.index',this.section_id))
        },

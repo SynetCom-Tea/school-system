@@ -94,7 +94,9 @@
                       chips
                       v-model="matiere.matiere"
                       :rules="[(v) => !!v || 'Ce champ est requis!']"
+                      @change="classeset(i)"
                       @update:modelValue="submitForm(matiere),setclasses(i)"
+
                     >
                     </Autocomplete>
                   </v-col>
@@ -110,7 +112,8 @@
                         label="Classes"
                         multiple
                         chips
-                        :items="classes"
+                        :items="classetabs[i]"
+                        @click="classeset(i)"
                         :rules="[(v) => !!v || 'Ce champ est requis!']"
                         @update:modelValue="submitForm(matiere)"
                         >
@@ -166,6 +169,7 @@
                       v-model="classe.classe"
                       :rules="[(v) => !!v || 'Ce champ est requis!']"
                       @update:modelValue="submitForm(classe),setmatiere(i)"
+
                     >
                     </Autocomplete>
                   </v-col>
@@ -252,11 +256,12 @@ import axios from "axios";
     data: () => ({
       alertFirst: true,
       alertSecond: true,
+
       icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle,mdiContentSave},
       step: 1,
 
       section: null,
-      uetabs: [],
+        classetabs:{},
       form: useForm({
         enseignant: null,
         importation: false,
@@ -294,9 +299,14 @@ import axios from "axios";
             this.$emit('input',this.form.matieres[i].matiere)
             let mat=this.form.matieres[i].matiere;
             router.replace(this.$page.url,{data:{matiere:mat}});
-            console.log('fdgfggg',this.classes);
+            // console.log(' routechech', routechech);
 
 
+        },
+
+        classeset(i){
+            this.classetabs[i]=this.classes;
+            console.log('fdgfggg',this.classetabs);
         },
         goBack() {
             router.get(route('AffectationEnseignants.index', this.section_id))

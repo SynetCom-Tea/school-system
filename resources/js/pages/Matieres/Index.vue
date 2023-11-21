@@ -441,7 +441,7 @@ export default {
                                 <v-row>
                                     <v-col md="2"></v-col>
                                     <v-col md="6">
-                                        <TextField class="mt-2" label="Libellé" placeholder="Libellé" v-model="donnee.nom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
+                                        <TextField class="mt-2" label="Libellé" placeholder="Libellé" v-model="donnee.nom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!'] " @update:modelValue=" verify(donnee)"></TextField>
                                     </v-col>
 
                                     <v-col md="2">

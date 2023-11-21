@@ -41,7 +41,7 @@ export default {
         mdiEye
     },
     layout: AuthenticatedLayout,
-    props: ["niveauMatieres", "section_id", "niveaux", "matieres","systemeLMD"],
+    props: ["niveauMatieres", "section_id", "niveaux", "matieres","systemeLMD","filieres","ues"],
     data() {
         return {
             icons: {
@@ -167,8 +167,11 @@ export default {
             dialog: false,
             target: {},
             show: false,
+            ajout:false,
             form: useForm({
+                cycle_filiere_id:null,
                 volume_horaire: "",
+                ue_id:null,
                 type:this.section_id,
                 coefficient: "",
                 notation: "",
@@ -184,6 +187,19 @@ export default {
         }
     },
  methods: {
+
+                    createmat(item) {
+                        this.ajout=true;
+                        console.log('item',item.matieres[0]);
+                            // this.form.id=item.filiere.id;
+                        this.form.niveau_id = item.matieres[0].niveau_id
+                        this.form.ue_id=item.matieres[0].ue_id
+                        this.form.cycle_filiere_id = item.matieres[0].cycle_filiere_id
+                        this.dialog = true;
+                        this.dialog_title = 'Ajouter la matière'
+
+
+                    },
                     create() {
                         router.get(route('affectations.create', this.section_id))
                     },
@@ -196,6 +212,7 @@ export default {
                         console.log(item)
                         this.dialog_title = 'Modifier '+item.matiere.nom+' '+item.niveau.code
                         this.form.id = item.id
+                        this.form.cycle_filiere_id=item.cycle_filiere_id
                         this.form.niveau_id = item.niveau_id
                         this.form.volume_horaire = item.volume_horaire
                         this.form.coefficient = item.coefficient
@@ -313,6 +330,33 @@ export default {
                                     });
                                 },
                             });
+                        }else if(valid){
+                            // const {
+                            //     cycle_filiere_id,
+                            //     ue_id,
+                            //     volume_horaire,
+                            //     coefficient,
+                            //     niveau_id,
+                            //     matiere_id
+                            // } = this.form;
+                            this.form.post(route('affectations.store',this.section_id), {
+                                onFinish: () => {
+                                    this.close();
+                                    this.$swal({
+                                        icon: 'success',
+                                        iconColor: '#004980',
+                                        color: '#004980',
+                                        title: 'Enregistrement',
+                                        text: 'La matière a été affectée aux niveaux avec succès!',
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 5000,
+                                        timerProgressBar: true,
+                                    });
+                                },
+                            });
+
                         }
                     },
                     close() {
@@ -322,6 +366,7 @@ export default {
                         this.form.coefficient = "";
                         this.form.matiere_id = "";
                         this.form.notation = "";
+                        this.ajout=false;
                         this.dialog = false;
                     },
                 },
@@ -353,7 +398,7 @@ export default {
     <v-card-title style="color: white; background-color: #7d002c" v-if="systemeLMD==null">GESTION DES MATIERES PAR NIVEAUX</v-card-title>
             <v-card-title style="color: white; background-color: #7d002c" v-else>GESTION DES UNITES DES ENSEIGNEMENTS</v-card-title>
           <v-divider></v-divider>
-      <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
+      <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="800px">
         <template v-slot:default="{ isActive }">
             <v-card>
                 <v-toolbar dense style="background-color: #7d002c">
@@ -373,31 +418,45 @@ export default {
                 </v-toolbar>
                 <v-card-text>
                     <v-form ref="form">
-                        <v-row>
-                            <v-col cols="12" md="12">
-                                <Select disabled="true" label="Matière" :items="matieres" variant="outlined" class="mt-1" itemValue="id" itemTitle="nom" v-model="form.matiere_id" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
-                                </Select>
+                        <v-row v-if="section_id ==3 || section_id ==4" style="height: 80px">
+                            <v-col cols="6" md="6" >
+                                <autocomplete  :disabled="true" label="cycle/filière" chips :items="filieres" variant="outlined" itemValue="id" itemTitle="code" v-model="form.cycle_filiere_id" class="mt-1" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                </autocomplete>
+                            </v-col>
+                            <v-col cols="6" md="6" >
+                                <autocomplete  :disabled="true" label="Niveau" chips :items="niveaux" variant="outlined" itemValue="id" itemTitle="libelle" v-model="form.niveau_id" class="mt-1" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                </autocomplete>
                             </v-col>
                         </v-row>
-                        <v-row>
-                            <v-col cols="12" md="12">
-                                <Select  disabled="true" label="Niveau"  :items="niveaux" variant="outlined" itemValue="id" itemTitle="libelle" v-model="form.niveau_id" class="mt-1" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
-                                </Select>
+
+
+                        <v-row style="height: 80px">
+                            <v-col cols="6" md="6" >
+                                <autocomplete  :disabled="true" label="Unité d'enseignement" chips :items="ues" variant="outlined" itemValue="id" itemTitle="libelle" v-model="form.ue_id" class="mt-1" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                </autocomplete>
+                            </v-col>
+                            <v-col cols="6" md="6" v-if="ajout == false">
+                                <autocomplete :disabled="true" label="Matière" placeholder="Matière" :items="matieres" variant="outlined" class="mt-1" itemValue="id" itemTitle="nom" v-model="form.matiere_id" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                </autocomplete>
+                            </v-col>
+                            <v-col cols="6" md="6" v-if="ajout == true">
+                                <autocomplete  label="Matière" :items="matieres" placeholder="Matière" variant="outlined" class="mt-1" itemValue="id" itemTitle="nom" v-model="form.matiere_id" isRequired :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                    Matière</autocomplete>
                             </v-col>
                         </v-row>
-                        <v-row>
-                            <v-col cols="12" md="12">
+
+                        <v-row style="height: 80px">
+                            <v-col cols="6" md="6">
                                 <TextField class="mt-2" type="number" label="Volume_horaire" placeholder="Volume_horaire" v-model="form.volume_horaire" isRequired :rules="rules"></TextField>
                             </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="12" md="12" v-if="section_id > 1">
+                            <v-col cols="6" md="6" v-if="section_id != 1">
                                 <TextField class="mt-1" type="number" label="Coefficient" placeholder="Coefficient" v-model="form.coefficient" isRequired :rules="rules"></TextField>
                             </v-col>
-                            <v-col cols="12" md="12" v-else>
+                            <v-col cols="6" md="6" v-else>
                                 <TextField class="mt-1" type="number" label="Notation" placeholder="Notation" v-model="form.notation" isRequired :rules="rules"></TextField>
                             </v-col>
                         </v-row>
+
                     </v-form>
                 </v-card-text>
                 <v-card-actions class="justify-end">
@@ -409,7 +468,7 @@ export default {
         </template>
     </v-dialog>
 
-    <v-dialog v-model="show" max-width="600" v-if="target">
+    <!-- <v-dialog v-model="show" max-width="600" v-if="target">
         <v-card>
             <v-toolbar dark color="primary">
                 <v-toolbar-title>
@@ -429,7 +488,7 @@ export default {
                                     <td><v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem()" :icon="icons.mdiDelete" color="red">
                                         </v-icon></td>
                                 </tr>
-                                <!-- <tr>
+                                 <tr>
                                     <td class="font-weight-black">Nom Etablissement:</td>
                                     <td>{{ target.name }}</td>
                                 </tr>
@@ -467,7 +526,7 @@ export default {
                                     <td class="font-weight-black">Statut:</td>
                                     <td v-if="target.statut == 1">Actif</td>
                                     <td v-if="target.statut == 0">Inactif</td>
-                                </tr> -->
+                                </tr>
                             </tbody>
                         </v-table>
                     </v-card>
@@ -477,7 +536,7 @@ export default {
                 <v-btn color="danger" variant="text" @click="show = false"> Fermer </v-btn>
             </v-card-actions>
         </v-card>
-    </v-dialog>
+    </v-dialog> -->
     <v-card-text>
         <Datatable  v-if="section_id == 1" titleDatatable="Liste des matières par niveau" :headers="headerspri" :items="niveauMatieres" :functionOnClickAddButton="create">
 
@@ -522,22 +581,24 @@ export default {
         </Datatable>
         <Datatable v-if="section_id >= 3 && systemeLMD !=null" titleDatatable="Liste des matières par niveau" :headers="headersupue" :items="niveauMatieres" :functionOnClickAddButton="create">
             <template v-slot:item.ues="{ item, index}">
-                    <v-chip-group column selected-class="text-purple">
-                        <v-chip v-for="tag in item.ues">
+                    <v-chip-group size="small" column selected-class="text-purple" style="width:90%;">
+                        <v-chip  v-for="tag in item.ues" style=" height: auto;  ">
                             {{ tag.ue.libelle }} =>
 
-                            <v-chip style="color: white; background-color: #7d002c;" :key="i" v-for="(t, i) in tag.matieres">
-                                {{ t.matiere.nom }}
-                                {{ '/ VH: ' }}{{ t.volume_horaire }}
-                                {{ ';Coeff: ' }}{{ t.coefficient }}
-                                 <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(t)" :icon="icons.mdiPencil" color="orange">
-                                </v-icon>
-                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(t)" :icon="icons.mdiCloseCircle">
+                            <v-chip-group column selected-class="text-purple" style="width:90%;">
+                                <v-chip size="small" :key="i" v-for="(t, i) in tag.matieres"  style=" color: white; background-color: #7d002c; size:10px;">
+                                    {{ t.matiere.nom }}
+                                    {{ '/ VH: ' }}{{ t.volume_horaire }}
+                                    {{ ';Coeff: ' }}{{ t.coefficient }}
+                                    <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(t)" :icon="icons.mdiPencil" color="orange">
                                     </v-icon>
+                                    <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(t)" :icon="icons.mdiCloseCircle">
+                                    </v-icon>
+                                </v-chip>
+                            </v-chip-group>
+                             {{'credit: ' }} {{ tag.credit }}
 
-                            </v-chip> {{ '   credit: ' }} {{ tag.credit }}
-
-
+                             <v-icon end size="small" class="me-2" title="Ajouter des cycles" @click="createmat(tag)" :icon="icons.mdiPlusCircle" color="primary"></v-icon>
                             <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
                             <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">
                             </v-icon>
