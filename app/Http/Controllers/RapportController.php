@@ -265,15 +265,16 @@ class RapportController extends Controller
                     ->where('classe_annee_id', $request->classe)
                     ->where('periode', Periode::find($request->periode)->libelle)
                     ->get();
-                // Itérer sur chaque historique bulletin
-                
-                foreach ($resultats as $historiqueBulletin) {
-                    // Grouper les historique_notes par nom_eu
-                    $historiqueNotesGroupedByNomEu = $historiqueBulletin->historique_notes->groupBy('nom_eu');
-                
-                    // Mettre à jour la propriété historique_notes de l'historique bulletin avec les données groupées
-                    $historiqueBulletin->historiqueNotesGroupedByNomEu = $historiqueNotesGroupedByNomEu;
-                }
+                // foreach ($resultats as $historiqueBulletin) {
+                //     $historiqueNotesGroupedByNomEu = $historiqueBulletin->historique_notes->groupBy('nom_eu');
+                //     $historiqueBulletin->historiqueNotesGroupedByNomEu = $historiqueNotesGroupedByNomEu;
+                // }
+                // foreach ($resultats as $notes) {
+                //     foreach ($notes->historiqueNotesGroupedByNomEu as $nom_eu => $note) {
+                //         dump($nom_eu, $note);
+                //     }
+                //     die();
+                // }
             }
         }
         // dd($classes, 'dd', $resultats);

@@ -112,7 +112,7 @@
                     </tr>
                     </tbody>
                 </v-table>
-                <v-table density="compact" v-if="typeSection == 3">
+                <v-table density="compact" v-if="typeSection == 4">
                     <thead>
                     <tr>
                         <th class="text-left">
@@ -157,6 +157,27 @@
                     </tr>
                     </tbody>
                 </v-table>
+                <v-data-table
+                    v-if="typeSection == 3"
+                    :headers="headers"
+                    :items="data.historique_notes"
+                    :group-by="groupBy"
+                    item-value="name"
+                >
+                    <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
+                    <tr>
+                        <td :colspan="columns.length">
+                        <VBtn
+                            size="small"
+                            variant="text"
+                            :icon="isGroupOpen(item) ? '$expand' : '$next'"
+                            @click="toggleGroup(item)"
+                        ></VBtn>
+                        {{ item.value }}
+                        </td>
+                    </tr>
+                    </template>
+                </v-data-table>
             </v-card-text>
             <v-card-actions>
                 <v-btn color="blue darken-1" text @click="closeDialog">Fermer</v-btn>
@@ -180,7 +201,27 @@
     },
     data() {
       return {
-        dialog: false
+        dialog: false,
+        groupBy: [
+          {
+            key: 'nom_eu',
+            order: 'asc',
+          },
+        ],
+        headers: [
+          {
+            title: 'Matière',
+            align: 'start',
+            sortable: false,
+            key: 'nom_matiere',
+          },
+          { title: 'Coefficient', key: 'coefficient' },
+          { title: 'Volume Horaire', key: 'volume_horaire_matiere' },
+          { title: 'Note de devoir', key: 'note_origine_devoir' },
+          { title: 'Note d\'examen', key: 'note_origine_examen' },
+          { title: 'Moyenne', key: 'note_generale' },
+          { title: 'Moyenne coefficienté', key: 'note_generale_coefficiente' },
+        ],
       };
     },
     methods: {
