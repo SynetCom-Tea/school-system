@@ -72,6 +72,9 @@ class AffectationController extends Controller
                 'niveaux' => Niveau::where('section_id',$type)->get(),
                 'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
                 'systemeLMD'=>$table->systeme_lmd_id,
+                'ues'=>Ue::where('etablissement_section_id',$table->id)->get(),
+                'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
+                    $query->where('etablissement_section_id',$table->id);})->get(),
             ]);     // dd($niveauMat);
     }else {
         if($type <= 2){
@@ -115,6 +118,8 @@ class AffectationController extends Controller
             'niveaux' => Niveau::where('section_id',$type)->get(),
             'matieres' => Matiere::where('etablissement_section_id',$table->id)->get(),
             'systemeLMD'=>$table->systeme_lmd_id,
+            'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
+                $query->where('etablissement_section_id',$table->id);})->get(),
         ]);
     }
 
@@ -161,6 +166,7 @@ class AffectationController extends Controller
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
         if($type>=3 && $table->systeme_lmd_id !=null){
+            if($request->ues){
                 // dd($request->ues);
                 foreach($request->ues as $ues){
                     // dd($classe);
@@ -181,8 +187,24 @@ class AffectationController extends Controller
                         );
                     }
                 }
+            }else{
+                // dd($request);
+                FiliereNiveauMatiereUe::updateOrInsert([
+                    'matiere_id' => $request->matiere_id,
+                    'niveau_id' => $request->niveau_id,
+                    'ue_id' => $request->ue_id,
+                    'cycle_filiere_id' => $request->cycle_filiere_id,
+
+                ],
+                [
+                    'volume_horaire' => $request->volume_horaire,
+                    'coefficient' => $request->coefficient
+                ]
+                );
+            }
+
         }else if($type>=3 && $table->systeme_lmd_id ==null){
-                dd($type);
+                // dd($type);
                 foreach($request->Affectations as $Affectation){
                     foreach($Affectation['niveau_id'] as $niv){
 
@@ -254,7 +276,7 @@ class AffectationController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        // dd($request->type);
+        //  dd($request);
         if($request->type<=2){
             $aff = NiveauMatiere::find($id);
             $aff->update($request->all());
