@@ -158,6 +158,7 @@ export default {
             return `${item.matricule } - ${item.nom }  ${item.prenom}`
         },
         rechercher(e) {
+            this.form.evaluation = e,
             router.replace(this.$page.url, {
                 data: {
                     evaluation: e
@@ -190,10 +191,6 @@ export default {
                 }
             })
         },
-        setNote(item) {
-            // console.log('item',item.key)
-            this.form.notes[item.key] = item.note;
-        },
         setClasse(n) {
             // console.log(n)
             this.form.matiere = null,
@@ -210,9 +207,6 @@ export default {
             this.form.section_id = this.type
             this.form.post(route("note.save"), {
                 preverseScroll: true,
-                onFailed: () => {
-
-                },
                 onSuccess: () => {
                     this.isLoading = false;
                     this.dialogConfirmation = false;
@@ -280,6 +274,7 @@ export default {
         },
     },
     mounted() {
+        // console.log(this.form.evaluation)
         if (this.type == 1) {
             this.filtrer = this.type_evaluation.filter(el => el.libelle == "Composition" || el.libelle == "Contrôle")
         }
@@ -297,11 +292,8 @@ export default {
 <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
 <br>
 <div style="margin: 20px">
-    <v-alert v-model="alertFirst" border="start" variant="tonal" closable close-label="Close Alert" color="primary" type="info" title="Information">
-        <li>
-            Le boutton <strong> "AJOUTER" </strong> pour créer une nouvelle évaluation si celle-ci n'existe pas
-        </li>
-        <!-- <li>Le formulaire sera valide si est seulement si tous les champs obligatoires marqués par <span style="color: red;">*</span> sont renseignés</li> -->
+    <v-alert border="start" variant="tonal"  color="primary" type="info" title="Information">
+        Le boutton <strong> "Ajouter" </strong> vous permet de créer une nouvelle évaluation si celle que vous voulez notée n'existe pas
     </v-alert>
 </div>
 <v-form v-model="valid">
@@ -311,7 +303,7 @@ export default {
         <br />
         <v-row style="margin: 20px">
             <v-col md="1"></v-col>
-            <v-col md="2">63
+            <v-col md="2">
                 <Autocomplete v-model="form.enseignant" :items="enseignants" :item-title="formatEnseignant" item-value="id" outlined required dense chips small-chips label="Enseignants"></Autocomplete>
             </v-col>
             <v-col md="2">
@@ -381,7 +373,7 @@ export default {
         <br />
         <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
             <template v-slot:item.note="{ item, index }">
-                <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => v && form.evaluation !=null   <= this.info || 'La note ne doit pas dépasser ' + this.info]" style="max-width: 300px"></TextField>
+                <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => { if (form.evaluation !=null){ return v <= info || 'La note ne doit pas dépasser ' + info}} ]" style="max-width: 300px"></TextField>
             </template>
         </Datatable>
         <v-card-actions>

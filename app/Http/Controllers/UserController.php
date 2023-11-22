@@ -212,8 +212,8 @@ class UserController extends Controller
         ]); 
         return Inertia::render('User/Create', [
             'etablissements' => Etablissement::all(),
-            'roles' => Role::all(),
-            'sections' => $sections,
+            'role' => Role::all(),
+            'AllSections' => $sections,
             'permissions' => Permission::all(),
             'enseignants' => Enseignant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
             'apprenants' => Apprenant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
@@ -275,7 +275,6 @@ class UserController extends Controller
         } else {
             return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoile rouge!');
 
-            return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
         }
     }
 

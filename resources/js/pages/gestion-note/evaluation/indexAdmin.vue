@@ -482,20 +482,20 @@ export default {
                                     </Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                                    <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Filieres" :rules="[v => !!v || 'Ce champ est requis!'] " :isRequired="true"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
+                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux" :rules="[v => !!v || 'Ce champ est requis!'] " :isRequired="true"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres"></Autocomplete>
+                                    <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres" :isRequired="true"></Autocomplete>
                                 </v-col>
                                 <v-col cols="3" v-if="section_id <=2">
-                                    <Autocomplete :disabled="!form.annee_id" label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                    <Autocomplete :disabled="!form.annee_id" label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                     </Autocomplete>
                                 </v-col>
                                 <v-col cols="3" v-if="section_id <=2 && notation">
-                                    <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
+                                    <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation" :rules="[v => !!v || 'Ce champ est requis!'] "  :isRequired="true">
                                     </TextField>
                                 </v-col>
                                 <v-col cols="3" v-if="section_id>=3" >
