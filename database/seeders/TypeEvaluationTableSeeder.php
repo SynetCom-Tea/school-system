@@ -17,9 +17,10 @@ class TypeEvaluationTableSeeder extends Seeder
         TypeEvaluation::create(['libelle' => 'Contrôle']);
         TypeEvaluation::create(['libelle' => 'Interrogation']);
         TypeEvaluation::create(['libelle' => 'Devoir']);
-        TypeEvaluation::create(['libelle' => 'Devoir Surveillé']);
+        TypeEvaluation::create(['libelle' => 'Devoir / Devoir Surveillé']);
         TypeEvaluation::create(['libelle' => 'Composition']);
         TypeEvaluation::create(['libelle' => 'Examen']);
         TypeEvaluation::create(['libelle' => 'TP']);
+        TypeEvaluation::create(['libelle' => 'Autre']);
     }
 }

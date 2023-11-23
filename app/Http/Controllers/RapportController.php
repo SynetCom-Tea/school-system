@@ -47,7 +47,7 @@ class RapportController extends Controller
                 $pdf = PDF::loadView('secondaire/bulletin', $data);
 
             }else if($request->section == '3' || $request->section == '4'){
-                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->first() : null) : null;
+                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->latest()->first() : null) : null;
                 // $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 $bulletin->groupUe = $bulletin->historique_notes->groupBy('nom_eu');
                 // foreach ($bulletin->groupUe as $ue => $note) {
@@ -109,6 +109,9 @@ class RapportController extends Controller
      */
     public function index(Request $request)
     {
+        $periode = [];
+        $filieres = [];
+        $cycle_filieres = [];
         $note_devoirs = [];
         $note_examens = [];
         $headers = [];
@@ -132,6 +135,11 @@ class RapportController extends Controller
             }if($request->section_id == 3){
                 $note_devoirs = collect($notes_reforme)->where('type_evaluation', 'Examen')->values();
                 $note_examens = collect($notes_reforme)->where('type_evaluation', 'Devoir')->values();
+                $periode = Periode::where('type',"Semestre")->get();
+                $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
+                $cycle_filieres = DB::table('cycle_filieres')
+                    ->whereIn('filiere_id', $filieres->pluck('id'))
+                    ->get();
                 //dd($note_devoirs, $note_examens);
             }
             $headers = [
@@ -155,10 +163,13 @@ class RapportController extends Controller
         }
         return Inertia::render('Rapport/Index', [
             "sectionID" => $request->section_id,
+            "filieres" => $filieres,
+            "cycle_filieres" => $cycle_filieres,
+            "periode" => $periode,
             "notes" => $notes_reforme,
             "headers" => $headers,
             "niveaux" => $niveaux,
-            "AllClasses" => $classes,
+            "classes" => $classes,
             "note_compositions" => $note_compositions,
             "note_interrogations" => $note_interrogations,
             "note_devoir_surveilles" => $note_devoir_surveilles,

@@ -15,7 +15,7 @@ if (!function_exists('calculerResultatsClasse')) {
     function calculerResultatsClasse($classeId) {
         $resultatsClasse = [];
         $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
-        dd($apprenantsDeLaClasse);
+        //dd($apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $details_notes = calculerMoyenneSecondaire($classeId, $apprenant->id);
     

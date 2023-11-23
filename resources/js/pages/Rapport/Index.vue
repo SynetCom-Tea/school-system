@@ -11,7 +11,7 @@ export default {
     BulletinDialog,
     NoteTypeEvaluation
   },
-  props: ["AllClasses", "niveaux", "sectionID", "notes", "headers", "note_compositions", "note_interrogations", "note_devoir_surveilles", "note_devoirs", "note_examens"],
+  props: ["AllClasses", "niveaux", "sectionID", "notes", "headers", "note_compositions", "note_interrogations", "note_devoir_surveilles", "note_devoirs", "note_examens", "periodes","filieres", "cycle_filieres"],
   data() {
     return {
       icons: {
@@ -307,7 +307,7 @@ export default {
             word-break: break-word;
           "
         >
-        <v-row>
+        <v-row v-if="sectionID == 1 || sectionID == 2">
           <v-col md="4">
           <autocomplete
             label="Niveau"
@@ -333,6 +333,51 @@ export default {
             item-value="id"
           ></autocomplete>
         </v-col>
+        </v-row>
+        <v-row v-if="sectionID == 3  || sectionID == 4">
+          <v-col md="5">
+            <autocomplete
+                label="Filière"
+                v-model="filiere"
+                class="mt-4"
+                :items="$page.props.filieres"
+                @update:modelValue="setClasse(filiere)"
+                item-title="code"
+                item-value="id"
+            ></autocomplete>
+          </v-col>
+          <v-col md="3" v-if="filiere">
+            <autocomplete
+            label="Classe"
+            v-model="classe"
+            :items="classes"
+            class="mt-4"
+            isRequired
+            item-title="libelle"
+            item-value="id"
+            ></autocomplete>
+          </v-col>
+          <v-col cols="2">
+            <autocomplete 
+                class="mt-4" 
+                v-model="periode" 
+                label="Periodes" 
+                itemTitle="libelle" 
+                itemValue="id" 
+                :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe" chips clearable>
+            </autocomplete>
+          </v-col>
+          <!-- <v-col md="2">
+              <v-btn
+              class="mt-4"
+              :append-icon="icons.mdiTimerSync"
+              color="deep-purple-accent-4"
+              @click="generate()"
+              :disabled="!periode"
+              >
+              Générer
+              </v-btn>
+          </v-col> -->
         </v-row>
         </v-toolbar-title>
       </v-toolbar>

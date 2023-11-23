@@ -123,7 +123,9 @@ export default {
         }
     },
     mounted(){
-        
+        if(this.sectionID == 2){
+            this.classes = this.$page.props.classes
+        }
     }
 }
 </script>
