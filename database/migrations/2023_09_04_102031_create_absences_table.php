@@ -15,12 +15,14 @@ return new class extends Migration
     {
         Schema::create('absences', function (Blueprint $table) {
             $table->id();
+            $table->date('date');
             $table->foreignIdFor(\App\Models\Apprenant::class)
                 ->index()
                 ->references('id')->on('apprenants');
-            $table->foreignIdFor(\Modules\Emploi\Entities\Seance::class)
+            $table->foreignIdFor(\Modules\Emploi\Entities\Seance::class)->nullable()
                 ->index()
                 ->references('id')->on('seances');
+            $table->string('journee');
             $table->timestamps();
         });
     }

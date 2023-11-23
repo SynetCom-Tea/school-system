@@ -5,7 +5,6 @@ namespace Modules\GestionNote\Entities;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Model;
-use Modules\GestionNote\Entities\Evaluation;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Modules\Enseignement\Entities\EnseignementAnnee;
@@ -33,7 +32,7 @@ class Evaluation extends Model
     {
         return $this->belongsTo(Periode::class);
     }
-    
+
     public static function getDetailEvaluationInferiere($etablissement_id,$evaluation_id){
         $evaluations = Evaluation::join('enseignement_annees','evaluations.enseignement_annee_id','=','enseignement_annees.id')
                                 ->join('enseignants','enseignement_annees.enseignant_id','=','enseignants.id')

@@ -427,7 +427,7 @@ export default {
                                     <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
                                     </TextField>
                                 </v-col>
-                                <v-col cols="3" v-if="section_id>=3" >
+                                <v-col cols="3" v-if="section_id>=3 && form.type_evaluation_id == 6" >
                                     <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
                                         <v-radio label="1ère" value="Prémiere session"></v-radio>
                                         <v-radio label="2ème" value="deuxiéme session"></v-radio>

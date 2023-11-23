@@ -162,6 +162,71 @@ class InscriptionsTableSeeder extends Seeder
                 'created_at' => '2023-11-14 10:33:37',
                 'updated_at' => '2023-11-14 10:33:37',
             ),
+            11 => 
+            array (
+                'id' => 14,
+                'code' => 'US--S-2023-2024-PA-A-1',
+                'date_inscription' => '2023-11-20',
+                'apprenant_id' => 14,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'niveau_id' => 19,
+                'statut' => 0,
+                'created_at' => '2023-11-20 11:23:31',
+                'updated_at' => '2023-11-20 11:23:31',
+            ),
+            12 => 
+            array (
+                'id' => 15,
+                'code' => 'US--S-2023-2024-PA-A-2',
+                'date_inscription' => '2023-11-20',
+                'apprenant_id' => 15,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'niveau_id' => 19,
+                'statut' => 0,
+                'created_at' => '2023-11-20 11:32:13',
+                'updated_at' => '2023-11-20 11:32:13',
+            ),
+            13 => 
+            array (
+                'id' => 16,
+                'code' => 'US--S-2023-2024-PA-A-3',
+                'date_inscription' => '2023-11-20',
+                'apprenant_id' => 16,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'niveau_id' => 19,
+                'statut' => 0,
+                'created_at' => '2023-11-20 11:32:57',
+                'updated_at' => '2023-11-20 11:32:57',
+            ),
+            14 => 
+            array (
+                'id' => 17,
+                'code' => 'US--S-2023-2024-PA-A-4',
+                'date_inscription' => '2023-11-20',
+                'apprenant_id' => 17,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'niveau_id' => 19,
+                'statut' => 0,
+                'created_at' => '2023-11-20 11:33:45',
+                'updated_at' => '2023-11-20 11:33:45',
+            ),
+            15 => 
+            array (
+                'id' => 18,
+                'code' => 'US--S-2023-2024-PA-A-5',
+                'date_inscription' => '2023-11-20',
+                'apprenant_id' => 18,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'niveau_id' => 19,
+                'statut' => 0,
+                'created_at' => '2023-11-20 11:35:13',
+                'updated_at' => '2023-11-20 11:35:13',
+            ),
         ));
         
         

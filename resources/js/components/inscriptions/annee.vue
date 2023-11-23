@@ -72,7 +72,7 @@
                   <v-list-item title="Nom & Prénom"
                   >
                     <v-list-item-subtitle
-                      ><span v-if="formapprenant">{{ formapprenant.nom }}</span>
+                      ><span v-if="formapprenant">{{ formapprenant.nom }} {{ formapprenant.prenom }}</span>
                       <span v-if="apprenant">{{ apprenant.name }}</span>
                     </v-list-item-subtitle>
                   </v-list-item>
@@ -270,7 +270,7 @@ export default {
           if (element) {
               list.push({
               ...element,
-              code_libelle: element.cycle.name + " - " + element.filiere.name,
+              code_libelle: element.code,
               });
           }
           });
@@ -359,7 +359,7 @@ export default {
     },
     async submitForm() {
       const v = await this.isValid();
-      this.form.apprenant = this.apprenant
+      this.form.apprenant = this.formapprenant != null ? this.formapprenant : this.apprenant
       this.$emit("formSubmitted", this.form);
       this.$emit("anneeFormValid", v);
     },
@@ -367,7 +367,7 @@ export default {
       let valid = false;
       const result = await this.v$.$validate()
       console.log('result',result);
-      if (result) {
+      if (result || this.formapprenant != null) {
         valid = true;
       }
       return valid;

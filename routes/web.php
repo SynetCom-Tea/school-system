@@ -121,6 +121,7 @@ Route::prefix('calendrierscolaire')->group(function () {
 
 Route::resource('salles', SalleController::class);
 Route::resource('rapports', RapportController::class);
+Route::get('generate_bulletin_apprenant', [RapportController::class, 'bulletin'])->name('bulletin');
 Route::resource('enseignants', EnseignantController::class)->only([ 'update', 'destroy']);
 Route::get('enseignantscreate/{type}', [EnseignantController::class, 'create'])->name('enseignants.create');
 Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');

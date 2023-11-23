@@ -146,9 +146,12 @@ export default {
     methods: {
         formatEvaluationLabel(item) {
             if (item.enseignement_annee.niveau_matiere != null) {
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
-            } else {
+                // if (item.)
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''} `;
+            } else if (item.session != null){
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} - ${item ? item?.session: ''}`;
+            } else{
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} `;
             }
         },
         formatCode(item) {
@@ -232,7 +235,7 @@ export default {
                             confirmButtonColor: "orange",
                             cancelButtonColor: "#d33",
                             confirmButtonText: "Oui!",
-                            cancelButtonText: "Non !",
+                            cancelButtonText: "Non!",
                         }).then((result) => {
                             if (result.isConfirmed) {
                                 this.format.section_id = this.type
@@ -272,6 +275,9 @@ export default {
                 }
             });
         },
+        TypeEvaluation(t){
+            this.form.type_evaluation_id = t
+        }
     },
     mounted() {
         // console.log(this.form.evaluation)
@@ -310,7 +316,7 @@ export default {
                 <Autocomplete :disabled="!form.enseignant" v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="SetFiliere(form.annee)"></Autocomplete>
             </v-col>
             <v-col md="2">
-                <Autocomplete v-model="form.classe" :disabled="!form.annee" :items="classes" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Classes" @update:modelValue="setEvaluation(form.classe)"></Autocomplete>
+                <Autocomplete v-model="form.classe" :disabled="!form.annee" :items="classes" item-title="code" item-value="id" outlined required dense chips small-chips label="Classes" @update:modelValue="setEvaluation(form.classe)"></Autocomplete>
             </v-col>
             <v-col md="3">
                 <Autocomplete @click="snackbar = true" v-model="form.evaluation" :disabled="question || !form.classe " :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(form.evaluation)"></Autocomplete>
@@ -322,7 +328,7 @@ export default {
         <v-card style="border: 2px solid rgb(0, 73, 128);margin: 60px" v-if="question">
             <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Informations de l'évaluation</v-card-title>
             <v-divider></v-divider>
-            <br />
+            <br/>
             <v-row style="margin: 20px">
                 <v-col md="1"></v-col>
                 <v-col cols="3">
@@ -330,11 +336,11 @@ export default {
                     </TextField>
                 </v-col>
                 <v-col cols="3">
-                    <Autocomplete label="Type Evaluation" variant="outlined" itemTitle="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                    <Autocomplete label="Type Evaluation" variant="outlined" itemTitle="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" @update:modelValue="TypeEvaluation(form.type_evaluation_id)" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                     </Autocomplete>
                 </v-col>
                 <v-col cols="3">
-                    <Autocomplete label="Periodes" variant="outlined" itemTitle="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                    <Autocomplete label="Périodes" variant="outlined" itemTitle="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                     </Autocomplete>
                 </v-col>
             </v-row>
@@ -353,7 +359,7 @@ export default {
                 <v-col md="2" v-if="type>=3 ">
                     <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense small-chips label="Matieres" chips clearable></Autocomplete>
                 </v-col>
-                <v-col cols="3" v-if="type>=3">
+                <v-col cols="3" v-if="type>=3 && form.type_evaluation_id == 6">
                     <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
                         <v-radio label="1ère" value="Prémiere session"></v-radio>
                         <v-radio label="2ème" value="deuxiéme session"></v-radio>

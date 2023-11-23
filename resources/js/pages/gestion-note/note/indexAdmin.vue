@@ -164,8 +164,10 @@ export default {
         formatEvaluationLabel(item) {
             if (item.enseignement_annee.niveau_matiere) {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
-            } else {
+            } else if(item?.session != null) {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} - ${item ? item?.session : ''}`;
+            }else{
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} `;
             }
         },
         formatClasseLabel(item) {

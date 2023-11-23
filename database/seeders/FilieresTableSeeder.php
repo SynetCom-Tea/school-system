@@ -52,6 +52,17 @@ class FilieresTableSeeder extends Seeder
                 'created_at' => '2023-11-13 13:49:25',
                 'updated_at' => '2023-11-13 13:49:25',
             ),
+            3 => 
+            array (
+                'id' => 4,
+                'name' => 'MASTER METHODES INFORMATIQUES APPLIQUEES A LA GESTION DES ENTREPRISES',
+                'code' => 'MIAGE',
+                'etablissement_section_id' => 4,
+                'departement_id' => NULL,
+                'deleted_at' => NULL,
+                'created_at' => '2023-11-20 09:49:31',
+                'updated_at' => '2023-11-20 09:49:31',
+            ),
         ));
         
         

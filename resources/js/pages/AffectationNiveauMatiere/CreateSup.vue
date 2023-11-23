@@ -31,31 +31,61 @@
             <v-divider></v-divider>
             <v-card-text>
 
-                <v-row>
-                    <v-col md="1"></v-col>
-                    <v-col md="5">
-                        <Autocomplete label="Filieres" item-title="code" item-value="id" :items="filieres" v-model="form.filiere" @update:modelValue="submitForm(null, null, null)" chips>
-                        </Autocomplete>
-                    </v-col>
-                    <v-col md="5">
-                        <Autocomplete label="Niveaux" item-title="libelle" item-value="id" :items="niveaux" v-model="form.niveau" @update:modelValue="submitForm(null, null, null)" chips>
-                        </Autocomplete>
-                    </v-col>
-                </v-row>
-                <!-- </v-card-text>
+            <v-row>
+              <v-col md="1"></v-col>
+              <v-col md="5">
+                <Autocomplete
+                  label="Filieres"
+                  item-title="code"
+                  item-value="id"
+                  :items="filieres"
+                  v-model="form.filiere"
+                  @update:modelValue="submitForm(null, null, null)"
+                  chips
+                >
+                </Autocomplete>
+              </v-col>
+              <v-col md="5">
+                <Autocomplete
+                  label="Niveaux"
+                  item-title="libelle"
+                  item-value="id"
+                  :items="niveaux"
+                  v-model="form.niveau"
+                  @update:modelValue="submitForm(null, null, null)"
+                  chips
+                >
+                </Autocomplete>
+              </v-col>
+            </v-row>
+        <!-- </v-card-text>
           <v-card-text> -->
-                <!-- <v-divider></v-divider> -->
-                <v-card class="mx-auto" max-width="800">
+            <!-- <v-divider></v-divider> -->
+            <v-card class="mx-auto" max-width="800" >
 
-                    <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
-                        <v-row>
-                            <v-col md="2"></v-col>
-                            <v-col md="4">
-                                <TextField label="Code UE" class="mt-2" placeholder="Code UE" isRequired v-model="ue.code_ue" @update:modelValue="submitForm(form.ues[i], null, null)"></TextField>
+              <v-card-text disabled :key="ue.id" v-for="(ue, i) in form.ues">
+                <v-row>
+                    <v-col md="2"></v-col>
+                  <v-col md="4">
+                    <TextField
+                          label="Code UE"
+                          class="mt-2"
+                          placeholder="Code UE"
+                          isRequired
+                          v-model="ue.code_ue"
+                          @update:modelValue="submitForm(form.ues[i], null, null)"
+                        ></TextField>
 
-                            </v-col>
-                            <v-col md="4">
-                                <TextField label="Nom UE" class="mt-2" placeholder="Nom UE" isRequired v-model="ue.nom_ue" @update:modelValue="submitForm(form.ues[i], null, null)"></TextField>
+                  </v-col>
+                  <v-col md="4">
+                    <TextField
+                          label="Nom UE"
+                          class="mt-2"
+                          placeholder="Nom UE"
+                          isRequired
+                          v-model="ue.nom_ue"
+                          @update:modelValue="submitForm(form.ues[i], null, null)"
+                        ></TextField>
 
                             </v-col>
                             <!-- <v-col md="3">
@@ -93,7 +123,7 @@
                         </v-row>
                         <!-- <v-divider></v-divider> -->
 
-                        <v-card class="mx-auto" max-width="600">
+                <v-card class="mx-auto" max-width="600" >
 
                             <v-card-text>
                                 <v-row disabled :key="matiere.id" v-for="(matiere, j) in ue.matieres">
@@ -115,27 +145,41 @@
                                         <!-- <v-btn variant="outlined" :disabled="ue.matieres ? !(ue.matieres.length > 1) : true" icon @click="removeRow(ue,ue.matieres[i])" fab small color="error">
                                                 <v-icon :icon="icons.mdiCloseCircle"></v-icon>
                                             </v-btn> -->
-                                    </v-col>
-                                </v-row>
-                                <v-row>
-                                    <v-col offset-md="10" cols="4">
-                                        <Button type="button" variant="outlined" @click="addRow(ue)" icon size="large" color="primary">
-                                            <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
-                                        </Button>
-                                    </v-col>
-                                </v-row>
-                            </v-card-text>
-                            <br />
-                        </v-card>
-                    </v-card-text>
-                    <v-row>
-                        <v-col offset-md="10" cols="4">
-                            <Button type="button" variant="outlined" @click="addRowUe" icon size="large" color="primary">
-                                <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
-                            </Button>
-                        </v-col>
+                      </v-col>
                     </v-row>
-                    <br />
+                    <v-row>
+                      <v-col offset-md="10" cols="4">
+                        <Button
+                          type="button"
+                          variant="outlined"
+                          @click="addRow(ue)"
+                          icon
+                          size="large"
+                          color="primary"
+                        >
+                          <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                        </Button>
+                      </v-col>
+                    </v-row>
+                  </v-card-text>
+                  <br />
+                 </v-card>
+                </v-card-text>
+                <v-row>
+                <v-col offset-md="10" cols="4">
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    @click="addRowUe"
+                    icon
+                    size="large"
+                    color="primary"
+                  >
+                    <v-icon :icon="icons.mdiPlusCircle" small></v-icon>
+                  </Button>
+                </v-col>
+              </v-row>
+              <br />
                 </v-card>
 
             </v-card-text>

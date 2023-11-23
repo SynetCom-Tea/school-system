@@ -118,6 +118,51 @@ class ApprenantTuteursTableSeeder extends Seeder
                 'updated_at' => '2023-11-14 10:33:37',
                 'deleted_at' => NULL,
             ),
+            11 => 
+            array (
+                'id' => 14,
+                'apprenant_id' => 14,
+                'tuteur_id' => 14,
+                'created_at' => '2023-11-20 11:23:31',
+                'updated_at' => '2023-11-20 11:23:31',
+                'deleted_at' => NULL,
+            ),
+            12 => 
+            array (
+                'id' => 15,
+                'apprenant_id' => 15,
+                'tuteur_id' => 15,
+                'created_at' => '2023-11-20 11:32:13',
+                'updated_at' => '2023-11-20 11:32:13',
+                'deleted_at' => NULL,
+            ),
+            13 => 
+            array (
+                'id' => 16,
+                'apprenant_id' => 16,
+                'tuteur_id' => 16,
+                'created_at' => '2023-11-20 11:32:57',
+                'updated_at' => '2023-11-20 11:32:57',
+                'deleted_at' => NULL,
+            ),
+            14 => 
+            array (
+                'id' => 17,
+                'apprenant_id' => 17,
+                'tuteur_id' => 17,
+                'created_at' => '2023-11-20 11:33:45',
+                'updated_at' => '2023-11-20 11:33:45',
+                'deleted_at' => NULL,
+            ),
+            15 => 
+            array (
+                'id' => 18,
+                'apprenant_id' => 18,
+                'tuteur_id' => 18,
+                'created_at' => '2023-11-20 11:35:13',
+                'updated_at' => '2023-11-20 11:35:13',
+                'deleted_at' => NULL,
+            ),
         ));
         
         

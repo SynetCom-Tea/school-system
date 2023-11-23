@@ -599,6 +599,7 @@ export default {
      
     },
     addNewInscription(item){
+      // console.log('ismoooo',item)
       // router.post('/scolarite/inscription/page/',{apprenant:item});
       router.get(route("inscriptionPage", {apprenant: JSON.stringify(item), section: JSON.stringify(this.vSectionID)}))
     },
@@ -725,7 +726,7 @@ export default {
               classe_code: element.classe_annee?.classe?.code,
               annee_scolaire: element.classe_annee?.annee?.libelle,
               cycle_niveau: element.cycle_filiere?.cycle?.name + ' / ' + element.niveau?.libelle,
-              filiere: element.cycle_filiere?.filiere?.name,
+              filiere: element.cycle_filiere?.filiere?.code,
               annee: element.annee?.libelle,
               more: {
                 apprenant: element.apprenant,

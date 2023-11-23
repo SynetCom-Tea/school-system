@@ -63,57 +63,78 @@ class EnseignementController extends Controller
     public function saveParam(Request $request){
         // dd($request->all());
         $check = 0;
+        $elementsNotDeleted = [];
         $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $request->section)->first();
-        DB::select("
-            UPDATE etablissement_type_frais
-            SET statut = 0
-            WHERE statut = 1 AND etablissement_section_id = :et_sec_id
-        ",
-        [
-            'et_sec_id' => $et_sec_id,
 
-        ]);
-        ;
-        foreach ($request->selected_frais as $key => $type_frais_id) {
-            EtablissementTypeFrais::create([
-                'type_frais_id' => $type_frais_id,
-                'etablissement_section_id' => $et_sec_id,
-                'statut' => 1
-            ]);
+        // ETABLISSEMENT TYPE FRAIS
+        $uncheckedFraisElements = EtablissementTypeFrais::whereNotIn('type_frais_id',$request->selected_frais)->where('etablissement_section_id',$et_sec_id)->get();
 
-            # code...
+        foreach ($uncheckedFraisElements as $element) {
+            $checkNotUsedInFrais = Frais::where('etablissement_type_frais_id',$element->id)->first();
+            if(is_null($checkNotUsedInFrais)){
+                $element->delete();
+            }else{
+                $elementsNotDeleted[] = $element; 
+            }
         }
 
-        /////////////////////// fin type frais ///////////////////////
+        foreach ($request->selected_frais as $elementId) {
+            EtablissementTypeFrais::updateOrCreate(
+                [
+                    'type_frais_id' => $elementId,
+                    'etablissement_section_id' => $et_sec_id
+                ],
+                [
+                    'type_frais_id' => $elementId,
+                    'etablissement_section_id' => $et_sec_id,
+                    'statut' => 1
+                ]
+            );
+        }
 
-        DB::select("
-            UPDATE etablissement_type_documents
-            SET statut = 0
-            WHERE statut = 1 AND etablissement_section_id = :et_sec_id
-        ",
-        [
-            'et_sec_id' => $et_sec_id,
 
-        ]);
-        ;
-        foreach ($request->selected_documents as $type_document_id) {
-            // Vérifiez si l'ID existe dans le deuxième tableau
-            $obligatoire = in_array($type_document_id, $request->selected_obligatoires) ? 1 : 0;
-        
-            EtablissementTypeDocument::create([
-                'type_document_id' => $type_document_id,
-                'etablissement_section_id' => $et_sec_id,
-                'obligatoire' => $obligatoire,
-                'statut' => 1
-            ]);
+        // ETABLISSEMENT TYPE DOCUMENT
+
+
+        $uncheckedDocumentsElements = EtablissementTypeDocument::whereNotIn('type_document_id',$request->selected_documents)->where('etablissement_section_id',$et_sec_id)->get();
+
+        foreach ($uncheckedDocumentsElements as $element) {
+            $element->delete();
+            // $checkNotUsedInFrais = Frais::where('etablissement_type_frais_id',$element->id)->first();
+            // if(is_null($checkNotUsedInFrais)){
+            //     $element->delete();
+            // }else{
+            //     $elementsNotDeleted[] = $element; 
+            // }
+        }
+
+        foreach ($request->selected_documents as $elementId) {
+            $obligatoire = in_array($elementId, $request->selected_obligatoires) ? 1 : 0;
+            EtablissementTypeDocument::updateOrCreate(
+                [
+                    'type_document_id' => $elementId,
+                    'etablissement_section_id' => $et_sec_id
+                ],
+                [
+                    'type_document_id' => $elementId,
+                    'etablissement_section_id' => $et_sec_id,
+                    'obligatoire' => $obligatoire,
+                    'statut' => 1
+                ]
+            );
         }
 
         /////////////////////// fin type document ///////////////////////
 
-        Parametre::updateOrCreate([
+        Parametre::updateOrCreate(
+            [
+                'etablissement_section_id' => $et_sec_id,
+            ],
+            [
             'etablissement_section_id' => $et_sec_id,
             'nbre_limite_eleve_par_classe' => $request->nbre_limite,
-        ]);
+            ]
+        );
 
 
         ///////////////////// fin nombre limite //////////////////////
