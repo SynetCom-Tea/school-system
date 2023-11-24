@@ -372,7 +372,7 @@ class NoteController extends Controller
             // dd($evaluation_id);
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                 $query->where('classe_id',$request->classe);
-            })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();
+            })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get(); 
         }elseif($request->evaluation == null && $request->questionner == 1) {
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                 $query->where('classe_id',$request->classe);

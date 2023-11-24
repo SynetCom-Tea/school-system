@@ -143,17 +143,17 @@ export default {
         editItem(item) {
             // console.log(item)
             this.form.id = item.id,
-                this.form.date = item.date,
-                this.form.periode_id = item.periode_id,
-                this.form.type_evaluation_id = item.type_evaluation_id
+            this.form.date = item.date,
+            this.form.periode_id = item.periode_id,
+            this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
             this.form.enseignant_id = item.enseignant_id,
-                this.form.annee_id = item.annee_id,
-                this.form.filiere = item.filiere_id,
-                this.form.matieres = item.matiere_id,
-                this.form.session = item.session
-                this.form.niveau = item.niveau_id,
-                this.form.notation = item.notation
+            this.form.annee_id = item.annee_id,
+            this.form.filiere = item.filiere_id,
+            this.form.matieres = item.matiere_id,
+            this.form.session = item.session
+            this.form.niveau = item.niveau_id,
+            this.form.notation = item.notation
             this.libelle = this.type_evaluation.filter(el => el.id == item.type_evaluation_id)
             if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle") {
                 this.notation = true
