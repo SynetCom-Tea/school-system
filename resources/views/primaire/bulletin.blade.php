@@ -119,16 +119,16 @@
                 <!-- Fin de la boucle -->
                 <tr>
                     <td width="90" height="20">TOTAL SUR</td>
-                    <td width="25">Pas defini</td>
+                    <td width="25">{{$total_notation}}</td>
                     <td width="10"></td>
                     <td></td>
-                    <td>@if($bulletin['periode'] == 'Trimestre I') Pas definie @endif</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre I') {{$total_point}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin['periode'] == 'Trimestre II') Pas definie @endif</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre II') {{$total_point}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin['periode'] == 'Trimestre III') Pas definie @endif</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre III') {{$total_point}} @endif</td>
                     <td></td>
                 </tr>
                 <tr>
