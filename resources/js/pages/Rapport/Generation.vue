@@ -66,6 +66,10 @@ export default {
         detailData: null,
         apprenantData: [],
         classes: [],
+        apprenant2: null,
+        classe2: null,
+        filiere2: null,
+        periode2: null,
         dialog: false,
         overlay: false,
         classe: null,
@@ -89,7 +93,7 @@ export default {
     methods: {
         generate() {
             this.$inertia.replace(this.$page.url, {
-                data: { classe: this.classe, periode: this.periode }
+                data: { classe: this.classe, periode: this.periode, tab: this.tab }
             });
             if(this.sectionID ==3){
                 this.setData(this.classe)
@@ -293,7 +297,7 @@ export default {
                                 <v-col cols="4">
                                     <autocomplete 
                                         class="mt-4" 
-                                        v-model="periode" 
+                                        v-model="periode2" 
                                         label="Periodes"
                                         itemTitle="libelle" 
                                         itemValue="id" 
@@ -303,7 +307,7 @@ export default {
                                 <v-col md="4">
                                     <autocomplete
                                     label="Classe"
-                                    v-model="classe"
+                                    v-model="classe2"
                                     :items="classes"
                                     :disabled="!periode"
                                     class="mt-4"
@@ -315,7 +319,7 @@ export default {
                                 <v-col md="4">
                                     <autocomplete
                                     :label="apprenant"
-                                    v-model="classe"
+                                    v-model="apprenant2"
                                     :items="classes"
                                     :disabled="!periode"
                                     class="mt-4"

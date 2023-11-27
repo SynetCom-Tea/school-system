@@ -12,7 +12,7 @@ class HistoriqueBulletin extends Model
     use HasFactory;
     protected $fillable = ['statut','apprenant_id', 'classe_annee_id', 
     'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe',
-    'total_coefficient', 'somme_note_generale', 'somme_note_generale_coefficient',
+    'total_coefficient', 'somme_note_generale', 'somme_notation', 'somme_note_generale_coefficient',
     'total_volume_horaire', 'moyenne_details_notes', 'rang'];
 
     public function apprenant()
