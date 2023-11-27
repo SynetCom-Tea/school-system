@@ -68,7 +68,8 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
         $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $notes_apprenant = getNoteByClasses($classeId, $section, $periode, $apprenant->id);
-            $moyenne = calculerMoyennePrimaire($notes_apprenant);
+            //dd($notes_apprenant);
+            $moyenne = calculerMoyennePrimaire(collect($notes_apprenant)->where('type_evaluation', 'Composition'));
         
             // Initialize $details_notes for each apprenant
             $details_notes = [];
@@ -83,6 +84,7 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
         
             $resultatsClasse[] = [
                 'classe' => $classeId,
+                'periode' => $notes_apprenant[0]->periode,
                 'nom_classe' => $classe->libelle,
                 'apprenant' => $apprenant->id,
                 'matricule_apprenant' => $apprenant->matricule,
@@ -107,7 +109,6 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
             $prevRank = $rank;
             $rank++;
         }
-
         return $resultatsClasse;
     }
 }
