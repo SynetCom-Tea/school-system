@@ -68,9 +68,11 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
         $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $notes_apprenant = getNoteByClasses($classeId, $section, $periode, $apprenant->id);
-            //dd($notes_apprenant);
             $moyenne = calculerMoyennePrimaire(collect($notes_apprenant)->where('type_evaluation', 'Composition'));
-        
+            $notes = array_column($notes_apprenant->toArray(), 'note');
+            $sommeNotes = array_sum($notes);
+            $notations = array_column($notes_apprenant->toArray(), 'notation_matiere');
+            $sommeNotations = array_sum($notations);
             // Initialize $details_notes for each apprenant
             $details_notes = [];
         
@@ -91,7 +93,9 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
                 'nom_apprenant' => $apprenant->nom,
                 'prenom_apprenant' => $apprenant->prenom,
                 'moyenne' => $moyenne,
-                'details_notes' => $details_notes // Tableau des détails des notes
+                'details_notes' => $details_notes, // Tableau des détails des notes
+                'sommeNotations' => $sommeNotations,
+                'sommeNotes' => $sommeNotes
             ];
         }
         // Transformer le tableau associatif en tableau indexé pour trier
