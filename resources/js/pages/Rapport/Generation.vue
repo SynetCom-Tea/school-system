@@ -147,6 +147,12 @@ export default {
   <v-card>
     <Toolbar :icon="icons.mdiDatabaseSync" :toolbarTitle="`Génération des bulletins - Section ${section}`"></Toolbar>
     <v-card-text>
+        <v-alert
+            type="info"
+            title="Information"
+            text="La génération par période s'effectue à la fin des évaluations de la période sélectionnée. En revanche, la génération par élève concerne ceux dont les notes ont été modifiées, ceux qui n'ont pas participé à une évaluation, ou encore ceux qui sont en session."
+            variant="tonal"
+        ></v-alert>
         <div class="d-flex flex-row">
             <v-tabs
                 v-model="tab"
@@ -283,25 +289,53 @@ export default {
                 <v-window-item value="option-2">
                     <v-card flat>
                         <v-card-text>
-                        <p>
-                            Morbi nec metus. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci. Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo. Nunc sed turpis.
-                        </p>
-
-                        <p>
-                            Suspendisse feugiat. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In hac habitasse platea dictumst. Fusce ac felis sit amet ligula pharetra condimentum.
-                        </p>
-
-                        <p>
-                            Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Nam commodo suscipit quam. In consectetuer turpis ut velit. Sed cursus turpis vitae tortor. Aliquam eu nunc.
-                        </p>
-
-                        <p>
-                            Etiam ut purus mattis mauris sodales aliquam. Ut varius tincidunt libero. Aenean viverra rhoncus pede. Duis leo. Fusce fermentum odio nec arcu.
-                        </p>
-
-                        <p class="mb-0">
-                            Donec venenatis vulputate lorem. Aenean viverra rhoncus pede. In dui magna, posuere eget, vestibulum et, tempor auctor, justo. Fusce commodo aliquam arcu. Suspendisse enim turpis, dictum sed, iaculis a, condimentum nec, nisi.
-                        </p>
+                            <v-row v-if="sectionID == 1  || sectionID == 2">
+                                <v-col cols="4">
+                                    <autocomplete 
+                                        class="mt-4" 
+                                        v-model="periode" 
+                                        label="Periodes"
+                                        itemTitle="libelle" 
+                                        itemValue="id" 
+                                        :items="periodes" variant="outlined" :isRequired="true" chips clearable>
+                                    </autocomplete>
+                                </v-col>
+                                <v-col md="4">
+                                    <autocomplete
+                                    label="Classe"
+                                    v-model="classe"
+                                    :items="classes"
+                                    :disabled="!periode"
+                                    class="mt-4"
+                                    isRequired
+                                    item-title="libelle"
+                                    item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col md="4">
+                                    <autocomplete
+                                    :label="apprenant"
+                                    v-model="classe"
+                                    :items="classes"
+                                    :disabled="!periode"
+                                    class="mt-4"
+                                    isRequired
+                                    item-title="libelle"
+                                    item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col md="4">
+                                    <v-btn
+                                    class="mt-4"
+                                    :append-icon="icons.mdiTimerSync"
+                                    color="deep-purple-accent-4"
+                                    @click="generate"
+                                    :disabled="!periode"
+                                    >
+                                    Générer
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
                         </v-card-text>
                     </v-card>
                 </v-window-item>

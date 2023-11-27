@@ -193,13 +193,14 @@ class RapportController extends Controller
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         if($request->section_id == 1){
-            $apprenant = 'élève';
+            $apprenant = 'Élève';
             $section = 'Primaire';
             $periode = Periode::where('type',"Trimestre")->get();
             if ($request->classe != null) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
                     $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                    dd($resultats);
                     // foreach ($resultatsyy as &$resultat) {
                     //     ajouterHistoriqueBulletin($resultat);
                     // }
@@ -210,7 +211,7 @@ class RapportController extends Controller
                 //     ->get();
             }
         }else if($request->section_id == 2){
-            $apprenant = 'élève';
+            $apprenant = 'Élève';
             $section = 'Secondaire';
             $periode = Periode::where('type',"Semestre")->get();
             if ($request->classe != null) {
