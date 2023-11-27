@@ -68,7 +68,7 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
         $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $notes_apprenant = getNoteByClasses($classeId, $section, $periode, $apprenant->id);
-            $moyenne = calculerMoyennePrimaire(collect($notes_apprenant)->where('type_evaluation', 'Composition'));
+            $moyenne = calculerMoyennePrimaire($notes_apprenant);
             $notes = array_column($notes_apprenant->toArray(), 'note');
             $sommeNotes = array_sum($notes);
             $notations = array_column($notes_apprenant->toArray(), 'notation_matiere');

@@ -12,7 +12,7 @@
                     :title="'Matricule: '+data.matricule_apprenant"
                 >
                     <template v-slot:subtitle>
-                    <span class="font-weight-bold">{{ 'Nom & Prénom: ' +  data.nom_apprenant + ' ' + data.prenom_apprenant }}</span> &mdash; Moyenne: {{ data.moyenne }}
+                    <span class="font-weight-bold">{{ 'Nom & Prénom: ' +  data.matricule_apprenant + ' ' + data.nom_prenom_apprenant }}</span> &mdash; Moyenne: {{ data.moyenne_details_notes }}
                     </template>
                 </v-list-item>
 
@@ -36,7 +36,7 @@
                     </thead>
                     <tbody>
                     <tr
-                        v-for="item in data.details_notes"
+                        v-for="item in data.historique_notes"
                         :key="item.nom_matiere"
                     >
                         <td>{{ item.nom_matiere }}</td>
