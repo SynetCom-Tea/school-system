@@ -28,9 +28,22 @@ class RapportController extends Controller
     {
         // dd($request->all());
         $etab = Etablissement::find(Auth::user()->etablissement_id);
-        $pdf = PDF::loadView('primaire/bulletin')->setPaper('A4', 'landscape');
         if($request->type == 0){
-            if($request->section == '1' || $request->section == '2'){
+            if($request->section == '1'){
+                $data = [
+                    'etablissement' => $etab,
+                    'bulletin' => $request->id,
+                    'notes' => $request->id['details_notes'],
+                    // 'total_point' => $request->id['details_notes']->sum('note'),
+                    // 'total_notation' => $request->id['details_notes']->sum('notation_matiere'),
+                    'section' => $request->section,
+                    'title' => 'Bulletin Trimestriel',
+                    'date' => date('m/d/Y'),
+                ];
+
+                $pdf = PDF::loadView('primaire/bulletin',$data)->setPaper('A4', 'landscape');
+
+            }elseif($request->section == '2'){
 
                 $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null) : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
@@ -44,11 +57,8 @@ class RapportController extends Controller
                     'date' => date('m/d/Y'),
                 ];
 
-                if($request->section == '1'){
-                    $pdf = PDF::loadView('primaire/bulletin', $data);
-                }else{
-                    $pdf = PDF::loadView('secondaire/bulletin', $data);
-                }
+                $pdf = PDF::loadView('secondaire/bulletin', $data);
+                
             }else if($request->section == '3'){
                 $bulletin = $request->id ? HistoriqueBulletin::where('id',$request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->first() : null;
                 // $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
@@ -279,7 +289,7 @@ class RapportController extends Controller
                     ->get();
             }
         }
-        dd('dd', $resultats);
+        // dd('dd', $resultats);
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
             "resultats" => $resultats,

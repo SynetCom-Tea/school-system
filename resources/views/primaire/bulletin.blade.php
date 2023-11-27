@@ -100,33 +100,35 @@
                     <td width="25"></td>
                 </tr>
                 <!-- debut de la boucle -->
+                @foreach($notes as $note)
                 <tr>
-                    <td width="90" height="20">Ecriture</td>
-                    <td width="25">10</td>
+                    <td width="90" height="20">{{$note['nom_matiere']}}</td>
+                    <td width="25">{{$note['notation_matiere']}}</td>
                     <td width="10"></td>
                     <td></td>
+                    <td>@if($bulletin['periode'] == 'Trimestre I') {{$note['note']}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>8</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre II') {{$note['note']}} @endif</td>
                     <td></td>
-                    <td>10</td>
                     <td></td>
-                    <td>7</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre III') {{$note['note']}} @endif</td>
                     <td></td>
                 </tr>
+                @endforeach
                 <!-- Fin de la boucle -->
                 <tr>
                     <td width="90" height="20">TOTAL SUR</td>
-                    <td width="25">70</td>
+                    <td width="25">Pas defini</td>
                     <td width="10"></td>
                     <td></td>
+                    <td>@if($bulletin['periode'] == 'Trimestre I') Pas definie @endif</td>
                     <td></td>
                     <td></td>
-                    <td>53.5</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre II') Pas definie @endif</td>
                     <td></td>
-                    <td>65</td>
                     <td></td>
-                    <td>70</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre III') Pas definie @endif</td>
                     <td></td>
                 </tr>
                 <tr>
@@ -134,27 +136,27 @@
                     <td width="25">10</td>
                     <td width="10"></td>
                     <td></td>
+                    <td>@if($bulletin['periode'] == 'Trimestre I') {{$bulletin['moyenne']}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>5.3</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre II') {{$bulletin['moyenne']}} @endif</td>
                     <td></td>
-                    <td>6.5</td>
                     <td></td>
-                    <td>7</td>
-                    <td>6</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre III') {{$bulletin['moyenne']}} @endif</td>
+                    <td>@if($bulletin['periode'] == 'Trimestre III') Pas definie @endif</td>
                 </tr>
                 <tr>
                     <td width="90" height="20">RANG DE MERITE</td>
                     <td width="25"></td>
                     <td width="10"></td>
                     <td></td>
+                    <td>@if($bulletin['periode'] == 'Trimestre I') {{$bulletin['rang']}} @endif</td>
                     <td></td>
                     <td></td>
+                    <td>@if($bulletin['periode'] == 'Trimestre II') {{$bulletin['rang']}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td></td>
-                    <td></td>
-                    <td></td>
+                    <td>@if($bulletin['periode'] == 'Trimestre III') {{$bulletin['rang']}} @endif</td>
                     <td></td>
                 </tr>
                 <tr>
