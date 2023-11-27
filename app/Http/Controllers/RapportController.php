@@ -205,6 +205,10 @@ class RapportController extends Controller
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
                         }
                     }
+                    $resultats = HistoriqueBulletin::with('historique_notes')
+                    ->where('classe_annee_id', $request->classe)
+                    ->where('periode', Periode::find($request->periode)->libelle)
+                    ->get();
                 }
                 elseif($request->tab == 'option-2'){
                     dd($request->all());

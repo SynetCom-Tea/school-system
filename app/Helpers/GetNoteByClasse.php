@@ -20,7 +20,9 @@ if (!function_exists('getNoteByClasses')) {
             ->where('classe_annee_id', $classe)
             ->where('evaluations.periode_id', $periode)
             ->where('notes.statut', 1);
-
+        if ($section == 1) {
+            $query->where('type_evaluations.libelle', 'Composition');
+        }
         if ($apprenant !== null) {
             $query->where('apprenants.id', $apprenant);
         }
