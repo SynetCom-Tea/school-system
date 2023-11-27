@@ -90,6 +90,11 @@ export default {
         },
     },
     methods: {
+        impBulClasse(){
+            // console.log(this.classe,this.periode,this.sectionID,'heeee');
+            window.open(route('bulletin', { type: 1, classe: this.classe, periode: this.periode, section: this.sectionID}), '_blank');
+            // window.location.href = route('bulletin', { type: 1, classe: this.classe, periode: this.periode, section: this.sectionID}) 
+        },
         generate() {
             this.$inertia.replace(this.$page.url, {
                 data: { classe: this.classe, periode: this.periode, tab: this.tab }
@@ -258,7 +263,7 @@ export default {
                                     Générer
                                     </v-btn>
                                 </v-col>
-                                <v-col md="2" v-if="classe">
+                                <!-- <v-col md="2" v-if="classe">
                                     <a :href="route('bulletin', { type: 1, classe: classe, periode: periode, section: sectionID })" target="__blank">
                                         <v-btn
                                     class="mt-4"
@@ -269,9 +274,9 @@ export default {
                                     Classe
                                     </v-btn>
                                     </a>
-                                </v-col>
+                                </v-col> -->
                             </v-row>
-                            <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :displayAddButton="false" >
+                            <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :functionOnClickAddButton="impBulClasse" :libelleButton="'Bulletin de la classe'" :displayAddButton="classe ? true : false" >
                                 <template v-slot:item.actions="{item}">
                                     <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
                                         <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
@@ -280,7 +285,7 @@ export default {
                                     </v-icon>
                                 </template>
                             </Datatable>
-                            <Datatable v-if="classes.length !== 0 && (sectionID == 2)" titleDatatable="Liste des élèves" :headers="headersSecondaire" :items="data" :displayAddButton="false" >
+                            <Datatable v-if="classes.length !== 0 && (sectionID == 2)" titleDatatable="Liste des élèves" :headers="headersSecondaire" :items="data" :functionOnClickAddButton="impBulClasse" :libelleButton="'Bulletin de la classe'" :displayAddButton="classe ? true : false" >
                                 <template v-slot:item.actions="{item}">
                                     <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
                                         <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
