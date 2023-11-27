@@ -28,7 +28,7 @@ class RapportController extends Controller
     {
         // dd($request->all());
         $etab = Etablissement::find(Auth::user()->etablissement_id);
-
+        $pdf = PDF::loadView('primaire/bulletin')->setPaper('A4', 'landscape');
         if($request->type == 0){
             if($request->section == '1' || $request->section == '2'){
 
@@ -44,16 +44,19 @@ class RapportController extends Controller
                     'date' => date('m/d/Y'),
                 ];
 
-                $pdf = PDF::loadView('secondaire/bulletin', $data);
-
-            }else if($request->section == '3' || $request->section == '4'){
-                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->first() : null) : null;
+                if($request->section == '1'){
+                    $pdf = PDF::loadView('primaire/bulletin', $data);
+                }else{
+                    $pdf = PDF::loadView('secondaire/bulletin', $data);
+                }
+            }else if($request->section == '3'){
+                $bulletin = $request->id ? HistoriqueBulletin::where('id',$request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->first() : null;
                 // $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 $bulletin->groupUe = $bulletin->historique_notes->groupBy('nom_eu');
                 // foreach ($bulletin->groupUe as $ue => $note) {
                 //     dump($ue,$note);
                 // }
-                // dd($bulletin);
+                // dd($request->id,$bulletin);
                 $data = [
                     'etablissement' => $etab,
                     'bulletin' => $bulletin,

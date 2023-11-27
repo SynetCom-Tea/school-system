@@ -188,7 +188,8 @@ class VersementController extends Controller
     }
 
     public function recuVersement(Request $request){
-        $versement = Versement::find($request->id)->with('inscription.annee','inscription.apprenant','inscription.niveau','frais')->first();
+        // dd($request->all());
+        $versement = Versement::where('id',$request->id)->with('inscription.annee','inscription.apprenant','inscription.niveau','inscription.cycleFiliere','frais')->first();
         $somme_verse = Versement::where('inscription_id',$versement->inscription_id)->where('frais_id',$versement->frais_id)->sum('montant');
         // dd($versement);
         $etb = Etablissement::find(Auth::user()->etablissement_id);
@@ -197,6 +198,7 @@ class VersementController extends Controller
         $data = [
             'etablissement' => $etb,
             'somme_verse' => $somme_verse,
+            'section' => $request->section,
             'title' => 'Welcome to ItSolutionStuff.com',
             'date' => date('m/d/Y'),
             'versement' => $versement

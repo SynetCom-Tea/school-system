@@ -105,11 +105,7 @@
             
         </div>
         <div style="position:absolute;margin-top:10px;margin-left:300px">
-            @if($etablissement->logo === null)
-            <img style="max-width:50%; height:auto" src="team.png" alt="Logo de l'entreprise">
-            @else
-            <img style="max-width:50%; height:auto" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
-            @endif
+        <img style="max-width:50%; height:auto" src="logos/iat-logo.png" alt="Logo de l'entreprise">
         </div>
         <div style="position:absolute;margin-top:10px;margin-left:480px">
         @if($section == '1' || $section == '2')

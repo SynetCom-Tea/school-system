@@ -72,7 +72,7 @@
               v-if="section == 2"
               :items="niveauxSecondaire"
               v-model="secondaire"
-              itemValue="id"
+              itemValue="id" 
               class="mt-2"
               itemTitle="libelle"
               label="Secondaire"
@@ -251,9 +251,10 @@
                             <a
                               style="cursor: pointer"
                               class="text-caption text-decoration-none text-primary"
+                              :href="route('generateRecuInscription', { id: item.raw.id, section: vSectionID })"
                               target="_blank"
                             >
-                              Documents</a
+                              Réçu</a
                             ></v-col
                           >
                           <v-col cols="3" @click="onclickFrais(item.raw)">
@@ -714,6 +715,7 @@ export default {
               niveau = element.niveau;
             }
             columns.push({
+              id: element.id,
               matricule: element.apprenant?.matricule,
               name: element.apprenant?.nom + " " + element.apprenant?.prenom,
               adresse: element.apprenant?.adresse,
