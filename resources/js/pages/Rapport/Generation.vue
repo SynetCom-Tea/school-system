@@ -235,7 +235,7 @@ export default {
                                         :items="periodes" variant="outlined" :isRequired="true" chips clearable>
                                     </autocomplete>
                                 </v-col>
-                                <v-col md="4">
+                                <v-col md="3">
                                     <autocomplete
                                     label="Classe"
                                     v-model="classe"
@@ -247,7 +247,7 @@ export default {
                                     item-value="id"
                                     ></autocomplete>
                                 </v-col>
-                                <v-col md="4">
+                                <v-col md="2">
                                     <v-btn
                                     class="mt-4"
                                     :append-icon="icons.mdiTimerSync"
@@ -258,10 +258,22 @@ export default {
                                     Générer
                                     </v-btn>
                                 </v-col>
+                                <v-col md="2" v-if="classe">
+                                    <a :href="route('bulletin', { type: 1, classe: classe, periode: periode, section: sectionID })" target="__blank">
+                                        <v-btn
+                                    class="mt-4"
+                                    :append-icon="icons.mdiTimerSync"
+                                    color="deep-purple-accent-4"
+                                    :disabled="!periode"
+                                    >
+                                    Classe
+                                    </v-btn>
+                                    </a>
+                                </v-col>
                             </v-row>
                             <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :displayAddButton="false" >
                                 <template v-slot:item.actions="{item}">
-                                    <a :href="route('bulletin', { type: 0, id: item, section: sectionID })" target="__blank">
+                                    <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
                                         <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
                                     </a>
                                     <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">

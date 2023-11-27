@@ -1,3 +1,4 @@
+@foreach($donnees as $donnee)
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -54,15 +55,15 @@
     </style>
 <body>
     <!-- Annee scolaire -->
-    <div class="middle"><b>ANNEE SCOLAIRE: {{$bulletin->classe_annee->annee->libelle}}</b></div>
+    <div class="middle"><b>ANNEE SCOLAIRE: {{$donnee['bulletin']->classe_annee->annee->libelle}}</b></div>
     <!-- Le nom de l'eleve de l'enseignant(e) et de la classe -->
     <div style="margin-top: 30px">
         <b>
             NOM DE L'ELEVE :
-        </b> {{$bulletin->nom_prenom_apprenant}} 
+        </b> {{$donnee['bulletin']->nom_prenom_apprenant}} 
         <b style="margin-left: 100px">
             COURS : 
-        </b> {{$bulletin->classe_annee->classe->code}}
+        </b> {{$donnee['bulletin']->classe_annee->classe->code}}
         <b style="margin-left: 70px">
             TENU PAR : 
         </b> Mme Hajia Aissa
@@ -100,19 +101,19 @@
                     <td width="25"></td>
                 </tr>
                 <!-- debut de la boucle -->
-                @foreach($notes as $note)
+                @foreach($donnee['detail'] as $note)
                 <tr>
                     <td width="90" height="20">{{$note->nom_matiere}}</td>
                     <td width="25">{{$note->notation_matiere}}</td>
                     <td width="10"></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$note->note}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre I') {{$note->note}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$note->note}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre II') {{$note->note}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$note->note}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre III') {{$note->note}} @endif</td>
                     <td></td>
                 </tr>
                 @endforeach
@@ -122,13 +123,13 @@
                     <td width="25">{{$total_notation}}</td>
                     <td width="10"></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$total_point}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre I') {{$total_point}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$total_point}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre II') {{$total_point}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$total_point}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre III') {{$total_point}} @endif</td>
                     <td></td>
                 </tr>
                 <tr>
@@ -136,27 +137,27 @@
                     <td width="25">10</td>
                     <td width="10"></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre I') {{$donnee['bulletin']->moyenne_details_notes}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre II') {{$donnee['bulletin']->moyenne_details_notes}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$bulletin->moyenne_details_notes}} @endif</td>
-                    <td>@if($bulletin->periode == 'Trimestre III') Pas definie @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre III') {{$donnee['bulletin']->moyenne_details_notes}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre III') Pas definie @endif</td>
                 </tr>
                 <tr>
                     <td width="90" height="20">RANG DE MERITE</td>
                     <td width="25"></td>
                     <td width="10"></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$bulletin->rang}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre I') {{$donnee['bulletin']->rang}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$bulletin->rang}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre II') {{$donnee['bulletin']->rang}} @endif</td>
                     <td></td>
                     <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$bulletin->rang}} @endif</td>
+                    <td>@if($donnee['bulletin']->periode == 'Trimestre III') {{$donnee['bulletin']->rang}} @endif</td>
                     <td></td>
                 </tr>
                 <tr>
@@ -234,3 +235,4 @@
     </div>
 </body>
 </html>
+@endforeach
