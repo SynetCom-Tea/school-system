@@ -20,6 +20,8 @@ return new class extends Migration
             $table->string('nom_eu')->nullable();
             $table->string('nom_matiere');
             $table->string('coefficient');
+            $table->string('notation_matiere')->nullable();
+            $table->string('note')->nullable();
             $table->double('note_de_classe')->nullable();
             $table->double('note_de_classe_coefficiente')->nullable();
             $table->string('note_de_composition')->nullable();

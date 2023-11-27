@@ -122,7 +122,7 @@ class RapportController extends Controller
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
-        if ($request->classe != null) {
+        if ($request->classe != null || $request->classe2 != null) {
             $notes_reforme = getNoteByClasses($request->classe, $request->section_id, $request->periode);
             // dd($notes_reforme, $request->classe);
             if($request->section_id == 1){
@@ -196,55 +196,32 @@ class RapportController extends Controller
             $apprenant = 'Élève';
             $section = 'Primaire';
             $periode = Periode::where('type',"Trimestre")->get();
-            if ($request->classe != null) {
-                $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
-                if ($historiqueBulletincheck->isEmpty()) {
-                    $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
-                    dd($resultats);
-                    // foreach ($resultatsyy as &$resultat) {
-                    //     ajouterHistoriqueBulletin($resultat);
-                    // }
+            if ($request->classe != null || $request->classe2 != null) {
+                if($request->tab == 'option-1'){
+                    $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                    if ($historiqueBulletincheck->isEmpty()) {
+                        $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                        foreach ($resultats as &$resultat) {
+                            ajouterHistoriqueBulletin($resultat, $request->section_id);
+                        }
+                    }
                 }
-                // $resultats = HistoriqueBulletin::with('historique_notes')
-                //     ->where('classe_annee_id', $request->classe)
-                //     ->where('periode', Periode::find($request->periode)->libelle)
-                //     ->get();
+                elseif($request->tab == 'option-2'){
+                    dd($request->all());
+                }
             }
         }else if($request->section_id == 2){
             $apprenant = 'Élève';
             $section = 'Secondaire';
             $periode = Periode::where('type',"Semestre")->get();
-            if ($request->classe != null) {
+            if ($request->classe != null || $request->classe2 != null) {
                 // foreach ($classes as $classe) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
                     $resultats = calculerResultatsClasse($request->classe, $request->section_id, $request->periode);
                     foreach ($resultats as &$resultat) {
                         // dd($resultat, $resultats);
-                        $historiqueBulletin = HistoriqueBulletin::create([
-                            'apprenant_id' => $resultat['apprenant'],
-                            'nom_classe' => $resultat['nom_classe'],
-                            'periode' => $resultat['periode'],
-                            'classe_annee_id' => $resultat['classe'],
-                            'matricule_apprenant' => $resultat['matricule_apprenant'],
-                            'nom_prenom_apprenant' => $resultat['nom_apprenant'] . ' ' . $resultat['prenom_apprenant'],
-                            'moyenne_details_notes' => $resultat['moyenne_details_notes'],
-                            'rang' => $resultat['rang'],
-                        ]);
-
-                        foreach ($resultat['details_notes'] as $detailNote) {
-                            HistoriqueNote::create([
-                                'historique_bulletin_id' => $historiqueBulletin->id,
-                                'nom_matiere' => $detailNote['nom_matiere'],
-                                'coefficient' => $detailNote['coefficient'],
-                                'note_de_classe' => $detailNote['noteDeClasse'],
-                                'note_de_classe_coefficiente' => $detailNote['noteDeClasseCoefficiente'],
-                                'note_de_composition' => $detailNote['noteDeComposition'],
-                                'note_de_composition_coefficiente' => $detailNote['noteDeCompositionCoefficiente'],
-                                'moyenne' => $detailNote['moyenne'],
-                                'moyenne_coefficiente' => $detailNote['moyenneCoefficiente'],
-                            ]);
-                        }
+                        ajouterHistoriqueBulletin($resultat, $request->section_id);
                     }
                     // dd($historiqueBulletincheck, $resultats[0]['periode']);
                 } else {
@@ -259,7 +236,7 @@ class RapportController extends Controller
             $cycle_filieres = DB::table('cycle_filieres')
                 ->whereIn('filiere_id', $filieres->pluck('id'))
                 ->get();
-            if ($request->classe != null) {
+            if ($request->classe != null || $request->classe2 != null) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
                     $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $request->periode);
@@ -267,7 +244,7 @@ class RapportController extends Controller
                         // Le tableau est vide
                     } else {
                         foreach ($resultatsyy as &$resultat) {
-                            ajouterHistoriqueBulletin($resultat);
+                            ajouterHistoriqueBulletin($resultat, $request->section_id);
                         }
                     }
                 }
