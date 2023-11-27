@@ -2,7 +2,7 @@
 const PdfPrinter = () =>  import("../../components/Rapports/PdfPrinter.vue");
 import DetailBulletin from '@/components/Rapports/DetailBulletin.vue';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { mdiDatabaseSync, mdiTimerSync, mdiPrinter, mdiAccountFileTextOutline, mdiCloseCircle, mdiEye } from "@mdi/js";
+import { mdiDatabaseSync, mdiTimerSync, mdiPrinter, mdiAccountFileTextOutline, mdiCloseCircle, mdiEye, mdiRepeat, mdiChartDonut, mdiRepeatVariant } from "@mdi/js";
 import jsPDF from 'jspdf';
 export default {
     components: {
@@ -10,15 +10,18 @@ export default {
         DetailBulletin
     },
     layout: AuthenticatedLayout,
-    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres"],
+    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres", "apprenant", "section"],
     data: () => ({
         icons: {
-        mdiDatabaseSync,
-        mdiTimerSync,
-        mdiPrinter,
-        mdiAccountFileTextOutline,
-        mdiCloseCircle,
-        mdiEye
+            mdiDatabaseSync,
+            mdiTimerSync,
+            mdiPrinter,
+            mdiAccountFileTextOutline,
+            mdiCloseCircle,
+            mdiEye,
+            mdiRepeatVariant,
+            mdiChartDonut,
+            mdiRepeat
         },
         headers: [
             {
@@ -58,6 +61,7 @@ export default {
             { title: 'Rang', align: 'center', key: 'rang' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
+        tab: 'option-1',
         data: [],
         detailData: null,
         apprenantData: [],
@@ -90,21 +94,30 @@ export default {
             if(this.sectionID ==3){
                 this.setData(this.classe)
             }
+            if(this.sectionID ==1){
+                this.setData(this.classe)
+                // this.data = this.resultats;
+            }
             // console.log('ojjj', this.classes.length, (this.classes.length !== 0))
             // const filteredResults = this.resultats;
-            // this.data = this.resultats;
+            this.data = this.resultats;
             // console.log('filteredResults',this.resultats)
         },
         setData(classe){
             if(this.sectionID == 1){
-                const filteredResults = this.resultats[classe];
-                this.data = this.resultats[classe];
+                // const filteredResults = this.resultats[classe];
+                this.data = this.resultats;
                 // console.log('daza',this.data);
             }else if(this.sectionID == 3){
                 this.data = this.resultats;
                 console.log('daza',this.$page.props.resultats);
             }
         },
+        // setPeriode(periode){
+        //     this.$inertia.replace(this.$page.url, {
+        //         data: { periode: periode }
+        //     });
+        // },
         setClasse(filiere){
             let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
             const cycleFiliereIds = cf.map((item) => item.id);
@@ -123,7 +136,7 @@ export default {
         }
     },
     mounted(){
-        if(this.sectionID == 2){
+        if(this.sectionID == 1 || this.sectionID == 2){
             this.classes = this.$page.props.classes
         }
     }
@@ -132,118 +145,187 @@ export default {
 
 <template>
   <v-card>
-    <Toolbar :icon="icons.mdiDatabaseSync" toolbarTitle="Génération des bulletins"></Toolbar>
+    <Toolbar :icon="icons.mdiDatabaseSync" :toolbarTitle="`Génération des bulletins - Section ${section}`"></Toolbar>
     <v-card-text>
-        <!-- <div class="text-center">
-            
-        </div> -->
-        <v-row v-if="sectionID == 3  || sectionID == 4">
-            <v-col md="5">
-                <autocomplete
-                    label="Filière"
-                    v-model="filiere"
-                    class="mt-4"
-                    :items="$page.props.filieres"
-                    @update:modelValue="setClasse(filiere)"
-                    item-title="code"
-                    item-value="id"
-                ></autocomplete>
-            </v-col>
-            <v-col md="3" v-if="filiere">
-                <autocomplete
-                label="Classe"
-                v-model="classe"
-                :items="classes"
-                class="mt-4"
-                isRequired
-                item-title="libelle"
-                item-value="id"
-                ></autocomplete>
-            </v-col>
-            <v-col cols="2">
-                <autocomplete 
-                    class="mt-4" 
-                    v-model="periode" 
-                    label="Periodes" 
-                    itemTitle="libelle" 
-                    itemValue="id" 
-                    :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe" chips clearable>
-                </autocomplete>
-            </v-col>
-            <v-col md="2">
-                <v-btn
-                class="mt-4"
-                :append-icon="icons.mdiTimerSync"
-                color="deep-purple-accent-4"
-                @click="generate()"
-                :disabled="!periode"
-                >
-                Générer
-                </v-btn>
-            </v-col>
-        </v-row>
-        <v-row v-if="sectionID == 1  || sectionID == 2">
-            <v-col md="4">
-                <autocomplete
-                label="Classe"
-                v-model="classe"
-                :items="classes"
-                @update:modelValue="setData(classe)"
-                class="mt-4"
-                isRequired
-                item-title="libelle"
-                item-value="id"
-                ></autocomplete>
-            </v-col>
-            <v-col cols="4">
-                <autocomplete 
-                    class="mt-4" 
-                    v-model="periode" 
-                    label="Periodes" 
-                    itemTitle="libelle" 
-                    itemValue="id" 
-                    :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe" chips clearable>
-                </autocomplete>
-            </v-col>
-            <v-col md="4"  v-if="sectionID != 1">
-                <v-btn
-                class="mt-4"
-                :append-icon="icons.mdiTimerSync"
-                color="deep-purple-accent-4"
-                @click="generate"
-                :disabled="!periode"
-                >
-                Générer
-                </v-btn>
-            </v-col>
-        </v-row>
-        <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :displayAddButton="false" >
-            <template v-slot:item.actions="{item}">
-                <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
-                    <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
-                </a>
-                <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+        <div class="d-flex flex-row">
+            <v-tabs
+                v-model="tab"
+                direction="vertical"
+                color="primary"
+            >
+                <v-tab value="option-1">
+                <v-icon start>
+                    {{ icons.mdiChartDonut }}
                 </v-icon>
-            </template>
-        </Datatable>
-        <Datatable v-if="classes.length !== 0 && (sectionID == 2)" titleDatatable="Liste des élèves" :headers="headersSecondaire" :items="data" :displayAddButton="false" >
-            <template v-slot:item.actions="{item}">
-                <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
-                    <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
-                </a>
-                <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                Par Semestre
+                </v-tab>
+                <v-tab value="option-2">
+                <v-icon start>
+                    {{ icons.mdiRepeatVariant }}
                 </v-icon>
-            </template>
-        </Datatable>
-        <Datatable v-if="classes.length !== 0 && (sectionID == 3)" titleDatatable="Liste des etudiants" :headers="headersSup" :items="data" :displayAddButton="false" >
-            <template v-slot:item.actions="{item}">
-                <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
-                    <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
-                </a>
-                <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                Par {{ apprenant }}
+                </v-tab>
+                <v-tab value="option-3">
+                <v-icon start>
+                    {{ icons.mdiRepeat }}
                 </v-icon>
-            </template>
-        </Datatable>
+                Option 3
+                </v-tab>
+            </v-tabs>
+            <v-window v-model="tab">
+                <v-window-item value="option-1">
+                    <v-card class="d-flex justify-center align-center">
+                        <v-card-text>
+                            <v-row v-if="sectionID == 3  || sectionID == 4">
+                                <v-col md="5">
+                                    <autocomplete
+                                        label="Filière"
+                                        v-model="filiere"
+                                        class="mt-4"
+                                        :items="$page.props.filieres"
+                                        @update:modelValue="setClasse(filiere)"
+                                        item-title="code"
+                                        item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col md="3" v-if="filiere">
+                                    <autocomplete
+                                    label="Classe"
+                                    v-model="classe"
+                                    :items="classes"
+                                    class="mt-4"
+                                    isRequired
+                                    item-title="libelle"
+                                    item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col cols="2">
+                                    <autocomplete 
+                                        class="mt-4" 
+                                        v-model="periode" 
+                                        label="Periodes" 
+                                        itemTitle="libelle" 
+                                        itemValue="id" 
+                                        :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe" chips clearable>
+                                    </autocomplete>
+                                </v-col>
+                                <v-col md="2">
+                                    <v-btn
+                                    class="mt-4"
+                                    :append-icon="icons.mdiTimerSync"
+                                    color="deep-purple-accent-4"
+                                    @click="generate()"
+                                    :disabled="!periode"
+                                    >
+                                    Générer
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="sectionID == 1  || sectionID == 2">
+                                <v-col cols="4">
+                                    <autocomplete 
+                                        class="mt-4" 
+                                        v-model="periode" 
+                                        label="Periodes"
+                                        itemTitle="libelle" 
+                                        itemValue="id" 
+                                        :items="periodes" variant="outlined" :isRequired="true" chips clearable>
+                                    </autocomplete>
+                                </v-col>
+                                <v-col md="4">
+                                    <autocomplete
+                                    label="Classe"
+                                    v-model="classe"
+                                    :items="classes"
+                                    :disabled="!periode"
+                                    class="mt-4"
+                                    isRequired
+                                    item-title="libelle"
+                                    item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col md="4">
+                                    <v-btn
+                                    class="mt-4"
+                                    :append-icon="icons.mdiTimerSync"
+                                    color="deep-purple-accent-4"
+                                    @click="generate"
+                                    :disabled="!periode"
+                                    >
+                                    Générer
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <Datatable v-if="classes.length !== 0 && (sectionID == 1)" titleDatatable="Liste des élèves" :headers="headers" :items="data" :displayAddButton="false" >
+                                <template v-slot:item.actions="{item}">
+                                    <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
+                                        <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
+                                    </a>
+                                    <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                                    </v-icon>
+                                </template>
+                            </Datatable>
+                            <Datatable v-if="classes.length !== 0 && (sectionID == 2)" titleDatatable="Liste des élèves" :headers="headersSecondaire" :items="data" :displayAddButton="false" >
+                                <template v-slot:item.actions="{item}">
+                                    <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
+                                        <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
+                                    </a>
+                                    <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                                    </v-icon>
+                                </template>
+                            </Datatable>
+                            <Datatable v-if="classes.length !== 0 && (sectionID == 3)" titleDatatable="Liste des etudiants" :headers="headersSup" :items="data" :displayAddButton="false" >
+                                <template v-slot:item.actions="{item}">
+                                    <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
+                                        <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
+                                    </a>
+                                    <v-icon size="small" class="me-2" title="Detail" @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                                    </v-icon>
+                                </template>
+                            </Datatable>
+                        </v-card-text>
+                    </v-card>
+                </v-window-item>
+                <v-window-item value="option-2">
+                    <v-card flat>
+                        <v-card-text>
+                        <p>
+                            Morbi nec metus. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Sed mollis, eros et ultrices tempus, mauris ipsum aliquam libero, non adipiscing dolor urna a orci. Curabitur ligula sapien, tincidunt non, euismod vitae, posuere imperdiet, leo. Nunc sed turpis.
+                        </p>
+
+                        <p>
+                            Suspendisse feugiat. Suspendisse faucibus, nunc et pellentesque egestas, lacus ante convallis tellus, vitae iaculis lacus elit id tortor. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In hac habitasse platea dictumst. Fusce ac felis sit amet ligula pharetra condimentum.
+                        </p>
+
+                        <p>
+                            Sed consequat, leo eget bibendum sodales, augue velit cursus nunc, quis gravida magna mi a libero. Nam commodo suscipit quam. In consectetuer turpis ut velit. Sed cursus turpis vitae tortor. Aliquam eu nunc.
+                        </p>
+
+                        <p>
+                            Etiam ut purus mattis mauris sodales aliquam. Ut varius tincidunt libero. Aenean viverra rhoncus pede. Duis leo. Fusce fermentum odio nec arcu.
+                        </p>
+
+                        <p class="mb-0">
+                            Donec venenatis vulputate lorem. Aenean viverra rhoncus pede. In dui magna, posuere eget, vestibulum et, tempor auctor, justo. Fusce commodo aliquam arcu. Suspendisse enim turpis, dictum sed, iaculis a, condimentum nec, nisi.
+                        </p>
+                        </v-card-text>
+                    </v-card>
+                </v-window-item>
+                <v-window-item value="option-3">
+                <v-card flat>
+                    <v-card-text>
+                    <p>
+                        Fusce a quam. Phasellus nec sem in justo pellentesque facilisis. Nam eget dui. Proin viverra, ligula sit amet ultrices semper, ligula arcu tristique sapien, a accumsan nisi mauris ac eros. In dui magna, posuere eget, vestibulum et, tempor auctor, justo.
+                    </p>
+
+                    <p class="mb-0">
+                        Cras sagittis. Phasellus nec sem in justo pellentesque facilisis. Proin sapien ipsum, porta a, auctor quis, euismod ut, mi. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nam at tortor in tellus interdum sagittis.
+                    </p>
+                    </v-card-text>
+                </v-card>
+                </v-window-item>
+            </v-window>
+        </div>
     </v-card-text>
     <v-dialog overlay-opacity="0.7" v-model="printPdf" max-width="750">
         <v-card>

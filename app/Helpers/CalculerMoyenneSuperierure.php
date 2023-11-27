@@ -8,26 +8,26 @@
  */
 
 use App\Models\EtablissementSection;
+use App\Models\RegimeEvaluation;
 use Illuminate\Support\Facades\DB;
 
  if (!function_exists('calculerMoyenneSuperierure')) {
-    function calculerMoyenneSuperierure($classeID, $apprenantID, $section) {
-        $notes_apprenant = getNoteByClasses($classeID, $section, $apprenantID);
+    function calculerMoyenneSuperierure($classeID, $apprenantID, $section, $periode) {
+        $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
         $groupedNotes = collect($notes_apprenant)->groupBy('nom_matiere');
         $details_notes = [];
         $periode = null;
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id,  $section);
         $systeme_lmd_id = DB::table('etablissement_section')
-        ->where('etablissement_section.id', $etablissement_section[0])
-        ->select(
-            'etablissement_section.systeme_lmd_id',
-        )->get();
-        dd($systeme_lmd_id);
+        ->find($etablissement_section[0], ['etablissement_section.systeme_lmd_id']);
+        $regime_evaluation = RegimeEvaluation::with('type_evaluation')
+        ->where('systeme_lmd_id', $systeme_lmd_id->systeme_lmd_id)->get();
+        // dd($systeme_lmd_id, $regime_evaluation);
         foreach ($groupedNotes as $matiere => $notes) {
             $note_devoir = 0;
             $note_examen = 0;
             $note_autre = 0;
-            if($etablissement_section){
+            if($systeme_lmd_id->systeme_lmd_id == 1){
                 foreach ($notes as $element) {
                     // Stocker les notes d'origine
                     if ($element->type_evaluation === 'Devoir') {
@@ -38,7 +38,7 @@ use Illuminate\Support\Facades\DB;
                         $note_examen += $note_origine_examen * 0.7; // Accumuler les notes d'examen
                     }
                 }
-            }elseif($etablissement_section){
+            }elseif($etablissement_section == 2){
                 foreach ($notes as $element) {
                     // Stocker les notes d'origine
                     if ($element->type_evaluation === 'Devoir') {
@@ -49,6 +49,8 @@ use Illuminate\Support\Facades\DB;
                         $note_autre += $note_origine_autre * 0.2; // Accumuler les notes d'autre
                     }
                 }
+            }else{
+
             }
             
             // Calcul de la note générale pour la matière

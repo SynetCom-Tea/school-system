@@ -50,7 +50,7 @@
                 <v-btn color="blue darken-1" text @click="closeDialog">Fermer</v-btn>
             </v-card-actions>
         </v-card>
-        <v-card v-if="data != null">
+        <v-card v-if="data != null && (typeSection == 2 || typeSection == 3)">
             <v-card-subtitle
                 v-if="typeSection == 2 || typeSection == 3"
                 class="mx-auto"
@@ -183,7 +183,6 @@
                 <v-btn color="blue darken-1" text @click="closeDialog">Fermer</v-btn>
             </v-card-actions>
         </v-card>
-        
     </v-dialog>
 </template>
 
