@@ -10,7 +10,7 @@ export default {
         DetailBulletin
     },
     layout: AuthenticatedLayout,
-    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres", "apprenant", "section"],
+    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres", "apprenant", "section", "apprenants"],
     data: () => ({
         icons: {
             mdiDatabaseSync,
@@ -91,20 +91,31 @@ export default {
     },
     methods: {
         generate() {
-            this.$inertia.replace(this.$page.url, {
-                data: { classe: this.classe, periode: this.periode, tab: this.tab }
-            });
-            if(this.sectionID ==3){
-                this.setData(this.classe)
+            console.log(this.tab)
+            if(this.tab == 'option-1'){
+                this.$inertia.replace(this.$page.url, {
+                    data: { classe: this.classe, periode: this.periode, tab: this.tab }
+                });
+                if(this.sectionID ==3){
+                    this.setData(this.classe)
+                }
+                if(this.sectionID ==1){
+                    this.setData(this.classe)
+                    // this.data = this.resultats;
+                }
+                this.data = this.resultats;
+            }else if(this.tab == 'option-2'){
+                this.$inertia.replace(this.$page.url, {
+                    data: { classe: this.classe, periode: this.periode, tab: this.tab, apprenant: this.apprenant2 }
+                });
             }
-            if(this.sectionID ==1){
-                this.setData(this.classe)
-                // this.data = this.resultats;
-            }
-            // console.log('ojjj', this.classes.length, (this.classes.length !== 0))
-            // const filteredResults = this.resultats;
-            this.data = this.resultats;
-            // console.log('filteredResults',this.resultats)
+        },
+        apprenantsAvecMatricule() {
+            return this.apprenants.map(apprenant => ({
+                ...apprenant,
+                affichageComplet: `${apprenant.matricule} - ${apprenant.nom} ${apprenant.prenom}`
+            }));
+            console.log(this.apprenants)
         },
         setData(classe){
             if(this.sectionID == 1){
@@ -122,9 +133,16 @@ export default {
         //     });
         // },
         setClasse(filiere){
-            let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
-            const cycleFiliereIds = cf.map((item) => item.id);
-            this.classes = this.$page.props.classes.filter((classe) => cycleFiliereIds.includes(classe.cycle_filiere_id));
+            if(this.sectionID == 1){
+                this.$inertia.replace(this.$page.url, {
+                    data: { classe: this.classe2, periode: this.periode2, tab: this.tab }
+                });
+                this.apprenantsAvecMatricule()
+            }else if(this.sectionID == 3){
+                let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
+                const cycleFiliereIds = cf.map((item) => item.id);
+                this.classes = this.$page.props.classes.filter((classe) => cycleFiliereIds.includes(classe.cycle_filiere_id));
+            }
         },
         openBulletinDialog(item) {
             this.detailData = item;
@@ -156,24 +174,24 @@ export default {
             text="La génération par période s'effectue à la fin des évaluations de la période sélectionnée. En revanche, la génération par élève concerne ceux dont les notes ont été modifiées, ceux qui n'ont pas participé à une évaluation, ou encore ceux qui sont en session."
             variant="tonal"
         ></v-alert>
-        <div class="d-flex flex-row">
+        <v-card>
             <v-tabs
-                v-model="tab"
-                direction="vertical"
-                color="primary"
+            v-model="tab"
+            color="deep-purple-accent-4"
+            align-tabs="center"
             >
-                <v-tab value="option-1">
-                    <v-icon start>
-                        {{ icons.mdiChartDonut }}
-                    </v-icon>
-                    Par periode
-                    </v-tab>
-                <v-tab value="option-2">
-                    <v-icon start>
-                        {{ icons.mdiRepeatVariant }}
-                    </v-icon>
-                    Par {{ apprenant }}
-                </v-tab>
+            <v-tab value="option-1">
+                <v-icon start>
+                    {{ icons.mdiChartDonut }}
+                </v-icon>
+                Par periode
+            </v-tab>
+            <v-tab value="option-2">
+                <v-icon start>
+                    {{ icons.mdiRepeatVariant }}
+                </v-icon>
+                Par {{ apprenant }}
+            </v-tab>
             </v-tabs>
             <v-window v-model="tab">
                 <v-window-item value="option-1">
@@ -308,7 +326,8 @@ export default {
                                     label="Classe"
                                     v-model="classe2"
                                     :items="classes"
-                                    :disabled="!periode"
+                                    @update:modelValue="setClasse(classe2)"
+                                    :disabled="!periode2"
                                     class="mt-4"
                                     isRequired
                                     item-title="libelle"
@@ -317,15 +336,18 @@ export default {
                                 </v-col>
                                 <v-col md="4">
                                     <autocomplete
-                                    :label="apprenant"
-                                    v-model="apprenant2"
-                                    :items="classes"
-                                    :disabled="!periode"
-                                    class="mt-4"
-                                    isRequired
-                                    item-title="libelle"
-                                    item-value="id"
-                                    ></autocomplete>
+                                        :label="apprenant"
+                                        v-model="apprenant2"
+                                        :items="apprenants"
+                                        :disabled="!classe2"
+                                        multiple
+                                        chips
+                                        class="mt-4"
+                                        isRequired
+                                        item-title="matricule"
+                                        item-value="id"
+                                    >
+                                    </autocomplete>
                                 </v-col>
                                 <v-col md="4">
                                     <v-btn
@@ -333,7 +355,7 @@ export default {
                                     :append-icon="icons.mdiTimerSync"
                                     color="deep-purple-accent-4"
                                     @click="generate"
-                                    :disabled="!periode"
+                                    :disabled="!apprenant2"
                                     >
                                     Générer
                                     </v-btn>
@@ -342,8 +364,9 @@ export default {
                         </v-card-text>
                     </v-card>
                 </v-window-item>
+
             </v-window>
-        </div>
+        </v-card>
     </v-card-text>
     <v-dialog overlay-opacity="0.7" v-model="printPdf" max-width="750">
         <v-card>
