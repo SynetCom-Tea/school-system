@@ -112,6 +112,9 @@ class RapportController extends Controller
      */
     public function index(Request $request)
     {
+        $periode = [];
+        $filieres = [];
+        $cycle_filieres = [];
         $note_devoirs = [];
         $note_examens = [];
         $headers = [];
@@ -123,7 +126,7 @@ class RapportController extends Controller
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         if ($request->classe != null) {
-            $notes_reforme = getNoteByClasses($request->classe, $request->section_id);
+            $notes_reforme = getNoteByClasses($request->classe, $request->section_id, $request->periode);
             // dd($notes_reforme, $request->classe);
             if($request->section_id == 1){
                 
@@ -135,6 +138,11 @@ class RapportController extends Controller
             }if($request->section_id == 3){
                 $note_devoirs = collect($notes_reforme)->where('type_evaluation', 'Examen')->values();
                 $note_examens = collect($notes_reforme)->where('type_evaluation', 'Devoir')->values();
+                $periode = Periode::where('type',"Semestre")->get();
+                $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
+                $cycle_filieres = DB::table('cycle_filieres')
+                    ->whereIn('filiere_id', $filieres->pluck('id'))
+                    ->get();
                 //dd($note_devoirs, $note_examens);
             }
             $headers = [
@@ -158,10 +166,13 @@ class RapportController extends Controller
         }
         return Inertia::render('Rapport/Index', [
             "sectionID" => $request->section_id,
+            "filieres" => $filieres,
+            "cycle_filieres" => $cycle_filieres,
+            "periode" => $periode,
             "notes" => $notes_reforme,
             "headers" => $headers,
             "niveaux" => $niveaux,
-            "AllClasses" => $classes,
+            "classes" => $classes,
             "note_compositions" => $note_compositions,
             "note_interrogations" => $note_interrogations,
             "note_devoir_surveilles" => $note_devoir_surveilles,
@@ -175,6 +186,8 @@ class RapportController extends Controller
      */
     public function create(Request $request)
     {
+        $apprenant = null;
+        $section = null;
         $resultats = [];
         $classes = [];
         $periode = [];
@@ -183,65 +196,31 @@ class RapportController extends Controller
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         if($request->section_id == 1){
-            foreach ($classes as $classe) {
-                $resultatsClasse = []; // Tableau pour les résultats de chaque classe
-                // dd($classes);
-                $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classe->id)->apprenants;
-            
-                foreach ($apprenantsDeLaClasse as $apprenant) {
-                    // dd($apprenant);
-                    $notes_apprenant = getNoteByClasses($classe->id, $apprenant->id);
-                    $moyenne = calculerMoyennePrimaire($notes_apprenant);
-            
-                    $details_notes = [];
-            
-                    foreach ($notes_apprenant as $note) {
-                        $details_notes[] = [
-                            'nom_matiere' => $note->nom_matiere,
-                            'notation_matiere' => $note->notation_matiere,
-                            'note' => $note->note
-                        ];
-                    }
-            
-                    $resultatsClasse[] = [
-                        'classe' => $classe->id,
-                        'nom_classe' => $classe->libelle,
-                        'apprenant' => $apprenant->id,
-                        'matricule_apprenant' => $apprenant->matricule,
-                        'nom_apprenant' => $apprenant->nom,
-                        'prenom_apprenant' => $apprenant->prenom,
-                        'moyenne' => $moyenne,
-                        'details_notes' => $details_notes // Tableau des détails des notes
-                    ];
+            $apprenant = 'élève';
+            $section = 'Primaire';
+            $periode = Periode::where('type',"Trimestre")->get();
+            if ($request->classe != null) {
+                $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                if ($historiqueBulletincheck->isEmpty()) {
+                    $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                    // foreach ($resultatsyy as &$resultat) {
+                    //     ajouterHistoriqueBulletin($resultat);
+                    // }
                 }
-                usort($resultatsClasse, function($a, $b) {
-                    if ($b['moyenne'] === $a['moyenne']) {
-                        return 0; // If averages are equal, retain the same order to manage ties
-                    }
-                    return $b['moyenne'] <=> $a['moyenne'];
-                });
-            
-                // Assign the rank to each student within the resultatsClasse array
-                $rang = 1;
-                $rangPrecedent = 1;
-                foreach ($resultatsClasse as &$resultat) {
-                    $resultat['rang'] = ordinalSuffix($rang);
-                    $rangPrecedent = $rang;
-                    $rang++;
-                }
-            
-                $resultats[$classe->id] = $resultatsClasse; // Stocker les résultats de chaque classe dans le tableau principal
+                // $resultats = HistoriqueBulletin::with('historique_notes')
+                //     ->where('classe_annee_id', $request->classe)
+                //     ->where('periode', Periode::find($request->periode)->libelle)
+                //     ->get();
             }
-            // sleep(5);
-            // dd($resultats);
         }else if($request->section_id == 2){
-            $periode = $request->section_id ? Periode::where('type',"Semestre")->get():collect();
+            $apprenant = 'élève';
+            $section = 'Secondaire';
+            $periode = Periode::where('type',"Semestre")->get();
             if ($request->classe != null) {
                 // foreach ($classes as $classe) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
-                    $resultats = calculerResultatsClasse($request->classe);
-
+                    $resultats = calculerResultatsClasse($request->classe, $request->section_id, $request->periode);
                     foreach ($resultats as &$resultat) {
                         // dd($resultat, $resultats);
                         $historiqueBulletin = HistoriqueBulletin::create([
@@ -271,10 +250,12 @@ class RapportController extends Controller
                     }
                     // dd($historiqueBulletincheck, $resultats[0]['periode']);
                 } else {
-                    $resultats = calculerResultatsClasse($request->classe);
+                    $resultats = calculerResultatsClasse($request->classe, $request->section_id, $request->periode);
                 }
             }
         }else if($request->section_id == 3){
+            $apprenant = 'étudiant';
+            $section = 'Supérieure';
             $periode = Periode::where('type',"Semestre")->get();
             $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
             $cycle_filieres = DB::table('cycle_filieres')
@@ -283,34 +264,31 @@ class RapportController extends Controller
             if ($request->classe != null) {
                 $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                 if ($historiqueBulletincheck->isEmpty()) {
-                    $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id);
-                    foreach ($resultatsyy as &$resultat) {
-                        ajouterHistoriqueBulletin($resultat);
+                    $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $request->periode);
+                    if (empty($resultatsyy[0]['details_notes'])) {
+                        // Le tableau est vide
+                    } else {
+                        foreach ($resultatsyy as &$resultat) {
+                            ajouterHistoriqueBulletin($resultat);
+                        }
                     }
                 }
                 $resultats = HistoriqueBulletin::with('historique_notes')
                     ->where('classe_annee_id', $request->classe)
                     ->where('periode', Periode::find($request->periode)->libelle)
                     ->get();
-                // Itérer sur chaque historique bulletin
-                
-                foreach ($resultats as $historiqueBulletin) {
-                    // Grouper les historique_notes par nom_eu
-                    $historiqueNotesGroupedByNomEu = $historiqueBulletin->historique_notes->groupBy('nom_eu');
-                
-                    // Mettre à jour la propriété historique_notes de l'historique bulletin avec les données groupées
-                    $historiqueBulletin->historiqueNotesGroupedByNomEu = $historiqueNotesGroupedByNomEu;
-                }
             }
         }
-        // dd('dd', $resultats);
+        dd('dd', $resultats);
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
             "resultats" => $resultats,
             "classes" => $classes,
             'periodes'=> $periode,
             "filieres" => $filieres,
-            "cycle_filieres" => $cycle_filieres
+            "cycle_filieres" => $cycle_filieres,
+            'apprenant' => $apprenant,
+            'section' => $section
         ]);
     }
 

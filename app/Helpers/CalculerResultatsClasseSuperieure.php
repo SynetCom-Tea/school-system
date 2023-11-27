@@ -14,11 +14,11 @@ use App\Models\HistoriqueNote;
 use Illuminate\Support\Facades\DB;
 
 if (!function_exists('calculerResultatsClasseSuperieure')) {
-    function calculerResultatsClasseSuperieure($classeId, $section) {
+    function calculerResultatsClasseSuperieure($classeId, $section, $periode) {
         $resultatsClasse = [];
         $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
         foreach ($apprenantsDeLaClasse as $apprenant) {
-            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section);
+            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode);
             $resultatsClasse[$apprenant->id] = [
                 'classe' => $classeId,
                 'periode' => $resultatMoyenne['periode'],

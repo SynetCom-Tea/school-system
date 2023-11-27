@@ -114,6 +114,104 @@
                     <td>7</td>
                     <td></td>
                 </tr>
+                <tr>
+                    <td width="90" height="20">Rédaction</td>
+                    <td width="25">10</td>
+                    <td width="10"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>9</td>
+                    <td></td>
+                    <td>10</td>
+                    <td></td>
+                    <td>6</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="90" height="20">Rédaction</td>
+                    <td width="25">10</td>
+                    <td width="10"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>9</td>
+                    <td></td>
+                    <td>10</td>
+                    <td></td>
+                    <td>6</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="90" height="20">Rédaction</td>
+                    <td width="25">10</td>
+                    <td width="10"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>9</td>
+                    <td></td>
+                    <td>10</td>
+                    <td></td>
+                    <td>6</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="90" height="20">Rédaction</td>
+                    <td width="25">10</td>
+                    <td width="10"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>9</td>
+                    <td></td>
+                    <td>10</td>
+                    <td></td>
+                    <td>6</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="90" height="20">Rédaction</td>
+                    <td width="25">10</td>
+                    <td width="10"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>9</td>
+                    <td></td>
+                    <td>10</td>
+                    <td></td>
+                    <td>6</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="90" height="20">Rédaction</td>
+                    <td width="25">10</td>
+                    <td width="10"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>9</td>
+                    <td></td>
+                    <td>10</td>
+                    <td></td>
+                    <td>6</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td width="90" height="20">Rédaction</td>
+                    <td width="25">10</td>
+                    <td width="10"></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>9</td>
+                    <td></td>
+                    <td>10</td>
+                    <td></td>
+                    <td>6</td>
+                    <td></td>
+                </tr>
                 <!-- Fin de la boucle -->
                 <tr>
                     <td width="90" height="20">TOTAL SUR</td>
