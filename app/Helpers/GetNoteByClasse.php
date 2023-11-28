@@ -10,7 +10,7 @@
 use Illuminate\Support\Facades\DB;
 
 if (!function_exists('getNoteByClasses')) {
-    function getNoteByClasses($classe, $section, $apprenant = null) {
+    function getNoteByClasses($classe, $section, $periode, $apprenant = null) {
         $query = DB::table('notes')
             ->join('evaluations', 'notes.evaluation_id', '=', 'evaluations.id')
             ->join('type_evaluations', 'evaluations.type_evaluation_id', '=', 'type_evaluations.id')
@@ -18,8 +18,11 @@ if (!function_exists('getNoteByClasses')) {
             ->join('enseignement_annees', 'evaluations.enseignement_annee_id', '=', 'enseignement_annees.id')
             ->join('apprenants', 'notes.apprenant_id', '=', 'apprenants.id')
             ->where('classe_annee_id', $classe)
+            ->where('evaluations.periode_id', $periode)
             ->where('notes.statut', 1);
-
+        if ($section == 1) {
+            $query->where('type_evaluations.libelle', 'Composition');
+        }
         if ($apprenant !== null) {
             $query->where('apprenants.id', $apprenant);
         }

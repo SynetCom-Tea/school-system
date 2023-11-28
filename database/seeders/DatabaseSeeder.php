@@ -83,6 +83,7 @@ class DatabaseSeeder extends Seeder
         $this->call(VersementsTableSeeder::class);
         $this->call(EvaluationsTableSeeder::class);
         $this->call(NotesTableSeeder::class);
+        $this->call(RegimeEvaluationsTableSeeder::class);
     }
 }
 

@@ -7,45 +7,58 @@
  * @return response()
  */
 
+use App\Models\EtablissementSection;
+use App\Models\RegimeEvaluation;
+use Illuminate\Support\Facades\DB;
 
  if (!function_exists('calculerMoyenneSuperierure')) {
-    function calculerMoyenneSuperierure($classeID, $apprenantID, $section) {
-        $notes_apprenant = getNoteByClasses($classeID, $section, $apprenantID);
+    function calculerMoyenneSuperierure($classeID, $apprenantID, $section, $periode) {
+        $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
         $groupedNotes = collect($notes_apprenant)->groupBy('nom_matiere');
         $details_notes = [];
         $periode = null;
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id,  $section);
+        $systeme_lmd_id = DB::table('etablissement_section')
+        ->find($etablissement_section[0], ['etablissement_section.systeme_lmd_id']);
+        $regime_evaluation = RegimeEvaluation::with('type_evaluation')
+        ->where('systeme_lmd_id', $systeme_lmd_id->systeme_lmd_id)->get();
+        // dd($systeme_lmd_id, $regime_evaluation);
         foreach ($groupedNotes as $matiere => $notes) {
             $note_devoir = 0;
             $note_examen = 0;
-        
-            foreach ($notes as $element) {
-                // Stocker les notes d'origine
-                if ($element->type_evaluation === 'Devoir') {
-                    $note_origine_devoir = $element->note;
-                    $note_devoir += $note_origine_devoir * 0.3; // Accumuler les notes de devoir
-                } elseif ($element->type_evaluation === 'Examen') {
-                    $note_origine_examen = $element->note;
-                    $note_examen += $note_origine_examen * 0.7; // Accumuler les notes d'examen
+            $note_autre = 0;
+            if($systeme_lmd_id->systeme_lmd_id == 1){
+                foreach ($notes as $element) {
+                    // Stocker les notes d'origine
+                    if ($element->type_evaluation === 'Devoir') {
+                        $note_origine_devoir = $element->note;
+                        $note_devoir += $note_origine_devoir * 0.3; // Accumuler les notes de devoir
+                    } elseif ($element->type_evaluation === 'Examen') {
+                        $note_origine_examen = $element->note;
+                        $note_examen += $note_origine_examen * 0.7; // Accumuler les notes d'examen
+                    }
                 }
+            }elseif($etablissement_section == 2){
+                foreach ($notes as $element) {
+                    // Stocker les notes d'origine
+                    if ($element->type_evaluation === 'Devoir') {
+                        $note_origine_devoir = $element->note;
+                        $note_devoir += $note_origine_devoir * 0.8; // Accumuler les notes de devoir
+                    } elseif ($element->type_evaluation === 'Autre') {
+                        $note_origine_autre = $element->note;
+                        $note_autre += $note_origine_autre * 0.2; // Accumuler les notes d'autre
+                    }
+                }
+            }else{
+
             }
-            // dd($notes);
+            
             // Calcul de la note générale pour la matière
             $note_generale = $note_devoir + $note_examen;
 
             // Calcul de la note générale pondérée par le coefficient
             $note_generale_coefficiente = $note_generale * $notes[0]->coefficient_matiere;
-        
-            // Ajouter la note générale, note de devoir, note d'examen et les notes d'origine à chaque élément de la matière
-            // foreach ($notes as $element) {
-            //     $element->note_generale = $note_generale;
-            //     $element->note_devoir = $note_devoir;
-            //     $element->note_examen = $note_examen;
-            //     $element->note_origine_devoir = $note_origine_devoir ?? null; // Note d'origine de devoir
-            //     $element->note_origine_examen = $note_origine_examen ?? null; // Note d'origine d'examen
-            //     $element->note_generale_coefficiente = $note_generale_coefficiente;
-            // }
-        
-            // Stocker les détails de la matière dans $details_notes
+
             $details_notes[] = [
                 'nom_eu' => $notes[0]->nom_ue,
                 'nom_matiere' => $matiere,

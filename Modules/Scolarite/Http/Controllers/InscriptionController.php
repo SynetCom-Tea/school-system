@@ -28,6 +28,7 @@ use Modules\Scolarite\Entities\Versement;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Scolarite\Entities\EtablissementTypeDocument;
+use PDF;
 
 class InscriptionController extends Controller
 {
@@ -586,13 +587,11 @@ class InscriptionController extends Controller
             }
 
             DB::commit();
+
             return redirect()->back()->with('message', [
                 'type' => 'success',
                 'text' => 'Inscription effectuée avec succès',
             ]);
-
-          
-        
 
         } catch (\Exception $e) {
             // En cas d'erreur, annulez la transaction
@@ -605,6 +604,25 @@ class InscriptionController extends Controller
             throw $e;
         }
   
+    }
+
+    public function recuInscription(Request $request){
+        // dd($request->all());
+        $etb = Etablissement::find(Auth::user()->etablissement_id);
+        $ins = Inscription::where('id',$request->id)->with('annee','apprenant','niveau','cycleFiliere')->first();
+
+
+        $data = [
+            'etablissement' => $etb,
+            'inscription' => $ins,
+            'section' => $request->section,
+            'title' => 'Welcome to ItSolutionStuff.com',
+            'date' => date('m/d/Y'),
+        ];
+
+        $pdf = PDF::loadView('recu_inscription', $data);
+
+        return $pdf->stream('itsolutionstuff.pdf');
     }
 
     /**

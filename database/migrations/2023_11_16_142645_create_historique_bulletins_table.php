@@ -30,6 +30,7 @@ return new class extends Migration
             $table->string('rang');
             $table->string('total_volume_horaire')->nullable();
             $table->string('total_coefficient')->nullable();
+            $table->string('somme_notation')->nullable();
             $table->string('somme_note_generale')->nullable();
             $table->string('somme_note_generale_coefficient')->nullable();
             $table->softDeletes();
