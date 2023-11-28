@@ -121,8 +121,11 @@ export default {
                     .then((res) => {
                     if (typeof res.data == "string" || typeof res.data == "undefined") {
                         this.$toast.error("Données non valides!");
+                        console.log('noottttt')
                     } else {
                         this.data = res.data;
+                        console.log('ooookk')
+                        this.$toast.error("supp!");
                     }
                 });
                 // this.$inertia.replace(this.$page.url, {
