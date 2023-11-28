@@ -228,6 +228,7 @@ class RapportController extends Controller
      */
     public function create(Request $request)
     {
+        $premieregeneration = false;
         $apprenants = [];
         $apprenant = null;
         $section = null;
@@ -246,6 +247,7 @@ class RapportController extends Controller
                 if($request->tab == 'option-1'){
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
+                        $premieregeneration = true;
                         $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
                         foreach ($resultats as &$resultat) {
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
@@ -257,16 +259,24 @@ class RapportController extends Controller
                     ->get();
                 }
                 elseif($request->tab == 'option-2'){
+                    $exception = true;
+                    $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
+                    // dd($request->all(), $request->apprenant, $request->tab, $apprenants, $request->classe, $request->section_id);
                     $apprenantsHistorique = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($apprenantsHistorique->isNotEmpty()) {
-                        $apprenantsId = $apprenantsHistorique->pluck('apprenant_id');
-                        $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->whereNotIn('apprenants.id', $apprenantsId)->get();
                         if($request->apprenant != null){
-                            dd($request->all());
+                            // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
+                            $apprenantIds = explode(',', $request->apprenant);
+                            // Supprimer les espaces autour de chaque ID
+                            $apprenantIds = array_map('trim', $apprenantIds);
+                            $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
+                            $resultatstz = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect);
+                            // dd($apprenantIds, $apprenantsSelect, $resultatstz);
+                            foreach ($resultatstz as &$resultat) {
+                                ajouterHistoriqueBulletin($resultat, $request->section_id, $exception);
+                            }
                         }
-                        // dd($apprenantsId, $apprenants);
                     }
-                    // dd($request->all());
                 }
             }
         }else if($request->section_id == 2){
@@ -323,6 +333,7 @@ class RapportController extends Controller
             "cycle_filieres" => $cycle_filieres,
             "apprenants" => $apprenants,
             'apprenant' => $apprenant,
+            'premieregeneration' => $premieregeneration,
             'section' => $section
         ]);
     }

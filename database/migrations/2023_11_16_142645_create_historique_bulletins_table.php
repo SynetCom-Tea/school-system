@@ -27,7 +27,7 @@ return new class extends Migration
             $table->string('nom_prenom_apprenant');
             $table->string('nom_classe');
             $table->string('moyenne_details_notes');
-            $table->string('rang');
+            $table->string('rang')->nullable();
             $table->string('total_volume_horaire')->nullable();
             $table->string('total_coefficient')->nullable();
             $table->string('somme_notation')->nullable();
