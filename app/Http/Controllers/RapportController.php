@@ -27,7 +27,7 @@ class RapportController extends Controller
 
     public function bulletin(Request $request)
     {
-        // dd($request->all());
+        dd($request->all());
         $etab = Etablissement::find(Auth::user()->etablissement_id);
         $annee_encours = getAnneeEncours();
         $periode = $request->periode ? Periode::find($request->periode) : null;
