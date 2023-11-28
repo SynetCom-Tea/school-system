@@ -261,20 +261,16 @@ class RapportController extends Controller
                 elseif($request->tab == 'option-2'){
                     $exception = true;
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
-                    // dd($request->all(), $request->apprenant, $request->tab, $apprenants, $request->classe, $request->section_id);
-                    $apprenantsHistorique = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
-                    if ($apprenantsHistorique->isNotEmpty()) {
-                        if($request->apprenant != null){
-                            // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
-                            $apprenantIds = explode(',', $request->apprenant);
-                            // Supprimer les espaces autour de chaque ID
-                            $apprenantIds = array_map('trim', $apprenantIds);
-                            $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
-                            $resultatstz = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect);
-                            // dd($apprenantIds, $apprenantsSelect, $resultatstz);
-                            foreach ($resultatstz as &$resultat) {
-                                ajouterHistoriqueBulletin($resultat, $request->section_id, $exception);
-                            }
+                    if($request->apprenant != null){
+                        // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
+                        $apprenantIds = explode(',', $request->apprenant);
+                        // Supprimer les espaces autour de chaque ID
+                        $apprenantIds = array_map('trim', $apprenantIds);
+                        $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
+                        $resultatstz = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect);
+                        // dd($apprenantIds, $apprenantsSelect, $resultatstz);
+                        foreach ($resultatstz as &$resultat) {
+                            ajouterHistoriqueBulletin($resultat, $request->section_id, $exception);
                         }
                     }
                 }
@@ -287,7 +283,7 @@ class RapportController extends Controller
                 if($request->tab == 'option-1'){
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
-                        $resultats = calculerResultatsClasse($request->classe, $request->section_id, $request->periode);
+                        $resultats = calculerResultatsClasse($request->classe, $request->section_id, $etablissement_section, $request->periode);
                         foreach ($resultats as &$resultat) {
                             // dd($resultat, $resultats);
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
@@ -299,7 +295,20 @@ class RapportController extends Controller
                         ->where('periode', Periode::find($request->periode)->libelle)
                         ->get();
                 }elseif($request->tab == 'option-2'){
-                    dd('option-2');
+                    $exception = true;
+                    $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
+                    if($request->apprenant != null){
+                        // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
+                        $apprenantIds = explode(',', $request->apprenant);
+                        // Supprimer les espaces autour de chaque ID
+                        $apprenantIds = array_map('trim', $apprenantIds);
+                        $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
+                        $resultatstz = calculerResultatsClasse($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect);
+                        // dd($apprenantIds, $apprenantsSelect, $resultatstz);
+                        foreach ($resultatstz as &$resultat) {
+                            ajouterHistoriqueBulletin($resultat, $request->section_id, $exception);
+                        }
+                    }
                 }
             }
         }else if($request->section_id == 3){

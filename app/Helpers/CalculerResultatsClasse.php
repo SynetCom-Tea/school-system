@@ -13,16 +13,22 @@ use App\Models\ClasseAnnee;
 use Illuminate\Support\Facades\DB;
 
 if (!function_exists('calculerResultatsClasse')) {
-    function calculerResultatsClasse($classeId, $section, $periode) {
+    function calculerResultatsClasse($classeId, $section, $etablissement_section, $periode, $apprenants = null) {
         $resultatsClasse = [];
-        $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+        $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
+        if($apprenants != null){
+            $apprenantsDeLaClasse = $apprenants;
+            // dd($apprenants);
+        }else{
+            $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+        }
         //dd($apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $details_notes = calculerMoyenneSecondaire($classeId, $section, $periode, $apprenant->id);
             $resultatsClasse[$apprenant->id] = [
                 'classe_annee_id' => $classeId,
                 'periode' => $details_notes[0]['periodes'],
-                'nom_classe' => Classe::find($classeId)->libelle,
+                'nom_classe' => $classe->libelle,
                 'apprenant_id' => $apprenant->id,
                 'matricule_apprenant' => $apprenant->matricule,
                 'nom_prenom_apprenant' => $apprenant->nom . ' ' . $apprenant->prenom,

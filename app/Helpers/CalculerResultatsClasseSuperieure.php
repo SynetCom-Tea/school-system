@@ -198,7 +198,24 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             }
         } elseif ($section == 2) {
             if ($exception != null) {
-                // Handle exception for section 2 if needed
+                $checkhistorique = HistoriqueBulletin::where('classe_annee_id', $resultat['classe_annee_id'])
+                ->where('periode', $resultat['periode'])
+                ->where('apprenant_id', $resultat['apprenant_id'])
+                ->where('statut', true)
+                ->latest()
+                ->first();
+                if ($checkhistorique != null) {
+                    $communs = array_intersect_assoc($checkhistorique->toArray(), $resultat);
+                    if (empty(array_diff(['apprenant_id', 'classe_annee_id', 'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe', 'moyenne_details_notes'], array_keys($communs)))) {
+                        return;
+                    } else {
+                        createHistoriqueBulletin($resultat, $section);
+                        $checkhistorique->update(['statut' => false]);
+                    }
+                } else {
+                    createHistoriqueBulletin($resultat, $section);
+                    return;
+                }
             } else {
                 createHistoriqueBulletin($resultat, $section);
             }
