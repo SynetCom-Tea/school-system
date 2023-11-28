@@ -138,13 +138,19 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
         ];
 
         switch ($section) {
-            case 2:
+            case 1:
                 $commonFields += [
-                    'coefficient' => $detailNote['coefficient'],
-                    'note_de_classe' => $detailNote['noteDeClasse'],
-                    // Add other fields for section 2
+                    'notation_matiere' => $detailNote['notation_matiere'],
+                    'note' => $detailNote['note'],
                 ];
                 break;
+            case 2:
+                    $commonFields += [
+                        'coefficient' => $detailNote['coefficient'],
+                        'note_de_classe' => $detailNote['noteDeClasse'],
+                        // Add other fields for section 2
+                    ];
+                    break;
             case 3:
                 $commonFields += [
                     'coefficient' => $detailNote['coefficient_matiere'],
