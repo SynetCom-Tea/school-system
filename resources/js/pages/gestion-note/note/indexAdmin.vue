@@ -227,7 +227,7 @@ export default {
             }else {
                 this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom 
             }
-        },
+        }, 
         closeEdit() {
             this.dialogEdit = false
         },
