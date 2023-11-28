@@ -284,17 +284,22 @@ class RapportController extends Controller
             $section = 'Secondaire';
             $periode = Periode::where('type',"Semestre")->get();
             if ($request->classe != null || $request->classe2 != null) {
-                // foreach ($classes as $classe) {
-                $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
-                if ($historiqueBulletincheck->isEmpty()) {
-                    $resultats = calculerResultatsClasse($request->classe, $request->section_id, $request->periode);
-                    foreach ($resultats as &$resultat) {
-                        // dd($resultat, $resultats);
-                        ajouterHistoriqueBulletin($resultat, $request->section_id);
+                if($request->tab == 'option-1'){
+                    $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                    if ($historiqueBulletincheck->isEmpty()) {
+                        $resultats = calculerResultatsClasse($request->classe, $request->section_id, $request->periode);
+                        foreach ($resultats as &$resultat) {
+                            // dd($resultat, $resultats);
+                            ajouterHistoriqueBulletin($resultat, $request->section_id);
+                        }
+                        // dd($historiqueBulletincheck, $resultats[0]['periode']);
                     }
-                    // dd($historiqueBulletincheck, $resultats[0]['periode']);
-                } else {
-                    $resultats = calculerResultatsClasse($request->classe, $request->section_id, $request->periode);
+                    $resultats = HistoriqueBulletin::with('historique_notes')
+                        ->where('classe_annee_id', $request->classe)
+                        ->where('periode', Periode::find($request->periode)->libelle)
+                        ->get();
+                }elseif($request->tab == 'option-2'){
+                    dd('option-2');
                 }
             }
         }else if($request->section_id == 3){
