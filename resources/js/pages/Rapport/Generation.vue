@@ -155,7 +155,7 @@ export default {
         //     });
         // },
         setClasse(filiere){
-            if(this.sectionID == 1){
+            if(this.sectionID == 1 || this.sectionID == 2){
                 this.$inertia.replace(this.$page.url, {
                     data: { classe: this.classe2, periode: this.periode2, tab: this.tab }
                 });
