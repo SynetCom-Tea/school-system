@@ -10,7 +10,7 @@ export default {
         DetailBulletin
     },
     layout: AuthenticatedLayout,
-    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres", "apprenant", "section", "apprenants"],
+    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres", "apprenant", "section", "apprenants", "premieregeneration"],
     data: () => ({
         icons: {
             mdiDatabaseSync,
@@ -32,7 +32,6 @@ export default {
             },
             { title: 'Nom & Prénom', align: 'center', key: 'nom_prenom_apprenant' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
-            { title: 'Rang', align: 'center', key: 'rang' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
         headersSecondaire: [
@@ -45,7 +44,6 @@ export default {
             { title: 'Nom', align: 'center', key: 'nom_apprenant' },
             { title: 'Prénom', align: 'center', key: 'prenom_apprenant' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
-            { title: 'Rang', align: 'center', key: 'rang' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
         headersSup: [
@@ -57,7 +55,6 @@ export default {
             },
             { title: 'Nom & Prénom', align: 'center', key: 'nom_prenom_apprenant' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
-            { title: 'Rang', align: 'center', key: 'rang' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
         tab: 'option-1',
@@ -90,7 +87,7 @@ export default {
         },
     },
     methods: {
-        generate() {
+        async generate() {
             console.log(this.tab)
             if(this.tab == 'option-1'){
                 this.$inertia.replace(this.$page.url, {
@@ -105,18 +102,36 @@ export default {
                 }
                 this.data = this.resultats;
             }else if(this.tab == 'option-2'){
-                this.$inertia.replace(this.$page.url, {
-                    data: { classe: this.classe, periode: this.periode, tab: this.tab, apprenant: this.apprenant2 }
+
+                await axios
+                    .get(
+                    route("bulletinbyapprenant", {
+                        section_id: this.sectionID,
+                        classe: this.classe2, 
+                        periode: this.periode2, 
+                        tab: this.tab, 
+                        apprenant: this.apprenant2
+                    })
+                    )
+                    .then((res) => {
+                    if (typeof res.data == "string" || typeof res.data == "undefined") {
+                        this.$toast.error("Données non valides!");
+                    } else {
+                        this.data = res.data;
+                    }
                 });
+                // this.$inertia.replace(this.$page.url, {
+                //     data: { classe: this.classe, periode: this.periode, tab: this.tab, apprenant: this.apprenant2 }
+                // });
             }
         },
-        apprenantsAvecMatricule() {
-            return this.apprenants.map(apprenant => ({
-                ...apprenant,
-                affichageComplet: `${apprenant.matricule} - ${apprenant.nom} ${apprenant.prenom}`
-            }));
-            console.log(this.apprenants)
-        },
+        // apprenantsAvecMatricule() {
+        //     return this.apprenants.map(apprenant => ({
+        //         ...apprenant,
+        //         affichageComplet: `${apprenant.matricule} - ${apprenant.nom} ${apprenant.prenom}`
+        //     }));
+        //     console.log(this.apprenants)
+        // },
         setData(classe){
             if(this.sectionID == 1){
                 // const filteredResults = this.resultats[classe];
@@ -137,7 +152,6 @@ export default {
                 this.$inertia.replace(this.$page.url, {
                     data: { classe: this.classe2, periode: this.periode2, tab: this.tab }
                 });
-                this.apprenantsAvecMatricule()
             }else if(this.sectionID == 3){
                 let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
                 const cycleFiliereIds = cf.map((item) => item.id);
@@ -238,7 +252,7 @@ export default {
                                     @click="generate()"
                                     :disabled="!periode"
                                     >
-                                    Générer
+                                    {{ premieregeneration ? 'Générer' : 'Voir' }}
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -273,7 +287,7 @@ export default {
                                     @click="generate"
                                     :disabled="!periode"
                                     >
-                                    Générer
+                                    {{ premieregeneration ? 'Générer' : 'Voir' }}
                                     </v-btn>
                                 </v-col>
                             </v-row>
