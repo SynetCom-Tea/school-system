@@ -41,8 +41,7 @@ export default {
                 sortable: false,
                 key: 'matricule_apprenant',
             },
-            { title: 'Nom', align: 'center', key: 'nom_apprenant' },
-            { title: 'Prénom', align: 'center', key: 'prenom_apprenant' },
+            { title: 'Nom & Prénom', align: 'center', key: 'nom_prenom_apprenant' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
@@ -119,7 +118,7 @@ export default {
                     })
                     )
                     .then((res) => {
-                    if (typeof res.data == "string" || typeof res.data == "undefined") {
+                    if (typeof res.data == "string") {
                         this.$toast.error("Données non valides!");
                         console.log('noottttt')
                     } else {

@@ -147,7 +147,12 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             case 2:
                     $commonFields += [
                         'coefficient' => $detailNote['coefficient'],
-                        'note_de_classe' => $detailNote['noteDeClasse'],
+                        'note_de_classe' => $detailNote['note_de_classe'],
+                        'note_de_classe_coefficiente' => $detailNote['note_de_classe_coefficiente'],
+                        'note_de_composition' => $detailNote['note_de_composition'],
+                        'note_de_composition_coefficiente' => $detailNote['note_de_composition_coefficiente'],
+                        'moyenne' => $detailNote['moyenne'],
+                        'moyenne_coefficiente' => $detailNote['moyenne_coefficiente'],
                         // Add other fields for section 2
                     ];
                     break;

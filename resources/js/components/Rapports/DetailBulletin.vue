@@ -104,10 +104,10 @@
                     >
                         <td>{{ item.nom_matiere }}</td>
                         <td>{{ item.coefficient }}</td>
-                        <td>{{ item.noteDeClasse }}</td>
-                        <td>{{ item.noteDeClasseCoefficiente }}</td>
-                        <td>{{ item.noteDeComposition }}</td>
-                        <td>{{ item.noteDeCompositionCoefficiente }}</td>
+                        <td>{{ item.note_de_classe }}</td>
+                        <td>{{ item.note_de_classe_coefficiente }}</td>
+                        <td>{{ item.note_de_composition }}</td>
+                        <td>{{ item.note_de_composition_coefficiente }}</td>
                         <td>{{ item.moyenne }}</td>
                     </tr>
                     </tbody>
