@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Annee;
+use App\Models\Apprenant;
 use App\Models\Classe;
 use App\Models\ClasseAnnee;
 use App\Models\Cycle;
@@ -225,6 +226,7 @@ class RapportController extends Controller
      */
     public function create(Request $request)
     {
+        $apprenants = [];
         $apprenant = null;
         $section = null;
         $resultats = [];
@@ -253,6 +255,15 @@ class RapportController extends Controller
                     ->get();
                 }
                 elseif($request->tab == 'option-2'){
+                    $apprenantsHistorique = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                    if ($apprenantsHistorique->isNotEmpty()) {
+                        $apprenantsId = $apprenantsHistorique->pluck('apprenant_id');
+                        $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->whereNotIn('apprenants.id', $apprenantsId)->get();
+                        if($request->apprenant != null){
+                            dd($request->all());
+                        }
+                        // dd($apprenantsId, $apprenants);
+                    }
                     // dd($request->all());
                 }
             }
@@ -308,6 +319,7 @@ class RapportController extends Controller
             'periodes'=> $periode,
             "filieres" => $filieres,
             "cycle_filieres" => $cycle_filieres,
+            "apprenants" => $apprenants,
             'apprenant' => $apprenant,
             'section' => $section
         ]);
