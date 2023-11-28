@@ -32,7 +32,9 @@ class RapportController extends Controller
         $annee_encours = getAnneeEncours();
         $periode = $request->periode ? Periode::find($request->periode) : null;
         if($request->type == 0){
+           
             if($request->section == '1'){
+                // dd('fin');
                 $bulletin = $request->id ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 // dd($bulletin,$detail);
