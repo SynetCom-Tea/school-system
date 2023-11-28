@@ -69,18 +69,17 @@
             <b style="margin-top: 5px;">{{$etablissement->ville}}-Niger</b>
       
         </p>
-        <h1>Reçu de versement</h1>
-        <h1 style="font-size: 16px;">Date du versement: {{$versement->date_versement}}</h1>
-        <p><span style="float: left;">Nom & Prénom: <strong>{{$versement->inscription->apprenant->nom}} {{$versement->inscription->apprenant->prenom}}</strong></span> &nbsp; <span style="float:right;">Montant versé: <strong>{{$versement->montant}} FCFA</strong></span> </p>
+        <h1>Reçu d'inscription</h1>
+        <h1 style="font-size: 16px;">Date de l'inscription: {{$inscription->date_inscription}}</h1>
+        <p><span style="float: left;">Nom & Prénom: <strong>{{$inscription->apprenant->nom}} {{$inscription->apprenant->prenom}}</strong></span> &nbsp; <span style="float:right;">Référence de l'inscription: <strong>{{$inscription->apprenant->matricule}}</strong></span> </p>
        
-        <p><span style="float: left;">Référence de l'inscription: <strong>{{$versement->inscription->apprenant->matricule}}</strong></span> <span style="float:right;">Montant restant: <strong>{{($versement->frais->montant - $somme_verse)}}</strong></span></p>
-        <br><br>
+       
         <div class="info">
-            <p>Année Scolaire: {{$versement->inscription->annee->libelle}}</p>
+            <p>Année Scolaire: {{$inscription->annee->libelle}}</p>
             @if($section == '1' || $section == '2')
-            <p>Niveau: {{$versement->inscription->niveau->code}} </p>
+            <p>Niveau: {{$inscription->niveau->code}} </p>
             @else
-            <p>Section: {{$versement->inscription->niveau->code}} {{$versement->inscription->cycleFiliere->code}} </p>
+            <p>Section: {{$inscription->niveau->code}} {{$inscription->cycleFiliere->code}} </p>
             @endif
         </div>
     </div>

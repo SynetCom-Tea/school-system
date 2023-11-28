@@ -29,9 +29,27 @@ class RapportController extends Controller
     {
         // dd($request->all());
         $etab = Etablissement::find(Auth::user()->etablissement_id);
-
+        $annee_encours = getAnneeEncours();
+        $periode = $request->periode ? Periode::find($request->periode) : null;
         if($request->type == 0){
-            if($request->section == '1' || $request->section == '2'){
+            if($request->section == '1'){
+                $bulletin = $request->id ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
+                $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
+                // dd($bulletin,$detail);
+                $data = [
+                    'etablissement' => $etab,
+                    'bulletin' => $bulletin,
+                    'notes' => $detail,
+                    'total_point' => $bulletin->somme_note_generale,
+                    'total_notation' => $bulletin->somme_notation,
+                    'section' => $request->section,
+                    'title' => 'Bulletin Trimestriel',
+                    'date' => date('m/d/Y'),
+                ];
+
+                $pdf = PDF::loadView('primaire/bulletin',$data)->setPaper('A4', 'landscape');
+
+            }elseif($request->section == '2'){
 
                 $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null) : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
@@ -46,19 +64,18 @@ class RapportController extends Controller
                 ];
 
                 $pdf = PDF::loadView('secondaire/bulletin', $data);
-
-            }else if($request->section == '3' || $request->section == '4'){
-                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->latest()->first() : null) : null;
+                
+            }else if($request->section == '3'){
+                $bulletin = $request->id ? HistoriqueBulletin::where('id',$request->id)->with('classe_annee.annee','apprenant','historique_notes','classe_annee.classe.niveau')->first() : null;
                 // $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 $bulletin->groupUe = $bulletin->historique_notes->groupBy('nom_eu');
                 // foreach ($bulletin->groupUe as $ue => $note) {
                 //     dump($ue,$note);
                 // }
-                // dd($bulletin);
+                // dd($request->id,$bulletin);
                 $data = [
                     'etablissement' => $etab,
                     'bulletin' => $bulletin,
-                    // 'detail' => $detail,
                     'section' => $request->section,
                     'title' => 'Bulletin Semestriel',
                     'date' => date('m/d/Y'),
@@ -67,11 +84,36 @@ class RapportController extends Controller
             }
 
         }elseif($request->type == 1){
-            if($request->section == '1' || $request->section == '2'){
+            if($request->section == '1'){
                 $tabs = [];
-                $annee_encours = getAnneeEncours();
-                
-                $bulletins = $request->classe ?  HistoriqueBulletin::where('statut',1)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
+                $bulletins = $request->classe && $periode ?  HistoriqueBulletin::where('statut',1)->where('periode',$periode->libelle)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
+                    $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
+                })->with('classe_annee.annee','classe_annee.classe.niveau')->get() : [];
+
+                foreach ($bulletins as $key => $bulletin) {
+                    $details = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
+                    $tabs[$bulletin->apprenant_id]=[
+                        'classe' => $bulletin->classe_annee->classe,
+                        'bulletin' => $bulletin,
+                        'detail' => $details,
+                    ];
+                }
+                // dd($tabs);
+                $data = [
+                    'etablissement' => $etab,
+                    'donnees' => $tabs,
+                    'total_point' => reset($tabs)['bulletin']->somme_note_generale,
+                    'total_notation' => reset($tabs)['bulletin']->somme_notation,
+                    'section' => $request->section,
+                    'title' => 'Bulletin Trimestriel',
+                    'date' => date('m/d/Y'),
+                ];
+
+                $pdf = PDF::loadView('primaire/bulletin_par_classe',$data)->setPaper('A4', 'landscape');
+
+            }elseif($request->section == '2'){
+                $tabs = [];
+                $bulletins = $request->classe && $periode ?  HistoriqueBulletin::where('statut',1)->where('periode',$periode->libelle)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
                     $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
                 })->with('classe_annee.annee','classe_annee.classe.niveau')->get() : [];
 

@@ -41,7 +41,7 @@
         }
         .logo img {
             max-width: 30%;
-            /* height: auto; */
+            height: auto;
         }
         .dotted-line {
             width: 100%;
@@ -50,15 +50,53 @@
     </style>
 </head>
 <body>
+<div class="receipt">
+        <div class="logo">
+            <img src="team.png" alt="Logo de l'entreprise">
+        </div>
+        <div style="margin-bottom: 20px; text-align:right; margin-top:-130px; margin-left:320px; position:absolute">
+            @if($etablissement->logo === null)
+            <img style="max-width:40%; height: 10%;" src="logos/iat-logo.png" alt="Logo de l'entreprise">
+            @else
+            <img style="max-width:30%; height: 20%" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
+            @endif
+        </div>
+        <p style="margin-bottom: 20px; text-align:center; margin-top:-120px;">
+       
+            <b style="margin-top: -10px;"><strong>{{$etablissement->name}}</strong></b><br>
+            <b style="margin-top: 5px;">Rue de {{$etablissement->adresse}}</b><br>
+            <b style="margin-top: 5px;">Tel: {{$etablissement->telephone}}</b><br>
+            <b style="margin-top: 5px;">{{$etablissement->ville}}-Niger</b>
+      
+        </p>
+        <h1>Reçu de versement</h1>
+        <h1 style="font-size: 16px;">Date du versement: {{$versement->date_versement}}</h1>
+        <p><span style="float: left;">Nom & Prénom: <strong>{{$versement->inscription->apprenant->nom}} {{$versement->inscription->apprenant->prenom}}</strong></span> &nbsp; <span style="float:right;">Montant versé: <strong>{{$versement->montant}} FCFA</strong></span> </p>
+       
+        <p><span style="float: left;">Référence de l'inscription: <strong>{{$versement->inscription->apprenant->matricule}}</strong></span> <span style="float:right;">Montant restant: <strong>{{($versement->frais->montant - $somme_verse)}}</strong></span></p>
+        <br><br>
+        <div class="info">
+            <p>Année Scolaire: {{$versement->inscription->annee->libelle}}</p>
+            @if($section == '1' || $section == '2')
+            <p>Niveau: {{$versement->inscription->niveau->code}} </p>
+            @else
+            <p>Section: {{$versement->inscription->niveau->code}} {{$versement->inscription->cycleFiliere->code}} </p>
+            @endif
+        </div>
+    </div>
+    <br><br>
+    <div class="dotted-line"></div>
+    <!-- ********************************************************************************* -->
+    <br><br>
     <div class="receipt">
         <div class="logo">
             <img src="team.png" alt="Logo de l'entreprise">
         </div>
         <div style="margin-bottom: 20px; text-align:right; margin-top:-130px;">
             @if($etablissement->logo === null)
-            <img style="max-width:30%; height: 11%;" src="logos/iat-logo.png" alt="Logo de l'entreprise">
+            <img style="max-width:30%; height: 20%;" src="logos/iat-logo.png" alt="Logo de l'entreprise">
             @else
-            <img style="max-width:30%; height:auto" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
+            <img style="max-width:30%; height:20%" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
             @endif
         </div>
         <p style="margin-bottom: 20px; text-align:center; margin-top:-120px;">
