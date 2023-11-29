@@ -9,17 +9,19 @@ import {
     mdiAccountPlusOutline,
     mdiEmailOutline,
     mdiCancel,
-    mdiCheckCircle
+    mdiCheckCircle,
+    mdiPlus
 } from '@mdi/js'
 export default {
     components: {
         mdiAccountPlusOutline,
         mdiEmailOutline,
         mdiCancel,
-        mdiCheckCircle
+        mdiCheckCircle,
+        mdiPlus
     },
     layout: AuthenticatedLayout,
-    props: ['roles', 'sections', 'etablissements', 'apprenants', 'enseignants','etablissement_sections'],
+    props: ['role', 'AllSections', 'etablissements', 'apprenants', 'enseignants', 'etablissement_sections'],
     data() {
         return {
             role_p_u: null,
@@ -27,7 +29,8 @@ export default {
                 mdiAccountPlusOutline,
                 mdiEmailOutline,
                 mdiCancel,
-                mdiCheckCircle
+                mdiCheckCircle,
+                mdiPlus
             },
             form: useForm({
                 nom: '',
@@ -37,7 +40,7 @@ export default {
                 sections: [],
                 apprenant_id: null,
                 enseignant_id: null,
-                section : null
+                section: null
             }),
         }
     },
@@ -67,49 +70,62 @@ export default {
         setInfoForEnseignant() {
             this.form.nom = this.enseignants.filter(el => el.id == this.form.enseignant_id)[0].nom
             this.form.prenom = this.enseignants.filter(el => el.id == this.form.enseignant_id)[0].prenom
-            console.log(this.$page.props.sections)
+            // console.log(this.$page.props.sections)
         },
         setInfoForApprenant() {
             this.form.nom = this.apprenants.filter(el => el.id == this.form.apprenant_id)[0].nom
             this.form.prenom = this.apprenants.filter(el => el.id == this.form.apprenant_id)[0].prenom
         },
-
+        formatEnseignant(item) {
+            return `${item.matricule } - ${item.nom }  ${item.prenom}`
+        },
+        formatApprenant(item) {
+            return `${item.matricule } - ${item.nom }  ${item.prenom}`
+        },
     },
     created() {
-        this.role_p_u = this.roles.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
+        this.role_p_u = this.role.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
     }
 }
 </script>
 <template>
 <v-card>
-    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Nouvel Utilisateurs"></Toolbar>
+    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Nouvel Utilisateur"></Toolbar>
     <v-card-text>
         <v-form>
-            <v-row>
-                <v-col md="6">
-                    <TextField name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true"></TextField>
-                    <TextField name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom"></TextField>
-                    <Autocomplete v-if="$page.props.auth.user.id !== 1 && form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" variant="solo-filled" :items="etablissement_sections" multiple chips clearable v-model="form.section">
-                    </Autocomplete>
-                </v-col>
-                <v-col v-if="$page.props.auth.user.id !=1">
-                    <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" variant="solo-filled" chips clearable v-model="form.roles">
-                    </Autocomplete>
-                    <Autocomplete label="Enseignant" v-if="form.roles==2" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="enseignants" chips clearable>
-                    </Autocomplete>
-                    <Autocomplete label="Apprenants" v-if="form.roles==3" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" item-title="matricule" item-value="id" variant="solo-filled" :items="apprenants" chips clearable>
-                    </Autocomplete>
-                </v-col>
-            </v-row>
-            <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn dark small type="button" variant="outlined" color="red" @click="goBack">
-                    <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-                </v-btn>
-                <v-btn small color="success" variant="outlined" @click="submit">
-                    <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-                </v-btn>
-            </v-card-actions>
+            <v-card style="border: 2px solid rgb(0, 73, 128);margin: 5px">
+                <v-card-title style="color: white; background-color: rgb(0, 73, 128)">
+                    <v-icon :icon="icon.mdiPlus" left></v-icon>
+                    Nouveau Utilisateur
+                </v-card-title>
+                <v-divider></v-divider>
+                <br />
+                <v-row style="margin:20px">
+                    <v-col md="6">
+                        <TextField disabled name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] "></TextField>
+                        <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" chips clearable v-model="form.roles" :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </Autocomplete>
+                        <Autocomplete label="Enseignant" v-if="form.roles == 2" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" :item-title="formatEnseignant" item-value="id" :items="enseignants" chips clearable :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </Autocomplete>
+                        <Autocomplete label="Apprenants" v-if="form.roles == 3" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" :item-title="formatApprenant" item-value="id" :items="apprenants" chips clearable :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </Autocomplete>
+                    </v-col>
+                    <v-col v-if="$page.props.auth.user.id !=1">
+                        <TextField disabled name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom" :rules="[v => !!v || 'Ce champ est requis!'] "></TextField>
+                        <Autocomplete v-if="$page.props.auth.user.id !== 1" :disabled="!form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" :items="etablissement_sections" multiple chips clearable v-model="form.section" :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </Autocomplete>
+                    </v-col>
+                </v-row>
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn dark small type="button" variant="outlined" color="red" @click="goBack">
+                        <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
+                    </v-btn>
+                    <v-btn small :loading="form.processing" color="success" variant="outlined" @click="submit">
+                        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
         </v-form>
     </v-card-text>
 </v-card>

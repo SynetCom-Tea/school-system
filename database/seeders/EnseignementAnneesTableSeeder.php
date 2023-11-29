@@ -499,6 +499,18 @@ class EnseignementAnneesTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'code' => 'MASTER METHODES INFORMATIQUES APPLIQUEES A LA GESTION DES ENTREPRISES/Prémiere Année/2e cycle/MIAGE/2e cycle/ Prémiere Année/Anglais',
             ),
+            40 => 
+            array (
+                'id' => 43,
+                'enseignant_id' => 6,
+                'niveau_matiere_id' => NULL,
+                'classe_annee_id' => 20,
+                'filiere_niveau_matiere_ue_id' => 7,
+                'created_at' => '2023-11-29 09:39:53',
+                'updated_at' => '2023-11-29 09:39:53',
+                'deleted_at' => NULL,
+                'code' => 'Analyste Programmeur/Prémiere Année/1er cycle/Analyste Programmeur/1er cycle/ Prémiere Année/RGH',
+            ),
         ));
         
         

@@ -128,7 +128,7 @@ export default {
             if (item.enseignement_annee.niveau_matiere) {
                 // Concatenate the relevant properties for the label
                 // console.log(item.type_evaluation.libelle)
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''} - ${item ? item?.periode?.libelle : ''}`;
             }else{
                  return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
             }

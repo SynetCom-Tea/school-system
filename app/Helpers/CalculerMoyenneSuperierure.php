@@ -63,7 +63,7 @@ use Illuminate\Support\Facades\DB;
             $details_notes[] = [
                 'nom_eu' => $notes[0]->nom_ue,
                 'nom_matiere' => $matiere,
-                'id_eu' => $notes[0]->id_ue,
+                'id_ue' => $notes[0]->id_ue,
                 'id_matiere' => $notes[0]->id_matiere,
                 'note_origine_devoir' => $note_origine_devoir ?? null,
                 'note_origine_examen' => $note_origine_examen ?? null,
