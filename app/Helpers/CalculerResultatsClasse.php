@@ -13,20 +13,25 @@ use App\Models\ClasseAnnee;
 use Illuminate\Support\Facades\DB;
 
 if (!function_exists('calculerResultatsClasse')) {
-    function calculerResultatsClasse($classeId, $section, $periode) {
+    function calculerResultatsClasse($classeId, $section, $etablissement_section, $periode, $apprenants = null) {
         $resultatsClasse = [];
-        $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+        $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
+        if($apprenants != null){
+            $apprenantsDeLaClasse = $apprenants;
+            // dd($apprenants);
+        }else{
+            $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+        }
         //dd($apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $details_notes = calculerMoyenneSecondaire($classeId, $section, $periode, $apprenant->id);
             $resultatsClasse[$apprenant->id] = [
-                'classe' => $classeId,
+                'classe_annee_id' => $classeId,
                 'periode' => $details_notes[0]['periodes'],
-                'nom_classe' => Classe::find($classeId)->libelle,
-                'apprenant' => $apprenant->id,
+                'nom_classe' => $classe->libelle,
+                'apprenant_id' => $apprenant->id,
                 'matricule_apprenant' => $apprenant->matricule,
-                'nom_apprenant' => $apprenant->nom,
-                'prenom_apprenant' => $apprenant->prenom,
+                'nom_prenom_apprenant' => $apprenant->nom . ' ' . $apprenant->prenom,
                 'details_notes' => $details_notes, // Tableau des détails des notes
             ];
         }
@@ -62,10 +67,15 @@ if (!function_exists('calculerResultatsClasse')) {
 }
 
 if (!function_exists('calculerResultatsClassePrimaire')) {
-    function calculerResultatsClassePrimaire($classeId, $section, $etablissement_section, $periode) {
+    function calculerResultatsClassePrimaire($classeId, $section, $etablissement_section, $periode, $apprenants = null) {
         $resultatsClasse = [];
         $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
-        $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+        if($apprenants != null){
+            $apprenantsDeLaClasse = $apprenants;
+            // dd($apprenants);
+        }else{
+            $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+        }
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $notes_apprenant = getNoteByClasses($classeId, $section, $periode, $apprenant->id);
             $moyenne = calculerMoyennePrimaire($notes_apprenant);
@@ -85,24 +95,23 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
             }
         
             $resultatsClasse[] = [
-                'classe' => $classeId,
+                'classe_annee_id' => $classeId,
                 'periode' => $notes_apprenant[0]->periode,
                 'nom_classe' => $classe->libelle,
-                'apprenant' => $apprenant->id,
+                'apprenant_id' => $apprenant->id,
                 'matricule_apprenant' => $apprenant->matricule,
-                'nom_apprenant' => $apprenant->nom,
-                'prenom_apprenant' => $apprenant->prenom,
-                'moyenne' => $moyenne,
+                'nom_prenom_apprenant' => $apprenant->nom . ' ' . $apprenant->prenom,
+                'moyenne_details_notes' => $moyenne,
                 'details_notes' => $details_notes, // Tableau des détails des notes
-                'sommeNotations' => $sommeNotations,
-                'sommeNotes' => $sommeNotes
+                'somme_notation' => $sommeNotations,
+                'somme_note_generale' => $sommeNotes
             ];
         }
         // Transformer le tableau associatif en tableau indexé pour trier
         $resultatsClasse = array_values($resultatsClasse);
 
         usort($resultatsClasse, function ($a, $b) {
-            return $b['moyenne'] <=> $a['moyenne'];
+            return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
         });
 
         $rank = 1;

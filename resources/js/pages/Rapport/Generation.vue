@@ -10,7 +10,7 @@ export default {
         DetailBulletin
     },
     layout: AuthenticatedLayout,
-    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres", "apprenant", "section", "apprenants"],
+    props: ["sectionID", "resultats", "periodes","filieres", "cycle_filieres", "apprenant", "section", "apprenants", "premieregeneration"],
     data: () => ({
         icons: {
             mdiDatabaseSync,
@@ -32,7 +32,6 @@ export default {
             },
             { title: 'Nom & Prénom', align: 'center', key: 'nom_prenom_apprenant' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
-            { title: 'Rang', align: 'center', key: 'rang' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
         headersSecondaire: [
@@ -42,10 +41,8 @@ export default {
                 sortable: false,
                 key: 'matricule_apprenant',
             },
-            { title: 'Nom', align: 'center', key: 'nom_apprenant' },
-            { title: 'Prénom', align: 'center', key: 'prenom_apprenant' },
+            { title: 'Nom & Prénom', align: 'center', key: 'nom_prenom_apprenant' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
-            { title: 'Rang', align: 'center', key: 'rang' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
         headersSup: [
@@ -57,7 +54,6 @@ export default {
             },
             { title: 'Nom & Prénom', align: 'center', key: 'nom_prenom_apprenant' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
-            { title: 'Rang', align: 'center', key: 'rang' },
             {title: 'Actions', align: 'center', key: 'actions'},
         ],
         tab: 'option-1',
@@ -65,6 +61,7 @@ export default {
         detailData: null,
         apprenantData: [],
         classes: [],
+        session: null,
         apprenant2: null,
         classe2: null,
         filiere2: null,
@@ -95,7 +92,7 @@ export default {
             window.open(route('bulletin', { type: 1, classe: this.classe, periode: this.periode, section: this.sectionID}), '_blank');
             // window.location.href = route('bulletin', { type: 1, classe: this.classe, periode: this.periode, section: this.sectionID}) 
         },
-        generate() {
+        async generate() {
             console.log(this.tab)
             if(this.tab == 'option-1'){
                 this.$inertia.replace(this.$page.url, {
@@ -110,18 +107,39 @@ export default {
                 }
                 this.data = this.resultats;
             }else if(this.tab == 'option-2'){
-                this.$inertia.replace(this.$page.url, {
-                    data: { classe: this.classe, periode: this.periode, tab: this.tab, apprenant: this.apprenant2 }
+
+                await axios
+                    .get(
+                    route("bulletinbyapprenant", {
+                        section_id: this.sectionID,
+                        classe: this.classe2, 
+                        periode: this.periode2, 
+                        tab: this.tab, 
+                        apprenant: this.apprenant2
+                    })
+                    )
+                    .then((res) => {
+                    if (typeof res.data == "string") {
+                        this.$toast.error("Données non valides!");
+                        console.log('noottttt')
+                    } else {
+                        this.data = res.data;
+                        console.log('ooookk')
+                        this.$toast.error("supp!");
+                    }
                 });
+                // this.$inertia.replace(this.$page.url, {
+                //     data: { classe: this.classe, periode: this.periode, tab: this.tab, apprenant: this.apprenant2 }
+                // });
             }
         },
-        apprenantsAvecMatricule() {
-            return this.apprenants.map(apprenant => ({
-                ...apprenant,
-                affichageComplet: `${apprenant.matricule} - ${apprenant.nom} ${apprenant.prenom}`
-            }));
-            console.log(this.apprenants)
-        },
+        // apprenantsAvecMatricule() {
+        //     return this.apprenants.map(apprenant => ({
+        //         ...apprenant,
+        //         affichageComplet: `${apprenant.matricule} - ${apprenant.nom} ${apprenant.prenom}`
+        //     }));
+        //     console.log(this.apprenants)
+        // },
         setData(classe){
             if(this.sectionID == 1){
                 // const filteredResults = this.resultats[classe];
@@ -138,16 +156,21 @@ export default {
         //     });
         // },
         setClasse(filiere){
-            if(this.sectionID == 1){
+            if(this.sectionID == 1 || this.sectionID == 2){
                 this.$inertia.replace(this.$page.url, {
                     data: { classe: this.classe2, periode: this.periode2, tab: this.tab }
                 });
-                this.apprenantsAvecMatricule()
             }else if(this.sectionID == 3){
+                console.log(filiere)
                 let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
                 const cycleFiliereIds = cf.map((item) => item.id);
                 this.classes = this.$page.props.classes.filter((classe) => cycleFiliereIds.includes(classe.cycle_filiere_id));
             }
+        },
+        setApprenant(){
+            this.$inertia.replace(this.$page.url, {
+                data: { classe: this.classe2, periode: this.periode2, tab: this.tab, session: this.session }
+            });
         },
         openBulletinDialog(item) {
             this.detailData = item;
@@ -202,7 +225,7 @@ export default {
                 <v-window-item value="option-1">
                     <v-card class="d-flex justify-center align-center">
                         <v-card-text>
-                            <v-row v-if="sectionID == 3  || sectionID == 4">
+                            <v-row v-if="sectionID == 3">
                                 <v-col md="5">
                                     <autocomplete
                                         label="Filière"
@@ -243,7 +266,7 @@ export default {
                                     @click="generate()"
                                     :disabled="!periode"
                                     >
-                                    Générer
+                                    {{ premieregeneration ? 'Générer' : 'Voir' }}
                                     </v-btn>
                                 </v-col>
                             </v-row>
@@ -278,7 +301,7 @@ export default {
                                     @click="generate"
                                     :disabled="!periode"
                                     >
-                                    Générer
+                                    {{ premieregeneration ? 'Générer' : 'Voir' }}
                                     </v-btn>
                                 </v-col>
                                 <!-- <v-col md="2" v-if="classe">
@@ -367,6 +390,76 @@ export default {
                                     </autocomplete>
                                 </v-col>
                                 <v-col md="4">
+                                    <v-btn
+                                    class="mt-4"
+                                    :append-icon="icons.mdiTimerSync"
+                                    color="deep-purple-accent-4"
+                                    @click="generate"
+                                    :disabled="!apprenant2"
+                                    >
+                                    Générer
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="sectionID == 3">
+                                <v-col md="3">
+                                    <autocomplete
+                                        label="Filière"
+                                        v-model="filiere2"
+                                        class="mt-4"
+                                        :items="$page.props.filieres"
+                                        @update:modelValue="setClasse(filiere2)"
+                                        item-title="code"
+                                        item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col md="3" v-if="filiere2">
+                                    <autocomplete
+                                    label="Classe"
+                                    v-model="classe2"
+                                    @update:modelValue="setApprenant()"
+                                    :items="classes"
+                                    class="mt-4"
+                                    isRequired
+                                    item-title="libelle"
+                                    item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col cols="2">
+                                    <autocomplete 
+                                        class="mt-4" 
+                                        v-model="periode2" 
+                                        label="Periodes" 
+                                        itemTitle="libelle" 
+                                        itemValue="id" 
+                                        :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe2" chips clearable>
+                                    </autocomplete>
+                                </v-col>
+                                <v-col cols="2">
+                                    <autocomplete 
+                                        class="mt-4" 
+                                        v-model="session"
+                                        label="Sessions" 
+                                        :items="['Prémiere session', 'Deuxiéme session']"
+                                        variant="outlined" :isRequired="true" :disabled="!periode2" clearable>
+                                    </autocomplete>
+                                </v-col>
+                                <v-col md="4">
+                                    <autocomplete
+                                        :label="apprenant"
+                                        v-model="apprenant2"
+                                        :items="apprenants"
+                                        :disabled="!classe2"
+                                        multiple
+                                        chips
+                                        class="mt-4"
+                                        isRequired
+                                        item-title="matricule"
+                                        item-value="id"
+                                    >
+                                    </autocomplete>
+                                </v-col>
+                                <v-col md="2">
                                     <v-btn
                                     class="mt-4"
                                     :append-icon="icons.mdiTimerSync"

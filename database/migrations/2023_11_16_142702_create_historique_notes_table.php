@@ -4,6 +4,8 @@ use App\Models\HistoriqueBulletin;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
+use Modules\Enseignement\Entities\Matiere;
+use Modules\Enseignement\Entities\Ue;
 
 return new class extends Migration
 {
@@ -17,6 +19,12 @@ return new class extends Migration
             $table->foreignIdFor(HistoriqueBulletin::class)
                 ->index()
                 ->references('id')->on('historique_bulletins');
+            $table->foreignIdFor(Matiere::class)->nullable()
+                ->index()
+                ->references('id')->on('matieres');
+            $table->foreignIdFor(Ue::class)->nullable()
+                ->index()
+                ->references('id')->on('ues');
             $table->string('nom_eu')->nullable();
             $table->string('nom_matiere');
             $table->string('coefficient');

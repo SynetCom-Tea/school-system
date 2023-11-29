@@ -39,6 +39,7 @@ if (!function_exists('getNoteByClasses')) {
                     'apprenants.nom AS nom_apprenant',
                     'apprenants.prenom AS prenom_apprenant',
                     'apprenants.id AS id_apprenant',
+                    'matieres.id AS id_matiere',
                     'matieres.nom AS nom_matiere',
                     'niveau_matieres.coefficient AS coefficient_matiere',
                     'niveau_matieres.notation AS notation_matiere'
@@ -49,13 +50,15 @@ if (!function_exists('getNoteByClasses')) {
                 ->join('ues', 'filiere_niveau_matiere_ues.ue_id', '=', 'ues.id')
                 ->select(
                     'type_evaluations.libelle AS type_evaluation',
-                    'periodes.libelle AS periode',
+                    'periodes.libelle AS periode',   
                     'notes.id AS note_id',
                     'notes.note',
                     'notes.date',
                     'apprenants.nom AS nom_apprenant',
                     'apprenants.prenom AS prenom_apprenant',
                     'apprenants.id AS id_apprenant',
+                    'matieres.id AS id_matiere',
+                    'ues.id AS id_ue',
                     'matieres.nom AS nom_matiere',
                     'ues.libelle AS nom_ue',
                     'filiere_niveau_matiere_ues.coefficient AS coefficient_matiere',

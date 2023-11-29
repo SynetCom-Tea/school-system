@@ -39,24 +39,24 @@
                 'nom_matiere' => $matiere,
                 'periodes' => $notes->first()->periode,
                 'coefficient' => $coefficient,
-                'noteDeClasse' => $noteDeClasse,
-                'noteDeClasseCoefficiente' => $noteDeClasseCoefficiente,
-                'noteDeComposition' => $noteDeComposition,
-                'noteDeCompositionCoefficiente' => $noteDeCompositionCoefficiente,
+                'note_de_classe' => $noteDeClasse,
+                'note_de_classe_coefficiente' => $noteDeClasseCoefficiente,
+                'note_de_composition' => $noteDeComposition,
+                'note_de_composition_coefficiente' => $noteDeCompositionCoefficiente,
                 'moyenne' => $moyenne,
-                'moyenneCoefficiente' => $moyenneCoefficiente
+                'moyenne_coefficiente' => $moyenneCoefficiente
             ];
         }
         if(count($details_notes) != 0){
             $details_notes[] = [
                 'nom_matiere' => 'Conduite',
                 'coefficient' => 1,
-                'noteDeClasse' => 18,
-                'noteDeClasseCoefficiente' => 18,
-                'noteDeComposition' => 18,
-                'noteDeCompositionCoefficiente' => 18,
+                'note_de_classe' => 18,
+                'note_de_classe_coefficiente' => 18,
+                'note_de_composition' => 18,
+                'note_de_composition_coefficiente' => 18,
                 'moyenne' => 18,
-                'moyenneCoefficiente' => 18
+                'moyenne_coefficiente' => 18
             ];
         }
         return $details_notes;

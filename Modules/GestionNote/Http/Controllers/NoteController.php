@@ -366,6 +366,7 @@ class NoteController extends Controller
         })->where('evaluation_id',$request->evaluation)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
         if ($request->evaluation){
+            if($request->section_id >=3){
             $eval = Evaluation::where('id',$request->evaluation)->with('enseignement_annee.filiere_niveau_matiere_ue.matiere')->get()[0];
             // dd($eval->id);
             $evaluation_session1 = Evaluation::where('periode_id',$eval->periode_id)->where('type_evaluation_id',$eval->type_evaluation_id)->where('session','Session 1')->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($eval){
@@ -380,16 +381,19 @@ class NoteController extends Controller
                     $id_apps = HistoriqueBulletin::whereHas('historique_notes',function ($notes) {
                         $notes->where('note_generale','<',10)->where('nom_matiere','merise');
                     })->where('apprenant_id',$note_app)->get()->pluck('apprenant_id');
-                    dump($id_apps);
+                    // dump($id_apps);
                 }     
                 die();
             }else {
-                dd('no');
+                $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
+                    $query->where('classe_id',$request->classe);
+                })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();
             }
-            
-            $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
-                $query->where('classe_id',$request->classe);
-            })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get(); 
+            } else {
+                $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
+                    $query->where('classe_id',$request->classe);
+                })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();
+            }  
         }elseif($request->evaluation == null && $request->questionner == 1) {
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                 $query->where('classe_id',$request->classe);
