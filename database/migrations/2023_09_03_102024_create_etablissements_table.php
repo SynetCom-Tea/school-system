@@ -2,6 +2,7 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -11,6 +12,12 @@ return new class extends Migration
      */
     public function up(): void
     {
+        Schema::create('regime_validations', function (Blueprint $table) {
+            $table->id();
+            $table->string('libelle')->nullable();
+            $table->string('description')->nullable();
+            $table->timestamps();
+        });
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
             $table->string('name');
@@ -27,9 +34,13 @@ return new class extends Migration
             $table->timestamps();
         });
 
+
         Schema::create('etablissement_section', function (Blueprint $table) {
             $table->id();
             $table->integer('regime_evaluation')->nullable();
+            $table->integer('nbre_credit')->nullable();
+            $table->foreignIdFor(\App\Models\RegimeValidation::class)->nullable()->index()
+            ->references('id')->on('regime_validations');
             $table->foreignIdFor(\App\Models\Etablissement::class)
                 ->index()
                 ->references('id')->on('etablissements');

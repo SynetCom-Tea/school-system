@@ -221,6 +221,55 @@ export default {
                         this.dialog = true
                     },
                     deleteItem(item) {
+                         console.log('item sup', item);
+                        this.$swal({
+                            title: "Es-tu sûr?",
+                            text: "Vous ne pourrez pas revenir en arrière !",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#004980",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Oui, supprimez-le!",
+                            cancelButtonText: "Non, annulez !",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                this.form.delete(route("affectations.destroy", item.id), {
+                                    onFinish: () => {
+                                        if (this.$page.props.flash?.message?.type == "error") {
+                                            this.$swal({
+                                                icon: "error",
+                                                title: "Suppression",
+                                                text: this.$page.props.flash?.message?.text,
+                                                toast: true,
+                                                position: "top-end",
+                                                showConfirmButton: false,
+                                                timer: 5000,
+                                                timerProgressBar: true,
+                                            });
+                                        } else if (this.$page.props.flash?.message?.type == "success") {
+                                            this.$swal({
+                                                icon: "success",
+                                                iconColor: "#004980",
+                                                color: "#004980",
+                                                title: "Suppression",
+                                                text: this.$page.props.flash?.message?.text,
+                                                toast: true,
+                                                position: "top-end",
+                                                showConfirmButton: false,
+                                                timer: 5000,
+                                                timerProgressBar: true,
+                                            });
+                                        }
+                                    },
+                                });
+
+
+                            }
+
+                        });
+                    },
+
+                    deleteItemNM(item) {
                         console.log('item sup', item);
                         this.$swal({
                             title: "Es-tu sûr?",
@@ -234,70 +283,90 @@ export default {
                         }).then((result) => {
                             if (result.isConfirmed) {
 
-                                if(this.section_id<=2){
-                                    this.form.delete(route("affectations.destroy", item.id), {
-                                    onFinish: () => {
-                                        if (this.$page.props.flash?.message?.type == "error") {
-                                            this.$swal({
-                                                icon: "error",
-                                                title: "Suppression",
-                                                text: this.$page.props.flash?.message?.text,
-                                                toast: true,
-                                                position: "top-end",
-                                                showConfirmButton: false,
-                                                timer: 5000,
-                                                timerProgressBar: true,
-                                            });
-                                        } else if (this.$page.props.flash?.message?.type == "success") {
-                                            this.$swal({
-                                                icon: "success",
-                                                iconColor: "#004980",
-                                                color: "#004980",
-                                                title: "Suppression",
-                                                text: this.$page.props.flash?.message?.text,
-                                                toast: true,
-                                                position: "top-end",
-                                                showConfirmButton: false,
-                                                timer: 5000,
-                                                timerProgressBar: true,
-                                            });
-                                        }
-                                    },
-                                });
-                            }else{
-                                this.form.delete(route("affectationsup.supprimer", item.id,this.section_id), {
-                                    onFinish: () => {
-                                        if (this.$page.props.flash?.message?.type == "error") {
-                                            this.$swal({
-                                                icon: "error",
-                                                title: "Suppression",
-                                                text: this.$page.props.flash?.message?.text,
-                                                toast: true,
-                                                position: "top-end",
-                                                showConfirmButton: false,
-                                                timer: 5000,
-                                                timerProgressBar: true,
-                                            });
-                                        } else if (this.$page.props.flash?.message?.type == "success") {
-                                            this.$swal({
-                                                icon: "success",
-                                                iconColor: "#004980",
-                                                color: "#004980",
-                                                title: "Suppression",
-                                                text: this.$page.props.flash?.message?.text,
-                                                toast: true,
-                                                position: "top-end",
-                                                showConfirmButton: false,
-                                                timer: 5000,
-                                                timerProgressBar: true,
-                                            });
-                                        }
-                                    },
-                                });
+                                    console.log('niveau',item.niveau.id);
+                                        this.form.delete(route("affectations.niveausupprime", item.niveau.id), {
+                                            onFinish: () => {
+                                                if (this.$page.props.flash?.message?.type == "error") {
+                                                    this.$swal({
+                                                        icon: "error",
+                                                        title: "Suppression",
+                                                        text: this.$page.props.flash?.message?.text,
+                                                        toast: true,
+                                                        position: "top-end",
+                                                        showConfirmButton: false,
+                                                        timer: 5000,
+                                                        timerProgressBar: true,
+                                                    });
+                                                } else if (this.$page.props.flash?.message?.type == "success") {
+                                                    this.$swal({
+                                                        icon: "success",
+                                                        iconColor: "#004980",
+                                                        color: "#004980",
+                                                        title: "Suppression",
+                                                        text: this.$page.props.flash?.message?.text,
+                                                        toast: true,
+                                                        position: "top-end",
+                                                        showConfirmButton: false,
+                                                        timer: 5000,
+                                                        timerProgressBar: true,
+                                                    });
+                                                }
+                                            },
+                                        });
+                                }
+
+                        });
+                    },
 
 
-                            }
-                            }
+                    deleteItemUE(item) {
+                        this.form.cycle_filiere_id=item.matieres[0].cycle_filiere_id
+                        this.form.niveau_id = item.matieres[0].niveau_id
+                        console.log('item sup', item);
+                        this.$swal({
+                            title: "Es-tu sûr?",
+                            text: "Vous ne pourrez pas revenir en arrière !",
+                            icon: "warning",
+                            showCancelButton: true,
+                            confirmButtonColor: "#004980",
+                            cancelButtonColor: "#d33",
+                            confirmButtonText: "Oui, supprimez-le!",
+                            cancelButtonText: "Non, annulez !",
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+
+                                    console.log('niveau',item);
+                                        this.form.delete(route("affectationsup.supprimerUE", item.ue.id), {
+                                            onFinish: () => {
+                                                if (this.$page.props.flash?.message?.type == "error") {
+                                                    this.$swal({
+                                                        icon: "error",
+                                                        title: "Suppression",
+                                                        text: this.$page.props.flash?.message?.text,
+                                                        toast: true,
+                                                        position: "top-end",
+                                                        showConfirmButton: false,
+                                                        timer: 5000,
+                                                        timerProgressBar: true,
+                                                    });
+                                                } else if (this.$page.props.flash?.message?.type == "success") {
+                                                    this.$swal({
+                                                        icon: "success",
+                                                        iconColor: "#004980",
+                                                        color: "#004980",
+                                                        title: "Suppression",
+                                                        text: this.$page.props.flash?.message?.text,
+                                                        toast: true,
+                                                        position: "top-end",
+                                                        showConfirmButton: false,
+                                                        timer: 5000,
+                                                        timerProgressBar: true,
+                                                    });
+                                                }
+                                            },
+                                        });
+                                }
+
                         });
                     },
                     async submit() {
@@ -553,9 +622,9 @@ export default {
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{ item }">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
-                </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
+                </v-icon> -->
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>
@@ -575,15 +644,15 @@ export default {
                 </template>
             <template v-slot:item.actions="{ item }">
 
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>
         <Datatable v-if="section_id >= 3 && systemeLMD !=null" titleDatatable="Liste des matières par niveau" :headers="headersupue" :items="niveauMatieres" :functionOnClickAddButton="create">
             <template v-slot:item.ues="{ item, index}">
-                    <v-chip-group size="small" column selected-class="text-purple" style="width:90%;">
+                    <v-chip-group size="small" column selected-class="text-purple">
                         <v-chip  v-for="tag in item.ues" style=" height: auto;  ">
-                            {{ tag.ue.libelle }} =>
+                            {{ tag.ue.libelle }} =>{{ " \t" }}{{ " \t" }}
 
                             <v-chip-group column selected-class="text-purple" style="width:90%;">
                                 <v-chip size="small" :key="i" v-for="(t, i) in tag.matieres"  style=" color: white; background-color: #7d002c; size:10px;">
@@ -600,7 +669,7 @@ export default {
 
                              <v-icon end size="small" class="me-2" title="Ajouter des cycles" @click="createmat(tag)" :icon="icons.mdiPlusCircle" color="primary"></v-icon>
                             <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
-                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItemUE(tag)" :icon="icons.mdiCloseCircle">
                             </v-icon>
 
                         </v-chip>
@@ -610,7 +679,7 @@ export default {
             <template v-slot:item.actions="{ item }">
                 <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon> -->
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>
@@ -631,7 +700,7 @@ export default {
             <template v-slot:item.actions="{ item }">
                 <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon> -->
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

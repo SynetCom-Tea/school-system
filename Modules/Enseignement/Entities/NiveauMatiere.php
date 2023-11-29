@@ -7,10 +7,11 @@ use Modules\Enseignement\Entities\Niveau;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class NiveauMatiere extends Model
 {
-    use HasFactory;
+    use HasFactory,SoftDeletes;
 
     protected $fillable = ['volume_horaire', 'coefficient', 'niveau_id', 'matiere_id','notation' ];
 

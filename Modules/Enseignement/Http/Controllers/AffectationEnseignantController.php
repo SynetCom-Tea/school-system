@@ -19,10 +19,12 @@ use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\NiveauMatiere;
 
 use function PHPSTORM_META\map;
-
 class AffectationEnseignantController extends Controller
 {
+    private $tab_classes;
+    // private $i=0;
     /**
+     *
      * Display a listing of the resource.
      * @return Renderable
      */
@@ -44,10 +46,19 @@ class AffectationEnseignantController extends Controller
         // })->get();
 
         // dd($classes);
-        $enseignement_annees=EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
-            $classe->where('etablissement_section_id',$table->id);
-        })->with('filiere_niveau_matiere_ue.matiere','niveau_matiere.matiere','classe_annee.classe','classe_annee.annee','enseignant')->get();
-
+        if($type<=2){
+            $enseignement_annees=EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
+                $classe->where('etablissement_section_id',$table->id);
+            })->with('filiere_niveau_matiere_ue.matiere','niveau_matiere.matiere','classe_annee.classe','classe_annee.annee','enseignant','niveau_matiere')->
+            whereHas('niveau_matiere',function($matiere) {
+                $matiere->where('deleted_at',null); })->get();
+        }else{
+            $enseignement_annees=EnseignementAnnee::whereHas('classe_annee.classe',function($classe) use ($table){
+                $classe->where('etablissement_section_id',$table->id);
+            })->with('filiere_niveau_matiere_ue.matiere','niveau_matiere.matiere','classe_annee.classe','classe_annee.annee','enseignant','niveau_matiere')->
+            whereHas('filiere_niveau_matiere_ue',function($matiere) {
+                $matiere->where('deleted_at',null); })->get();
+        }
         // $niveauMat = NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
 
         //     $query->where('etablissement_section_id',$table->id);})->whereHas('niveau',function ($query) use ($type){
@@ -57,11 +68,13 @@ class AffectationEnseignantController extends Controller
         $list1 = [];
         $tabs=collect();
         // dd($list_classes);
+        // dd($enseignement_annees);
         foreach($enseignants as $enseignant){
             foreach($enseignement_annees as $enseignement_annee){
                 // $i = 0;
                 if($enseignant->id == $enseignement_annee->enseignant_id){
                     if($type<=2){
+
                         $list[] = [
                         'id' => $enseignement_annee,
                         'matiere' => $enseignement_annee->niveau_matiere->matiere,
@@ -106,7 +119,13 @@ class AffectationEnseignantController extends Controller
 
         $classe_annees=[];
         $mat = $request->matiere ? Matiere::where('id',$request->matiere)->first():null;
-
+    //  dd($request->enseg);
+        $enseig = $request->enseg ? EnseignementAnnee::find($request->enseg):null;
+        if($enseig!=null){
+            $classes = ClasseAnnee::with('classe')->where('id',$enseig->classe_annee_id)->first();
+            // $class=ClasseAnnee::find()->with('classe');
+            $classe_annees[]=$classes;
+        }
         if($mat!=null){
 
                     $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
@@ -162,6 +181,7 @@ class AffectationEnseignantController extends Controller
 
 
                     }
+            // dd($classe_annees);
 
         }
 
@@ -186,6 +206,7 @@ class AffectationEnseignantController extends Controller
      * Show the form for creating a new resource.
      * @return Renderable
      */
+
     public function create($type,Request $request)
     {
         // dd($request->matiere ?? 3);
@@ -358,8 +379,18 @@ class AffectationEnseignantController extends Controller
 
         }
 
+        // if($type==1 || $type==2){
+        //     $allmatiere= NiveauMatiere::with('matiere','niveau')->whereHas('matiere',function ($query) use ($table){
 
+        //         $query->where('etablissement_section_id',$table->id);})->get();
+        // }else{
+        //     $allmatiere= FiliereNiveauMatiereUe::with('matiere')->whereHas('matiere',function ($query) use ($table){
+        //         $query->where('etablissement_section_id',$table->id);})->get();
+        // }
+
+        // dd($allmatiere);
             $allmatiere=Matiere::where('etablissement_section_id',$table->id)->get();
+
 
 
         return Inertia::render('AffectationEnseignants/Create', [
