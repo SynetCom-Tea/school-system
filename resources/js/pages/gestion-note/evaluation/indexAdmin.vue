@@ -143,17 +143,17 @@ export default {
         editItem(item) {
             // console.log(item)
             this.form.id = item.id,
-                this.form.date = item.date,
-                this.form.periode_id = item.periode_id,
-                this.form.type_evaluation_id = item.type_evaluation_id
+            this.form.date = item.date,
+            this.form.periode_id = item.periode_id,
+            this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id
             this.form.enseignant_id = item.enseignant_id,
-                this.form.annee_id = item.annee_id,
-                this.form.filiere = item.filiere_id,
-                this.form.matieres = item.matiere_id,
-                this.form.session = item.session
-                this.form.niveau = item.niveau_id,
-                this.form.notation = item.notation
+            this.form.annee_id = item.annee_id,
+            this.form.filiere = item.filiere_id,
+            this.form.matieres = item.matiere_id,
+            this.form.session = item.session
+            this.form.niveau = item.niveau_id,
+            this.form.notation = item.notation
             this.libelle = this.type_evaluation.filter(el => el.id == item.type_evaluation_id)
             if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle") {
                 this.notation = true
@@ -342,6 +342,7 @@ export default {
             })
         },
         Notation(t) {
+            this.form.session = null
             this.libelle = this.type_evaluation.filter(el => el.id == t)
             if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle"|| this.libelle[0].libelle == "Composition") {
                 this.notation = true
@@ -427,10 +428,10 @@ export default {
                                     <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
                                     </TextField>
                                 </v-col>
-                                <v-col cols="3" v-if="section_id>=3" >
+                                <v-col cols="3" v-if="section_id>=3 && form.type_evaluation_id == 6" >
                                     <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
-                                        <v-radio label="1ère" value="Prémiere session"></v-radio>
-                                        <v-radio label="2ème" value="deuxiéme session"></v-radio>
+                                        <v-radio label="1ère" value="Session 1"></v-radio>
+                                        <v-radio label="2ème" value="Session 2"></v-radio>
                                     </v-radio-group>
                                 </v-col>
                             </v-row>
@@ -482,23 +483,23 @@ export default {
                                     </Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                                    <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Filieres" :rules="[v => !!v || 'Ce champ est requis!'] " :isRequired="true"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
+                                    <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux" :rules="[v => !!v || 'Ce champ est requis!'] " :isRequired="true"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres"></Autocomplete>
+                                    <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres" :isRequired="true"></Autocomplete>
                                 </v-col>
                                 <v-col cols="3" v-if="section_id <=2">
-                                    <Autocomplete :disabled="!form.annee_id" label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                                    <Autocomplete :disabled="!form.annee_id" label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                     </Autocomplete>
                                 </v-col>
                                 <v-col cols="3" v-if="section_id <=2 && notation">
-                                    <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation">
+                                    <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation" :rules="[v => !!v || 'Ce champ est requis!'] "  :isRequired="true">
                                     </TextField>
                                 </v-col>
-                                <v-col cols="3" v-if="section_id>=3" >
+                                <v-col cols="3" v-if="section_id>=3 && form.type_evaluation_id == 6" >
                                     <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
                                         <v-radio label="1ère" value="Prémiere session"></v-radio>
                                         <v-radio label="2ème" value="deuxiéme session"></v-radio>

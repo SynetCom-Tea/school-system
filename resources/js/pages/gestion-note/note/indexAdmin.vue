@@ -1,5 +1,4 @@
 <template>
-<!-- <AuthenticatedLayout> -->
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
     <br>
     <div style="margin: 20px">
@@ -51,7 +50,7 @@
                         </v-row>
                         <v-row>
                             <v-col md="12">
-                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator,rules.max]">
+                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator]">
                                 </TextField>
                             </v-col>
                         </v-row>
@@ -68,7 +67,7 @@
         <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Liste des notes</v-card-title>
         <v-divider></v-divider>
         <br />
-        <Datatable titleDatatable="Listes des notes" :displayAddButton="false" :items="notes" :headers="headers">
+        <Datatable titleDatatable="Liste des notes" :displayAddButton="false" :items="notes" :headers="headers">
             <template v-slot:item.apprenant="{ item}">
                 {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
             </template>
@@ -78,7 +77,6 @@
             </template>
         </Datatable>
     </v-card>
-<!-- </AuthenticatedLayout> -->
 </template>
 
 <script>
@@ -93,6 +91,7 @@ import {
     mdiPencil,
     mdiDelete,
     mdiCloseCircle,
+    mdiSearchWeb
 } from '@mdi/js'
 export default {
     components: {
@@ -100,9 +99,10 @@ export default {
         mdiPencil,
         mdiDelete,
         mdiCloseCircle,
+        mdiSearchWeb
     },
     layout: AuthenticatedLayout,
-    props: ['classes', 'evaluations', 'notes', 'annees', 'type'],
+    props: ['classes', 'evaluations', 'notes', 'annees', 'type',],
     data() {
         return {
             icon: {
@@ -110,16 +110,18 @@ export default {
                 mdiPencil,
                 mdiDelete,
                 mdiCloseCircle,
+                mdiSearchWeb
             },
             dialogEdit: false,
             headers: [{
-                    title: '#',
+                
+                    title: 'Matricule',
                     align: 'start',
                     key: 'apprenant.matricule',
                     sortable: false,
                 },
                 {
-                    title: "Nom",
+                    title: "Nom et Prénom",
                     align: "center",
                     key: "apprenant"
                 },
@@ -137,7 +139,7 @@ export default {
             rules: {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                max: v => (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation) >= v || "La note ne doit pas dépasser " + (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation)
+                // max: v => (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation) >= v || "La note ne doit pas dépasser " + (this.evaluations[0].notation || this.evaluations[0].enseignement_annee.niveau_matiere.notation)
             },
             format: useForm({
                 section_id: null,
@@ -163,15 +165,17 @@ export default {
         formatEvaluationLabel(item) {
             if (item.enseignement_annee.niveau_matiere) {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
-            } else {
+            } else if(item?.session != null) {
                 return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} - ${item ? item?.session : ''}`;
+            }else{
+                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} `;
             }
         },
         formatClasseLabel(item) {
             if (this.type >= 3 && item?.cycle_filiere_id != null) {
                 return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
             } else {
-                return `${item ? item?.libelle : 'Pas de données'}`;
+                return `${item ? item?.code : 'Pas de données'}`;
             }
         },
         rechercher() {
@@ -180,54 +184,50 @@ export default {
                     evaluation: this.form.evaluation,
                 },
                 onFinish: () => {
-                        // console.log('thjk')
-                        if (this.$page.props.flash ?.message ?.type == 'error') {
-                            this.$swal({
-                                icon: 'warning',
-                                title: 'Information',
-                                text: this.$page.props.flash ?.message ?.text,
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 10000,
-                                timerProgressBar: true,
-                            });
-                        }
-                    },
+                    if (this.$page.props.flash ?.message ?.type == 'error') {
+                        this.$swal({
+                            icon: 'warning',
+                            title: 'Information',
+                            text: this.$page.props.flash ?.message ?.text,
+                            toast: true,
+                            position: 'top-end',
+                            showConfirmButton: false,
+                            timer: 10000,
+                            timerProgressBar: true,
+                        });
+                    }
+                },
             });
-            // console.log('je suis la',this.selectedClasse,this.selectedEvaluation)
         },
         setClasse(a) {
-            // console.log(this.form)
             this.form.classe = null,
-                router.replace(this.$page.url, {
-                    data: {
-                        annee: a,
-                    }
-                });
+            router.replace(this.$page.url, {
+                data: {
+                    annee: a,
+                }
+            });
         },
         requete(id) {
-            // console.log(this.type)
             this.form.evaluation = null,
-                router.replace(this.$page.url, {
-                    data: {
-                        classe: id,
-                    },
-                });
-            // console.log('id',id)   
+            router.replace(this.$page.url, {
+                data: {
+                    classe: id,
+                },
+            });
         },
         edit(item) {
-            // console.log(item)
             this.dialogEdit = true,
-                this.form.id_note = item.id,
-                this.form.note = item.note,
-                this.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
+            this.form.id_note = item.id,
+            this.form.note = item.note,
+            this.nom_prenom = item.apprenant.nom + ' ' + item.apprenant.prenom
             if (item.evaluation.enseignement_annee.niveau_matiere) {
                 this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.niveau_matiere.matiere.nom
-            } else {
-                this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom
+            }else if(item.evaluation.session != null)  {
+                this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom + '-' + item.evaluation.session
+            }else {
+                this.type_matiere = item.evaluation.type_evaluation.libelle + '-' + item.evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere.nom 
             }
-        },
+        }, 
         closeEdit() {
             this.dialogEdit = false
         },

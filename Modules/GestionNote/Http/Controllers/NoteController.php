@@ -8,12 +8,14 @@ use App\Models\Classe;
 use App\Models\Section;
 use App\Models\Apprenant;
 use Illuminate\Http\Request;
+use App\Models\HistoriqueNote;
+use App\Models\HistoriqueBulletin;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\ApprenantClasseAnnee;
+
 use Illuminate\Support\Facades\Auth;
 use Modules\GestionNote\Entities\Note;
-
 use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Periode;
 use Modules\Enseignement\Entities\Filiere;
@@ -158,26 +160,48 @@ class NoteController extends Controller
         // if ($reempty($re)) {
         //     # code...
         // }
-        if ($request->section_id >=3 && $request->enseignement_annee_id ==null && $request->evaluation ==null  ){
+        if ($request->section_id >=3 && $request->enseignement_annee_id ==null && $request->evaluation ==null){
             $fnmu = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get();
                 $classe_id = Classe::where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get()[0]->id;
                 $enseigement_anne = EnseignementAnnee::where('filiere_niveau_matiere_ue_id',$fnmu[0]->id)->where('enseignant_id',$request->enseignant)->whereHas('classe_annee',function($classe) use ($request,$classe_id){
                     $classe->where('classe_id',$classe_id)->where('annee_id',$request->annee);
                 })->where('niveau_matiere_id','=',null)->get();
                 $id_enseignement = $enseigement_anne[0]->id;
-                $data = ['session'=>$request->session, 'date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+                if ($request->session){
+                    $evaluationId = Evaluation::where('periode_id',$request->periode_id)->where('type_evaluation_id',$request->type_evaluation_id)->where('session',$request->session)->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($request){
+                            $matiere->where('matiere_id',$request->matieres);
+                        });
+                }
+                else {
+                    $evaluationId = Evaluation::where('periode_id',$request->periode_id)->where('type_evaluation_id',$request->type_evaluation_id)->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($request){
+                        $matiere->where('matiere_id',$request->matieres);
+                    });
+                }
+                if ($evaluationId->exists()){
+                    $evaluation_id = $evaluationId->get()[0]->id;
+                }else{
+                    $data = ['session'=>$request->session, 'date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+                    $evaluation = Evaluation::create($data);
+                    $evaluation_id = $evaluation->id;
+                }
+                // dd($evaluation_id);
+        }else if ($request->section_id <=2 && $request->enseignement_annee_id !=null && $request->evaluation ==null){
+            // $verifyEvaluation  = 
+            $evaluationId = Evaluation::where('periode_id',$request->periode_id)->where('type_evaluation_id',$request->type_evaluation_id)->where('enseignement_annee_id',$request->enseignement_annee_id);
+            if ($evaluationId->exists()){
+                $evaluation_id = $evaluationId->get()[0]->id;
+                // dd($evaluation_id);
+            }else{
+                $data = ['date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $request->enseignement_annee_id , 'statut' =>0?? 'RAS'];
                 $evaluation = Evaluation::create($data);
                 $evaluation_id = $evaluation->id;
-        }else {
-            $data = ['session'=>$request->session, 'date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $request->enseignement_annee_id , 'statut' =>0?? 'RAS'];
-            $evaluation = Evaluation::create($data);
-            $evaluation_id = $evaluation->id;
+            }    
         } 
         foreach ($request->notes as $key => $value) {
             if($value != null){
                 $item = ApprenantClasseAnnee::where('id',$key)->with('apprenant')->get();
                 // dump($item[0]);
-                $verif = Note::where('evaluation_id',$request->evaluation)->where('apprenant_id',$item[0]->apprenant->id)->get();
+                $verif = Note::where('evaluation_id',$request->evaluation ? $request->evaluation : $evaluation_id )->where('apprenant_id',$item[0]->apprenant->id)->get();
                 // dump($verif);
                 if($verif->count() == 0){
                     $note = Note::create([
@@ -290,38 +314,38 @@ class NoteController extends Controller
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
         $enseignant = Enseignant::whereHas('enseignement_annees.classe_annee.classe',function($etat) use ($etat_section_id){
             $etat->where('etablissement_section_id',$etat_section_id);
-        })->where('etablissement_id',Auth::user()->etablissement_id)->get();
+            })->where('etablissement_id',Auth::user()->etablissement_id)->get();
         $filieres = $request->annee && $request->enseignant ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);
-        })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
+            })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant);
-        })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.classe_annee',function($anne) use($request){
+            })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.classe_annee',function($anne) use($request){
             $anne->where('annee_id',$request->annee);
-        })->with('filiere','cycle')->get() : [];
+            })->with('filiere','cycle')->get() : [];
         $niveaux = Niveau::where('section_id',$request->section_id)->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant);
-        })->get() ;
+            })->get() ;
         $matieres =   $request->enseignant && $request->niveau ? Matiere::where('etablissement_section_id',$etat_section_id )->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant);
-        })->whereHas('filiere_niveau_matiere_ues',function($fnmu) use ($request){
+            })->whereHas('filiere_niveau_matiere_ues',function($fnmu) use ($request){
             $fnmu->where('niveau_id',$request->niveau)->where('cycle_filiere_id',$request->filiere);
-        })->get()  : [];
+            })->get()  : [];
         // $enseignement_annees = EnseignementAnne
         $enseigements = $request->annee && $request->section_id<=2 ?  DB::select("
-        SELECT ea.id,ea.code FROM enseignement_annees ea
-        JOIN enseignants en ON en.id = ea.enseignant_id
-        JOIN classe_annees ca ON ca.id = ea.classe_annee_id
-        JOIN classes c ON c.id = ca.classe_id
-        JOIN annees a ON a.id = ca.annee_id
-        JOIN etablissement_section es ON es.id = c.etablissement_section_id
-        JOIN sections s ON s.id = es.section_id
-        JOIN etablissements e ON e.id = es.etablissement_id
-        WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id AND a.id = :annee_id
-        ",[
-            'annee_id'=>$request->annee,
-            'enseignant_id'=>$request->enseignant,
-            'section_id'=> $request->section_id,
-            'etablissement_id'=>$user->etablissement_id
+            SELECT ea.id,ea.code FROM enseignement_annees ea
+            JOIN enseignants en ON en.id = ea.enseignant_id
+            JOIN classe_annees ca ON ca.id = ea.classe_annee_id
+            JOIN classes c ON c.id = ca.classe_id
+            JOIN annees a ON a.id = ca.annee_id
+            JOIN etablissement_section es ON es.id = c.etablissement_section_id
+            JOIN sections s ON s.id = es.section_id
+            JOIN etablissements e ON e.id = es.etablissement_id
+            WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id AND a.id = :annee_id
+            ",[
+                'annee_id'=>$request->annee,
+                'enseignant_id'=>$request->enseignant,
+                'section_id'=> $request->section_id,
+                'etablissement_id'=>$user->etablissement_id
         ]):collect();
         // dd($enseigements);
         $classes = $request->annee ?  Classe::where('etablissement_section_id',$etat_section_id)->whereHas('classe_annees.enseignement_annees',function($classe) use($request){
@@ -342,15 +366,39 @@ class NoteController extends Controller
         })->where('evaluation_id',$request->evaluation)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
         if ($request->evaluation){
-            $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
-                $query->where('classe_id',$request->classe);
-            })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();
+            if($request->section_id >=3){
+            $eval = Evaluation::where('id',$request->evaluation)->with('enseignement_annee.filiere_niveau_matiere_ue.matiere')->get()[0];
+            // dd($eval->id);
+            $evaluation_session1 = Evaluation::where('periode_id',$eval->periode_id)->where('type_evaluation_id',$eval->type_evaluation_id)->where('session','Session 1')->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($eval){
+                $matiere->where('matiere_id',$eval->enseignement_annee->filiere_niveau_matiere_ue->matiere_id);
+            });
+            if ($evaluation_session1->exists() && $eval->session == 'Session 2'){
+                $id_evaluation = $evaluation_session1->get()[0]->id;
+                $note_apps =  Note::whereHas('apprenant.apprenant_classe_annees.classe_annee',function($classeAnne) use($request){
+                    $classeAnne->where('classe_id',$request->classe);
+                })->where('evaluation_id',$id_evaluation)->get()->pluck('apprenant_id');
+                foreach ($note_apps as $key => $note_app) {
+                    $id_apps = HistoriqueBulletin::whereHas('historique_notes',function ($notes) {
+                        $notes->where('note_generale','<',10)->where('nom_matiere','merise');
+                    })->where('apprenant_id',$note_app)->get()->pluck('apprenant_id');
+                    // dump($id_apps);
+                }     
+                die();
+            }else {
+                $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
+                    $query->where('classe_id',$request->classe);
+                })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();
+            }
+            } else {
+                $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
+                    $query->where('classe_id',$request->classe);
+                })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();
+            }  
         }elseif($request->evaluation == null && $request->questionner == 1) {
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                 $query->where('classe_id',$request->classe);
             })->with('apprenant')->get();
-        } 
-         
+        }
         $customizingEleves = $eleves->map(
             function ($value) {
                 return [

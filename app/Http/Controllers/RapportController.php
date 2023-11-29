@@ -341,12 +341,12 @@ class RapportController extends Controller
                     $exception = true;
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
                     if($request->apprenant != null){
-                        dd('option-2', $request->apprenant);
                         // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
                         $apprenantIds = explode(',', $request->apprenant);
                         // Supprimer les espaces autour de chaque ID
                         $apprenantIds = array_map('trim', $apprenantIds);
                         $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
+                        // dd('option-2', $request->apprenant, $apprenantIds, $apprenantsSelect);
                         $resultatstz = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect);
                         // dd($apprenantIds, $apprenantsSelect, $resultatstz);
                         foreach ($resultatstz as &$resultat) {

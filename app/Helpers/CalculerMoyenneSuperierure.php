@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\DB;
         ->where('systeme_lmd_id', $systeme_lmd_id->systeme_lmd_id)->get();
         // dd($systeme_lmd_id, $regime_evaluation);
         foreach ($groupedNotes as $matiere => $notes) {
+            // dd($notes, $groupedNotes);
             $note_devoir = 0;
             $note_examen = 0;
             $note_autre = 0;
@@ -62,6 +63,8 @@ use Illuminate\Support\Facades\DB;
             $details_notes[] = [
                 'nom_eu' => $notes[0]->nom_ue,
                 'nom_matiere' => $matiere,
+                'id_ue' => $notes[0]->id_ue,
+                'id_matiere' => $notes[0]->id_matiere,
                 'note_origine_devoir' => $note_origine_devoir ?? null,
                 'note_origine_examen' => $note_origine_examen ?? null,
                 'note_devoir_pourcentage' => $note_devoir,
