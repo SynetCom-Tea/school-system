@@ -61,6 +61,7 @@ export default {
         detailData: null,
         apprenantData: [],
         classes: [],
+        session: null,
         apprenant2: null,
         classe2: null,
         filiere2: null,
@@ -160,10 +161,16 @@ export default {
                     data: { classe: this.classe2, periode: this.periode2, tab: this.tab }
                 });
             }else if(this.sectionID == 3){
+                console.log(filiere)
                 let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == filiere);
                 const cycleFiliereIds = cf.map((item) => item.id);
                 this.classes = this.$page.props.classes.filter((classe) => cycleFiliereIds.includes(classe.cycle_filiere_id));
             }
+        },
+        setApprenant(){
+            this.$inertia.replace(this.$page.url, {
+                data: { classe: this.classe2, periode: this.periode2, tab: this.tab, session: this.session }
+            });
         },
         openBulletinDialog(item) {
             this.detailData = item;
@@ -218,7 +225,7 @@ export default {
                 <v-window-item value="option-1">
                     <v-card class="d-flex justify-center align-center">
                         <v-card-text>
-                            <v-row v-if="sectionID == 3  || sectionID == 4">
+                            <v-row v-if="sectionID == 3">
                                 <v-col md="5">
                                     <autocomplete
                                         label="Filière"
@@ -383,6 +390,76 @@ export default {
                                     </autocomplete>
                                 </v-col>
                                 <v-col md="4">
+                                    <v-btn
+                                    class="mt-4"
+                                    :append-icon="icons.mdiTimerSync"
+                                    color="deep-purple-accent-4"
+                                    @click="generate"
+                                    :disabled="!apprenant2"
+                                    >
+                                    Générer
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="sectionID == 3">
+                                <v-col md="3">
+                                    <autocomplete
+                                        label="Filière"
+                                        v-model="filiere2"
+                                        class="mt-4"
+                                        :items="$page.props.filieres"
+                                        @update:modelValue="setClasse(filiere2)"
+                                        item-title="code"
+                                        item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col md="3" v-if="filiere2">
+                                    <autocomplete
+                                    label="Classe"
+                                    v-model="classe2"
+                                    @update:modelValue="setApprenant()"
+                                    :items="classes"
+                                    class="mt-4"
+                                    isRequired
+                                    item-title="libelle"
+                                    item-value="id"
+                                    ></autocomplete>
+                                </v-col>
+                                <v-col cols="2">
+                                    <autocomplete 
+                                        class="mt-4" 
+                                        v-model="periode2" 
+                                        label="Periodes" 
+                                        itemTitle="libelle" 
+                                        itemValue="id" 
+                                        :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe2" chips clearable>
+                                    </autocomplete>
+                                </v-col>
+                                <v-col cols="2">
+                                    <autocomplete 
+                                        class="mt-4" 
+                                        v-model="session"
+                                        label="Sessions" 
+                                        :items="['Prémiere session', 'Deuxiéme session']"
+                                        variant="outlined" :isRequired="true" :disabled="!periode2" clearable>
+                                    </autocomplete>
+                                </v-col>
+                                <v-col md="4">
+                                    <autocomplete
+                                        :label="apprenant"
+                                        v-model="apprenant2"
+                                        :items="apprenants"
+                                        :disabled="!classe2"
+                                        multiple
+                                        chips
+                                        class="mt-4"
+                                        isRequired
+                                        item-title="matricule"
+                                        item-value="id"
+                                    >
+                                    </autocomplete>
+                                </v-col>
+                                <v-col md="2">
                                     <v-btn
                                     class="mt-4"
                                     :append-icon="icons.mdiTimerSync"
