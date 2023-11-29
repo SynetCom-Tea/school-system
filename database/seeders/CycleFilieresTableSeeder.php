@@ -27,7 +27,7 @@ class CycleFilieresTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'created_at' => '2023-11-13 13:49:24',
                 'updated_at' => '2023-11-13 13:49:24',
-                'code' => 'Analyste Programmeur/1er cycle',
+                'code' => 'AP/1er cycle',
             ),
             1 => 
             array (
@@ -37,7 +37,7 @@ class CycleFilieresTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'created_at' => '2023-11-13 13:49:24',
                 'updated_at' => '2023-11-13 13:49:24',
-                'code' => 'Analyste Programmeur/2e cycle',
+                'code' => 'AP/2e cycle',
             ),
             2 => 
             array (
@@ -47,7 +47,7 @@ class CycleFilieresTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'created_at' => '2023-11-13 13:49:24',
                 'updated_at' => '2023-11-13 13:49:24',
-                'code' => 'Informatique et Gestion/Cycle Moyen',
+                'code' => 'IG/Cycle Moyen',
             ),
             3 => 
             array (
@@ -57,7 +57,7 @@ class CycleFilieresTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'created_at' => '2023-11-13 13:49:24',
                 'updated_at' => '2023-11-13 13:49:24',
-                'code' => 'Informatique et Gestion/1er cycle',
+                'code' => 'IG/1er cycle',
             ),
             4 => 
             array (
@@ -67,7 +67,7 @@ class CycleFilieresTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'created_at' => '2023-11-13 13:49:25',
                 'updated_at' => '2023-11-13 13:49:25',
-                'code' => 'Gestion de projet/1er cycle',
+                'code' => 'GP/1er cycle',
             ),
             5 => 
             array (
@@ -77,7 +77,17 @@ class CycleFilieresTableSeeder extends Seeder
                 'deleted_at' => NULL,
                 'created_at' => '2023-11-13 13:49:25',
                 'updated_at' => '2023-11-13 13:49:25',
-                'code' => 'Gestion de projet/2e cycle',
+                'code' => 'GP/2e cycle',
+            ),
+            6 => 
+            array (
+                'id' => 7,
+                'cycle_id' => 3,
+                'filiere_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => '2023-11-20 09:49:31',
+                'updated_at' => '2023-11-20 09:49:31',
+                'code' => 'MIAGE/2e cycle',
             ),
         ));
         

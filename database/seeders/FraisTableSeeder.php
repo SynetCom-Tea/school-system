@@ -663,6 +663,62 @@ class FraisTableSeeder extends Seeder
                 'created_at' => '2023-11-13 15:33:46',
                 'updated_at' => '2023-11-13 15:33:46',
             ),
+            46 => 
+            array (
+                'id' => 47,
+                'libelle' => NULL,
+                'montant' => 30000.0,
+                'etablissement_type_frais_id' => 10,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'etablissement_id' => 2,
+                'niveau_id' => 19,
+                'deleted_at' => NULL,
+                'created_at' => '2023-11-20 09:50:53',
+                'updated_at' => '2023-11-20 09:50:53',
+            ),
+            47 => 
+            array (
+                'id' => 48,
+                'libelle' => NULL,
+                'montant' => 30000.0,
+                'etablissement_type_frais_id' => 10,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'etablissement_id' => 2,
+                'niveau_id' => 20,
+                'deleted_at' => NULL,
+                'created_at' => '2023-11-20 09:50:53',
+                'updated_at' => '2023-11-20 09:50:53',
+            ),
+            48 => 
+            array (
+                'id' => 49,
+                'libelle' => NULL,
+                'montant' => 450000.0,
+                'etablissement_type_frais_id' => 11,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'etablissement_id' => 2,
+                'niveau_id' => 19,
+                'deleted_at' => NULL,
+                'created_at' => '2023-11-20 09:50:53',
+                'updated_at' => '2023-11-20 09:50:53',
+            ),
+            49 => 
+            array (
+                'id' => 50,
+                'libelle' => NULL,
+                'montant' => 450000.0,
+                'etablissement_type_frais_id' => 11,
+                'cycle_filiere_id' => 7,
+                'annee_id' => 2,
+                'etablissement_id' => 2,
+                'niveau_id' => 20,
+                'deleted_at' => NULL,
+                'created_at' => '2023-11-20 09:50:53',
+                'updated_at' => '2023-11-20 09:50:53',
+            ),
         ));
         
         

@@ -7,12 +7,12 @@
     <style>
         body {
             font-family: 'Arial', sans-serif;
-            background-color: #f5f5f5;
+            /* background-color: #f5f5f5; */
             margin: 0;
             padding: 0;
         }
         .receipt {
-            width: 500px;
+            width: 550px;
             margin: 20px auto;
             background-color: #fff;
             border: 2px solid #333;
@@ -26,7 +26,7 @@
             margin-bottom: 20px;
         }
         .receipt p {
-            font-size: 14px;
+            font-size: 12px;
             color: #555;
             margin: 8px 0;
         }
@@ -41,7 +41,7 @@
         }
         .logo img {
             max-width: 30%;
-            height: auto;
+            /* height: auto; */
         }
         .dotted-line {
             width: 100%;
@@ -55,37 +55,11 @@
             <img src="team.png" alt="Logo de l'entreprise">
         </div>
         <div style="margin-bottom: 20px; text-align:right; margin-top:-130px;">
-            <img style="max-width:30%; height:auto" src="team.png" alt="Logo de l'entreprise">
-        </div>
-        <p style="margin-bottom: 20px; text-align:center; margin-top:-120px;">
-       
-            <b style="margin-top: -10px;"><strong>ESIMAD</strong></b><br>
-            <b style="margin-top: 5px;">Rue de Yantala</b><br>
-            <b style="margin-top: 5px;">Tel: 97 34 19 00 / 83 82 23 64</b><br>
-            <b style="margin-top: 5px;">Niamey-Niger</b>
-      
-    </p>
-        <h1>Reçu de versement</h1>
-        <p>Date du versement: <strong>01/10/2023</strong></p>
-        <p>Nom & Prénom: <strong>John Doe</strong></p>
-        <p>Référence du versement: <strong>#123456</strong></p>
-        <p>Montant versé: <strong>$100.00</strong></p>
-        <p>Montant restant: <strong>Carte de crédit</strong></p>
-        <div class="info">
-            <p>Année Scolaire: 2023-2024</p>
-            <p>Niveau: TD</p>
-        </div>
-    </div>
-    <br><br>
-    <div class="dotted-line"></div>
-    <!-- ********************************************************************************* -->
-    <br><br>
-    <div class="receipt">
-        <div class="logo">
-            <img src="team.png" alt="Logo de l'entreprise">
-        </div>
-        <div style="margin-bottom: 20px; text-align:right; margin-top:-130px;">
-            <img style="max-width:30%; height:auto" src="team.png" alt="Logo de l'entreprise">
+            @if($etablissement->logo === null)
+            <img style="max-width:30%; height: 11%;" src="logos/iat-logo.png" alt="Logo de l'entreprise">
+            @else
+            <img style="max-width:30%; height:auto" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
+            @endif
         </div>
         <p style="margin-bottom: 20px; text-align:center; margin-top:-120px;">
        
@@ -94,16 +68,20 @@
             <b style="margin-top: 5px;">Tel: {{$etablissement->telephone}}</b><br>
             <b style="margin-top: 5px;">{{$etablissement->ville}}-Niger</b>
       
-    </p>
+        </p>
         <h1>Reçu de versement</h1>
-        <h1 style="font-size: 16px;">Date du versement: {{$versement->created_at}}</h1>
+        <h1 style="font-size: 16px;">Date du versement: {{$versement->date_versement}}</h1>
         <p><span style="float: left;">Nom & Prénom: <strong>{{$versement->inscription->apprenant->nom}} {{$versement->inscription->apprenant->prenom}}</strong></span> &nbsp; <span style="float:right;">Montant versé: <strong>{{$versement->montant}} FCFA</strong></span> </p>
        
-        <p><span style="float: left;">Référence du versement: <strong>#123456</strong></span> <span style="float:right;">Montant restant: <strong>{{($versement->frais->montant - $somme_verse)}}</strong></span></p>
+        <p><span style="float: left;">Référence de l'inscription: <strong>{{$versement->inscription->apprenant->matricule}}</strong></span> <span style="float:right;">Montant restant: <strong>{{($versement->frais->montant - $somme_verse)}}</strong></span></p>
         <br><br>
         <div class="info">
             <p>Année Scolaire: {{$versement->inscription->annee->libelle}}</p>
-            <p>Niveau: {{$versement->inscription->niveau->code}}</p>
+            @if($section == '1' || $section == '2')
+            <p>Niveau: {{$versement->inscription->niveau->code}} </p>
+            @else
+            <p>Section: {{$versement->inscription->niveau->code}} {{$versement->inscription->cycleFiliere->code}} </p>
+            @endif
         </div>
     </div>
 </body>

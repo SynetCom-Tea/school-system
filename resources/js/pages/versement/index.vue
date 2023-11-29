@@ -42,7 +42,7 @@
             <v-list-item
               :title="`${item.apprenant.nom} ${item.apprenant.prenom}` "
               :subtitle="`${item.niveau.libelle} en ${item.annee.libelle}`"
-              @click="getCodeInscription(item)"
+              @click="getCodeInscription(item),RechercheInscription()"
             >
               <template v-slot:prepend>
                 <v-icon class="bg-primary" :icon="icons.mdiAccountSchool"></v-icon>
@@ -89,7 +89,7 @@
               </v-chip>
             </template>
             <template v-slot:item.actions="{item}">
-              <a :href="route('generateRecuVersement', { id: item.id, section: type })" target="__blank">
+              <a :href="route('generateRecuVersement', { id: item.id, section: section })" target="__blank">
                 <v-icon size="small" class="me-2" :icon="icons.mdiPrinter" color="primary"></v-icon>
               </a>
                 <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
@@ -128,8 +128,8 @@
                 >
                 <Autocomplete 
                     :items="type_frais"
-                    item-title="type_frais.libelle"
-                    item-value="type_frais.id"
+                    item-title="etablissement_type_frais.type_frais.libelle"
+                    item-value="etablissement_type_frais.type_frais.id"
                     label="Frais"
                     isRequired
                     v-model="form.type_frais"

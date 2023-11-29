@@ -82,6 +82,7 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('salles', SalleController::class);
+    Route::get('getbulletinbyapprenant/{section_id}/{classe}/{periode}/{tab}/{apprenant}', [RapportController::class, 'create'])->name('bulletinbyapprenant');
 });
 
 Route::resource('etudiants', EtudiantsController::class);
@@ -122,6 +123,7 @@ Route::prefix('calendrierscolaire')->group(function () {
 
 Route::resource('salles', SalleController::class);
 Route::resource('rapports', RapportController::class);
+Route::get('generate_bulletin_apprenant', [RapportController::class, 'bulletin'])->name('bulletin');
 Route::resource('enseignants', EnseignantController::class)->only([ 'update', 'destroy']);
 Route::get('enseignantscreate/{type}', [EnseignantController::class, 'create'])->name('enseignants.create');
 Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');

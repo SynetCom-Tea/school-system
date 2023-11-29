@@ -379,6 +379,316 @@ class MatieresTableSeeder extends Seeder
                 'updated_at' => NULL,
                 'code' => 'Supérieure/Réseau avancé',
             ),
+            36 => 
+            array (
+                'id' => 37,
+            'nom' => 'Systèmes d’exploitation (linux, Windows)',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+            'code' => 'Supérieure/Systèmes d’exploitation (linux, Windows)',
+            ),
+            37 => 
+            array (
+                'id' => 38,
+                'nom' => 'Connaissances et protocole en réseaux',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Connaissances et protocole en réseaux',
+            ),
+            38 => 
+            array (
+                'id' => 39,
+                'nom' => 'PROGICIELS DE GESTION 1',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/PROGICIELS DE GESTION 1',
+            ),
+            39 => 
+            array (
+                'id' => 40,
+            'nom' => 'Systèmes d’information (Merise)',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+            'code' => 'Supérieure/Systèmes d’information (Merise)',
+            ),
+            40 => 
+            array (
+                'id' => 41,
+            'nom' => 'Algorithmique et Programmation (Langage C)',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+            'code' => 'Supérieure/Algorithmique et Programmation (Langage C)',
+            ),
+            41 => 
+            array (
+                'id' => 42,
+            'nom' => 'Recherche Opérationnelle 1 (Programmation linéaire et théorie des graphes)',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+            'code' => 'Supérieure/Recherche Opérationnelle 1 (Programmation linéaire et théorie des graphes)',
+            ),
+            42 => 
+            array (
+                'id' => 43,
+                'nom' => 'ECONOMIE GENERALE',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/ECONOMIE GENERALE',
+            ),
+            43 => 
+            array (
+                'id' => 44,
+                'nom' => 'Mathématiques financières',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Mathématiques financières',
+            ),
+            44 => 
+            array (
+                'id' => 45,
+                'nom' => 'DROIT DU TRAVAIL',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/DROIT DU TRAVAIL',
+            ),
+            45 => 
+            array (
+                'id' => 46,
+                'nom' => 'DROIT DES AFFAIRES',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/DROIT DES AFFAIRES',
+            ),
+            46 => 
+            array (
+                'id' => 47,
+                'nom' => 'Fiscalité',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Fiscalité',
+            ),
+            47 => 
+            array (
+                'id' => 48,
+                'nom' => 'Anglais',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Anglais',
+            ),
+            48 => 
+            array (
+                'id' => 49,
+                'nom' => 'Réseaux locaux',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Réseaux locaux',
+            ),
+            49 => 
+            array (
+                'id' => 50,
+                'nom' => 'Réseau Internet',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Réseau Internet',
+            ),
+            50 => 
+            array (
+                'id' => 51,
+                'nom' => 'PROGICIELS DE GESTION 2',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/PROGICIELS DE GESTION 2',
+            ),
+            51 => 
+            array (
+                'id' => 52,
+                'nom' => 'Structure des données 1',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Structure des données 1',
+            ),
+            52 => 
+            array (
+                'id' => 53,
+            'nom' => 'Systèmes d’information (UML)',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+            'code' => 'Supérieure/Systèmes d’information (UML)',
+            ),
+            53 => 
+            array (
+                'id' => 54,
+                'nom' => 'Gestion des projets',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Gestion des projets',
+            ),
+            54 => 
+            array (
+                'id' => 55,
+                'nom' => 'GESTION DES STOCKS',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/GESTION DES STOCKS',
+            ),
+            55 => 
+            array (
+                'id' => 56,
+                'nom' => 'LOGISTIQUE ET PRODUCTION',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/LOGISTIQUE ET PRODUCTION',
+            ),
+            56 => 
+            array (
+                'id' => 57,
+                'nom' => 'Administration réseaux',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Administration réseaux',
+            ),
+            57 => 
+            array (
+                'id' => 58,
+                'nom' => 'Sécurité réseaux',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Sécurité réseaux',
+            ),
+            58 => 
+            array (
+                'id' => 59,
+                'nom' => 'Structure des données 2',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Structure des données 2',
+            ),
+            59 => 
+            array (
+                'id' => 60,
+                'nom' => 'Programmation orientée objets',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Programmation orientée objets',
+            ),
+            60 => 
+            array (
+                'id' => 61,
+                'nom' => 'Base des données',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Base des données',
+            ),
+            61 => 
+            array (
+                'id' => 62,
+                'nom' => 'Recherche Opérationnelle 2',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/Recherche Opérationnelle 2',
+            ),
+            62 => 
+            array (
+                'id' => 63,
+                'nom' => 'ENTREPRENARIAT',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/ENTREPRENARIAT',
+            ),
+            63 => 
+            array (
+                'id' => 64,
+                'nom' => 'CONTROLE DE GESTION',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/CONTROLE DE GESTION',
+            ),
+            64 => 
+            array (
+                'id' => 65,
+                'nom' => 'AUDIT',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/AUDIT',
+            ),
+            65 => 
+            array (
+                'id' => 66,
+                'nom' => 'INGENIERIE FINANCIERE',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/INGENIERIE FINANCIERE',
+            ),
+            66 => 
+            array (
+                'id' => 67,
+                'nom' => 'STAGES ET MEMOIRES',
+                'etablissement_section_id' => 4,
+                'deleted_at' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Supérieure/STAGES ET MEMOIRES',
+            ),
         ));
         
         

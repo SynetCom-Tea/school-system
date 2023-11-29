@@ -9,13 +9,15 @@
 
 
  if (!function_exists('calculerMoyenneSecondaire')) {
-    function calculerMoyenneSecondaire($classeID, $apprenantID) {
-        $notes_apprenant = getNoteByClasses($classeID, $apprenantID);
+    function calculerMoyenneSecondaire($classeID, $section, $periode, $apprenantID) {
+        $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
+        // dd($notes_apprenant);
         $notestypeComposition = collect($notes_apprenant)->where('type_evaluation', 'Composition');
         $notesDeClasses = collect($notes_apprenant)->whereIn('type_evaluation', ['Interrogation', 'Devoir Surveillé', 'Devoir']);
         $groupedNotes = $notesDeClasses->groupBy('nom_matiere');
         $details_notes = [];
         foreach ($groupedNotes as $matiere => $notes) {
+            // dd($notes);
             $compositionNotes = $notestypeComposition->where('nom_matiere', $matiere);
 
             // Calculate total notes and average note
@@ -35,25 +37,26 @@
             
             $details_notes[] = [
                 'nom_matiere' => $matiere,
+                'periodes' => $notes->first()->periode,
                 'coefficient' => $coefficient,
-                'noteDeClasse' => $noteDeClasse,
-                'noteDeClasseCoefficiente' => $noteDeClasseCoefficiente,
-                'noteDeComposition' => $noteDeComposition,
-                'noteDeCompositionCoefficiente' => $noteDeCompositionCoefficiente,
+                'note_de_classe' => $noteDeClasse,
+                'note_de_classe_coefficiente' => $noteDeClasseCoefficiente,
+                'note_de_composition' => $noteDeComposition,
+                'note_de_composition_coefficiente' => $noteDeCompositionCoefficiente,
                 'moyenne' => $moyenne,
-                'moyenneCoefficiente' => $moyenneCoefficiente
+                'moyenne_coefficiente' => $moyenneCoefficiente
             ];
         }
         if(count($details_notes) != 0){
             $details_notes[] = [
                 'nom_matiere' => 'Conduite',
                 'coefficient' => 1,
-                'noteDeClasse' => 18,
-                'noteDeClasseCoefficiente' => 18,
-                'noteDeComposition' => 18,
-                'noteDeCompositionCoefficiente' => 18,
+                'note_de_classe' => 18,
+                'note_de_classe_coefficiente' => 18,
+                'note_de_composition' => 18,
+                'note_de_composition_coefficiente' => 18,
                 'moyenne' => 18,
-                'moyenneCoefficiente' => 18
+                'moyenne_coefficiente' => 18
             ];
         }
         return $details_notes;

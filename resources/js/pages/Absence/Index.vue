@@ -7,7 +7,7 @@ export default {
   components: {
     
   },
-  props: ["absences", "sectionID", "niveaux"],
+  props: ["absencesAll", "sectionID", "niveaux", "AllClasses"],
   data() {
     return {
       icons: {
@@ -18,13 +18,14 @@ export default {
       },
       headers: [
         {
-          title: 'Code',
+          title: 'Matricule',
           align: 'start',
           sortable: false,
-          key: 'code',
+          key: 'matricule_apprenant',
         },
-        { title: 'Date', align: 'center', key: 'tranche_date' },
-        { title: 'Classe', align: 'center', key: 'nom_classe' },
+        { title: 'Nom & Prénom', align: 'center', key: 'nom_prenom_apprenant' },
+        { title: 'Absence journée entière', align: 'center', key: 'journee' },
+        { title: 'Seance', align: 'center', key: 'nom_matiere_heure_debut' },
         {title: 'Actions', align: 'center', key: 'actions'},
       ],
       classes: [],
@@ -49,12 +50,30 @@ export default {
         return classe.niveau_id == niveau;
       });
     },
-    setEmploi(classe) {
+    setAbsence(date) {
       this.$inertia.replace(this.$page.url, {
         data: {
-          classe: classe,
+          classe: this.form.classe,
+          date: date
         }
       })
+    },
+    formatDate(dateString) {
+      if (!dateString) {
+        return ''; // Si la date est nulle, retournez une chaîne vide
+      }
+
+      // Convertir la chaîne de date en objet Date
+      const dateObject = new Date(dateString);
+
+      // Vérifier si la conversion est réussie
+      if (isNaN(dateObject.getTime())) {
+        return 'Date invalide';
+      }
+
+      // Formater la date selon vos préférences locales
+      const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+      return dateObject.toLocaleDateString('fr-FR', options);
     },
     editItem(){
 
@@ -84,7 +103,7 @@ export default {
           "
         >
         <v-row>
-          <v-col md="4">
+          <v-col cols="4">
           <autocomplete
             label="Niveau"
             v-model="form.niveau"
@@ -96,24 +115,46 @@ export default {
             item-value="id"
           ></autocomplete>
         </v-col>
-        <v-col md="4">
+        <v-col cols="3">
           <autocomplete
             label="Classe"
             v-model="form.classe"
             :items="classes"
             :disabled="!form.niveau"
-            @update:modelValue="setEmploi(form.classe)"
             class="mt-4"
             isRequired
             item-title="libelle"
             item-value="id"
           ></autocomplete>
         </v-col>
+        <v-col cols="3">
+          <TextField
+            class="mt-4" 
+            label="Date"
+            type="date" 
+            variant="outlined"
+            :disabled="!form.classe"
+            placeholder="Date" 
+            v-model="form.date" 
+            :isRequired="true"
+          >
+          </TextField>
+        </v-col>
+        <v-col cols="2">
+          <v-btn
+            color="deep-purple-accent-4"
+            class="mt-4" 
+            @click="setAbsence(form.date)"
+            :disabled="!form.date"
+            >
+            Générer
+            </v-btn>
+        </v-col>
         </v-row>
         </v-toolbar-title>
       </v-toolbar>
       <v-card>
-        <Datatable titleDatatable="Liste des absences" :headers="headers" :items="absences" :functionOnClickAddButton="goTo" >   
+        <Datatable :titleDatatable="`Liste des absences du ${formatDate(form.date)}`" :headers="headers" :items="absencesAll" :functionOnClickAddButton="goTo" >   
             <template v-slot:item.actions="{item}">
                 <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
                 </v-icon>

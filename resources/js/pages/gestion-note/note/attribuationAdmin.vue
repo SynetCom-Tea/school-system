@@ -39,7 +39,7 @@ export default {
         mdiTimelineAlert,
         mdiContentSaveEditOutline
     },
-    props: ['enseignants', 'annees', 'classes', 'evaluations', 'eleves', 'type', 'filieres', 'niveaux'],
+    props: ['enseignants', 'annees', 'classes', 'evaluations', 'eleves', 'type', 'type_evaluation', 'periodes', 'enseignements', 'filieres', 'niveaux', 'matieres'],
     layout: AuthenticatedLayout,
     data() {
         return {
@@ -58,10 +58,12 @@ export default {
                 mdiContentSaveEditOutline,
                 mdiSearchWeb
             },
+            question: false,
+            filtrer: [],
             tabs: [],
             valid: null,
+            snackbar: false,
             dialogConfirmation: false,
-            searchQuery: null,
             headers: [{
                     title: 'Matricule',
                     align: 'start',
@@ -83,15 +85,15 @@ export default {
                 required: v => !!v || "Veuillez renseigner la note",
                 validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
                 max: v => {
-                            if (this.evaluations[0].notation) {
-                                 return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
-                        } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id) {
-                            return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
-                        } else {
-                            return v <= 20 || "La note ne doit pas dépasser 20";
-                        }
+                    if (this.evaluations[0].notation != null) {
+                        return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
+                    } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id != null) {
+                        return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
+                    } else {
+                        return v <= 20 || "La note ne doit pas dépasser 20";
                     }
-                },
+                }
+            },
             form: this.$inertia.form({
                 notes: [],
                 evaluation: null,
@@ -99,13 +101,20 @@ export default {
                 annee: null,
                 enseignant: null,
                 filiere: null,
-                niveau: null
+                niveau: null,
+                section_id: null,
+                type_evaluation_id: null,
+                periode_id: null,
+                enseignement_annee_id: null,
+                date: null,
+                matieres: null,
+                session: null
             }),
             format: this.$inertia.form({
                 section_id: null,
-                
+
             }),
-            info : null
+            info: null
         }
     },
     created() {
@@ -146,7 +155,7 @@ export default {
             }
         },
         formatCode(item) {
-            return `${item ? item?.filiere.code : 'Pas de données'} - ${item ? item.cycle.name : 'Pas de données'} `
+            return `${item.filiere.code } - ${item.cycle.name } `
         },
         formatEnseignant(item) {
             return `${item.matricule } - ${item.nom }  ${item.prenom}`
@@ -157,11 +166,12 @@ export default {
                     evaluation: e
                 }
             });
-            if (this.evaluations.filter(el => el.id == e)[0].notation != null){
+
+            if (this.evaluations.filter(el => el.id == e)[0].notation != null) {
                 this.info = this.evaluations.filter(el => el.id == e)[0].notation
-            }else if(this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation != null ){
-                this.info = this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere.notation 
-            } else if (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.filiere_niveau_matiere_ue_id != null || (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation == null) ){
+            } else if (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation != null) {
+                this.info = this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere.notation
+            } else if (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.filiere_niveau_matiere_ue_id != null || (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation == null)) {
                 this.info = 20
             }
         },
@@ -171,6 +181,7 @@ export default {
                 data: {
                     annee: a,
                     enseignant: this.form.enseignant,
+                    section_id: this.type
                 }
             });
         },
@@ -188,6 +199,8 @@ export default {
         },
         setClasse(n) {
             // console.log(n)
+            this.form.matiere = null,
+                this.form.classe = null
             router.replace(this.$page.url, {
                 data: {
                     niveau: n,
@@ -197,6 +210,7 @@ export default {
             })
         },
         submit() {
+            this.form.section_id = this.type
             this.form.post(route("note.save"), {
                 preverseScroll: true,
                 onFailed: () => {
@@ -206,6 +220,7 @@ export default {
                     this.isLoading = false;
                     this.dialogConfirmation = false;
                     this.form.reset();
+                    this.question = false
                     if (this.$page.props.flash ?.message ?.type == 'error') {
                         this.$swal({
                             icon: 'error',
@@ -239,6 +254,15 @@ export default {
 
             });
         },
+        Approver() {
+            this.form.evaluation = null
+            router.replace(this.$page.url, {
+                data: {
+                    evaluation: null,
+                    questionner: 1
+                }
+            })
+        },
         dialog() {
             // console.log(this.form.notes)
             // this.info = this.evaluations.filter(el => el.id = this.selectedEvaluation)
@@ -258,9 +282,18 @@ export default {
             });
         },
     },
-    // mounted(){
-    //     console.log(this.evaluations)
-    // }
+    mounted() {
+        if (this.type == 1) {
+            this.filtrer = this.type_evaluation.filter(el => el.libelle == "Composition" || el.libelle == "Contrôle")
+        }
+        if (this.type == 2) {
+            this.filtrer = this.type_evaluation.filter(el => el.libelle != "Contrôle")
+        }
+        if (this.type == 3 || this.type == 4) {
+            this.filtrer = this.type_evaluation.filter(el => el.libelle == "Examen" || el.libelle == "TP" || el.libelle == "Devoir")
+        }
+        // console.log(this.evaluations)
+    },
 }
 </script>
 
@@ -268,74 +301,114 @@ export default {
 <!-- <Head title="Notes" /> -->
 
 <!-- <AuthenticatedLayout> -->
-    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
+<Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
+<v-form v-model="valid">
 
-    <v-card style="margin: 20px">
-        <v-card-title>
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <v-chip class="primary">Attribution de notes</v-chip>
-                </div>
-            </div>
-        </v-card-title>
-    </v-card>
-    <v-form v-model="valid">
-
-        <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
-            <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
-            <v-divider></v-divider>
-            <br />
-            <v-row style="margin: 20px">
-                <v-col md="2" v-if="type<=2"></v-col>
-                <v-col md="2">
-                    <Autocomplete v-model="form.enseignant" :items="enseignants" :item-title="formatEnseignant" item-value="id" outlined required dense chips small-chips label="Enseignants"></Autocomplete>
-                </v-col>
-                <v-col md="2">
-                    <Autocomplete :disabled="!form.enseignant" v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="SetFiliere(form.annee)"></Autocomplete>
-                </v-col>
-                <v-col md="2" v-if="type>=3">
-                    <Autocomplete :disabled="!form.annee" v-model="form.filiere" :items="filieres" :item-title="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
-                </v-col>
-                <v-col md="2" v-if="type>=3">
-                    <Autocomplete :disabled="!form.filiere" v-model="form.niveau" :items="niveaux" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux" @update:modelValue="setClasse(form.niveau)"></Autocomplete>
-                </v-col>
-                <v-col md="2">
-                    <Autocomplete v-model="form.classe" :items="classes" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Classes" @update:modelValue="setEvaluation(form.classe)"></Autocomplete>
-                </v-col>
-                <v-col md="2">
-                    <Autocomplete v-model="form.evaluation" :disabled="!form.classe" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(form.evaluation)"></Autocomplete>
-                </v-col>
-            </v-row>
-        </v-card>
-        <div style="width: 50%; padding: 10px"  v-if="form.evaluation">
-                <v-alert style="width: 50%; padding: 10px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button"    variant="tonal"  color="primary" type="info" title="Information" size="small">
-                   <u> Notation :</u> ../{{ info }}
-                </v-alert>
-            </div>
-        <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
-            <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Saisissez les notes</v-card-title>
-            <v-divider></v-divider>
-            <br />
-            <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false" >
-                <template v-slot:item.note="{ item, index }">
-                    <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!',(v) => v <= this.info || 'La note ne doit pas dépasser ' + this.info]" style="max-width: 300px"></TextField>
+    <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
+        <v-divider></v-divider>
+        <br />
+        <v-row style="margin: 20px">
+            <v-col md="1"></v-col>
+            <v-col md="2">
+                <Autocomplete v-model="form.enseignant" :items="enseignants" :item-title="formatEnseignant" item-value="id" outlined required dense chips small-chips label="Enseignants"></Autocomplete>
+            </v-col>
+            <v-col md="2">
+                <Autocomplete :disabled="!form.enseignant" v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="SetFiliere(form.annee)"></Autocomplete>
+            </v-col>
+            <v-col md="2">
+                <Autocomplete v-model="form.classe" :disabled="!form.annee" :items="classes" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Classes" @update:modelValue="setEvaluation(form.classe)"></Autocomplete>
+            </v-col>
+            <v-col md="3">
+                <Autocomplete @click="snackbar = true" v-model="form.evaluation" :disabled="question || !form.classe " :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(form.evaluation)"></Autocomplete>
+            </v-col>
+            <v-col md="2">
+                <v-switch :disabled="!form.classe" v-model="question" @click="Approver" label="Oui!" color="primary" inset></v-switch>
+            </v-col>
+        </v-row>
+        <div class="text-center ma-2">
+            <v-snackbar v-model="snackbar" location="right" color="orange" rounded="pill" :timeout="3000">
+                Si l'évaluation n'existe pas Clickez sur le boutton "Oui" pour la crée!!!
+                <template v-slot:actions>
+                    <v-btn color="red" variant="text">
+                    </v-btn>
                 </template>
-            </Datatable>
-            <v-card-actions>
-                <v-spacer />
-                <v-btn :loading="form.processing" variant="outlined" :disabled="!valid" color="green" @click="dialog">
-                    <v-icon :icon="icon.mdiCheckCircle"></v-icon> Valider
-                </v-btn>
-            </v-card-actions>
-        </v-card>
-    </v-form>
+            </v-snackbar>
+        </div>
+            <v-card style="border: 2px solid rgb(0, 73, 128);margin: 60px" v-if="question">
+                <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Informations de l'évaluation</v-card-title>
+                <v-divider></v-divider>
+                <br />
+                <v-row style="margin: 20px" >
+                    <v-col md="1"></v-col>
+                    <v-col cols="3">
+                        <TextField label="Date Evaluation" type="date" variant="outlined" placeholder="Date" v-model="form.date" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                        </TextField>
+                    </v-col>
+                    <v-col cols="3">
+                        <Autocomplete label="Type Evaluation" variant="outlined" itemTitle="libelle" item-value="id" :items="filtrer" v-model="form.type_evaluation_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                        </Autocomplete>
+                    </v-col>
+                    <v-col cols="3">
+                        <Autocomplete label="Periodes" variant="outlined" itemTitle="libelle" item-value="id" :items="periodes" v-model="form.periode_id" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                        </Autocomplete>
+                    </v-col>
+
+                </v-row>
+                <v-row style="margin: 20px" >
+                    <v-col md="1"></v-col>
+                    <v-col cols="2" v-if="type <=2">
+                        <Autocomplete label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                        </Autocomplete>
+                    </v-col>
+                    <v-col md="2" v-if="type>=3">
+                        <Autocomplete v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                    </v-col>
+                    <v-col md="2" v-if="type>=3 ">
+                        <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="libelle" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
+                    </v-col>
+                    <v-col md="2" v-if="type>=3 ">
+                        <Autocomplete v-model="form.matieres" :items="matieres" itemTitle="nom" item-value="id" outlined required dense small-chips label="Matieres" chips clearable></Autocomplete>
+                    </v-col>
+                    <v-col cols="3" v-if="type>=3">
+                        <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
+                            <v-radio label="1ère" value="Prémiere session"></v-radio>
+                            <v-radio label="2ème" value="deuxiéme session"></v-radio>
+                        </v-radio-group>
+                    </v-col>
+                </v-row>
+            </v-card>
+    </v-card>
+    <div style="width: 50%; padding: 10px" v-if="form.evaluation">
+        <v-alert style="width: 50%; padding: 10px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button" variant="tonal" color="primary" type="info" title="Information" size="small">
+            <u> Notation :</u> ../{{ info }}
+        </v-alert>
+    </div>
+    <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Saisissez les notes</v-card-title>
+        <v-divider></v-divider>
+        <br />
+        <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
+            <template v-slot:item.note="{ item, index }">
+                <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => v && form.evaluation !=null   <= this.info || 'La note ne doit pas dépasser ' + this.info]" style="max-width: 300px"></TextField>
+            </template>
+        </Datatable>
+        <v-card-actions>
+            <v-spacer />
+            <v-btn :loading="form.processing" variant="outlined" :disabled="!valid" color="green" @click="dialog">
+                <v-icon :icon="icon.mdiCheckCircle"></v-icon> Valider
+            </v-btn>
+        </v-card-actions>
+    </v-card>
+</v-form>
 <!-- </AuthenticatedLayout> -->
 </template>
+
 <style>
 .add-button:hover {
-  background-color: white;
-  box-shadow: 0px 0px 8px white;
-  transform: scale(1.05);
-  cursor: pointer;
+    background-color: white;
+    box-shadow: 0px 0px 8px white;
+    transform: scale(1.05);
+    cursor: pointer;
 }
 </style>

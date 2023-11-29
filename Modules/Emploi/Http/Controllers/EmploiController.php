@@ -119,9 +119,10 @@ class EmploiController extends Controller
         $dateDebut = Carbon::parse($request->date[0]);
         $dateFin = Carbon::parse($request->date[1]);
         $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
-        // dd($occurrences, $request->all());
+        dd($occurrences, $request->all());
         // dd($classeAnnee, $request->classe, Annee::find(2)->id);
         try {
+            DB::beginTransaction();
             $emploi = Emploi::create([
                 'date_debut' => $request->date[0],
                 'date_fin' => $request->date[1],
@@ -134,6 +135,7 @@ class EmploiController extends Controller
                     // dd($jour, $seancesDuJour['seances'], $occurrences['Lundi']);
                     // Récupère les horaires pour ce jour
                     foreach ($seancesDuJour['seances'] as $seance) {
+                        dd($seance);
                         // for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
                             if ($seance['matiere'] != null) {
                                 // $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));

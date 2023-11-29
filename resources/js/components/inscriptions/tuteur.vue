@@ -58,7 +58,7 @@
                 v-model="form.selectTuteurs"
                 :items="setTuteurs"
                 item-title="code_libelle"
-                item-value="id"
+                item-value="tuteur.id"
                 multiple
                 chips
                 closable-chips

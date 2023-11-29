@@ -46,6 +46,15 @@ class ParametresTableSeeder extends Seeder
                 'created_at' => '2023-11-13 13:42:27',
                 'updated_at' => '2023-11-13 13:42:27',
             ),
+            3 => 
+            array (
+                'id' => 4,
+                'etablissement_section_id' => 4,
+                'nbre_limite_eleve_par_classe' => NULL,
+                'statut' => NULL,
+                'created_at' => '2023-11-20 09:41:23',
+                'updated_at' => '2023-11-20 09:41:23',
+            ),
         ));
         
         

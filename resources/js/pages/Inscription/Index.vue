@@ -72,7 +72,7 @@
               v-if="section == 2"
               :items="niveauxSecondaire"
               v-model="secondaire"
-              itemValue="id"
+              itemValue="id" 
               class="mt-2"
               itemTitle="libelle"
               label="Secondaire"
@@ -251,9 +251,10 @@
                             <a
                               style="cursor: pointer"
                               class="text-caption text-decoration-none text-primary"
+                              :href="route('generateRecuInscription', { id: item.raw.id, section: vSectionID })"
                               target="_blank"
                             >
-                              Documents</a
+                              Réçu</a
                             ></v-col
                           >
                           <v-col cols="3" @click="onclickFrais(item.raw)">
@@ -599,6 +600,7 @@ export default {
      
     },
     addNewInscription(item){
+      // console.log('ismoooo',item)
       // router.post('/scolarite/inscription/page/',{apprenant:item});
       router.get(route("inscriptionPage", {apprenant: JSON.stringify(item), section: JSON.stringify(this.vSectionID)}))
     },
@@ -713,6 +715,7 @@ export default {
               niveau = element.niveau;
             }
             columns.push({
+              id: element.id,
               matricule: element.apprenant?.matricule,
               name: element.apprenant?.nom + " " + element.apprenant?.prenom,
               adresse: element.apprenant?.adresse,
@@ -725,7 +728,7 @@ export default {
               classe_code: element.classe_annee?.classe?.code,
               annee_scolaire: element.classe_annee?.annee?.libelle,
               cycle_niveau: element.cycle_filiere?.cycle?.name + ' / ' + element.niveau?.libelle,
-              filiere: element.cycle_filiere?.filiere?.name,
+              filiere: element.cycle_filiere?.filiere?.code,
               annee: element.annee?.libelle,
               more: {
                 apprenant: element.apprenant,

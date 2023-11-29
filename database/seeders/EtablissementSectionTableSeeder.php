@@ -58,6 +58,19 @@ class EtablissementSectionTableSeeder extends Seeder
                 'code' => 'Groupe IAT/Supérieure',
                 'statutLmd' => 1,
             ),
+            3 => 
+            array (
+                'id' => 4,
+                'regime_evaluation' => 1,
+                'etablissement_id' => 2,
+                'section_id' => 3,
+                'systeme_lmd_id' => 1,
+                'configuration' => NULL,
+                'created_at' => NULL,
+                'updated_at' => NULL,
+                'code' => 'Hetech/Supérieure',
+                'statutLmd' => 1,
+            ),
         ));
         
         

@@ -30,7 +30,7 @@
         Route::get('/save_versement',[\Modules\Scolarite\Http\Controllers\VersementController::class,'saveVersement'])->name('postVersement'); 
         Route::get('/delete_versement',[\Modules\Scolarite\Http\Controllers\VersementController::class,'supVersement'])->name('deleteVersement'); 
         Route::get('/generate_recu_versement',[\Modules\Scolarite\Http\Controllers\VersementController::class,'recuVersement'])->name('generateRecuVersement'); 
-
+        Route::get('/generate_recu_inscription',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'recuInscription'])->name('generateRecuInscription'); 
         
         
         

@@ -125,7 +125,7 @@ class VersementController extends Controller
                 $frais = null;
             }
             // dd($etab_type_frais);
-            // dd($etab_type_frais,$frais);
+            //dd($etab_type_frais,$frais);
             if(!is_null($frais)){
                 $versement = Versement::create([
                     'inscription_id' => $inscription->id,
@@ -188,7 +188,8 @@ class VersementController extends Controller
     }
 
     public function recuVersement(Request $request){
-        $versement = Versement::find($request->id)->with('inscription.annee','inscription.apprenant','inscription.niveau','frais')->first();
+        // dd($request->all());
+        $versement = Versement::where('id',$request->id)->with('inscription.annee','inscription.apprenant','inscription.niveau','inscription.cycleFiliere','frais')->first();
         $somme_verse = Versement::where('inscription_id',$versement->inscription_id)->where('frais_id',$versement->frais_id)->sum('montant');
         // dd($versement);
         $etb = Etablissement::find(Auth::user()->etablissement_id);
@@ -197,6 +198,7 @@ class VersementController extends Controller
         $data = [
             'etablissement' => $etb,
             'somme_verse' => $somme_verse,
+            'section' => $request->section,
             'title' => 'Welcome to ItSolutionStuff.com',
             'date' => date('m/d/Y'),
             'versement' => $versement
@@ -236,8 +238,12 @@ class VersementController extends Controller
     public function index(Request $request)
     {
         // dd($request->all());
+        $type_frais = Frais::whereHas('etablissement_type_frais',function($query) use ($request){
+            $query->where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id))->where('statut',1);
+        })->groupBy('etablissement_type_frais_id')->with('etablissement_type_frais.type_frais')->get();
 
-        $type_frais = EtablissementTypeFrais::where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id))->where('statut',1)->with('type_frais')->get();
+        // dd($type_frais);
+        // $type_frais = EtablissementTypeFrais::where('etablissement_section_id',getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id))->where('statut',1)->with('type_frais')->get();
         // dd($result);
         return Inertia::render('versement/index',[
             'section' => $request->section_id,

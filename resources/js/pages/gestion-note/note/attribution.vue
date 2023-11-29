@@ -244,8 +244,8 @@ export default {
     </v-card>
     <v-form v-model="valid">
 
-        <v-card style="border: 2px solid #7d002c;margin: 20px">
-            <v-card-title style="color: white; background-color: #7d002c">Choisissez les criteres</v-card-title>
+        <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+            <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
             <v-divider></v-divider>
             <br />
             <v-row>
@@ -266,13 +266,13 @@ export default {
             </v-row>
         </v-card>
 
-        <v-card style="border: 2px solid #7d002c;margin: 20px" v-if="eleves">
-            <v-card-title style="color: white; background-color: #7d002c">Saisissez les notes</v-card-title>
+        <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px" v-if="eleves">
+            <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Saisissez les notes</v-card-title>
             <v-divider></v-divider>
             <br />
             <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
                 <template v-slot:item.note="{ item, index }">
-                    <TextField label="" v-model="item.note" @update:modelValue="setNote(item)" outlined dense :rules="[rules.required, rules.validator, rules.max]" style="max-width: 300px"></TextField>
+                <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!']" style="max-width: 300px"></TextField>
                 </template>
             </Datatable>
             <v-card-actions>
