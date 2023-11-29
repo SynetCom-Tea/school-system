@@ -8,12 +8,13 @@ use App\Models\Classe;
 use App\Models\Section;
 use App\Models\Apprenant;
 use Illuminate\Http\Request;
+use App\Models\HistoriqueNote;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\ApprenantClasseAnnee;
 use Illuminate\Support\Facades\Auth;
-use Modules\GestionNote\Entities\Note;
 
+use Modules\GestionNote\Entities\Note;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Periode;
 use Modules\Enseignement\Entities\Filiere;
@@ -364,12 +365,27 @@ class NoteController extends Controller
         })->where('evaluation_id',$request->evaluation)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
         if ($request->evaluation){
-            // $eval = Evaluation::find($request->evaluation)->with('enseignement_annee.filiere_niveau_matiere_ue.matiere')->get()->first();
-            // // dd($eval->enseignement_annee);
-            // $evaluation_id = Evaluation::where('periode_id',$eval->periode_id)->where('type_evaluation_id',$eval->type_evaluation_id)->where('session','Prémiere session')->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($eval){
-            //     $matiere->where('matiere_id',)
-            // })->get();
-            // dd($evaluation_id);
+            $eval = Evaluation::where('id',$request->evaluation)->with('enseignement_annee.filiere_niveau_matiere_ue.matiere')->get()[0];
+            // dd($eval->id);
+            $evaluation_session1 = Evaluation::where('periode_id',$eval->periode_id)->where('type_evaluation_id',$eval->type_evaluation_id)->where('session','Session 1')->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($eval){
+                $matiere->where('matiere_id',$eval->enseignement_annee->filiere_niveau_matiere_ue->matiere_id);
+            });
+            if ($evaluation_session1->exists()){
+                $id_evaluation = $evaluation_session1->get()[0]->id;
+                $note_apps =  Note::whereHas('apprenant.apprenant_classe_annees.classe_annee',function($classeAnne) use($request){
+                    $classeAnne->where('classe_id',$request->classe);
+                })->where('evaluation_id',$id_evaluation)->get()->pluck('apprenant_id');
+                foreach ($note_apps as $key => $note_app) {
+                    $id_apps = HistoriqueNote::whereHas('historique_bulletin',function ($apprenant) use ($note_app){
+                        $apprenant->where('apprenant_id',$note_app);
+                    })->where('note_generale','<=',10)->get()->pluck('historique_bulletin.apprenant_id');
+                    dump($id_apps);
+                }     
+                die();
+            }else {
+                
+            }
+            
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                 $query->where('classe_id',$request->classe);
             })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get(); 

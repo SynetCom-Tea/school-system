@@ -17,7 +17,7 @@ class HistoriqueNote extends Model
       'volume_horaire_matiere', 'note_generale', 'note_generale_coefficiente', 'note', 'notation_matiere'
         ];
 
-    public function historiqur_bulletin(): BelongsTo
+    public function historique_bulletin(): BelongsTo
     {
         return $this->belongsTo(HistoriqueBulletin::class);
     }

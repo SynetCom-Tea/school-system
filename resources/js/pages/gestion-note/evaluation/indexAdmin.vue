@@ -342,6 +342,7 @@ export default {
             })
         },
         Notation(t) {
+            this.form.session = null
             this.libelle = this.type_evaluation.filter(el => el.id == t)
             if (this.libelle[0].libelle == "Devoir" || this.libelle[0].libelle == "Interrogation" || this.libelle[0].libelle == "Contrôle"|| this.libelle[0].libelle == "Composition") {
                 this.notation = true
@@ -429,8 +430,8 @@ export default {
                                 </v-col>
                                 <v-col cols="3" v-if="section_id>=3 && form.type_evaluation_id == 6" >
                                     <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
-                                        <v-radio label="1ère" value="Prémiere session"></v-radio>
-                                        <v-radio label="2ème" value="deuxiéme session"></v-radio>
+                                        <v-radio label="1ère" value="Session 1"></v-radio>
+                                        <v-radio label="2ème" value="Session 2"></v-radio>
                                     </v-radio-group>
                                 </v-col>
                             </v-row>
@@ -498,7 +499,7 @@ export default {
                                     <TextField :prepend-inner-icon="icon.mdiPencil" hint="Sur combien vous voulez noter cette evaluation (Ex:/10,20,40...)" label="Notation" variant="outlined" placeholder="Notation" v-model="form.notation" :rules="[v => !!v || 'Ce champ est requis!'] "  :isRequired="true">
                                     </TextField>
                                 </v-col>
-                                <v-col cols="3" v-if="section_id>=3" >
+                                <v-col cols="3" v-if="section_id>=3 && form.type_evaluation_id == 6" >
                                     <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
                                         <v-radio label="1ère" value="Prémiere session"></v-radio>
                                         <v-radio label="2ème" value="deuxiéme session"></v-radio>
