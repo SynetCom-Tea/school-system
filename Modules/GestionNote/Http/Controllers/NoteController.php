@@ -383,7 +383,7 @@ class NoteController extends Controller
                     })->where('apprenant_id',$note_app)->get()->pluck('apprenant_id');
                     // dump($id_apps);
                 }     
-                die();
+                // die();
             }else {
                 $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                     $query->where('classe_id',$request->classe);
