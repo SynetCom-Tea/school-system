@@ -17,6 +17,7 @@ return new class extends Migration
             $table->string('libelle')->nullable();
             $table->string('description')->nullable();
             $table->timestamps();
+            $table->softDeletes();
         });
         Schema::create('etablissements', function (Blueprint $table) {
             $table->id();
