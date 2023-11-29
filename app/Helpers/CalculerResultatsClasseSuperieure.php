@@ -166,6 +166,8 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
                 $commonFields += [
                     'nom_eu' => $detailNote['nom_eu'],
                     'nom_matiere' => $detailNote['nom_matiere'],
+                    'ue_id' => $detailNote['id_ue'],
+                    'matiere_id' => $detailNote['id_matiere'],
                     'coefficient' => $detailNote['coefficient_matiere'],
                     'volume_horaire_matiere' => $detailNote['volume_horaire_matiere'],
                     'note_origine_devoir' => $detailNote['note_origine_devoir'],
