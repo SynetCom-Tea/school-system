@@ -9,11 +9,12 @@ use App\Models\Section;
 use App\Models\Apprenant;
 use Illuminate\Http\Request;
 use App\Models\HistoriqueNote;
+use App\Models\HistoriqueBulletin;
 use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\ApprenantClasseAnnee;
-use Illuminate\Support\Facades\Auth;
 
+use Illuminate\Support\Facades\Auth;
 use Modules\GestionNote\Entities\Note;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Periode;
@@ -370,20 +371,20 @@ class NoteController extends Controller
             $evaluation_session1 = Evaluation::where('periode_id',$eval->periode_id)->where('type_evaluation_id',$eval->type_evaluation_id)->where('session','Session 1')->whereHas('enseignement_annee.filiere_niveau_matiere_ue',function ($matiere) use($eval){
                 $matiere->where('matiere_id',$eval->enseignement_annee->filiere_niveau_matiere_ue->matiere_id);
             });
-            if ($evaluation_session1->exists()){
+            if ($evaluation_session1->exists() && $eval->session == 'Session 2'){
                 $id_evaluation = $evaluation_session1->get()[0]->id;
                 $note_apps =  Note::whereHas('apprenant.apprenant_classe_annees.classe_annee',function($classeAnne) use($request){
                     $classeAnne->where('classe_id',$request->classe);
                 })->where('evaluation_id',$id_evaluation)->get()->pluck('apprenant_id');
                 foreach ($note_apps as $key => $note_app) {
-                    $id_apps = HistoriqueNote::whereHas('historique_bulletin',function ($apprenant) use ($note_app){
-                        $apprenant->where('apprenant_id',$note_app);
-                    })->where('note_generale','<=',10)->get()->pluck('historique_bulletin.apprenant_id');
+                    $id_apps = HistoriqueBulletin::whereHas('historique_notes',function ($notes) {
+                        $notes->where('note_generale','<',10)->where('nom_matiere','merise');
+                    })->where('apprenant_id',$note_app)->get()->pluck('apprenant_id');
                     dump($id_apps);
                 }     
                 die();
             }else {
-                
+                dd('no');
             }
             
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
