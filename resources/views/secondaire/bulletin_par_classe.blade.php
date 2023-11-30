@@ -143,9 +143,9 @@
             <b style="font-size: 13px;">Moyenne obtenue : {{$donnee['bulletin']->moyenne_details_notes}} / 20</b>
         </div>
        
-        <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
+        <!-- <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
             <b style="font-size: 13px;">Rang : {{ $donnee['bulletin']->rang}}</b>
-        </div>
+        </div> -->
        
         <!-- Fin informations sur le professeur et rang -->
 
