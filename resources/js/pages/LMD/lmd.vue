@@ -57,8 +57,10 @@
                 inset
               ></v-switch>
             </v-col>
-            <v-col v-if="form.lmd">
+            <v-row v-if="form.lmd">
+            <v-col cols="4" md="4">
               <Autocomplete
+              class="mt-1"
                 :items="lmds"
                 item-title="libelle"
                 item-value="id"
@@ -66,15 +68,45 @@
                 @update:modelValue="test()"
                 chips
                 closable-chips
-                required
+                isRequired
                 color="blue-grey-lighten-2"
                 label="Select"
               ></Autocomplete>
             </v-col>
-            <v-col>
+            <v-col cols="4" md="4">
+              <Autocomplete
+              class="mt-1"
+                :items="regime_val"
+                item-title="libelle"
+                item-value="id"
+                label="Modalité de passage"
+                placeholder="Modalité de passage"
+                v-model="form.regime_validation"
+                @update:modelValue="test()"
+                chips
+                closable-chips
+                isRequired
+                color="blue-grey-lighten-2"
+              ></Autocomplete>
+            </v-col>
+
+            <v-col cols="3" md="3" v-if="form.regime_validation==2">
+                <TextField
+              class="mt-1"
+              label="Nombre de crédit"
+              placeholder="Nombre de crédit"
+              v-model="form.nbre_credit"
+              @update:modelValue="test()"
+              isRequired
+              :rules="[(v) => !!v || 'Ce champ est requis!']"
+            ></TextField>
+
+            </v-col>
+            </v-row>
+            <v-col v-if="!form.lmd">
               <v-switch
-                label="Souhaiterez-vous appliquez le régime d'évaluation ?"
-                v-model="form.regime_evaluation"
+                label="Le systeme de devoir continu"
+                v-model="form.devoir_continu"
                 color="indigo"
                 inset
               ></v-switch>
@@ -145,7 +177,7 @@ import {
   mdiGift,
 } from "@mdi/js";
 export default {
-  props: ["type", "lmds"],
+  props: ["type", "lmds","regime_val"],
   components: {
     Loader,
     // Datatable,
@@ -180,7 +212,9 @@ export default {
     form: useForm({
       lmd: false,
       type_lmd: null,
-      regime_evaluation: false,
+      devoir_continu: false,
+      regime_validation:null,
+      nbre_credit:null,
       type: null,
     }),
   }),
@@ -194,12 +228,15 @@ export default {
       }
     },
     test() {
+
+        // console.log(this.regime_val);
       if (this.form.lmd == true && this.form.type_lmd !== null) {
         this.check = false;
       } else if (this.form.lmd == false) {
         this.check = false;
       } else {
         this.check = true;
+        this.form.devoir_continu=false;
       }
     },
     //  submit(){
