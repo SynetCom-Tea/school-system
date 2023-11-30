@@ -294,38 +294,20 @@ class AffectationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy(string $id,Request $niveau)
     {
+        // dd($niveau);
         try{
-
+            if($niveau->type==1 || $niveau->type==2  ){
                 $aff = NiveauMatiere::find($id);
-                $table = Niveau::where('id',$aff->niveau_id)->first();
-                $aff->delete();
 
-        }
-        catch(\Illuminate\Database\QueryException $e){
-            if($e->getCode() == "23000"){
-                //dd($e->getCode());
-                return redirect()->route('affectations.index',$table->section_id)->with('message', [
-                    'type' => 'error',
-                    'text' => "Désolé, vous ne pouvez pas supprimer la matière de ce niveau!",
-                ]);
+            }else if($niveau->type==3 || $niveau->type==4){
 
-            }
-        }
-        return redirect()->route('affectations.index',$table->section_id)->with('message', [
-            'type' => 'success',
-            'text' => "La matière a été supprimée de ce niveau avec succès !",
-        ]);
-    }
-
-
-    public function supprimer($id)
-    {
-        try{
                 $aff = FiliereNiveauMatiereUe::find($id);
-                $table = Niveau::where('id',$aff->niveau_id)->first();
-                $aff->delete();
+            }
+
+            $table = Niveau::where('id',$aff->niveau_id)->first();
+            $aff->delete();
 
         }
         catch(\Illuminate\Database\QueryException $e){
@@ -343,4 +325,79 @@ class AffectationController extends Controller
             'text' => "La matière a été supprimée de ce niveau avec succès !",
         ]);
     }
+
+
+    public function niveausupprime( $id,Request $niveau)
+    {
+        // dd($id);
+        try{
+
+            if($niveau->type==1 || $niveau->type==2  ){
+                $affs = NiveauMatiere::where('niveau_id',$id)->get();
+
+            }else if($niveau->type==3 || $niveau->type==4){
+
+                $affs = FiliereNiveauMatiereUe::where('niveau_id',$id)->get();
+            }
+
+            $table = Niveau::where('id',$id)->first();
+
+            foreach($affs as $aff){
+                $aff->delete();
+            }
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                //dd($e->getCode());
+                return redirect()->route('affectations.index',$table->section_id)->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer la matière de ce niveau!",
+                ]);
+
+            }
+        }
+        return redirect()->route('affectations.index',$table->section_id)->with('message', [
+            'type' => 'success',
+            'text' => "La matière a été supprimée de ce niveau avec succès !",
+        ]);
+    }
+
+
+
+
+    public function supprimerUE($id,Request $ue)
+    {
+        // dd($id);
+        try{
+                $affs = FiliereNiveauMatiereUe::where('cycle_filiere_id',$ue->cycle_filiere_id)->where('ue_id',$id)->where('niveau_id',$ue->niveau_id)->get();
+                $table = Niveau::where('id',$ue->niveau_id)->first();
+                foreach($affs as $aff){
+                    $aff->delete();
+                }
+
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                //dd($e->getCode());
+                return redirect()->route('affectations.index',$table->section_id)->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer la matière de ce niveau!",
+                ]);
+
+            }
+        }
+        return redirect()->route('affectations.index',$table->section_id)->with('message', [
+            'type' => 'success',
+            'text' => "La matière a été supprimée de ce niveau avec succès !",
+        ]);
+    }
+
+
+
+
+
+
 }
+
+
+

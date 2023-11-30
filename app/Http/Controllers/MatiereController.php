@@ -44,9 +44,23 @@ class MatiereController extends Controller
         // dd($request);
         $ets_id = Auth::user()->etablissement_id;
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        if($request->importation=="1"){
 
+            foreach($request->fichier as $matiere){
+                Matiere::updateOrInsert([
+                    'nom' => $matiere[0],
+                    'etablissement_section_id' => $table->id,
+                ],
+                [
 
-        foreach($request->donnees as $matiere){
+                ]
+                );
+
+            }
+
+        }else{
+
+            foreach($request->donnees as $matiere){
             Matiere::updateOrInsert([
                 'nom' => $matiere['nom'],
                 'etablissement_section_id' => $table->id,
@@ -57,7 +71,7 @@ class MatiereController extends Controller
             );
 
         }
-
+}
         return redirect()->route('matieres.index', $type)->with('message', [
             'type' => 'success',
             'text' => "Les matières ont été créées avec succès !",

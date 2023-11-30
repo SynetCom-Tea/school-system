@@ -135,6 +135,13 @@ class FilliereController extends Controller
     {
         try{
             $filiere = Filiere::find($id);
+
+            $cyclefiliere = CycleFiliere::where('filiere_id',$filiere->id)->get();
+            foreach( $cyclefiliere as $cycle) {
+                # code...
+                $cycle->delete();
+            }
+
             $filiere->delete();
         }
         catch(\Illuminate\Database\QueryException $e){

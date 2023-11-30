@@ -69,7 +69,7 @@
                 ],
                 dialog_title: 'Affectation des enseignants',
                 dialog: false,
-
+                classetabs:{},
                 form: useForm({
                     id:null,
                     type:this.section_id,
@@ -98,6 +98,20 @@
 
 
         },
+        classeset(i){
+
+            if(this.tab.length==0)
+            {
+            this.classetabs[i]=this.classes;
+            this.tab[i]=this.form.matieres[i].matiere;
+            }else if(this.tab[i]!=this.form.matieres[i].matiere){
+            this.classetabs[i]=this.classes;
+            this.tab[i]=this.form.matieres[i].matiere;
+            console.log('i',this.tab[i]!=this.form.matieres[i].matiere);
+            }
+            console.log('fdgfggg',this.classetabs);
+
+        },
             create() {
                 router.get(route('affectationEnseignants.create', this.section_id));
             },
@@ -107,9 +121,9 @@
             // let mat=this.form.matiere;
             // console.log('mat',this.form.matiere);
             if(this.section_id<=2){
-                router.replace(this.$page.url,{data:{matiere:item.niveau_matiere.matiere.id}});
+                router.replace(this.$page.url,{data:{matiere:item.niveau_matiere.matiere.id,enseg:item.id}});
             }else{
-                router.replace(this.$page.url,{data:{matiere:item.filiere_niveau_matiere_ue.matiere.id}});
+                router.replace(this.$page.url,{data:{matiere:item.filiere_niveau_matiere_ue.matiere.id,enseg:item.id}});
             }
                 // router.get(route('AffectationEnseignants.edit',item.id ));
 
