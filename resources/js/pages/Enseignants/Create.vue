@@ -151,10 +151,10 @@
                 :label="'Attribution des matières par classe'"
               ></v-switch>
             </v-col>
-                <v-col cols="12" md="12" v-if="!form.importation">
+                <v-col cols="12" md="12" v-if="!form.importation"  >
                <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres" >
 
-                 <v-col cols="5" md="5" style="height: 90px" >
+                 <v-col cols="5" md="5"  >
                    <Autocomplete
                      label="Matière"
                      placeholder="Matière"
@@ -171,7 +171,7 @@
                    </Autocomplete>
                  </v-col>
 
-                 <v-col cols="5" md="5" style="height: 90px">
+                 <v-col cols="5" md="5" >
                    <Autocomplete
                        v-model="matiere.classes"
                        isRequired
@@ -224,7 +224,7 @@
             <v-col cols="12" md="12" v-if="form.importation && section_id=='1'">
                <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes" >
 
-                 <v-col cols="5" md="5" style="height: 90px" >
+                 <v-col cols="5" md="5"  >
                    <Autocomplete
                      label="Classe"
                      placeholder="Classe"
@@ -241,7 +241,7 @@
                    </Autocomplete>
                  </v-col>
 
-                 <v-col cols="5" md="5" style="height: 90px">
+                 <v-col cols="5" md="5" >
                    <Autocomplete
                        v-model="classe.matieres"
                        isRequired

@@ -544,7 +544,7 @@
                                                 <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_salle" label="Charger le fichier des Matières" variant="solo-inverted"></v-file-input>
                                             </v-col>
                                             <v-col v-if="form.importation">
-                                                <v-btn class="ma-2" outlined type="button" color="primary" href="../models/echantillons/fiche_echantillonage.ods" download>
+                                                <v-btn class="ma-2" outlined type="button" color="primary" href="../models/salles.xlsx" download>
                                                     Télécharger le Modèle
                                                 </v-btn>
                                             </v-col>
