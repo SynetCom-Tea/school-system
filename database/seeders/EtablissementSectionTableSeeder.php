@@ -14,15 +14,15 @@ class EtablissementSectionTableSeeder extends Seeder
      */
     public function run()
     {
-        
+
 
         \DB::table('etablissement_section')->delete();
-        
+
         \DB::table('etablissement_section')->insert(array (
-            0 => 
+            0 =>
             array (
                 'id' => 1,
-                'regime_evaluation' => NULL,
+                'devoir_continu' => NULL,
                 'etablissement_id' => 1,
                 'section_id' => 1,
                 'systeme_lmd_id' => NULL,
@@ -32,10 +32,10 @@ class EtablissementSectionTableSeeder extends Seeder
                 'code' => 'Groupe IAT/Primaire',
                 'statutLmd' => 0,
             ),
-            1 => 
+            1 =>
             array (
                 'id' => 2,
-                'regime_evaluation' => NULL,
+                'devoir_continu' => NULL,
                 'etablissement_id' => 1,
                 'section_id' => 2,
                 'systeme_lmd_id' => NULL,
@@ -45,10 +45,10 @@ class EtablissementSectionTableSeeder extends Seeder
                 'code' => 'Groupe IAT/Secondaire',
                 'statutLmd' => 0,
             ),
-            2 => 
+            2 =>
             array (
                 'id' => 3,
-                'regime_evaluation' => 1,
+                'devoir_continu' => 1,
                 'etablissement_id' => 1,
                 'section_id' => 3,
                 'systeme_lmd_id' => 1,
@@ -58,10 +58,10 @@ class EtablissementSectionTableSeeder extends Seeder
                 'code' => 'Groupe IAT/Supérieure',
                 'statutLmd' => 1,
             ),
-            3 => 
+            3 =>
             array (
                 'id' => 4,
-                'regime_evaluation' => 1,
+                'devoir_continu' => 1,
                 'etablissement_id' => 2,
                 'section_id' => 3,
                 'systeme_lmd_id' => 1,
@@ -72,7 +72,7 @@ class EtablissementSectionTableSeeder extends Seeder
                 'statutLmd' => 1,
             ),
         ));
-        
-        
+
+
     }
 }

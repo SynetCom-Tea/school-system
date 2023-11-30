@@ -83,6 +83,9 @@ export default {
 
             form: useForm({
                 id: null,
+                fichier_matiere:null,
+                importation: false,
+                fichier:[],
                 code: '',
                 nom: '',
                 donnees: [],
@@ -90,8 +93,8 @@ export default {
             file: null,
             headers1: [],
             data: [],
-            contentType: ["nom"],
-            importation: false,
+            contentType: ["Nom"],
+
             rules: [
                 value => {
                     if (value) return true
@@ -202,8 +205,16 @@ export default {
         // Méthodes de l'importation du fichier
         handleFileUpload(event) {
             const file = event.target.files[0];
+
             if (file) {
+                const extensionFichier = file.name.split('.').pop().toLowerCase();
+
+                const extensionsAutorisees = ['xlsx', 'xls', 'csv'];
+                if (extensionsAutorisees.includes(extensionFichier)) {
+
+
                 const reader = new FileReader();
+
 
                 reader.onload = (e) => {
                     const data = e.target.result;
@@ -212,6 +223,7 @@ export default {
                     const workbook = XLSX.read(data, {
                         type: "binary"
                     });
+
                     const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
                     // Convertir les données de la feuille en tableau
@@ -223,11 +235,12 @@ export default {
                     if (sheetData.length > 0) {
                         this.headers1 = sheetData[0];
                         this.data = sheetData.slice(1);
-
+                        console.log(this.data);
                         if (this.checkEntete(this.headers1, this.contentType)) {
                             const missingDataIndex = this.donneesManquantes(this.data);
 
                             if (typeof missingDataIndex === "number") {
+                                this.form.fichier=this.data;
                                 this.$swal.fire({
                                     class:"alert",
                                     title: "Validé",
@@ -240,6 +253,7 @@ export default {
                                 //this.submitForm(null);
                                 const ligne = missingDataIndex.rowIndex + 2;
                                 const colonne = missingDataIndex.columnIndex + 1;
+                                this.close()
                                 this.$swal.fire({
                                     class:"alert",
                                     title: "Erreur",
@@ -255,6 +269,7 @@ export default {
                         } else {
                             this.form.fichier_matiere = null;
                             //this.submitForm(null);
+                            this.close()
                             this.$swal.fire({
                                 class:"alert",
                                 title: "Erreur",
@@ -266,6 +281,18 @@ export default {
                     }
                 };
                 reader.readAsBinaryString(file);
+            } else {
+                this.form.fichier_matiere = null;
+                            //this.submitForm(null);
+                this.close()
+                this.$swal.fire({
+                        class:"alert",
+                        title: "Erreur",
+                        text: "Votre fichier n'est pas valide veuillez charger un fichier de type excel !",
+                        icon: "warning",
+                        confirmButtonText: "OK",
+                });
+            }
             }
         },
         checkEntete(arr1, arr2) {
@@ -355,6 +382,10 @@ export default {
             this.form.code = ""
             this.form.nom = ""
             this.form.donnees = []
+            this.form.fichier=[]
+            this.form.fichier_matiere=null,
+            this.form.importation= false,
+
             this.dialog = false
         }
     },
@@ -412,12 +443,12 @@ export default {
                     <v-form ref="form">
                         <v-row v-if="form.id==null">
                             <v-col>
-                                <v-switch v-model="importation" color="#004980" inset :label="'Importation d\'un fichier pour alimenter les matières'"></v-switch>
+                                <v-switch v-model="form.importation" color="#004980" inset :label="'Importation d\'un fichier pour alimenter les matières'"></v-switch>
                             </v-col>
-                            <v-col v-if="importation">
+                            <v-col v-if="form.importation">
                                 <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_matiere" label="Charger le fichier des Matières" variant="solo-inverted"></v-file-input>
                             </v-col>
-                            <v-col v-if="importation">
+                            <v-col v-if="form.importation">
                                 <v-btn class="ma-2" outlined type="button" color="primary" href="../models/echantillons/fiche_echantillonage.ods" download>
                                     Télécharger le Modèle
                                 </v-btn>
@@ -428,13 +459,13 @@ export default {
                                 <text-field disabled label="Code" placeholder="Code" v-model="form.code" isRequired :rules="rules"></text-field>
                             </v-col>
                         </v-row>
-                        <v-row v-if="!importation && form.id!=null">
+                        <v-row v-if="!form.importation && form.id!=null">
                             <v-col cols="12" md="12">
                                 <text-field label="Libellé" placeholder="Libellé" v-model="form.nom" isRequired :rules="rules"></text-field>
 
                             </v-col>
                         </v-row>
-                        <v-card v-if="!importation && form.id==null">
+                        <v-card v-if="!form.importation && form.id==null">
                             <br>
                             <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
 

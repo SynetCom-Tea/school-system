@@ -2,6 +2,8 @@
 
 namespace Modules\Enseignement\Http\Controllers;
 
+use App\Models\RegimeEvaluation;
+use App\Models\RegimeValidation;
 use App\Models\SystemeLmd;
 use Illuminate\Contracts\Support\Renderable;
 use Illuminate\Http\Request;
@@ -24,7 +26,8 @@ class LmdController extends Controller
 
             return Inertia::render('LMD/lmd', [
                 'type' => $type,
-                'lmds' => SystemeLmd::all()
+                'lmds' => SystemeLmd::all(),
+                'regime_val' => RegimeValidation::all()
             ]);
         }else{
             return redirect()->route('admin.gestion', $type);
@@ -49,12 +52,12 @@ class LmdController extends Controller
     public function store(Request $request)
     {
         //
-
+        // dd($request);
         $eva = null;
         $ligne = DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->type)->first();
         // dd($request->type_lmd);
         if ($ligne) {
-            if ($request->regime_evaluation == true) {
+            if ($request->devoir_continu == true) {
                 $eva = 1;
             } else {
                 $eva = 0;
@@ -62,9 +65,13 @@ class LmdController extends Controller
             if ($request->lmd) {
                 DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->type)->update([
                     'systeme_lmd_id' => $request->type_lmd,
-                    'regime_evaluation' => $eva,
+                    'devoir_continu' => $eva,
                     'statutLmd'=>1,
+                    'nbre_credit'=>$request->nbre_credit,
+                    'regime_validation_id'=>$request->regime_validation,
+
                 ]);
+
             } else {
                 DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $request->type)->update([
                     'systeme_lmd_id' => null,

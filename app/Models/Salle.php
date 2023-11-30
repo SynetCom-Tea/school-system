@@ -12,7 +12,7 @@ class Salle extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['libelle', 'code', 'etablissement_id'];
+    protected $fillable = ['libelle', 'code','capacité', 'etablissement_id'];
 
     public function seances(): HasMany
     {

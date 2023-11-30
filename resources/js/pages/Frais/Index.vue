@@ -160,10 +160,10 @@
                 });
             },
 
-            deleteItemc(items){
+            deleteItemc(item){
 
-
-                     this.$swal({
+                console.log('items',item);
+                this.$swal({
                     title: 'Es-tu sûr?',
                     text: "Vous ne pourrez pas revenir en arrière !",
                     icon: 'warning',
@@ -173,43 +173,44 @@
                     confirmButtonText: 'Oui, supprimez-le!',
                     cancelButtonText: 'Non, annulez !',
                     }).then((result) => {
-                        console.log('item',item);
+                        console.log('item',item.frais.length);
                     if (result.isConfirmed) {
 
+                        for (var i = 0; i < item.frais.length; i++) {
+                            console.log('id',item.frais[i].id);
 
-                       this.form.delete(route('frais.supprimer', item.id), {
-                        onFinish: () => {
-                            if(this.$page.props.flash?.message?.type == 'error'){
-                                this.$swal({
-                                icon: 'error',
-                                title: 'Suppression',
-                                text: this.$page.props.flash?.message?.text,
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
+                            this.form.delete(route('frais.destroy', item.frais[i].id), {
+                                    onFinish: () => {
+                                        if(this.$page.props.flash?.message?.type == 'error'){
+                                            this.$swal({
+                                            icon: 'error',
+                                            title: 'Suppression',
+                                            text: this.$page.props.flash?.message?.text,
+                                            toast: true,
+                                            position: 'top-end',
+                                            showConfirmButton: false,
+                                            timer: 5000,
+                                            timerProgressBar: true,
+                                        });
+                                        }else if(this.$page.props.flash?.message?.type == 'success'){
+                                            this.$swal({
+                                            icon: 'success',
+                                            iconColor: '#004980',
+                                            color: '#004980',
+                                            title: 'Suppression',
+                                            text: this.$page.props.flash?.message?.text,
+                                            toast: true,
+                                            position: 'top-end',
+                                            showConfirmButton: false,
+                                            timer: 5000,
+                                            timerProgressBar: true,
+                                        });
+                                        }
+                                    },
                             });
-                            }else if(this.$page.props.flash?.message?.type == 'success'){
-                                this.$swal({
-                                icon: 'success',
-                                iconColor: '#004980',
-                                color: '#004980',
-                                title: 'Suppression',
-                                text: this.$page.props.flash?.message?.text,
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-                            }
-                        },
-                        });
+                        }
                     }
                 });
-
-
 
             },
             async submit() {
@@ -419,7 +420,7 @@
                 </template>
             <template v-slot:item.actions="{item}">
 
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemc(item.raw)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemc(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

@@ -94,7 +94,6 @@
                       chips
                       v-model="matiere.matiere"
                       :rules="[(v) => !!v || 'Ce champ est requis!']"
-                      @change="classeset(i)"
                       @update:modelValue="submitForm(matiere),setclasses(i)"
 
                     >
@@ -262,6 +261,7 @@ import axios from "axios";
 
       section: null,
         classetabs:{},
+        tab:[],
       form: useForm({
         enseignant: null,
         importation: false,
@@ -305,8 +305,18 @@ import axios from "axios";
         },
 
         classeset(i){
+
+          if(this.tab.length==0)
+           {
             this.classetabs[i]=this.classes;
+            this.tab[i]=this.form.matieres[i].matiere;
+          }else if(this.tab[i]!=this.form.matieres[i].matiere){
+            this.classetabs[i]=this.classes;
+            this.tab[i]=this.form.matieres[i].matiere;
+            console.log('i',this.tab[i]!=this.form.matieres[i].matiere);
+          }
             console.log('fdgfggg',this.classetabs);
+
         },
         goBack() {
             router.get(route('AffectationEnseignants.index', this.section_id))
