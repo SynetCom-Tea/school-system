@@ -26,10 +26,6 @@ class SectionSeeder extends Seeder
             'id' => 3,
             'libelle' => 'Supérieure'
         ]);
-        Section::create([
-            'id' => 4,
-            'libelle' => 'Universitaire'
-        ]);
 
         Role::create([
             'name' => 'Administrateur',
