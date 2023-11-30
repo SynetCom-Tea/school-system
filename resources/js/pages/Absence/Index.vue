@@ -103,7 +103,7 @@ export default {
           "
         >
         <v-row>
-          <v-col cols="4">
+          <v-col cols="3">
           <autocomplete
             label="Niveau"
             v-model="form.niveau"
@@ -140,14 +140,14 @@ export default {
           >
           </TextField>
         </v-col>
-        <v-col cols="2">
+        <v-col cols="3">
           <v-btn
             color="deep-purple-accent-4"
             class="mt-4" 
             @click="setAbsence(form.date)"
             :disabled="!form.date"
             >
-            Générer
+            Voir les absences
             </v-btn>
         </v-col>
         </v-row>

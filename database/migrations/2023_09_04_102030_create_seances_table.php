@@ -49,15 +49,19 @@ return new class extends Migration
             BEFORE INSERT ON seances
             FOR EACH ROW
             BEGIN
-
-                SET @niveau_id = (SELECT niveau_id FROM niveau_matieres WHERE id = NEW.niveau_matiere_id);
-
-                SET @matiere_id = (SELECT matiere_id FROM niveau_matieres WHERE id = NEW.niveau_matiere_id);
-
-                SET NEW.nom_matiere = (SELECT nom FROM matieres WHERE id = @matiere_id);
+                IF NEW.niveau_matiere_id IS NOT NULL THEN
+                    -- If niveau_matiere_id is not null
+                    SET @niveau_id = (SELECT niveau_id FROM niveau_matieres WHERE id = NEW.niveau_matiere_id);
+                    SET @matiere_id = (SELECT matiere_id FROM niveau_matieres WHERE id = NEW.niveau_matiere_id);
+                ELSE
+                    -- If niveau_matiere_id is null
+                    SET @niveau_id = (SELECT niveau_id FROM filiere_niveau_matiere_ues WHERE id = NEW.filiere_niveau_matiere_ue_id);
+                    SET @matiere_id = (SELECT matiere_id FROM filiere_niveau_matiere_ues WHERE id = NEW.filiere_niveau_matiere_ue_id);
+                END IF;
             
+                SET NEW.nom_matiere = (SELECT nom FROM matieres WHERE id = @matiere_id);
                 SET NEW.libelle_niveau = (SELECT libelle FROM niveaux WHERE id = @niveau_id);
-            END
+            END;
         ");
     }
 
