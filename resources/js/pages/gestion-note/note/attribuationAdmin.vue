@@ -346,7 +346,7 @@ export default {
             </v-row>
             <v-row style="margin: 20px">
                 <v-col md="1"></v-col>
-                <v-col cols="2" v-if="type <=2">
+                <v-col cols="4" v-if="type <=2">
                     <Autocomplete label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                     </Autocomplete>
                 </v-col>

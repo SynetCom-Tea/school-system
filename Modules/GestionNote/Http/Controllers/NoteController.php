@@ -331,7 +331,7 @@ class NoteController extends Controller
             $fnmu->where('niveau_id',$request->niveau)->where('cycle_filiere_id',$request->filiere);
             })->get()  : [];
         // $enseignement_annees = EnseignementAnne
-        $enseigements = $request->annee && $request->section_id<=2 ?  DB::select("
+        $enseigements = $request->classe && $request->annee && $request->section_id<=2 ?  DB::select("
             SELECT ea.id,ea.code FROM enseignement_annees ea
             JOIN enseignants en ON en.id = ea.enseignant_id
             JOIN classe_annees ca ON ca.id = ea.classe_annee_id
@@ -340,9 +340,10 @@ class NoteController extends Controller
             JOIN etablissement_section es ON es.id = c.etablissement_section_id
             JOIN sections s ON s.id = es.section_id
             JOIN etablissements e ON e.id = es.etablissement_id
-            WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id AND a.id = :annee_id
+            WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id AND a.id = :annee_id AND c.id = :classe_id
             ",[
                 'annee_id'=>$request->annee,
+                'classe_id'=>$request->classe,
                 'enseignant_id'=>$request->enseignant,
                 'section_id'=> $request->section_id,
                 'etablissement_id'=>$user->etablissement_id
