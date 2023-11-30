@@ -61,7 +61,7 @@ return new class extends Migration
             
                 SET NEW.nom_matiere = (SELECT nom FROM matieres WHERE id = @matiere_id);
                 SET NEW.libelle_niveau = (SELECT libelle FROM niveaux WHERE id = @niveau_id);
-            END;
+            END;        
         ");
     }
 
