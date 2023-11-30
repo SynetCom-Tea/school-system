@@ -39,7 +39,7 @@ use Illuminate\Support\Facades\DB;
                         $note_examen += $note_origine_examen * 0.7; // Accumuler les notes d'examen
                     }
                 }
-            }elseif($etablissement_section == 2){
+            }elseif($systeme_lmd_id->systeme_lmd_id == 2){
                 foreach ($notes as $element) {
                     // Stocker les notes d'origine
                     if ($element->type_evaluation === 'Devoir') {
