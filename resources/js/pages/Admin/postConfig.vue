@@ -38,7 +38,38 @@
 
                 </v-card>
             </v-col>
+            <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('facultes.index')">
 
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/faculte.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des facultés</p>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('departements.index')">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/department.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion Départements</p>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
+                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('filieres.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/filieres.jpg'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des filières</p>
+
+                </v-card>
+            </v-col>
             <v-col cols="auto" style="margin-left:18px;">
                 <v-card :disabled="salleCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('salles.index')">
 
@@ -64,14 +95,24 @@
             </v-col>
 
 
-
-            <v-col cols="auto" style="margin-left:18px;">
+            <v-col cols="auto" style="margin-left:18px;" v-if="type == '1'||type == '2'">
                 <v-card :disabled="classeCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
 
                     </v-img>
                     <p class="text-h6" style="text-align: center;">Gestion des classes</p>
+
+                </v-card>
+
+            </v-col>
+            <v-col cols="auto" style="margin-left:18px;" v-if="type == '3'||type == '4'">
+                <v-card :disabled="classeCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('classes.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/classe.png'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Gestion des sections</p>
 
                 </v-card>
 
@@ -176,38 +217,7 @@
 
         </v-col> -->
 
-          <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('facultes.index')">
 
-                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/faculte.png'" class="text-white">
-
-                    </v-img>
-                    <p class="text-h6" style="text-align: center;">Gestion des facultés</p>
-
-                </v-card>
-
-            </v-col>
-            <v-col cols="auto" v-if="type == '4'" style="margin-left:18px;">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="go('departements.index')">
-
-                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/department.png'" class="text-white">
-
-                    </v-img>
-                    <p class="text-h6" style="text-align: center;">Gestion Départements</p>
-
-                </v-card>
-
-            </v-col>
-            <v-col cols="auto" v-if="type == '4' || type == '3'" style="margin-left:18px;">
-                <v-card elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('filieres.index',type)">
-
-                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/filieres.jpg'" class="text-white">
-
-                    </v-img>
-                    <p class="text-h6" style="text-align: center;">Gestion des filières</p>
-
-                </v-card>
-            </v-col>
 
 
 

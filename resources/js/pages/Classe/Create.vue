@@ -325,10 +325,10 @@ export default {
         </v-card-text>
         <v-card-actions class="justify-end">
       <v-spacer></v-spacer>
-      <Button   variant="outlined" class="mb-2" style="height: 30px" small type="button" color="red" @click="goBack">
+      <Button   variant="outlined" class="mb-2" style="height: 30px"  type="button" color="red" @click="goBack">
         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
       </Button>
-      <Button variant="outlined" class="mb-2" style="height: 30px"  small color="primary" @click="submit">
+      <Button variant="outlined" class="mb-2" style="height: 30px"   color="primary" @click="submit">
         <v-icon :icon="icon.mdiContentSave" left></v-icon> Enregistrer
       </Button>
     </v-card-actions>
