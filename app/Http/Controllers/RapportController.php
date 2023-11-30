@@ -35,7 +35,7 @@ class RapportController extends Controller
            
             if($request->section == '1'){
                 // dd('fin');
-                $bulletin = $request->id ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
+                $bulletin = $request->id ? HistoriqueBulletin::where('id',$request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 // dd($bulletin,$detail);
                 $data = [
@@ -53,7 +53,7 @@ class RapportController extends Controller
 
             }elseif($request->section == '2'){
 
-                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null) : null;
+                $bulletin = $request->id ? HistoriqueBulletin::where('id',$request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 // dd($bulletin,$detail);
                 $data = [

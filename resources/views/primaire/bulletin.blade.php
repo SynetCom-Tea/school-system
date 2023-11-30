@@ -161,7 +161,7 @@
                 </tr>
                 <tr>
                     <td height="63" width="90">RESULTAT DE FIN D'ANNEE</td>
-                    <td colspan="11" width="25"><p>@if($bulletin->periode == 'Trimestre III') Admis au CP à la rentrée d'Octobre 2024 @endif</p></td>
+                    <td colspan="11" width="25"><p>@if($bulletin->periode == 'Trimestre III') @if($bulletin->moyenne_details_notes >= 5) Admis(e) @else Non admis(e)  @endif  en classe Supérieure à la rentrée d'Octobre prochaine @endif</p></td>
                 </tr>
             </tbody>
         </table>
