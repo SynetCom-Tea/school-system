@@ -648,7 +648,7 @@ export default {
                 </v-icon>
             </template>
         </Datatable>
-        <Datatable v-if="section_id >= 3 && systemeLMD !=null" titleDatatable="Liste des matières par niveau" :headers="headersupue" :items="niveauMatieres" :functionOnClickAddButton="create">
+        <Datatable v-if="section_id >= 3 && systemeLMD !=null" titleDatatable="Liste des unités des enseignements par niveau" :headers="headersupue" :items="niveauMatieres" :functionOnClickAddButton="create">
             <template v-slot:item.ues="{ item, index}">
                     <v-chip-group size="small" column selected-class="text-purple">
                         <v-chip  v-for="tag in item.ues" style=" height: auto;  ">
