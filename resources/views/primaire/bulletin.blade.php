@@ -104,15 +104,15 @@
                 <tr>
                     <td width="90" height="20">{{$note->nom_matiere}}</td>
                     <td width="25">{{$note->notation_matiere}}</td>
-                    <td width="10"></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$note->note}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$note->note}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$note->note}} @endif</td>
+                    <td width="10">@if($bulletin->periode == 'Octobre') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Novembre') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Décembre') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Janvier') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Février') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mars') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Avril') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mai') {{$note->note}} @endif</td>
+                    <td>@if($bulletin->periode == 'Juin') {{$note->note}} @endif</td>
                     <td></td>
                 </tr>
                 @endforeach
@@ -120,48 +120,48 @@
                 <tr>
                     <td width="90" height="20">TOTAL SUR</td>
                     <td width="25">{{$total_notation}}</td>
-                    <td width="10"></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$total_point}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$total_point}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$total_point}} @endif</td>
+                    <td width="10">@if($bulletin->periode == 'Octobre') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Novembre') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Décembre') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Janvier') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Février') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mars') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Avril') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mai') {{$total_point}} @endif</td>
+                    <td>@if($bulletin->periode == 'Juin') {{$total_point}} @endif</td>
                     <td></td>
                 </tr>
                 <tr>
                     <td width="90" height="20">MOYENNE SUR</td>
                     <td width="25">10</td>
-                    <td width="10"></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$bulletin->moyenne_details_notes}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$bulletin->moyenne_details_notes}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$bulletin->moyenne_details_notes}} @endif</td>
-                    <td>@if($bulletin->periode == 'Trimestre III') Pas definie @endif</td>
+                    <td width="10">@if($bulletin->periode == 'Octobre') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Novembre') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Décembre') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Janvier') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Février') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mars') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Avril') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mai') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Juin') {{$bulletin->moyenne_details_notes}} @endif</td>
+                    <td>@if($bulletin->periode == 'Juin') Pas definie @endif</td>
                 </tr>
                 <tr>
                     <td width="90" height="20">RANG DE MERITE</td>
                     <td width="25"></td>
-                    <td width="10"></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre I') {{$bulletin->rang}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre II') {{$bulletin->rang}} @endif</td>
-                    <td></td>
-                    <td></td>
-                    <td>@if($bulletin->periode == 'Trimestre III') {{$bulletin->rang}} @endif</td>
+                    <td width="10">@if($bulletin->periode == 'Octobre') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Novembre') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Décembre') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Janvier') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Février') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mars') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Avril') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Mai') {{$bulletin->rang}} @endif</td>
+                    <td>@if($bulletin->periode == 'Juin') {{$bulletin->rang}} @endif</td>
                     <td></td>
                 </tr>
                 <tr>
                     <td height="63" width="90">RESULTAT DE FIN D'ANNEE</td>
-                    <td colspan="11" width="25"><p>@if($bulletin->periode == 'Trimestre III') Admis au CP à la rentrée d'Octobre 2024 @endif</p></td>
+                    <td colspan="11" width="25"><p>@if($bulletin->periode == 'Juin') @if($bulletin->moyenne_details_notes >= 5) Admis(e) @else Non admis(e)  @endif  en classe Supérieure à la rentrée d'Octobre prochaine @endif</p></td>
                 </tr>
             </tbody>
         </table>

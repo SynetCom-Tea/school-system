@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }}</title>
+    <title>Bulletin par classe</title>
     <style type="text/css">
         td,
         th {
@@ -143,9 +143,9 @@
             <b style="font-size: 13px;">Moyenne obtenue : {{$donnee['bulletin']->moyenne_details_notes}} / 20</b>
         </div>
        
-        <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
+        <!-- <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
             <b style="font-size: 13px;">Rang : {{ $donnee['bulletin']->rang}}</b>
-        </div>
+        </div> -->
        
         <!-- Fin informations sur le professeur et rang -->
 

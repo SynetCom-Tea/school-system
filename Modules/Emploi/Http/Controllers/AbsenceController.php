@@ -4,6 +4,7 @@ namespace Modules\Emploi\Http\Controllers;
 
 use App\Models\Absence;
 use App\Models\Annee;
+use App\Models\Apprenant;
 use App\Models\ApprenantClasseAnnee;
 use App\Models\ClasseAnnee;
 use App\Models\Cycle;
@@ -31,8 +32,14 @@ class AbsenceController extends Controller
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         if($request->date){
             $seanceId = [];
-            $absencesUneSeance = Absence::with('apprenant')->where('date', $request->date)->whereNotNull('seance_id')->get();
-            $absencesJourneeEntiere = Absence::with('apprenant')->where('date', $request->date)->whereNull('seance_id')->get();
+            $apprenantIds = DB::table('apprenant_classe_annees')
+            ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+            ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
+            ->select('apprenants.id')
+            ->get();
+            dd(collect($apprenantIds)->pluck('id'));
+            $absencesUneSeance = Absence::with('apprenant')->where('date', $request->date)->whereNotNull('seance_id')->whereIn('apprenant_id', collect($apprenantIds)->pluck('id'))->get();
+            $absencesJourneeEntiere = Absence::with('apprenant')->where('date', $request->date)->whereNull('seance_id')->whereIn('apprenant_id', collect($apprenantIds)->pluck('id'))->get();
             // dd($absencesUneSeance);
             $seances = Emploi::getSeancesByIds($absencesUneSeance->pluck('seance_id'), $request->classe);
             $seancesById = collect($seances)->keyBy('id');
@@ -52,30 +59,32 @@ class AbsenceController extends Controller
             });
             // Parcourir les absencesUneSeance et ajouter les informations de la séance correspondante
             $absencesJourneeAll = collect($absencesUneSeance)->map(function ($absence) use ($seancesById) {
-                $seance = $seancesById->get($absence['seance_id']);
-            
-                // Sélectionner spécifiquement quelques informations de Seance
-                $heureDebutSansSecondes = Carbon::parse($seance['heure_debut'])->format('H:i');
-                $heureFinSansSecondes = Carbon::parse($seance['heure_fin'])->format('H:i');
-                $seanceData = [
-                    'jour' => $seance['jour'],
-                    'nom_matiere_heure_debut' => $seance['nom_matiere'] . ' - ' . $heureDebutSansSecondes . ' à ' . $heureFinSansSecondes,
-                    'nom_prenom_enseignant' => $seance['enseignant_nom'] . ' - ' . $seance['enseignant_prenom'],
-                    // Ajoutez d'autres champs de Seance que vous souhaitez inclure
-                ];
-            
-                // Sélectionner spécifiquement quelques informations de Absence
-                $absenceData = [
-                    'id' => $absence['id'],
-                    'date' => $absence['date'],
-                    'journee' => $absence['journee'],
-                    'matricule_apprenant' => $absence['apprenant']['matricule'],
-                    'nom_prenom_apprenant' => $absence['apprenant']['nom'] . ' - ' .$absence['apprenant']['prenom']
-                    // Ajoutez d'autres champs de Absence que vous souhaitez inclure
-                ];
-            
-                // Fusionner les informations sélectionnées de Seance avec Absence
-                return array_merge($absenceData, $seanceData);
+                if ($absence['seance_id'] !== null) {
+                    $seance = $seancesById->get($absence['seance_id']);
+                    // Sélectionner spécifiquement quelques informations de Seance
+                    $heureDebutSansSecondes = Carbon::parse($seance['heure_debut'])->format('H:i');
+                    $heureFinSansSecondes = Carbon::parse($seance['heure_fin'])->format('H:i');
+                    $seanceData = [
+                        'jour' => $seance['jour'],
+                        'nom_matiere_heure_debut' => $seance['nom_matiere'] . ' - ' . $heureDebutSansSecondes . ' à ' . $heureFinSansSecondes,
+                        'nom_prenom_enseignant' => $seance['enseignant_nom'] . ' - ' . $seance['enseignant_prenom'],
+                        // Ajoutez d'autres champs de Seance que vous souhaitez inclure
+                    ];
+                
+                    // Sélectionner spécifiquement quelques informations de Absence
+                    $absenceData = [
+                        'id' => $absence['id'],
+                        'date' => $absence['date'],
+                        'journee' => $absence['journee'],
+                        'matricule_apprenant' => $absence['apprenant']['matricule'],
+                        'nom_prenom_apprenant' => $absence['apprenant']['nom'] . ' - ' .$absence['apprenant']['prenom']
+                        // Ajoutez d'autres champs de Absence que vous souhaitez inclure
+                    ];
+                
+                    // Fusionner les informations sélectionnées de Seance avec Absence
+                    return array_merge($absenceData, $seanceData);
+                }
+                
             });
             $absencesAll = array_merge($absencesJourneeEntiereAll->toArray(), $absencesJourneeAll->toArray());
             // dd($absencesUneSeance, $absencesJourneeEntiere, $absencesJourneeAll->toArray(), $absencesJourneeEntiereAll, $absencesJourneeAll, $absencesAll);

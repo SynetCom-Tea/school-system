@@ -14,7 +14,6 @@ class TypeEtablissementSeeder extends Seeder
      */
     public function run(): void
     {
-        TypeEtablissement::create(['name' => 'Université']);
         TypeEtablissement::create(['name' => 'Ecole']);
         TypeEtablissement::create(['name' => 'Institut']);
 

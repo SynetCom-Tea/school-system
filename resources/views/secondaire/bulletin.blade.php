@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }}</title>
+    <title>Bulletin par élève</title>
     <style type="text/css">
         td,
         th {
@@ -143,9 +143,9 @@
             <b style="font-size: 13px;">Moyenne obtenue : {{$bulletin->moyenne_details_notes}} / 20</b>
         </div>
        
-        <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
+        <!-- <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
             <b style="font-size: 13px;">Rang : {{ $bulletin->rang}}</b>
-        </div>
+        </div> -->
        
         <!-- Fin informations sur le professeur et rang -->
 
@@ -171,6 +171,10 @@
                 @foreach($detail as $line)
                     @php
                         $total = $total + $line->moyenne_coefficiente;
+                        $conduite = '';
+                        if($line->nom_matiere == 'Conduite'){
+                            $conduite = $line->note_de_classe;
+                        }
                     @endphp
                     <tr>
                         <td><b>{{$line->nom_matiere}}</b></td>
@@ -200,6 +204,7 @@
                         <td style="text-align:center;" width="100"></td>
                     </tr>
                 @endforeach
+                
                 <tr>
                     <td><b>Total</b></td>
                     <td style="text-align:center" colspan="8">{{$total}}</td>
@@ -241,11 +246,19 @@
            
             <tr>    
                 <td width="153"  height="20" colspan=3>
-                    <input type="checkbox"><label>Bonne</label><br>
+                    @if($conduite <= 18)
+                    <input checked="checked" type="checkbox"><label>Bonne</label><br>
                     <input type="checkbox"><label>Avertissement</label><br>
                     <input type="checkbox"><label>Blâme</label><br>
-                    <label></label><br>
-                    <label></label><br>
+                    @elseif(($conduite > 12 ) and ($line->moyenne <= 15))
+                    <input type="checkbox"><label>Bonne</label><br>
+                    <input checked="checked" type="checkbox"><label>Avertissement</label><br>
+                    <input type="checkbox"><label>Blâme</label><br>
+                    @elseif(($line->moyenne < 11 ))
+                    <input type="checkbox"><label>Bonne</label><br>
+                    <input type="checkbox"><label>Avertissement</label><br>
+                    <input checked="checked" type="checkbox"><label>Blâme</label><br>
+                    @endif
                 </td>
                 <td width="153"  height="20" colspan=3>
                     <input type="checkbox" checked="checked"><label>Bien</label><br>

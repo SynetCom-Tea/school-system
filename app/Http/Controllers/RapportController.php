@@ -35,7 +35,7 @@ class RapportController extends Controller
            
             if($request->section == '1'){
                 // dd('fin');
-                $bulletin = $request->id ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
+                $bulletin = $request->id ? HistoriqueBulletin::where('id',$request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 // dd($bulletin,$detail);
                 $data = [
@@ -53,7 +53,7 @@ class RapportController extends Controller
 
             }elseif($request->section == '2'){
 
-                $bulletin = $request->id ? (HistoriqueBulletin::find($request->id) ? HistoriqueBulletin::find($request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null) : null;
+                $bulletin = $request->id ? HistoriqueBulletin::where('id',$request->id)->with('classe_annee.annee','classe_annee.classe.niveau')->first() : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id',$bulletin->id)->get() : [];
                 // dd($bulletin,$detail);
                 $data = [
@@ -256,6 +256,7 @@ class RapportController extends Controller
                     $resultats = HistoriqueBulletin::with('historique_notes')
                     ->where('classe_annee_id', $request->classe)
                     ->where('periode', Periode::find($request->periode)->libelle)
+                    ->where('statut',true)
                     ->get();
                 }
                 elseif($request->tab == 'option-2'){
@@ -284,6 +285,9 @@ class RapportController extends Controller
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
                         $resultats = calculerResultatsClasse($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                        if (empty($resultats)) {
+                            return; // Exit the function if $details_notes is empty
+                        }
                         foreach ($resultats as &$resultat) {
                             // dd($resultat, $resultats);
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
@@ -293,6 +297,7 @@ class RapportController extends Controller
                     $resultats = HistoriqueBulletin::with('historique_notes')
                         ->where('classe_annee_id', $request->classe)
                         ->where('periode', Periode::find($request->periode)->libelle)
+                        ->where('statut',true)
                         ->get();
                 }elseif($request->tab == 'option-2'){
                     $exception = true;
@@ -336,6 +341,7 @@ class RapportController extends Controller
                     $resultats = HistoriqueBulletin::with('historique_notes')
                         ->where('classe_annee_id', $request->classe)
                         ->where('periode', Periode::find($request->periode)->libelle)
+                        ->where('statut',true)
                         ->get();
                 } elseif($request->tab == 'option-2'){
                     $exception = true;

@@ -31,9 +31,8 @@ class EtablissementController extends Controller
     {
         // dd(TypeEtablissement::all());
         return Inertia::render('Etablissement/Index', [
-            'ecoles' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','2')->get(),
-            'instituts' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','3')->get(),
-            'universites' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','1')->get(),
+            'ecoles' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','1')->get(),
+            'instituts' => Etablissement::with('type_etablissement', 'sections', 'users')->where('type_etablissement_id','2')->get(),
             'types' => TypeEtablissement::all(),
             'sections' => Section::all()
         ]);
@@ -108,7 +107,7 @@ class EtablissementController extends Controller
     public function update(Request $request, string $id)
     {
         $ets = Etablissement::find($id);
-        if ($request->type_etablissement_id == 2) {
+        if ($request->type_etablissement_id == 1) {
             $ets->sections()->sync($request->section);
         } else {
             $ets->sections()->sync(3);

@@ -106,7 +106,7 @@ export default {
               v-model="form.section"
               multiple
               chips
-              v-if="form.type_etablissement_id == 2"
+              v-if="form.type_etablissement_id == 1"
             ></Autocomplete>
           </v-col>
         </v-row>
