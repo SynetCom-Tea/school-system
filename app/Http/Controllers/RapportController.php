@@ -139,6 +139,33 @@ class RapportController extends Controller
                 ];
             
                 $pdf = PDF::loadView('secondaire/bulletin_par_classe', $data);
+            }elseif($request->section == '3'){
+                $tabs = [];
+                $bulletins = $request->classe && $periode ?  HistoriqueBulletin::where('statut',1)->where('periode',$periode->libelle)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
+                    $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
+                })->with('classe_annee.annee', 'apprenant','historique_notes','classe_annee.classe.niveau')->get() : [];
+
+                
+
+                foreach ($bulletins as $key => $bulletin) {
+                    $bulletin->groupUe = $bulletin->historique_notes->groupBy('nom_eu');
+                    $tabs[$bulletin->apprenant_id]=[
+                        'classe' => $bulletin->classe_annee->classe,
+                        'bulletin' => $bulletin,
+                    ];
+                }
+            
+                // dd($tabs);
+                $request->classe;
+                $data = [
+                    'etablissement' => $etab,
+                    'section' => $request->section,
+                    'donnees' => $tabs,
+                    'title' => 'Bulletin Semestriel',
+                    'date' => date('m/d/Y'),
+                ];
+            
+                $pdf = PDF::loadView('superieur/bulletin_par_classe', $data);
             }
         }
         

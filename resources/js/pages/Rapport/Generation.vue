@@ -335,7 +335,7 @@ export default {
                                     </v-icon>
                                 </template>
                             </Datatable>
-                            <Datatable v-if="classes.length !== 0 && (sectionID == 3)" titleDatatable="Liste des etudiants" :headers="headersSup" :items="data" :displayAddButton="false" >
+                            <Datatable v-if="classes.length !== 0 && (sectionID == 3)" titleDatatable="Liste des etudiants" :headers="headersSup" :items="data" :functionOnClickAddButton="impBulClasse" :libelleButton="'Bulletin de la classe'" :displayAddButton="classe ? true : false" >
                                 <template v-slot:item.actions="{item}">
                                     <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })" target="__blank">
                                         <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter" color="info"></v-icon>
