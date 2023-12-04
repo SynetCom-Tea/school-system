@@ -196,8 +196,7 @@ export default {
         },
         setClasse(n) {
             // console.log(n)
-            this.form.matiere = null,
-                this.form.classe = null
+                this.form.matiere = null,
             router.replace(this.$page.url, {
                 data: {
                     niveau: n,
@@ -258,17 +257,15 @@ export default {
             })
         },
         dialog() {
-            // console.log(this.form.notes)
-            // this.info = this.evaluations.filter(el => el.id = this.selectedEvaluation)
             this.$swal({
-                title: "Êtes-vous sûr?",
-                text: "Êtes-vous sûr de vouloir sauvegarder ces notes",
-                icon: "info",
-                showCancelButton: true,
-                confirmButtonColor: "orange",
-                cancelButtonColor: "#d33",
-                confirmButtonText: "Oui, sauvegarde-le!",
-                cancelButtonText: "Non, annulez!",
+            title: "Êtes-vous sûr?",
+            text: "Êtes-vous sûr de vouloir sauvegarder ces notes",
+            icon: "info",
+            showCancelButton: true,
+            confirmButtonColor: "orange",
+            cancelButtonColor: "#d33",
+            confirmButtonText: "Oui, sauvegarde-le!",
+            cancelButtonText: "Non, annulez!",
             }).then((result) => {
                 if (result.isConfirmed) {
                     this.submit();
@@ -277,6 +274,14 @@ export default {
         },
         TypeEvaluation(t){
             this.form.type_evaluation_id = t
+        },
+        SetInfo(nm){
+            // console.log(this.enseignements.filter(el => el.id == nm)[0].notation)
+            if(this.enseignements.filter(el => el.id == nm)[0].notation != null){
+                this.info = this.enseignements.filter(el => el.id == nm)[0].notation
+            }else{
+                this.info = 20
+            }
         }
     },
     mounted() {
@@ -347,7 +352,7 @@ export default {
             <v-row style="margin: 20px">
                 <v-col md="1"></v-col>
                 <v-col cols="4" v-if="type <=2">
-                    <Autocomplete label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
+                    <Autocomplete label="Matiére/Classe" variant="outlined" itemTitle="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id" @update:modelValue="SetInfo(form.enseignement_annee_id)" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable>
                     </Autocomplete>
                 </v-col>
                 <v-col md="2" v-if="type>=3">
@@ -368,7 +373,7 @@ export default {
             </v-row>
         </v-card>
     </v-card>
-    <div style="width: 50%; padding: 10px" v-if="form.evaluation">
+    <div style="width: 50%; padding: 10px" v-if="form.evaluation || form.enseignement_annee_id != null">
         <v-alert style="width: 50%; padding: 10px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button" variant="tonal" color="primary" type="info" title="Information" size="small">
             <u> Notation :</u> ../{{ info }}
         </v-alert>
@@ -379,7 +384,7 @@ export default {
         <br />
         <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
             <template v-slot:item.note="{ item, index }">
-                <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => { if (form.evaluation !=null){ return v <= info || 'La note ne doit pas dépasser ' + info}} ]" style="max-width: 300px"></TextField>
+                <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => { if (form.evaluation !=null || form.enseignement_annee_id != null){ return v <= info || 'La note ne doit pas dépasser ' + info}} ]" style="max-width: 300px"></TextField>
             </template>
         </Datatable>
         <v-card-actions>

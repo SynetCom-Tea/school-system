@@ -332,7 +332,7 @@ class NoteController extends Controller
             })->get()  : [];
         // $enseignement_annees = EnseignementAnne
         $enseigements = $request->classe && $request->annee && $request->section_id<=2 ?  DB::select("
-            SELECT ea.id,ea.code FROM enseignement_annees ea
+            SELECT ea.id,ea.code,nm.notation FROM enseignement_annees ea
             JOIN enseignants en ON en.id = ea.enseignant_id
             JOIN classe_annees ca ON ca.id = ea.classe_annee_id
             JOIN classes c ON c.id = ca.classe_id
@@ -340,6 +340,7 @@ class NoteController extends Controller
             JOIN etablissement_section es ON es.id = c.etablissement_section_id
             JOIN sections s ON s.id = es.section_id
             JOIN etablissements e ON e.id = es.etablissement_id
+            JOIN niveau_matieres nm ON nm.id = ea.niveau_matiere_id
             WHERE en.id = :enseignant_id AND s.id = :section_id AND e.id = :etablissement_id AND a.id = :annee_id AND c.id = :classe_id
             ",[
                 'annee_id'=>$request->annee,
