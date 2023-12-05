@@ -35,7 +35,7 @@ return new class extends Migration
 
         DB::statement("ALTER TABLE enseignement_annees ADD COLUMN code varchar(255);");
 
-       
+
         DB::unprepared("
         CREATE TRIGGER enseignement_annees_before_insert BEFORE INSERT ON enseignement_annees
         FOR EACH ROW
@@ -48,13 +48,13 @@ return new class extends Migration
             DECLARE filiere VARCHAR(255);
             DECLARE niveau VARCHAR(255);
 
-            SELECT classes.libelle INTO classe
+            SELECT classes.code INTO classe
             FROM classes
             JOIN classe_annees ON classes.id = classe_annees.classe_id
             JOIN niveau_matieres nm ON nm.id = NEW.niveau_matiere_id
             WHERE classe_annees.id = NEW.classe_annee_id AND nm.id = NEW.niveau_matiere_id;
-            SELECT classes.libelle INTO grouper
-            FROM classes 
+            SELECT classes.code INTO grouper
+            FROM classes
             JOIN classe_annees ON classes.id = classe_annees.classe_id
             JOIN filiere_niveau_matiere_ues fnmu ON fnmu.id = NEW.filiere_niveau_matiere_ue_id
             WHERE classe_annees.id = NEW.classe_annee_id AND fnmu.id = NEW.filiere_niveau_matiere_ue_id;
@@ -62,7 +62,7 @@ return new class extends Migration
             FROM matieres m
             JOIN niveau_matieres nm ON m.id = nm.matiere_id
             WHERE nm.id = NEW.niveau_matiere_id;
-            SELECT cy.name,m.nom,f.name,n.libelle INTO cycle,module,filiere,niveau 
+            SELECT cy.name,m.nom,f.name,n.libelle INTO cycle,module,filiere,niveau
             FROM matieres m
             JOIN filiere_niveau_matiere_ues fnmu ON m.id = fnmu.matiere_id
             JOIN niveaux n ON n.id = fnmu.niveau_id
@@ -70,12 +70,12 @@ return new class extends Migration
             JOIN cycles cy ON cy.id = cf.cycle_id
             JOIN filieres f ON f.id = cf.filiere_id
             WHERE fnmu.id = NEW.filiere_niveau_matiere_ue_id;
-            IF NEW.niveau_matiere_id IS NOT NULL 
-            THEN 
+            IF NEW.niveau_matiere_id IS NOT NULL
+            THEN
             SET NEW.code = CONCAT(classe, '/', matiere);
             END IF;
             IF NEW.niveau_matiere_id IS NULL
-            THEN 
+            THEN
             SET NEW.code = CONCAT(filiere,'/',niveau,'/',cycle,'/',grouper, '/', module);
             END IF ;
         END;

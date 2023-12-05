@@ -49,21 +49,34 @@ export default {
       const { valid } = await this.$refs.form.validate();
       if (valid) {
         console.log(this.form);
-        this.form.post(route("etablissements.store"), {
-          onFinish: () => {
-            // this.close();
-            this.$swal({
-              icon: "success",
-              title: "Enregistrement",
-              text: "Etablissement créé avec succès!",
-              toast: true,
-              position: "top-end",
-              showConfirmButton: false,
-              timer: 5000,
-              timerProgressBar: true,
-            });
-          },
-        });
+        this.$swal({
+            title: 'Etês-vous sûr de vouloir enregistrer?',
+            text: "Vous ne pourrez pas revenir en arrière !",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#004980',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Oui, Enregistrer !',
+            cancelButtonText: 'Non, annulez !',
+            }).then((result) => {
+            if (result.isConfirmed) {
+                this.form.post(route("etablissements.store"), {
+                onFinish: () => {
+                    // this.close();
+                    this.$swal({
+                    icon: "success",
+                    title: "Enregistrement",
+                    text: "Etablissement créé avec succès!",
+                    toast: true,
+                    position: "top-end",
+                    showConfirmButton: false,
+                    timer: 5000,
+                    timerProgressBar: true,
+                    });
+                },
+                });
+            }
+        })
       }
     },
   },

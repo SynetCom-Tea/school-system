@@ -186,6 +186,54 @@
                     }
                 });
             },
+
+
+            deleteItemall(item){
+                console.log(item.enseignant.id);
+                this.$swal({
+                    title: 'Es-tu sûr?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#004980',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, supprimez-le!',
+                    cancelButtonText: 'Non, annulez !',
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+
+                       this.form.delete(route('AffectationEnseignants.supprimerE', item.enseignant.id), {
+                        onFinish: () => {
+                            if(this.$page.props.flash?.message?.type == 'error'){
+                                this.$swal({
+                                icon: 'error',
+                                title: 'Suppression',
+                                text: this.$page.props.flash?.message?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            }else if(this.$page.props.flash?.message?.type == 'success'){
+                                this.$swal({
+                                icon: 'success',
+                                iconColor: '#004980',
+                                color: '#004980',
+                                title: 'Suppression',
+                                text: this.$page.props.flash?.message?.text,
+                                toast: true,
+                                position: 'top-end',
+                                showConfirmButton: false,
+                                timer: 5000,
+                                timerProgressBar: true,
+                            });
+                            }
+                        },
+                        });
+                    }
+                });
+            },
             async submit() {
                 const { valid } = await this.$refs.form.validate()
                 if(!this.form.id && valid) {
@@ -368,7 +416,7 @@
                 <template v-slot:item.list="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.list">
-                            {{ tag.classe.libelle }} =>{{ tag.matiere.nom }}
+                            {{ tag.matiere.nom }}{{' => '}}{{ tag.classe.libelle }}
                             <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(tag.id)" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
                             <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(tag.id)" :icon="icons.mdiCloseCircle" >
@@ -378,7 +426,7 @@
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemall(item)" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

@@ -591,4 +591,32 @@ class AffectationEnseignantController extends Controller
         //
 
     }
+
+    public function supprimerE($id)
+    {
+        //
+        //  dd($id);
+        try{
+            $enseignement_annees = EnseignementAnnee::where('enseignant_id',$id)->get();
+            foreach($enseignement_annees as $enseignement_annee){
+                $enseignement_annee->delete();
+            }
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                return redirect()->back()->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer cette affectation!",
+                ]);
+
+            }
+        }
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => "L'affectation a été supprimé avec succès !",
+        ]);
+        //
+
+    }
+
 }
