@@ -14,7 +14,7 @@ use Illuminate\Support\Facades\DB;
  if (!function_exists('calculerMoyenneSuperierure')) {
     function calculerMoyenneSuperierure($classeID, $apprenantID, $section, $periode) {
         $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
-        $groupedNotes = collect($notes_apprenant)->groupBy('nom_matiere');
+        $groupedNotes = collect($notes_apprenant)->groupBy('nom_ue');
         $details_notes = [];
         $periode = null;
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id,  $section);

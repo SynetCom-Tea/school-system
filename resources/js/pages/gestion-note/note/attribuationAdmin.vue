@@ -275,8 +275,7 @@ export default {
         TypeEvaluation(t){
             this.form.type_evaluation_id = t
         },
-        SetInfo(nm){
-            // console.log(this.enseignements.filter(el => el.id == nm)[0].notation)
+        SetInfo(nm){  
             if(this.enseignements.filter(el => el.id == nm)[0].notation != null){
                 this.info = this.enseignements.filter(el => el.id == nm)[0].notation
             }else{
@@ -285,7 +284,6 @@ export default {
         }
     },
     mounted() {
-        // console.log(this.form.evaluation)
         if (this.type == 1) {
             this.filtrer = this.type_evaluation.filter(el => el.libelle == "Composition" || el.libelle == "Contrôle")
         }
@@ -384,7 +382,7 @@ export default {
         <br />
         <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
             <template v-slot:item.note="{ item, index }">
-                <TextField label="" v-model="form.notes[item.id]" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => { if (form.evaluation !=null || form.enseignement_annee_id != null){ return v <= info || 'La note ne doit pas dépasser ' + info}} ]" style="max-width: 300px"></TextField>
+                <TextField label="" v-model="form.notes[item.id]" @update:modelValue="SetNote()" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => { if (form.evaluation !=null || form.enseignement_annee_id != null){ return v <= info || 'La note ne doit pas dépasser ' + info}} ]" style="max-width: 300px"></TextField>
             </template>
         </Datatable>
         <v-card-actions>

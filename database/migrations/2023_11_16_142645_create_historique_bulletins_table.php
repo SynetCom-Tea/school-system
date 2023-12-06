@@ -33,6 +33,7 @@ return new class extends Migration
             $table->string('somme_notation')->nullable();
             $table->string('somme_note_generale')->nullable();
             $table->string('somme_note_generale_coefficient')->nullable();
+            $table->boolean('validation')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

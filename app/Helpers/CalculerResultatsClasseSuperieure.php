@@ -41,7 +41,9 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
                 'moyenne_details_notes' => $resultatMoyenne['moyenne_generale'],
                 'details_notes' => $resultatMoyenne['details_notes'], // Tableau des détails des notes
             ];
+            dump($resultatsClasse);
         }
+        die();
         $resultatsClasseAvecRang = calculerRangApprenants($resultatsClasse);
         $moyenneClasse = calculerMoyenneClasse($resultatsClasse);
 
