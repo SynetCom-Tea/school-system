@@ -98,6 +98,7 @@ export default {
     },
     submit() {
       console.log(this.form);
+      
       this.form.post(route("emplois.store"), {
         // onFinish: () => this.form.reset(),
         onError: (error) => {
@@ -260,6 +261,7 @@ export default {
                   >
                     <v-expansion-panel-title>
                       {{ `Les seances du ${day}` }}
+                      <v-btn v-if="day !== 'Lundi'" @click="repeatHierarchically(day)">{{ `Reconduire ${day}` }}</v-btn>
                     </v-expansion-panel-title>
                     <v-expansion-panel-text>
                       <v-row

@@ -33,14 +33,13 @@ return new class extends Migration
             $table->id();
             $table->string('libelle')->nullable();
             $table->string('description')->nullable();
-            $table->integer('nbre_credit')->nullable();
             $table->timestamps();
             $table->softDeletes();
         });
         Schema::create('etablissement_section', function (Blueprint $table) {
             $table->id();
-            $table->integer('regime_evaluation')->nullable();
-
+            $table->integer('devoir_continu')->nullable();
+            $table->integer('nbre_credit')->nullable();
             $table->foreignIdFor(\App\Models\RegimeValidation::class)->nullable()->index()
             ->references('id')->on('regime_validations');
             $table->foreignIdFor(\App\Models\Etablissement::class)

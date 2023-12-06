@@ -145,7 +145,7 @@
         <!-- <b style="font-size: 13px;">Prof responsable de la classe : <span style="color:green">NON DEFINI</span></b> <br> -->
         <b style="font-size: 13px;">Nom et Prénom de l'étudiant :</b> {{$bulletin->nom_prenom_apprenant }} <br>
 
-        <b style="font-size: 13px;">Rang : {{$bulletin->rang}}e</b>
+        <!-- <b style="font-size: 13px;">Rang : {{$bulletin->rang}}e</b> -->
     </div>
 
     <table style="margin-top: 60px; position:absolute; font-size: 13px;text-align:center;">

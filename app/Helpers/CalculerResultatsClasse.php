@@ -25,6 +25,9 @@ if (!function_exists('calculerResultatsClasse')) {
         //dd($apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $details_notes = calculerMoyenneSecondaire($classeId, $section, $periode, $apprenant->id);
+            if (empty($details_notes)) {
+                return; // Exit the function if $details_notes is empty
+            }        
             $resultatsClasse[$apprenant->id] = [
                 'classe_annee_id' => $classeId,
                 'periode' => $details_notes[0]['periodes'],

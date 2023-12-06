@@ -119,7 +119,9 @@ class EmploiController extends Controller
         $dateDebut = Carbon::parse($request->date[0]);
         $dateFin = Carbon::parse($request->date[1]);
         $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
-        dd($occurrences, $request->all());
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section);
+        $classe = getClasses(Annee::find(2)->id, $etablissement_section, $request->classe)->firstOrFail();
+        // dd($occurrences, $request->all());
         // dd($classeAnnee, $request->classe, Annee::find(2)->id);
         try {
             DB::beginTransaction();
@@ -135,7 +137,7 @@ class EmploiController extends Controller
                     // dd($jour, $seancesDuJour['seances'], $occurrences['Lundi']);
                     // Récupère les horaires pour ce jour
                     foreach ($seancesDuJour['seances'] as $seance) {
-                        dd($seance);
+                        // dd($seance);
                         // for ($i = 0; $i < $seancesDuJour['occurrences']; $i++) {
                             if ($seance['matiere'] != null) {
                                 // $dateSeance = (new DateTime($seancesDuJour['date_debut']))->add(new DateInterval('P' . ($i * 7) . 'D'));
@@ -163,7 +165,7 @@ class EmploiController extends Controller
                                         ->where('matiere_id', $seance['matiere'])
                                         ->first()->id
                                     : DB::table('filiere_niveau_matiere_ues')
-                                        ->where('niveau_id', $request->niveau)
+                                        ->where('niveau_id', $classe->niveau_id)
                                         ->where('matiere_id', $seance['matiere'])
                                         ->first()->id,
                                     'emploi_id' => $emploi->id,
