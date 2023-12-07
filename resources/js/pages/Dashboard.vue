@@ -44,7 +44,6 @@ const students = [
 
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
-
 import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
