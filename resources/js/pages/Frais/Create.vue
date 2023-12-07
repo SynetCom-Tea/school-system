@@ -93,7 +93,6 @@ export default {
                         confirmButtonText: 'Oui, Enregistrer !',
                         cancelButtonText: 'Non, annulez !',
                         }).then((result) => {
-
                         if (result.isConfirmed) {
                             this.form.post(route('frais.store',this.section_id), {
                                 onFinish: () => {
