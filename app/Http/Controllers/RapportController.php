@@ -28,6 +28,10 @@ class RapportController extends Controller
     public function bulletin(Request $request)
     {
         // dd($request->all());
+        // dd('ismo');
+        // $pdf = PDF::loadView('primaire/tester');
+        // return $pdf->stream('itsolutionstuff.pdf');
+        // dd('ok');
         $etab = Etablissement::find(Auth::user()->etablissement_id);
         $annee_encours = getAnneeEncours();
         $periode = $request->periode ? Periode::find($request->periode) : null;
