@@ -287,6 +287,7 @@ class RapportController extends Controller
                     $resultats = HistoriqueBulletin::with('historique_notes')
                     ->where('classe_annee_id', $request->classe)
                     ->where('periode', Periode::find($request->periode)->libelle)
+                    ->where('statut',true)
                     ->get();
                 }
                 elseif($request->tab == 'option-2'){
@@ -315,6 +316,9 @@ class RapportController extends Controller
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
                         $resultats = calculerResultatsClasse($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                        if (empty($resultats)) {
+                            return; // Exit the function if $details_notes is empty
+                        }
                         foreach ($resultats as &$resultat) {
                             // dd($resultat, $resultats);
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
@@ -324,6 +328,7 @@ class RapportController extends Controller
                     $resultats = HistoriqueBulletin::with('historique_notes')
                         ->where('classe_annee_id', $request->classe)
                         ->where('periode', Periode::find($request->periode)->libelle)
+                        ->where('statut',true)
                         ->get();
                 }elseif($request->tab == 'option-2'){
                     $exception = true;
@@ -367,6 +372,7 @@ class RapportController extends Controller
                     $resultats = HistoriqueBulletin::with('historique_notes')
                         ->where('classe_annee_id', $request->classe)
                         ->where('periode', Periode::find($request->periode)->libelle)
+                        ->where('statut',true)
                         ->get();
                 } elseif($request->tab == 'option-2'){
                     $exception = true;

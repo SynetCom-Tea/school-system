@@ -303,7 +303,7 @@ export default {
                         </v-row>
                         <v-row>
                             <v-col cols="12" md="12">
-                                <Select label="Section" :items="sections" variant="outlined" multiple item-value="id" item-title="libelle" v-model="form.section" isMultiple chips v-if="form.type_etablissement_id == 2"></Select>
+                                <Select label="Section" :items="sections" variant="outlined" multiple item-value="id" item-title="libelle" v-model="form.section" isMultiple chips v-if="form.type_etablissement_id == 1"></Select>
                             </v-col>
                         </v-row>
                     </v-form>
@@ -328,7 +328,6 @@ export default {
     <v-tabs v-model="tab" color="primary" align-tabs="end">
         <v-tab value="1">Ecoles</v-tab>
         <v-tab value="2">Instituts</v-tab>
-        <v-tab value="3">Universités</v-tab>
     </v-tabs>
     <v-card-text>
         <v-window v-model="tab">
@@ -440,7 +439,7 @@ export default {
                 </div>
             </v-window-item>
 
-            <v-window-item value="3">
+            <!-- <v-window-item value="3">
                 <v-container>
                     <v-row>
                         <v-col :key="i" v-for="(t, i) in getUniversities">
@@ -491,7 +490,7 @@ export default {
                         <v-pagination v-model="univPage" :length="univlenghtCount" :total-visible="6" :items-per-page="univsPerPage"></v-pagination>
                     </span>
                 </div>
-            </v-window-item>
+            </v-window-item> -->
         </v-window>
     </v-card-text>
 </v-card>

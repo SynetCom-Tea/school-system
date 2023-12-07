@@ -33,20 +33,39 @@ class SalleController extends Controller
      */
     public function store(Request $request)
     {
+        // dd($request);
         $ets_id = Auth::user()->etablissement_id;
-        foreach($request->donnees as $donnee){
-            
+       if($request->importation=="1"){
+            foreach($request->fichier as $donnee){
+
                 Salle::updateOrInsert([
-                    'libelle' => $donnee['libelle']
+                    'libelle' => $donnee[0],
+                    'code' => $donnee[1],
+                    'capacité' => $donnee[2],
+                    'etablissement_id' => $ets_id
                 ],
                 [
-                'code' => $donnee['code'],
-                'etablissement_id' => $ets_id
                 ]
                 );
-            
-        }
-        
+
+            }
+        }else{
+
+            foreach($request->donnees as $donnee){
+
+                Salle::updateOrInsert([
+                    'libelle' => $donnee['libelle'],
+                    'code' => $donnee['code'],
+                    'capacité' => $donnee['capacite'],
+                    'etablissement_id' => $ets_id
+                ],
+                [
+
+                ]
+                );
+
+        }}
+
         return redirect()->route('salles.index')->with('message', [
             'type' => 'success',
             'text' => "La salle a été créée avec succès !",
@@ -74,6 +93,7 @@ class SalleController extends Controller
      */
     public function update(Request $request, string $id)
     {
+        // dd($request);
         $salle = Salle::find($id);
         $salle->update($request->all());
         return redirect()->route('salles.index');

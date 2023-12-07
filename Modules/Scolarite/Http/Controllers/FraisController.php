@@ -250,24 +250,25 @@ class FraisController extends Controller
      */
     public function supprimer($id)
     {
-        try{
-            $frais = Frais::find($id);
-            $niveau = Niveau::where('id',$frais->niveau_id)->first();
-            $frais->delete();
-        }
-        catch(\Illuminate\Database\QueryException $e){
-            if($e->getCode() == "23000"){
-                return redirect()->route('frais.index',$niveau->section_id)->with('message', [
-                    'type' => 'error',
-                    'text' => "Désolé, vous ne pouvez pas supprimer ce frais!",
-                ]);
+        dump($id);
+        // try{
+        //     $frais = Frais::find($id);
+        //     $niveau = Niveau::where('id',$frais->niveau_id)->first();
+        //     $frais->delete();
+        // }
+        // catch(\Illuminate\Database\QueryException $e){
+        //     if($e->getCode() == "23000"){
+        //         return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+        //             'type' => 'error',
+        //             'text' => "Désolé, vous ne pouvez pas supprimer ce frais!",
+        //         ]);
 
-            }
-        }
-        return redirect()->route('frais.index',$niveau->section_id)->with('message', [
-            'type' => 'success',
-            'text' => "Le frais a été supprimé avec succès !",
-        ]);
+        //     }
+        // }
+        // return redirect()->route('frais.index',$niveau->section_id)->with('message', [
+        //     'type' => 'success',
+        //     'text' => "Le frais a été supprimé avec succès !",
+        // ]);
     }
 
 

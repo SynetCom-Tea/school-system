@@ -13,8 +13,9 @@ return new class extends Migration
     {
         Schema::create('salles', function (Blueprint $table) {
             $table->id();
-            $table->string('code');
+            $table->string('code')->nullable();
             $table->string('libelle');
+            $table->string('capacité')->nullable();
             $table->foreignIdFor(\App\Models\Etablissement::class)->index()
                 ->references('id')->on('etablissements');
             $table->softDeletes();

@@ -182,9 +182,9 @@
                        label="Classes"
                        multiple
                        chips
+                       @click="classeset(i)"
                        :items="classetabs[i]"
                        :rules="rules"
-                       @click="classeset(i)"
                        @update:modelValue="submitForm(matiere)"
                        >
                    </Autocomplete>
@@ -324,6 +324,7 @@
      alertFirst: true,
      alertSecond: true,
      classetabs:{},
+     tab:[],
      icons: { mdiPlusCircle, mdiCloseCircle, mdiInformation ,mdiCancel,mdiCheckCircle,mdiContentSave},
      step: 1,
      section: null,
@@ -372,8 +373,18 @@
 
        },
        classeset(i){
+
+            if(this.tab.length==0)
+            {
             this.classetabs[i]=this.classes;
+            this.tab[i]=this.form.matieres[i].matiere;
+            }else if(this.tab[i]!=this.form.matieres[i].matiere){
+            this.classetabs[i]=this.classes;
+            this.tab[i]=this.form.matieres[i].matiere;
+            console.log('i',this.tab[i]!=this.form.matieres[i].matiere);
+            }
             console.log('fdgfggg',this.classetabs);
+
         },
        goBack() {
            router.get(route('enseignants.index',this.section_id))
