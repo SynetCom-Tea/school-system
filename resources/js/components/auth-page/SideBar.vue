@@ -409,7 +409,7 @@ export default {
         }
       }
 
-            if (sections && sections.length == 4) {
+            if (sections && sections.length == 3) {
                 allSections = "Toutes les Sections";
             }
 

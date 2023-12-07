@@ -71,9 +71,9 @@ export async function  getNiveauxSuperieur() {
 export function getTypeEtablissementById(vId) {
   let formatVId = vId ? parseInt(vId) : null
   if (formatVId) {
-    if (formatVId == 1) return 'Université'
-     if(formatVId==2) return 'École'
-      if(formatVId==3) return 'Institut'
+    // if (formatVId == 1) return 'Université'
+     if(formatVId==1) return 'École'
+      if(formatVId==2) return 'Institut'
   }
 
 }
