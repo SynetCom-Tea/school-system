@@ -27,10 +27,12 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
         }
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode);
+            $resultatMoyenneUe = calculerMoyenneSuperierureUe($classeId, $apprenant->id, $section, $periode);
+            // dump($resultatMoyenneUe);
             $resultatsClasse[$apprenant->id] = [
                 'classe_annee_id' => $classeId,
                 'periode' => $resultatMoyenne['periode'],
-                'nom_classe' => $classe->libelle,
+                'nom_classe' => $classe->lib7elle,
                 'apprenant_id' => $apprenant->id,
                 'matricule_apprenant' => $apprenant->matricule,
                 'nom_prenom_apprenant' => $apprenant->nom . ' ' . $apprenant->prenom,
@@ -41,7 +43,20 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
                 'moyenne_details_notes' => $resultatMoyenne['moyenne_generale'],
                 'details_notes' => $resultatMoyenne['details_notes'], // Tableau des détails des notes
             ];
-            dump($resultatsClasse);
+            $resultatsClasseUe[$apprenant->id] = [
+                'total_volume_horaire' => $resultatMoyenneUe['total_volume_horaire'],
+                'total_coefficient' => $resultatMoyenneUe['total_coefficient'],
+                'somme_note_generale' => $resultatMoyenneUe['somme_note_generale'],
+                'somme_note_generale_coefficient' => $resultatMoyenneUe['somme_note_generale_coefficient'],
+                'moyenne_details_notes' => $resultatMoyenneUe['moyenne_generale'],
+                'nom_classe' => $classe->lib7elle,
+                'apprenant_id' => $apprenant->id,
+                'matricule_apprenant' => $apprenant->matricule,
+                'nom_prenom_apprenant' => $apprenant->nom . ' ' . $apprenant->prenom,
+                'details_notes' => $resultatMoyenneUe['details_notes_ues'], // Tableau des détails des notes
+            ];
+            dump($resultatsClasseUe);
+            
         }
         die();
         $resultatsClasseAvecRang = calculerRangApprenants($resultatsClasse);

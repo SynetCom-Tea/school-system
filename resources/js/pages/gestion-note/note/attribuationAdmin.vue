@@ -4,9 +4,7 @@ import {
     Head
 } from "@inertiajs/vue3";
 import {
-    router,
-    usePage,
-    useForm
+    router
 } from "@inertiajs/vue3";
 import {
     mdiAccountSchool,
