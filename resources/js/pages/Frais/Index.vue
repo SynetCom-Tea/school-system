@@ -77,6 +77,7 @@
                     montant: '',
                     annee:null,
                     filiere:null,
+                    type:this.section_id,
                     niveau_id: '',
                     annee_id: '',
                 }),
@@ -173,13 +174,10 @@
                     confirmButtonText: 'Oui, supprimez-le!',
                     cancelButtonText: 'Non, annulez !',
                     }).then((result) => {
-                        console.log('item',item.frais.length);
+                        console.log('item',item.niveau.id);
                     if (result.isConfirmed) {
 
-                        for (var i = 0; i < item.frais.length; i++) {
-                            console.log('id',item.frais[i].id);
-
-                            this.form.delete(route('frais.destroy', item.frais[i].id), {
+                            this.form.delete(route('frais.supprimer', item.niveau.id), {
                                     onFinish: () => {
                                         if(this.$page.props.flash?.message?.type == 'error'){
                                             this.$swal({
@@ -208,7 +206,7 @@
                                         }
                                     },
                             });
-                        }
+
                     }
                 });
 
