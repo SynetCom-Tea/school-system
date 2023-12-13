@@ -379,16 +379,10 @@ class NoteController extends Controller
                 $note_apps =  Note::whereHas('apprenant.apprenant_classe_annees.classe_annee',function($classeAnne) use($request){
                     $classeAnne->where('classe_id',$request->classe);
                 })->where('evaluation_id',$id_evaluation)->get()->pluck('apprenant_id');
-                foreach ($note_apps as $key => $note_app) {
-                    $id_apps = HistoriqueBulletin::whereHas('historique_notes',function ($notes) {
-                        $notes->where('note_generale','<',10)->where('nom_matiere','merise');
-                    })->where('apprenant_id',$note_app)->get()->pluck('apprenant_id');
-                    // dump($id_apps);
-                }     
-                // die();
+                $id_apps = HistoriqueBulletin::where('validation',true)->get()->pluck('apprenant_id');    
                 $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                     $query->where('classe_id',$request->classe);
-                })->whereNotIn('apprenant_id',$apps)->with('apprenant')->get();
+                })->whereNotIn('apprenant_id',$id_apps)->with('apprenant')->get();
             }else {
                 $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                     $query->where('classe_id',$request->classe);

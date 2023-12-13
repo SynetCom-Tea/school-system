@@ -13,14 +13,14 @@ class HistoriqueBulletin extends Model
     protected $fillable = ['statut','apprenant_id', 'classe_annee_id', 
     'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe',
     'total_coefficient', 'somme_note_generale', 'somme_notation', 'somme_note_generale_coefficient',
-    'total_volume_horaire', 'moyenne_details_notes', 'rang'];
+    'total_volume_horaire', 'moyenne_details_notes', 'rang','validation','total_credit'];
 
     public function apprenant()
     {
         return $this->belongsTo(Apprenant::class);
     }
 
-    public function classe_annee()
+    public function classe_annee()  
     {
         return $this->belongsTo(ClasseAnnee::class);
     }

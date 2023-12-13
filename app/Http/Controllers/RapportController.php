@@ -289,7 +289,6 @@ class RapportController extends Controller
                             return; // Exit the function if $details_notes is empty
                         }
                         foreach ($resultats as &$resultat) {
-                            // dd($resultat, $resultats);
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
                         }
                         // dd($historiqueBulletincheck, $resultats[0]['periode']);
@@ -333,9 +332,13 @@ class RapportController extends Controller
                         if (empty($resultatsyy[0]['details_notes'])) {
                             // Le tableau est vide
                         } else {
-                            foreach ($resultatsyy as &$resultat) {
+                            foreach ($resultatsyy as $resultat) {
+                                // $var1 = collect($resultat['details_notes'])->sum('note_generale_coefficiente');
+                                // $var2 = collect($resultat['details_notes'])->sum('coefficient_matiere');
+                                // dump($var1/$var2);
                                 ajouterHistoriqueBulletin($resultat, $request->section_id);
                             }
+                            // die();
                         }
                     }
                     $resultats = HistoriqueBulletin::with('historique_notes')
