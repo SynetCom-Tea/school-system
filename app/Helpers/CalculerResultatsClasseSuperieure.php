@@ -44,19 +44,8 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
                 'moyenne_details_notes' => $resultatMoyenne['moyenne_generale'],
                 'details_notes' => $resultatMoyenne['details_notes'], // Tableau des détails des notes
             ];
-            // foreach ($resultatsClasse[$apprenant->id]['details_notes'] as $key => $value) {
-            //     $credit_total = 0;
-            //     if ($value['note_generale']>=10){
-            //         // $credit_total = $value['coefficient_matiere'];
-            //         dump(collect($value)->sum('coefficient_matiere'));
-            //     }
-            //     // dump($credit_total);
-            // }
-            // dump($resultatsClasse);
-            // dump($resultatsClasse[$apprenant->id]['details_notes']);
         }
-        // die();
-        
+       
         $resultatsClasseAvecRang = calculerRangApprenants($resultatsClasse);
         $moyenneClasse = calculerMoyenneClasse($resultatsClasse);
 

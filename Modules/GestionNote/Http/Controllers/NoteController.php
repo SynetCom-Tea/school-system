@@ -156,7 +156,7 @@ class NoteController extends Controller
                 'text' => 'Merci de renseigner les notes!',
             ]);
         }
-        // dd($request->notes);
+        dd($request->notes);
         // if ($reempty($re)) {
         //     # code...
         // }

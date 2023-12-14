@@ -15,7 +15,7 @@ class EtablissementSection extends Model
     use HasFactory, SoftDeletes;
     protected $fillable =  [
         'code',
-        'regime_evaluation',
+        'regime_evaluation_id',
         'etablissement_id',
         'section_id',
         'systeme_lmd_id',
