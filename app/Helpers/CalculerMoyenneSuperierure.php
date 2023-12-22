@@ -12,8 +12,10 @@ use App\Models\RegimeEvaluation;
 use Illuminate\Support\Facades\DB;
 
  if (!function_exists('calculerMoyenneSuperierure')) {
-    function calculerMoyenneSuperierure($classeID, $apprenantID, $section, $periode) {
-        $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
+    function calculerMoyenneSuperierure($classeID, $apprenantID, $section, $periode,$session = null) {
+        // $session = true;
+        $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID,$session);
+        // dd($notes_apprenant);
         $groupedNotes = collect($notes_apprenant)->groupBy('nom_matiere');
         $details_notes = [];
         $periode = null;
@@ -30,13 +32,20 @@ use Illuminate\Support\Facades\DB;
             $note_autre = 0;
             if($systeme_lmd_id->systeme_lmd_id == 1){
                 foreach ($notes as $element) {
+                    // dump($element);
                     // Stocker les notes d'origine
-                    if ($element->type_evaluation === 'Devoir') {
-                        $note_origine_devoir = $element->note;
-                        $note_devoir += $note_origine_devoir * 0.3; // Accumuler les notes de devoir
-                    } elseif ($element->type_evaluation === 'Examen') {
-                        $note_origine_examen = $element->note;
-                        $note_examen += $note_origine_examen * 0.7; // Accumuler les notes d'examen
+                    if ($session == null){
+                        if ($element->type_evaluation === 'Devoir') {
+                            $note_origine_devoir = $element->note;
+                            $note_devoir += $note_origine_devoir * 0.3; // Accumuler les notes de devoir
+                        } elseif ($element->type_evaluation === 'Examen') {
+                            $note_origine_examen = $element->note;
+                            $note_examen += $note_origine_examen * 0.7; // Accumuler les notes d'examen
+                        }
+                    }else {
+                        if ($element->type_evaluation === 'Examen'){
+                            $note_examen += $element->note;
+                        }
                     }
                 }
             }elseif($etablissement_section == 2){
@@ -53,7 +62,11 @@ use Illuminate\Support\Facades\DB;
             }
             
             // Calcul de la note générale pour la matière
-            $note_generale = $note_devoir + $note_examen;
+            if ($session == null){
+                $note_generale = $note_devoir + $note_examen;
+            }else {
+                $note_generale =  $note_examen;
+            }
             // Calcul de la note générale pondérée par le coefficient
             // dump($note_generale);
             $note_generale_coefficiente = $note_generale * $notes[0]->coefficient_matiere;
@@ -73,6 +86,7 @@ use Illuminate\Support\Facades\DB;
                 'note_generale_coefficiente' => $note_generale_coefficiente,
             ];
             $periode = $notes[0]->periode;
+            // dd($details_notes);
         }
         // die();
         $moyennes = calculerMoyenneGenerale($details_notes);

@@ -156,10 +156,6 @@ class NoteController extends Controller
                 'text' => 'Merci de renseigner les notes!',
             ]);
         }
-        dd($request->notes);
-        // if ($reempty($re)) {
-        //     # code...
-        // }
         if ($request->section_id >=3 && $request->enseignement_annee_id ==null && $request->evaluation ==null){
             $fnmu = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get();
                 $classe_id = Classe::where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get()[0]->id;
@@ -272,13 +268,43 @@ class NoteController extends Controller
         $section_id = Section::where('id',$request->section_id)->get()[0]->id;
         // dd($section_id);
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
-        $classes = $request->annee ? Classe::where('etablissement_section_id',$etat_section_id)->whereHas('classe_annees',function($classe) use($request){
+        $cl = $request->annee ? Classe::where('etablissement_section_id',$etat_section_id)->whereHas('classe_annees',function($classe) use($request){
                   $classe->where('annee_id',$request->annee);
                })->with('niveau','cycle_filiere.filiere')->get() : [] ;
-        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) {
+        $classes = $request->annee ? $cl->map(
+            function ($value) use ($section_id){
+                if($section_id>=3 && $value->cycle_filiere_id != null){
+                    $code = $value->cycle_filiere->filiere->code. ' - ' . $value->niveau->code . ' - '. $value->code;
+                }else{
+                    $code = $value->code;
+                }
+                return [
+                    'id'=>$value->id,
+                    'code'=>$code,
+                ];
+            }
+        ) : [];
+        $ev = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) {
             $query1->where('classe_id',$request->classe);
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
         // dd($classes);
+        $evaluations = $request->classe ?  $ev->map(
+            function ($value) use ($section_id){
+                if ($section_id<=2){
+                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom;
+                }else if ($section_id>=3){
+                    if ($value->session != null){
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom .' - ' . $value->session; 
+                    }else {
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom; 
+                    }
+                }
+                return [
+                    'id' => $value->id,
+                    'code' => $code,
+                ];
+            }
+        ) :[];
         $notes = $request->evaluation ? Note::where('statut',1)->where('evaluation_id',$request->evaluation)->with('apprenant','evaluation.type_evaluation','evaluation.enseignement_annee.niveau_matiere.matiere','evaluation.enseignement_annee.filiere_niveau_matiere_ue.matiere','evaluation.periode')->get() : [];
         if ($request->evaluation) {
             if ($notes->count() == 0) {
@@ -312,16 +338,32 @@ class NoteController extends Controller
         $typeEvaluations = TypeEvaluation::all();
         // dd($section_id);
         $etat_section_id = DB::table('etablissement_section')->where('section_id',$section_id)->where('etablissement_id',$user->etablissement_id)->get()[0]->id;
-        $enseignant = Enseignant::whereHas('enseignement_annees.classe_annee.classe',function($etat) use ($etat_section_id){
+        $enseis = Enseignant::whereHas('enseignement_annees.classe_annee.classe',function($etat) use ($etat_section_id){
             $etat->where('etablissement_section_id',$etat_section_id);
             })->where('etablissement_id',Auth::user()->etablissement_id)->get();
-        $filieres = $request->annee && $request->enseignant ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
+        $enseignant = $enseis->map(
+                function ($value){
+                    return [
+                        'id'=>$value->id,
+                        'nom_prenom'=>$value->matricule . ' - ' . $value->nom . ' - ' . $value->prenom
+                    ];
+                }
+            );
+        $cycle_filieres = $request->annee && $request->enseignant ? CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);
             })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant);
             })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.classe_annee',function($anne) use($request){
             $anne->where('annee_id',$request->annee);
             })->with('filiere','cycle')->get() : [];
+        $filieres = $request->annee && $request->enseignant ? $cycle_filieres->map(
+                function ($value){
+                    return [
+                        'id' =>$value->id,
+                        'formatCode'=> $value->filiere->code . ' - ' . $value->cycle->name
+                    ];
+                }
+            ) : [];
         $niveaux = Niveau::where('section_id',$request->section_id)->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($request){
             $enseignant->where('enseignant_id',$request->enseignant);
             })->get() ;
@@ -356,12 +398,29 @@ class NoteController extends Controller
                 $classe->where('annee_id',$request->annee);
              })->get() : [];
             //  dd($classes);
-        $evaluations = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) {
+        $ev = $request->classe ? Evaluation::whereHas('enseignement_annee.classe_annee', function ($query1) use ($request) {
             $query1->where('classe_id',$request->classe);
         })->whereHas('enseignement_annee',function($enseignant) use ($request){
             $enseignant->where('enseignant_id',$request->enseignant);
         })->with('type_evaluation','periode','enseignement_annee.niveau_matiere.matiere','enseignement_annee.filiere_niveau_matiere_ue.matiere')->get() : [] ;
         // dd($request->classe);
+        $evaluations = $request->classe ?  $ev->map(
+            function ($value) use ($section_id){
+                if ($section_id<=2){
+                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom;
+                }else if ($section_id>=3){
+                    if ($value->session != null){
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom .' - ' . $value->session; 
+                    }else {
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom; 
+                    }
+                }
+                return [
+                    'id' => $value->id,
+                    'code' => $code,
+                ];
+            }
+        ) :[];
         $eleves = collect();
         $apps = $request->evaluation? Note::whereHas('apprenant.apprenant_classe_annees.classe_annee',function($classeAnne) use($request){
             $classeAnne->where('classe_id',$request->classe);

@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Modules\GestionNote\Entities\Periode;
 
 if (!function_exists('calculerResultatsClasseSuperieure')) {
-    function calculerResultatsClasseSuperieure($classeId, $section, $etablissement_section, $periode, $apprenants = null) {
+    function calculerResultatsClasseSuperieure($classeId, $section, $etablissement_section, $periode, $apprenants = null,$session = null) {
         $resultatsClasse = [];
         $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
         // dd($classe);
@@ -26,9 +26,11 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
             // dd($apprenants);
         }else{
             $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+            // dd($apprenantsDeLaClasse);
         }
+        // dd($apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $key=>$apprenant) {
-            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode);
+            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode,$session);
             $resultatsClasse[$apprenant->id] = [
                 'classe_annee_id' => $classeId,
                 'periode' => $resultatMoyenne['periode'],
@@ -44,7 +46,9 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
                 'moyenne_details_notes' => $resultatMoyenne['moyenne_generale'],
                 'details_notes' => $resultatMoyenne['details_notes'], // Tableau des détails des notes
             ];
+            // dump($resultatsClasse);
         }
+        // die();
        
         $resultatsClasseAvecRang = calculerRangApprenants($resultatsClasse);
         $moyenneClasse = calculerMoyenneClasse($resultatsClasse);

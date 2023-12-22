@@ -1,84 +1,3 @@
-<template>
-    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
-    <br>
-    <div style="margin: 20px">
-        <Button variant="flat" style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button-style"  nameButton="Ajouter" title="Attribution des notes" small color="primary"  :prependIcon="icon.mdiPlus" @click="create">
-        </Button>
-    </div>
-    <v-card variant="outlined" style="border: 2px solid rgb(0, 73, 128);margin: 20px">
-        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
-        <v-divider></v-divider>
-        <br />
-        <v-row>
-            <v-col md="1"></v-col>
-            <v-col md="2">
-                <Autocomplete v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="setClasse(form.annee)"></Autocomplete>
-            </v-col>
-            <v-col md="3">
-                <Autocomplete v-model="form.classe" :items="classes" :item-title="formatClasseLabel" item-value="id" @update:modelValue="requete(form.classe)" outlined required dense chips small-chips label="Classes"></Autocomplete>
-            </v-col>
-            <v-col md="3">
-                <Autocomplete v-model="form.evaluation" :disabled="!form.classe" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
-            </v-col>
-            <v-col md="3">
-                <Button color="secondary" variant="outlined" class="mb-3" @click="rechercher()" nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!form.classe || !form.evaluation"></Button>
-            </v-col>
-            <v-col md="2"></v-col>
-        </v-row>
-    </v-card>
-    <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
-        <template v-slot:default="{ isActive }">
-            <v-card>
-                <v-toolbar dense style="background-color: rgb(0, 73, 128)">
-                    <v-toolbar-title style="color: white">
-                        <v-icon left :icon="icon.mdiPencil"></v-icon> Modification
-                    </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="closeEdit()"></v-icon>
-                </v-toolbar>
-                <v-card-text>
-                    <v-form>
-                        <v-row>
-                            <v-col md="12">
-                                <TextField label="Evaluation" class="mt-1" disabled v-model="type_matiere">
-                                </TextField>
-                            </v-col>
-                            <v-col md="12">
-                                <TextField v-model="nom_prenom" disabled label="Nom et prenom">
-                                </TextField>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col md="12">
-                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator]">
-                                </TextField>
-                            </v-col>
-                        </v-row>
-                    </v-form>
-                </v-card-text>
-                <v-card-actions class="justify-end">
-                    <v-spacer></v-spacer>
-                    <Button variant="outlined" :loading="form.processing" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
-                </v-card-actions>
-            </v-card>
-        </template>
-    </v-dialog>
-    <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
-        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Liste des notes</v-card-title>
-        <v-divider></v-divider>
-        <br />
-        <Datatable titleDatatable="Liste des notes" :displayAddButton="false" :items="notes" :headers="headers">
-            <template v-slot:item.apprenant="{ item}">
-                {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
-            </template>
-            <template v-slot:item.action="{ item}">
-                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item)"></v-icon>
-                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item)"></v-icon>
-            </template>
-        </Datatable>
-    </v-card>
-</template>
-
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {
@@ -161,22 +80,6 @@ export default {
         create() {
             this.format.section_id = this.type,
                 this.format.get(route('note.attribution_admin'))
-        },
-        formatEvaluationLabel(item) {
-            if (item.enseignement_annee.niveau_matiere) {
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
-            } else if(item?.session != null) {
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} - ${item ? item?.session : ''}`;
-            }else{
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''} `;
-            }
-        },
-        formatClasseLabel(item) {
-            if (this.type >= 3 && item?.cycle_filiere_id != null) {
-                return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
-            } else {
-                return `${item ? item?.code : 'Pas de données'}`;
-            }
         },
         rechercher() {
             router.replace(this.$page.url, {
@@ -299,3 +202,83 @@ export default {
     },
 }
 </script>
+<template>
+    <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
+    <br>
+    <div style="margin: 20px">
+        <Button variant="flat" style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button-style"  nameButton="Ajouter" title="Attribution des notes" small color="primary"  :prependIcon="icon.mdiPlus" @click="create">
+        </Button>
+    </div>
+    <v-card variant="outlined" style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Choisissez les criteres</v-card-title>
+        <v-divider></v-divider>
+        <br />
+        <v-row>
+            <v-col md="1"></v-col>
+            <v-col md="2">
+                <Autocomplete v-model="form.annee" :items="annees" item-title="libelle" item-value="id" outlined required dense chips small-chips label="Années academiques" @update:modelValue="setClasse(form.annee)"></Autocomplete>
+            </v-col>
+            <v-col md="3">
+                <Autocomplete v-model="form.classe" :items="classes" item-title="code" item-value="id" @update:modelValue="requete(form.classe)" outlined required dense chips small-chips label="Classes"></Autocomplete>
+            </v-col>
+            <v-col md="3">
+                <Autocomplete v-model="form.evaluation" :disabled="!form.classe" :items="evaluations " item-title="code" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
+            </v-col>
+            <v-col md="3">
+                <Button color="secondary" variant="outlined" class="mb-3" @click="rechercher()" nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!form.classe || !form.evaluation"></Button>
+            </v-col>
+            <v-col md="2"></v-col>
+        </v-row>
+    </v-card>
+    <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
+        <template v-slot:default="{ isActive }">
+            <v-card>
+                <v-toolbar dense style="background-color: rgb(0, 73, 128)">
+                    <v-toolbar-title style="color: white">
+                        <v-icon left :icon="icon.mdiPencil"></v-icon> Modification
+                    </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="closeEdit()"></v-icon>
+                </v-toolbar>
+                <v-card-text>
+                    <v-form>
+                        <v-row>
+                            <v-col md="12">
+                                <TextField label="Evaluation" class="mt-1" disabled v-model="type_matiere">
+                                </TextField>
+                            </v-col>
+                            <v-col md="12">
+                                <TextField v-model="nom_prenom" disabled label="Nom et prenom">
+                                </TextField>
+                            </v-col>
+                        </v-row>
+                        <v-row>
+                            <v-col md="12">
+                                <TextField label="Note" v-model="form.note" :rules="[rules.required, rules.validator]">
+                                </TextField>
+                            </v-col>
+                        </v-row>
+                    </v-form>
+                </v-card-text>
+                <v-card-actions class="justify-end">
+                    <v-spacer></v-spacer>
+                    <Button variant="outlined" :loading="form.processing" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
+                </v-card-actions>
+            </v-card>
+        </template>
+    </v-dialog>
+    <v-card style="border: 2px solid rgb(0, 73, 128);margin: 20px">
+        <v-card-title style="color: white; background-color: rgb(0, 73, 128)">Liste des notes</v-card-title>
+        <v-divider></v-divider>
+        <br />
+        <Datatable titleDatatable="Liste des notes" :displayAddButton="false" :items="notes" :headers="headers">
+            <template v-slot:item.apprenant="{ item}">
+                {{ item.apprenant.nom }} {{ item.apprenant.prenom }}
+            </template>
+            <template v-slot:item.action="{ item}">
+                <v-icon color="warning" :icon="icon.mdiPencil" @click="edit(item)"></v-icon>
+                <v-icon color="red" :icon="icon.mdiDelete" @click="deleteItem(item)"></v-icon>
+            </template>
+        </Datatable>
+    </v-card>
+</template>

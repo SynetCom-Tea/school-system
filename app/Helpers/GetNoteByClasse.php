@@ -10,7 +10,7 @@
 use Illuminate\Support\Facades\DB;
 
 if (!function_exists('getNoteByClasses')) {
-    function getNoteByClasses($classe, $section, $periode, $apprenant = null) {
+    function getNoteByClasses($classe, $section, $periode, $apprenant = null,$session = null) {
         $query = DB::table('notes')
             ->join('evaluations', 'notes.evaluation_id', '=', 'evaluations.id')
             ->join('type_evaluations', 'evaluations.type_evaluation_id', '=', 'type_evaluations.id')
@@ -45,6 +45,7 @@ if (!function_exists('getNoteByClasses')) {
                     'niveau_matieres.notation AS notation_matiere'
                 );
         } elseif ($section == 3) {
+            if ($session == null ){
             $query->join('filiere_niveau_matiere_ues', 'enseignement_annees.filiere_niveau_matiere_ue_id', '=', 'filiere_niveau_matiere_ues.id')
                 ->join('matieres', 'filiere_niveau_matiere_ues.matiere_id', '=', 'matieres.id')
                 ->join('ues', 'filiere_niveau_matiere_ues.ue_id', '=', 'ues.id')
@@ -64,8 +65,29 @@ if (!function_exists('getNoteByClasses')) {
                     'filiere_niveau_matiere_ues.coefficient AS coefficient_matiere',
                     'filiere_niveau_matiere_ues.volume_horaire AS volume_horaire_matiere'
                 );
+            }else {
+                $query->join('filiere_niveau_matiere_ues', 'enseignement_annees.filiere_niveau_matiere_ue_id', '=', 'filiere_niveau_matiere_ues.id')
+                ->join('matieres', 'filiere_niveau_matiere_ues.matiere_id', '=', 'matieres.id')
+                ->join('ues', 'filiere_niveau_matiere_ues.ue_id', '=', 'ues.id')
+                ->where('evaluations.session','=','Session 2')
+                ->select(
+                    'type_evaluations.libelle AS type_evaluation',
+                    'periodes.libelle AS periode',   
+                    'notes.id AS note_id',
+                    'notes.note',
+                    'notes.date',
+                    'apprenants.nom AS nom_apprenant',
+                    'apprenants.prenom AS prenom_apprenant',
+                    'apprenants.id AS id_apprenant',
+                    'matieres.id AS id_matiere',
+                    'ues.id AS id_ue',
+                    'matieres.nom AS nom_matiere',
+                    'ues.libelle AS nom_ue',
+                    'filiere_niveau_matiere_ues.coefficient AS coefficient_matiere',
+                    'filiere_niveau_matiere_ues.volume_horaire AS volume_horaire_matiere'
+                );
+            }   
         }
-
         $notes = $query->get();
 
         return $notes;
