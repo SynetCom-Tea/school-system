@@ -2,33 +2,34 @@
 
 namespace Modules\Scolarite\Http\Controllers;
 
-use Illuminate\Http\Request;
-use Illuminate\Http\Response;
-use Illuminate\Routing\Controller;
+use PDF;
+use App\Models\Role;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Redirect;
-use Modules\Scolarite\Entities\Inscription;
 use App\Models\Annee;
-use App\Models\Apprenant;
-use App\Models\Classe;
-use App\Models\ClasseAnnee;
 use App\Models\Cycle;
-use Modules\Enseignement\Entities\CycleFiliere;
-use App\Models\TypeDocument;
+use App\Models\Classe;
 use App\Models\Document;
-use App\Models\ApprenantClasseAnnee;
-use App\Models\Etablissement;
-use App\Models\ApprenantTuteur;
+use App\Models\Apprenant;
 use App\Models\Parametre;
-use Modules\Enseignement\Entities\Niveau;
+use App\Models\ClasseAnnee;
+use App\Models\TypeDocument;
+use Illuminate\Http\Request;
+use App\Models\Etablissement;
+use Illuminate\Http\Response;
+use App\Models\ApprenantTuteur;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
+use App\Models\ApprenantClasseAnnee;
+use Illuminate\Support\Facades\Auth;
 use Modules\Scolarite\Entities\Frais;
 use Modules\Scolarite\Entities\Tuteur;
+use Illuminate\Support\Facades\Redirect;
+use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\TypeFrais;
 use Modules\Scolarite\Entities\Versement;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use Modules\Scolarite\Entities\Inscription;
+use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Scolarite\Entities\EtablissementTypeDocument;
-use PDF;
 
 class InscriptionController extends Controller
 {
@@ -343,10 +344,10 @@ class InscriptionController extends Controller
         $matricule = $this->generateMatricule($request->all());
         $code_inscription = $this->generateCodeInscription($request->all());
         $id_apprenant = null;
-
-
+        $section = $request->section;
         $tabs = EtablissementTypeDocument::where('etablissement_section_id',$et_sec_id)->where('obligatoire','1')->where('statut','1')->with('type_document')->get()->pluck('type_document_id')->unique()->values()->all();
-
+        $type_user = 'Etudiant';
+        $role = Role::where('name','Etudiant')->get();
         if($request->apprenants){
             if (isset($request->documents['documents'])) {
                 $p = collect($request->documents['documents'])->map(function($e){
@@ -387,11 +388,15 @@ class InscriptionController extends Controller
                         'etablissement_id' => Auth::user()->etablissement_id
                     ]);
                     $id_apprenant = $item_apprenant->id;
-                    if ($request->section == '3'){
-                        CreationCompteEtudiant($item_apprenant);
+                    // CreationCompte($item_apprenant,$section);
+                    $apprenant = Apprenant::where('id',$id_apprenant)->get()[0];
+                    if ($section == '3'){
+                    CreationCompte($apprenant,$section,$type_user,$role);
                     }
                 }else{
                     $id_apprenant = $find->id;
+                    $apprenant = Apprenant::where('id',$id_apprenant)->get()[0];
+                    CreationCompte($apprenant,$section,$type_user,$role);
                 }
             }else{
                 $id_apprenant = $request->annees['apprenant']['more']['apprenant']['id'];

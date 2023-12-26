@@ -250,40 +250,7 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-        $user = Auth::user();
-        $nom = str_replace(' ', '', $request->nom);
-        $prenom = str_replace(' ', '', $request->prenom);
-        $login = strtolower($nom) . '-' . strtolower($prenom) . '@gmail.com';
-
-        $permis = Role::find($request->roles);
-
-        $userData = [
-            'nom' => $request->nom,
-            'prenom' => $request->prenom,
-            'type_user' => $request->type_user,
-            'email' => $login,
-            'user_id' => $user->id,
-            'password' => Hash::make($login),
-            'etablissement_id' => $user->etablissement_id,
-        ];
-
-        if ($request->type_user == 'Tuteur' || $request->type_user == 'Enseignant') {
-            $userData[strtolower($request->type_user) . '_id'] = $request->{strtolower($request->type_user) . '_id'};
-        }
-
-        $user = User::create($userData);
-        $user->syncRoles($request->roles);
-        $user->syncPermissions($permis->permissions->pluck('id'));
-
-        if ($request->checkbox != null) {
-            foreach ($request->section as $sec) {
-                $etablissement_sections = getSectionEtablissement($user->etablissement_id, $sec);
-                SectionUser::create([
-                    'user_id' => $user->id,
-                    'etablissement_section_id' => $etablissement_sections[0]
-                ]);
-            }
-        }
+        CreationCompte(null,null,$request->type_user,$request->roles,$request);
 
         return redirect()->route('users.index')->with('message', 'Utilisateur a été créé avec succès !');
 

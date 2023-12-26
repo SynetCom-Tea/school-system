@@ -49,7 +49,7 @@
             "app/Helpers/CalculerResultatsClasse.php",
             "app/Helpers/CalculerResultatsClasseSuperieure.php",
             "app/Helpers/CalculerMoyenneSuperierure.php",
-            "app/Helpers/CreationCompteEtudiant.php"
+            "app/Helpers/CreationCompte.php"
         ]
     },
     "autoload-dev": {
