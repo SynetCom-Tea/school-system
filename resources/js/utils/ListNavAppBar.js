@@ -10,6 +10,7 @@ import {
   mdiHumanCapacityIncrease,
   mdiPresentation,
   mdiGift,
+  mdiViewDashboardOutline,
   mdiCalendarMultiple,
   mdiMonitorDashboard,
   mdiSquareMedium,
@@ -542,7 +543,7 @@ export function menusTuteur(page, sectionID) {
       permissions: "tuteur",
     },
     {
-      icon: mdiSquareMedium,
+      icon: mdiViewDashboardOutline,
       title: "Notes et résultats",
       link: "result",
       color: "rgb(139,0,0)",
