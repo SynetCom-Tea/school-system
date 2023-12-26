@@ -11,7 +11,7 @@ export default {
     BulletinDialog,
     NoteTypeEvaluation
   },
-  props: ["AllClasses", "niveaux", "sectionID", "notes", "headers", "note_compositions", "note_interrogations", "note_devoir_surveilles", "note_devoirs", "note_examens", "periodes","filieres", "cycle_filieres"],
+  props: ["check", "AllClasses", "types", "niveaux", "sectionID", "notes", "headers", "note_compositions", "note_interrogations", "note_devoir_surveilles", "note_devoirs", "note_examens", "periodes","filieres", "cycle_filieres"],
   data() {
     return {
       icons: {
@@ -28,233 +28,45 @@ export default {
         classe: null,
         date: null,
         emploi: null,
+        type_evaluation: null,
+        filiere: null,
+        periode: null,
         section_id: null
       }),
     };
   },
   computed: {
-    // formattedData() {
-    //     if (this.sectionID === 1) {
-    //         return processNotesData(this.notes);
-    //     }
-    //     return [];
-    // },
-    // formattedCompositionData() {
-    //     if (this.sectionID === 2 || this.sectionID === 1) {
-    //         return processNotesData(this.note_compositions);
-    //     }
-    //     return [];
-    // },
-    // formattedInterogationrData() {
-    //     if (this.sectionID === 2) {
-    //         return processNotesData(this.note_interrogations);
-    //     }
-    //     return [];
-    // },
-    // formattedDevoirSurveilleData() {
-    //     if (this.sectionID === 2) {
-    //         return processNotesData(this.note_devoir_surveilles);
-    //     }
-    //     return [];
-    // }
     formattedData() {
-        if(this.sectionID == 1){
-            const apprenants = {};
-            this.notes.forEach(note => {
-            if (!apprenants[note.id_apprenant]) {
-                apprenants[note.id_apprenant] = {
-                nom_apprenant: note.nom_apprenant,
-                prenom_apprenant: note.prenom_apprenant,
-                moyenne: 0,
-                count: 0,
-                totalNotes: 0,
-                };
-            }
-
-            if (!isNaN(note.note)) {
-                apprenants[note.id_apprenant].totalNotes += note.note;
-                apprenants[note.id_apprenant].count++;
-            }
-
-            apprenants[note.id_apprenant][note.nom_matiere] = note.note;
-            });
-
-            // Calcul de la moyenne pour chaque apprenant
-            Object.values(apprenants).forEach(apprenant => {
-            if (apprenant.count > 0) {
-                apprenant.moyenne = (apprenant.totalNotes / apprenant.count).toFixed(2);
-            }
-            });
-
-            return Object.values(apprenants);
-        }
-    },
-    formattedCompositionData() {
-        if(this.sectionID == 2 || this.sectionID == 1){
-
-            const apprenants = {};
-            this.note_compositions.forEach(note => {
-            if (!apprenants[note.id_apprenant]) {
-                apprenants[note.id_apprenant] = {
-                nom_apprenant: note.nom_apprenant,
-                prenom_apprenant: note.prenom_apprenant,
-                moyenne: 0,
-                count: 0,
-                totalNotes: 0,
-                };
-            }
-
-            if (!isNaN(note.note)) {
-                apprenants[note.id_apprenant].totalNotes += note.note;
-                apprenants[note.id_apprenant].count++;
-            }
-
-            apprenants[note.id_apprenant][note.nom_matiere] = note.note;
-            });
-
-            // Calcul de la moyenne pour chaque apprenant
-            Object.values(apprenants).forEach(apprenant => {
-            if (apprenant.count > 0) {
-                apprenant.moyenne = (apprenant.totalNotes / apprenant.count).toFixed(2);
-            }
-            });
-
-            return Object.values(apprenants);
-        }
-    },
-    formattedDevoirData() {
-      if(this.sectionID == 2){
-        const apprenants = {};
-        this.note_devoirs.forEach(note => {
-        if (!apprenants[note.id_apprenant]) {
-            apprenants[note.id_apprenant] = {
-            nom_apprenant: note.nom_apprenant,
-            prenom_apprenant: note.prenom_apprenant,
-            moyenne: 0,
-            count: 0,
-            totalNotes: 0,
-            };
-        }
-
-        if (!isNaN(note.note)) {
-            apprenants[note.id_apprenant].totalNotes += note.note;
-            apprenants[note.id_apprenant].count++;
-        }
-
-        apprenants[note.id_apprenant][note.nom_matiere] = note.note;
-        });
-
-        // Calcul de la moyenne pour chaque apprenant
-        Object.values(apprenants).forEach(apprenant => {
-        if (apprenant.count > 0) {
-            apprenant.moyenne = (apprenant.totalNotes / apprenant.count).toFixed(2);
-        }
-        });
-
-        return Object.values(apprenants);
+      const apprenants = {};
+      this.notes.forEach(note => {
+      if (!apprenants[note.id_apprenant]) {
+          apprenants[note.id_apprenant] = {
+          nom_apprenant: note.nom_apprenant,
+          prenom_apprenant: note.prenom_apprenant,
+          moyenne: 0,
+          count: 0,
+          totalNotes: 0,
+          };
       }
-    },
-    formattedExamenData() {
-      if(this.sectionID == 2){
-        const apprenants = {};
-        this.note_examens.forEach(note => {
-        if (!apprenants[note.id_apprenant]) {
-            apprenants[note.id_apprenant] = {
-            nom_apprenant: note.nom_apprenant,
-            prenom_apprenant: note.prenom_apprenant,
-            moyenne: 0,
-            count: 0,
-            totalNotes: 0,
-            };
-        }
 
-        if (!isNaN(note.note)) {
-            apprenants[note.id_apprenant].totalNotes += note.note;
-            apprenants[note.id_apprenant].count++;
-        }
-
-        apprenants[note.id_apprenant][note.nom_matiere] = note.note;
-        });
-
-        // Calcul de la moyenne pour chaque apprenant
-        Object.values(apprenants).forEach(apprenant => {
-        if (apprenant.count > 0) {
-            apprenant.moyenne = (apprenant.totalNotes / apprenant.count).toFixed(2);
-        }
-        });
-        console.log('Data',apprenants);
-        return Object.values(apprenants);
+      if (!isNaN(note.note)) {
+          apprenants[note.id_apprenant].totalNotes += note.note;
+          apprenants[note.id_apprenant].count++;
       }
-    },
-    formattedInterogationrData() {
-      if(this.sectionID == 2){
-          const apprenants = {};
-          this.note_interrogations.forEach(note => {
-          if (!apprenants[note.id_apprenant]) {
-              apprenants[note.id_apprenant] = {
-              nom_apprenant: note.nom_apprenant,
-              prenom_apprenant: note.prenom_apprenant,
-              moyenne: 0,
-              count: 0,
-              totalNotes: 0,
-              };
-          }
 
-          if (!isNaN(note.note)) {
-              apprenants[note.id_apprenant].totalNotes += note.note;
-              apprenants[note.id_apprenant].count++;
-          }
+      apprenants[note.id_apprenant][note.nom_matiere] = note.note;
+      });
 
-          apprenants[note.id_apprenant][note.nom_matiere] = note.note;
-          });
-
-          // Calcul de la moyenne pour chaque apprenant
-          Object.values(apprenants).forEach(apprenant => {
-          if (apprenant.count > 0) {
-              apprenant.moyenne = (apprenant.totalNotes / apprenant.count).toFixed(2);
-          }
-          });
-
-          return Object.values(apprenants);
+      // Calcul de la moyenne pour chaque apprenant
+      Object.values(apprenants).forEach(apprenant => {
+      if (apprenant.count > 0) {
+          apprenant.moyenne = (apprenant.totalNotes / apprenant.count).toFixed(2);
       }
+      });
+      return Object.values(apprenants);
     },
-    formattedDevoirSurveilleData() {
-        if(this.sectionID == 2){
-            const apprenants = {};
-            this.note_devoir_surveilles.forEach(note => {
-            if (!apprenants[note.id_apprenant]) {
-                apprenants[note.id_apprenant] = {
-                nom_apprenant: note.nom_apprenant,
-                prenom_apprenant: note.prenom_apprenant,
-                moyenne: 0,
-                count: 0,
-                totalNotes: 0,
-                };
-            }
-
-            if (!isNaN(note.note)) {
-                apprenants[note.id_apprenant].totalNotes += note.note;
-                apprenants[note.id_apprenant].count++;
-            }
-
-            apprenants[note.id_apprenant][note.nom_matiere] = note.note;
-            });
-
-            // Calcul de la moyenne pour chaque apprenant
-            Object.values(apprenants).forEach(apprenant => {
-            if (apprenant.count > 0) {
-                apprenant.moyenne = (apprenant.totalNotes / apprenant.count).toFixed(2);
-            }
-            });
-
-            return Object.values(apprenants);
-        }
-    }
   },
   methods: {
-    calculateAverageForApprenant(apprenant) {
-      return apprenant.moyenne;
-    },
     openBulletinDialog(item) {
       this.selectedApprenant = item;
       console.log(item)
@@ -264,15 +76,17 @@ export default {
       this.dialog = false;
       this.selectedApprenant = null;
     },
-    goTo() {
-      
-    },
     setClasse(niveau) {
-      this.form.classe = null
-      this.form.emploi = null
-      this.classes = this.AllClasses.filter((classe) => {
-        return classe.niveau_id == niveau;
-      });
+      if(this.sectionID == 1 || this.sectionID == 2){
+          this.classes = this.AllClasses.filter((classe) => {
+          return classe.niveau_id == niveau;
+        });
+      }else if(this.sectionID == 3){
+        let cf = this.$page.props.cycle_filieres.filter((c_f) => c_f.filiere_id == niveau);
+        console.log(cf)
+        const cycleFiliereIds = cf.map((item) => item.id);
+        this.classes = this.$page.props.AllClasses.filter((classe) => cycleFiliereIds.includes(classe.cycle_filiere_id));
+      }
     },
     setData(classe) {
       this.$inertia.replace(this.$page.url, {
@@ -281,12 +95,16 @@ export default {
         }
       })
     },
-    editItem(){
-
+    async show(){
+      this.$inertia.replace(this.$page.url, {
+        data: {
+          section_id: this.sectionID,
+          classe: this.form.classe,
+          periode: this.form.periode, 
+          type_evaluation: this.form.type_evaluation,
+        }
+      })
     },
-    deleteItem(){
-
-    }
   },
   mounted(){
     this.form.section_id = this.sectionID
@@ -308,7 +126,7 @@ export default {
           "
         >
         <v-row v-if="sectionID == 1 || sectionID == 2">
-          <v-col md="4">
+          <v-col md="3">
           <autocomplete
             label="Niveau"
             v-model="form.niveau"
@@ -320,7 +138,7 @@ export default {
             item-value="id"
           ></autocomplete>
         </v-col>
-        <v-col md="4">
+        <v-col md="3">
           <autocomplete
             label="Classe"
             v-model="form.classe"
@@ -333,91 +151,92 @@ export default {
             item-value="id"
           ></autocomplete>
         </v-col>
+        <v-col cols="2">
+            <autocomplete 
+                class="mt-4" 
+                v-model="form.periode" 
+                label="Periodes" 
+                itemTitle="libelle" 
+                itemValue="id"
+                :items="periodes" variant="outlined" :isRequired="true" :disabled="!form.classe" chips clearable>
+            </autocomplete>
+          </v-col>
+        <v-col cols="3">
+          <autocomplete chips class="mt-4" label="Type Evaluation" variant="outlined" item-title="libelle" item-value="libelle" :items="types" v-model="form.type_evaluation" clearable :isRequired="true">
+          </autocomplete>
+        </v-col>
+        <v-col md="1">
+            <v-btn
+            class="mt-4"
+            :append-icon="icons.mdiTimerSync"
+            color="deep-purple-accent-4"
+            @click="show()"
+            :disabled="!form.type_evaluation"
+            >
+            Voir
+            </v-btn>
+        </v-col>
         </v-row>
-        <v-row v-if="sectionID == 3  || sectionID == 4">
-          <v-col md="5">
+        <v-row v-if="sectionID == 3">
+          <v-col md="3">
             <autocomplete
                 label="Filière"
-                v-model="filiere"
+                v-model="form.filiere"
                 class="mt-4"
                 :items="$page.props.filieres"
-                @update:modelValue="setClasse(filiere)"
+                @update:modelValue="setClasse(form.filiere)"
                 item-title="code"
                 item-value="id"
             ></autocomplete>
-          </v-col>
-          <v-col md="3" v-if="filiere">
+        </v-col>
+        <v-col md="4" v-if="form.filiere">
             <autocomplete
             label="Classe"
-            v-model="classe"
+            v-model="form.classe"
             :items="classes"
             class="mt-4"
+            @update:modelValue="setData(form.classe)"
             isRequired
             item-title="libelle"
             item-value="id"
             ></autocomplete>
-          </v-col>
-          <v-col cols="2">
+        </v-col>
+        <v-col cols="2">
             <autocomplete 
                 class="mt-4" 
-                v-model="periode" 
+                v-model="form.periode" 
                 label="Periodes" 
                 itemTitle="libelle" 
                 itemValue="id" 
-                :items="periodes" variant="outlined" :isRequired="true" :disabled="!classe" chips clearable>
+                :items="periodes" variant="outlined" :isRequired="true" :disabled="!form.classe" chips clearable>
+            </autocomplete>
+        </v-col>
+          <v-col cols="2">
+            <autocomplete chips class="mt-4" label="Type Evaluation" variant="outlined" item-title="libelle" item-value="libelle" :items="types" v-model="form.type_evaluation" clearable :isRequired="true">
             </autocomplete>
           </v-col>
-          <!-- <v-col md="2">
+          <v-col md="1">
               <v-btn
               class="mt-4"
               :append-icon="icons.mdiTimerSync"
               color="deep-purple-accent-4"
-              @click="generate()"
-              :disabled="!periode"
+              @click="show()"
+              :disabled="!form.type_evaluation"
               >
-              Générer
+              Voir
               </v-btn>
-          </v-col> -->
+          </v-col>
         </v-row>
         </v-toolbar-title>
       </v-toolbar>
-      <v-card >
-        <v-card v-if="sectionID == 2">
-          <NoteTypeEvaluation
-              :data="formattedInterogationrData"
-              :headers="headers"
-              typeEvaluation="Notes d'interrogation des élèves par matière"
-              @open="openBulletinDialog"
-          />
-          <NoteTypeEvaluation
-              :data="formattedDevoirSurveilleData"
-              :headers="headers"
-              typeEvaluation="Notes de Devoir Surveillé des élèves par matière"
-              @open="openBulletinDialog"
-          />
-        </v-card>
-        <v-card v-if="sectionID == 1 || sectionID == 2">
-          <NoteTypeEvaluation
-              :data="formattedCompositionData"
-              :headers="headers"
-              typeEvaluation="Notes de composition des élèves par matière"
-              @open="openBulletinDialog"
-          />
-        </v-card>
-        <v-card v-if="sectionID == 3">
-          <NoteTypeEvaluation
-              :data="formattedDevoirData"
-              :headers="headers"
-              typeEvaluation="Notes de devoir des etudiants par matières"
-              @open="openBulletinDialog"
-          />
-          <NoteTypeEvaluation
-              :data="formattedExamenData"
-              :headers="headers"
-              typeEvaluation="Notes d'examen des etudiants par matière"
-              @open="openBulletinDialog"
-          />
-        </v-card>
+      <v-card>
+        <NoteTypeEvaluation
+          v-if="form.type_evaluation != null"
+          :data="formattedData"
+          :headers="headers"
+          :typeEvaluation="`Notes de ${ form.type_evaluation } des élèves par matière`"
+          @open="openBulletinDialog"
+        />
       </v-card>
       <BulletinDialog
             v-if="selectedApprenant !== null"

@@ -62,7 +62,7 @@ export default {
     },
     methods: {
         goTo() {
-            this.form.get(route("emplois.create"))
+            this.form.get(route("emplois.create", this.form.section_id))
             // router.get(route("emplois.create"));
         },
         setClasse(niveau) {

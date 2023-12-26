@@ -78,15 +78,30 @@ class Emploi extends Model
         return $seances;
     }
 
-    public static function getSeancesByIds($seanceIds, $classe)
+    // public static function getSeancesByIds($seanceIds, $classe =null)
+    // {
+    //     // dd($seanceIds);
+    //     return Seance::whereIn('seances.id', $seanceIds)
+    //     ->join('enseignement_annees', 'seances.niveau_matiere_id', '=', 'enseignement_annees.niveau_matiere_id')
+    //     ->join('enseignants', 'enseignement_annees.enseignant_id', '=', 'enseignants.id')
+    //     ->join('emplois', 'seances.emploi_id', '=', 'emplois.id')
+    //     ->where('enseignement_annees.classe_annee_id', $classe)
+    //     ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom', 'emplois.date_debut', 'emplois.date_fin')
+    //     ->get();
+    // }
+
+    public static function getSeancesByIds($seanceIds, $classe = null)
     {
-        // dd($seanceIds);
-        return Seance::whereIn('seances.id', $seanceIds)
-        ->join('enseignement_annees', 'seances.niveau_matiere_id', '=', 'enseignement_annees.niveau_matiere_id')
-        ->join('enseignants', 'enseignement_annees.enseignant_id', '=', 'enseignants.id')
-        ->join('emplois', 'seances.emploi_id', '=', 'emplois.id')
-        ->where('enseignement_annees.classe_annee_id', $classe)
-        ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom', 'emplois.date_debut', 'emplois.date_fin')
-        ->get();
+        $query = Seance::whereIn('seances.id', $seanceIds)
+            ->join('enseignement_annees', 'seances.niveau_matiere_id', '=', 'enseignement_annees.niveau_matiere_id')
+            ->join('enseignants', 'enseignement_annees.enseignant_id', '=', 'enseignants.id')
+            ->join('emplois', 'seances.emploi_id', '=', 'emplois.id')
+            ->select('seances.*', 'enseignants.nom AS enseignant_nom', 'enseignants.prenom AS enseignant_prenom', 'emplois.date_debut', 'emplois.date_fin');
+
+        if ($classe !== null) {
+            $query->where('enseignement_annees.classe_annee_id', $classe);
+        }
+
+        return $query->get();
     }
 }

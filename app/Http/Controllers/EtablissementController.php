@@ -80,8 +80,8 @@ class EtablissementController extends Controller
             'password' => $request->password ?? Hash::make('password'), 'etablissement_id' => $ets->id
         ];
         $admin = User::create($user);
-        $admin->givePermissionTo('manage_system');
-        $admin->syncRoles('Administrateur');
+        $admin->givePermissionTo('manage_school');
+        // $admin->syncRoles('Administrateur');
         return redirect()->route('etablissements.index');
     }
 

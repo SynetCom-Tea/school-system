@@ -443,6 +443,7 @@ export default {
         titleDatatable="Liste des enseignants"
         :headers="headers"
         :items="enseignants"
+        :permission="'manage_school|enseignant.create'"
         :functionOnClickAddButton="create"
       >
         <template v-slot:item.actions="{ item }">
@@ -450,6 +451,7 @@ export default {
             size="small"
             class="me-2"
             title="Modifier"
+            v-permission:any="'manage_school|enseignant.update'"
             @click="editItem(item.enseignant)"
             :icon="icons.mdiPencil"
             color="orange"
@@ -459,6 +461,7 @@ export default {
             size="small"
             class="me-2"
             title="Supprimer"
+            v-permission:any="'manage_school|enseignant.delete'"
             @click="deleteItem(item.enseignant)"
             :icon="icons.mdiDelete"
             color="red"

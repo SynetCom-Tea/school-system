@@ -19,7 +19,7 @@ use Modules\Enseignement\Entities\Matiere;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\GestionNote\Entities\Note;
 use Modules\GestionNote\Entities\Periode;
-
+use Modules\GestionNote\Entities\TypeEvaluation;
 use PDF;
 
 class RapportController extends Controller
@@ -154,7 +154,10 @@ class RapportController extends Controller
      */
     public function index(Request $request)
     {
+        $check = false;
+        $notes = [];
         $periode = [];
+        $types = [];
         $filieres = [];
         $cycle_filieres = [];
         $note_devoirs = [];
@@ -166,27 +169,35 @@ class RapportController extends Controller
         $note_devoir_surveilles = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        if($request->section_id == 3){
+            $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
+            $cycle_filieres = DB::table('cycle_filieres')
+                ->whereIn('filiere_id', $filieres->pluck('id'))
+                ->get();
+        }
+        // dd($classes);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         if ($request->classe != null || $request->classe2 != null) {
             $notes_reforme = getNoteByClasses($request->classe, $request->section_id, $request->periode);
             // dd($notes_reforme, $request->classe);
             if($request->section_id == 1){
-                
+                $typesNotIn = ['TP', 'Examen', 'Devoir', 'Interrogation', 'Autre', 'Devoir / Devoir Surveillé'];
+                $periode = Periode::where('type',"Trimestre")->get();
             }
             if($request->section_id == 2){
+                $typesNotIn = ['TP', 'Autre', 'Contrôle'];
+                $periode = Periode::where('type',"Semestre")->get();
                 $note_compositions = collect($notes_reforme)->where('type_evaluation', 'Composition')->values();
                 $note_interrogations = collect($notes_reforme)->where('type_evaluation', 'Interrogation')->values();
                 $note_devoir_surveilles = collect($notes_reforme)->where('type_evaluation', 'Devoir Surveillé')->values();
             }if($request->section_id == 3){
+                $typesNotIn = ['Composition', 'Devoir', 'Interrogation', 'Contrôle'];
                 $note_devoirs = collect($notes_reforme)->where('type_evaluation', 'Examen')->values();
                 $note_examens = collect($notes_reforme)->where('type_evaluation', 'Devoir')->values();
                 $periode = Periode::where('type',"Semestre")->get();
-                $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
-                $cycle_filieres = DB::table('cycle_filieres')
-                    ->whereIn('filiere_id', $filieres->pluck('id'))
-                    ->get();
-                //dd($note_devoirs, $note_examens);
+                // dd($filieres);
             }
+            $types = TypeEvaluation::whereNotIn('libelle', $typesNotIn)->get();
             $headers = [
                 [
                     'title' => 'Nom',
@@ -204,22 +215,29 @@ class RapportController extends Controller
                     'key' => $mat, // Utilisation d'une clé unique pour chaque matière
                 ];
             }
+            if($request->type_evaluation != null){
+                $notes = collect($notes_reforme)->where('type_evaluation', $request->type_evaluation)->values();
+                $check = true;
+                // dd($request->type_evaluation, $notes, $headers);
+            }
             //dd($headers);
         }
         return Inertia::render('Rapport/Index', [
+            "check" => $check,
             "sectionID" => $request->section_id,
             "filieres" => $filieres,
             "cycle_filieres" => $cycle_filieres,
-            "periode" => $periode,
-            "notes" => $notes_reforme,
+            "periodes" => $periode,
+            "notes" => $notes,
             "headers" => $headers,
             "niveaux" => $niveaux,
-            "classes" => $classes,
+            "AllClasses" => $classes,
             "note_compositions" => $note_compositions,
             "note_interrogations" => $note_interrogations,
             "note_devoir_surveilles" => $note_devoir_surveilles,
             "note_devoirs" => $note_devoirs,
-            "note_examens" => $note_examens
+            "note_examens" => $note_examens,
+            "types" => $types
         ]);
     }
 

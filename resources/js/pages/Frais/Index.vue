@@ -406,21 +406,20 @@
 
                     </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des frais" :headers="headers" :items="frais" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des frais" :headers="headers" :items="frais" :permission="'manage_school|frais.create'" :functionOnClickAddButton="create" >
                 <template v-slot:item.frais="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.frais">
                             {{ tag.etablissement_type_frais.type_frais.libelle}} => {{tag.montant}}
-                            <v-icon end  size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange">
+                            <v-icon end  size="small" class="me-2" title="Modifier" @click="editItem(tag)" v-permission:any="'manage_school|frais.update'" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
-                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">
+                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItem(tag)" v-permission:any="'manage_school|frais.delete'" :icon="icons.mdiCloseCircle">
                             </v-icon>
                         </v-chip>
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{item}">
-
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemc(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemc(item)" v-permission:any="'manage_school|frais.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

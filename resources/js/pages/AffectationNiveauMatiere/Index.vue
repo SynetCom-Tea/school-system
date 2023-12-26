@@ -607,36 +607,35 @@ export default {
         </v-card>
     </v-dialog> -->
     <v-card-text>
-        <Datatable  v-if="section_id == 1" titleDatatable="Liste des matières par niveau" :headers="headerspri" :items="niveauMatieres" :functionOnClickAddButton="create">
+        <Datatable  v-if="section_id == 1" titleDatatable="Liste des matières par niveau" :headers="headerspri" :items="niveauMatieres" :permission="'manage_school|affectation_niveau_matiere.create'" :functionOnClickAddButton="create">
 
             <template v-slot:item.matiere="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.matiere">
                             {{ tag.matiere.nom }} => {{ 'Notation: ' }}{{ tag.notation }}
-                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange"></v-icon>
+                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag)" v-permission:any="'manage_school|affectation_niveau_matiere.update'" :icon="icons.mdiPencil" color="orange"></v-icon>
                             <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
-                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle" >
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiCloseCircle" >
                             </v-icon>
-
                         </v-chip>
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{ item }">
                 <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon> -->
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>
-        <Datatable  v-if="section_id == 2" titleDatatable="Liste des matières par niveau" :headers="headers" :items="niveauMatieres" :functionOnClickAddButton="create">
+        <Datatable  v-if="section_id == 2" titleDatatable="Liste des matières par niveau" :headers="headers" :permission="'manage_school|affectation_niveau_matiere.create'" :items="niveauMatieres" :functionOnClickAddButton="create">
             <template v-slot:item.matiere="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.matiere">
                             {{tag.matiere.nom}} =>{{ 'Coeff: ' }} {{tag.coefficient}}
-                            <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange">
+                            <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(tag)" v-permission:any="'manage_school|affectation_niveau_matiere.update'" :icon="icons.mdiPencil" color="orange">
                             </v-icon>
                             <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
-                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle" >
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiCloseCircle" >
                             </v-icon>
 
                         </v-chip>
@@ -644,32 +643,31 @@ export default {
                 </template>
             <template v-slot:item.actions="{ item }">
 
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>
-        <Datatable v-if="section_id >= 3 && systemeLMD !=null" titleDatatable="Liste des unités des enseignements par niveau" :headers="headersupue" :items="niveauMatieres" :functionOnClickAddButton="create">
+        <Datatable v-if="section_id >= 3 && systemeLMD !=null" titleDatatable="Liste des unités des enseignements par niveau" :permission="'manage_school|affectation_niveau_matiere.create'" :headers="headersupue" :items="niveauMatieres" :functionOnClickAddButton="create">
             <template v-slot:item.ues="{ item, index}">
                     <v-chip-group size="small" column selected-class="text-purple">
                         <v-chip  v-for="tag in item.ues" style=" height: auto;  ">
                             {{ tag.ue.libelle }} =>{{ " \t" }}{{ " \t" }}
-
                             <v-chip-group column selected-class="text-purple" style="width:90%;">
                                 <v-chip size="small" :key="i" v-for="(t, i) in tag.matieres"  style=" color: white; background-color: #7d002c; size:10px;">
                                     {{ t.matiere.nom }}
                                     {{ '/ VH: ' }}{{ t.volume_horaire }}
                                     {{ ';Coeff: ' }}{{ t.coefficient }}
-                                    <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(t)" :icon="icons.mdiPencil" color="orange">
+                                    <v-icon end size="small" class="me-2" title="Modifier" @click="editItem(t)" v-permission:any="'manage_school|affectation_niveau_matiere.update'" :icon="icons.mdiPencil" color="orange">
                                     </v-icon>
-                                    <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(t)" :icon="icons.mdiCloseCircle">
+                                    <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(t)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiCloseCircle">
                                     </v-icon>
                                 </v-chip>
                             </v-chip-group>
                              {{'credit: ' }} {{ tag.credit }}
 
-                             <v-icon end size="small" class="me-2" title="Ajouter des cycles" @click="createmat(tag)" :icon="icons.mdiPlusCircle" color="primary"></v-icon>
+                             <v-icon end size="small" class="me-2" title="Ajouter des cycles" @click="createmat(tag)" v-permission:any="'manage_school|manage_school|affectation_niveau_matiere.create'" :icon="icons.mdiPlusCircle" color="primary"></v-icon>
                             <!-- <v-icon end color="primary" :icon="icons.mdiEye" title="Détail l'établissement" style="top: 0; left: 0; display: absolute" @click="showItem(tag)"></v-icon> -->
-                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItemUE(tag)" :icon="icons.mdiCloseCircle">
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItemUE(tag)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiCloseCircle">
                             </v-icon>
 
                         </v-chip>
@@ -679,18 +677,18 @@ export default {
             <template v-slot:item.actions="{ item }">
                 <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon> -->
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>
 
-        <Datatable v-if="section_id >= 3 && systemeLMD ==null" titleDatatable="Liste des matières par niveau" :headers="headersup" :items="niveauMatieres" :functionOnClickAddButton="create">
+        <Datatable v-if="section_id >= 3 && systemeLMD ==null" titleDatatable="Liste des matières par niveau" :headers="headersup" :items="niveauMatieres" :permission="'manage_school|affectation_niveau_matiere.create'" :functionOnClickAddButton="create">
             <template v-slot:item.matiere="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.matiere">
                             {{ tag.matiere.nom }} =><v-chip> {{ 'VH: ' }} {{ tag.volume_horaire }}</v-chip> <v-chip>  {{ '  Coeff: ' }} {{ tag.coefficient }}</v-chip>
-                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag)" :icon="icons.mdiPencil" color="orange"></v-icon>
-                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" :icon="icons.mdiCloseCircle">
+                            <v-icon size="small" class="me-2" title="Modifier" @click="editItem(tag)" v-permission:any="'manage_school|affectation_niveau_matiere.update'" :icon="icons.mdiPencil" color="orange"></v-icon>
+                            <v-icon end size="small" class="me-2" title="Supprimer" @click="deleteItem(tag)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiCloseCircle">
                             </v-icon>
 
                         </v-chip>
@@ -700,7 +698,7 @@ export default {
             <template v-slot:item.actions="{ item }">
                 <!-- <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
                 </v-icon> -->
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItemNM(item)" v-permission:any="'manage_school|affectation_niveau_matiere.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

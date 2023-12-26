@@ -21,7 +21,7 @@ export default {
         mdiPlus
     },
     layout: AuthenticatedLayout,
-    props: ['role', 'AllSections', 'etablissements', 'apprenants', 'enseignants', 'etablissement_sections'],
+    props: ['role', 'AllSections', 'etablissements', 'tuteurs', 'enseignants', 'etablissement_sections', 'section_id'],
     data() {
         return {
             role_p_u: null,
@@ -35,13 +35,16 @@ export default {
             form: useForm({
                 nom: '',
                 prenom: '',
+                type_user: null,
                 roles: null,
                 etablissement_id: null,
                 sections: [],
-                apprenant_id: null,
+                tuteur_id: null,
                 enseignant_id: null,
-                section: null
+                section: null,
+                checkbox: null
             }),
+            userTypes: ['Enseignant', 'Tuteur', 'Autre'],
         }
     },
     methods: {
@@ -72,20 +75,29 @@ export default {
             this.form.prenom = this.enseignants.filter(el => el.id == this.form.enseignant_id)[0].prenom
             // console.log(this.$page.props.sections)
         },
-        setInfoForApprenant() {
-            this.form.nom = this.apprenants.filter(el => el.id == this.form.apprenant_id)[0].nom
-            this.form.prenom = this.apprenants.filter(el => el.id == this.form.apprenant_id)[0].prenom
+        setInfoForTuteur() {
+            this.form.nom = this.tuteurs.filter(el => el.id == this.form.tuteur_id)[0].nom
+            this.form.prenom = this.tuteurs.filter(el => el.id == this.form.tuteur_id)[0].prenom
         },
-        formatEnseignant(item) {
-            return `${item.matricule } - ${item.nom }  ${item.prenom}`
-        },
-        formatApprenant(item) {
-            return `${item.matricule } - ${item.nom }  ${item.prenom}`
+        updateUserTypes(sectionId) {
+            console.log('SectionID',sectionId)
+            this.userTypes = ['Enseignant', 'Tuteur'];
+            if (sectionId == 1 || sectionId == 2) {
+                this.userTypes.push('Élève');
+                this.userTypes.push('Autre');
+            }
+            if (sectionId == 3) {
+                this.userTypes.push('Étudiant');
+                this.userTypes.push('Autre');
+            }
         },
     },
     created() {
         this.role_p_u = this.role.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
-    }
+    },
+    mounted() {
+        //  this.updateUserTypes(this.section_id);
+    },
 }
 </script>
 <template>
@@ -93,27 +105,53 @@ export default {
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Nouvel Utilisateur"></Toolbar>
     <v-card-text>
         <v-form>
-            <v-card style="border: 2px solid rgb(0, 73, 128);margin: 5px">
-                <v-card-title style="color: white; background-color: rgb(0, 73, 128)">
-                    <v-icon :icon="icon.mdiPlus" left></v-icon>
-                    Nouveau Utilisateur
-                </v-card-title>
-                <v-divider></v-divider>
-                <br />
-                <v-row style="margin:20px">
-                    <v-col md="6">
-                        <TextField disabled name="nom" label="Nom" placeholder="Nom" v-model="form.nom" isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] "></TextField>
-                        <Autocomplete :isRequired="true" label="Roles" item-title="name" item-value="id" :items="role_p_u" chips clearable v-model="form.roles" :rules="[v => !!v || 'Ce champ est requis!'] ">
-                        </Autocomplete>
-                        <Autocomplete label="Enseignant" v-if="form.roles == 2" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" :item-title="formatEnseignant" item-value="id" :items="enseignants" chips clearable :rules="[v => !!v || 'Ce champ est requis!'] ">
-                        </Autocomplete>
-                        <Autocomplete label="Apprenants" v-if="form.roles == 3" v-model="form.apprenant_id" @update:modelValue="setInfoForApprenant" :isRequired="true" :item-title="formatApprenant" item-value="id" :items="apprenants" chips clearable :rules="[v => !!v || 'Ce champ est requis!'] ">
-                        </Autocomplete>
+                <v-row>
+                    <v-col cols="6">
+                        <autocomplete
+                            class="mt-4"
+                            v-model="form.type_user"
+                            label="Type utilisateur"
+                            :items="userTypes"
+                            variant="outlined"
+                            :isRequired="true"
+                            clearable
+                            >
+                        </autocomplete>
                     </v-col>
-                    <v-col v-if="$page.props.auth.user.id !=1">
-                        <TextField disabled name="prenom" label="Prenom" placeholder="Prenom" isRequired="true" v-model="form.prenom" :rules="[v => !!v || 'Ce champ est requis!'] "></TextField>
-                        <Autocomplete v-if="$page.props.auth.user.id !== 1" :disabled="!form.enseignant_id" label="Section" :isRequired="true" item-title="libelle" item-value="id" :items="etablissement_sections" multiple chips clearable v-model="form.section" :rules="[v => !!v || 'Ce champ est requis!'] ">
-                        </Autocomplete>
+                    <v-col cols="6">
+                        <v-checkbox
+                            v-model="form.checkbox"
+                            value="1"
+                            label="Utilisateur d'une section ?"
+                            type="checkbox"
+                            >
+                        </v-checkbox>
+                    </v-col>
+                    <v-col v-if="form.checkbox == 1" md="3">
+                        <autocomplete class="mt-4" label="Section" :isRequired="true" itemTitle="libelle" item-value="id" :items="etablissement_sections" multiple chips clearable v-model="form.section" :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </autocomplete>
+                    </v-col>
+                    <v-col v-if="form.type_user == 'Autre'" md="3">
+                        <text-field class="mt-4" name="nom" label="Nom" placeholder="Nom" v-model="form.nom" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!'] "></text-field>
+                    </v-col>
+                    <v-col v-if="form.type_user == 'Autre'" md="3">
+                        <text-field class="mt-4" name="prenom" label="Prenom" placeholder="Prenom" :isRequired="true" v-model="form.prenom" :rules="[v => !!v || 'Ce champ est requis!'] "></text-field>
+                    </v-col>
+                    <v-col v-if="form.type_user == 'Enseignant'" md="4">
+                        <autocomplete class="mt-4" label="Enseignant" v-model="form.enseignant_id" @update:modelValue="setInfoForEnseignant" :isRequired="true" item-title="nomcomplet" item-value="id" :items="enseignants" chips clearable :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </autocomplete>
+                    </v-col>
+                    <v-col v-if="form.type_user == 'Tuteur'" md="4">
+                        <autocomplete class="mt-4" label="Tuteur" v-model="form.tuteur_id" @update:modelValue="setInfoForTuteur" :isRequired="true" itemTitle="nomcomplet" item-value="id" :items="tuteurs" chips clearable :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </autocomplete>
+                    </v-col>
+                    <!-- <v-col v-if="form.tuteur_id != null" md="4">
+                        <autocomplete class="mt-4" label="Tuteur" v-model="form.tuteur_id" :isRequired="true" itemTitle="nomcomplet" item-value="id" :items="tuteurs" chips clearable :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </autocomplete>
+                    </v-col> -->
+                    <v-col md="3">
+                        <autocomplete class="mt-4" :isRequired="true" label="Roles" itemTitle="name" item-value="id" :items="role_p_u" chips clearable v-model="form.roles" :rules="[v => !!v || 'Ce champ est requis!'] ">
+                        </autocomplete>
                     </v-col>
                 </v-row>
                 <v-card-actions>
@@ -121,11 +159,13 @@ export default {
                     <v-btn dark small type="button" variant="outlined" color="red" @click="goBack">
                         <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
                     </v-btn>
-                    <v-btn small :loading="form.processing" color="success" variant="outlined" @click="submit">
+                    <v-btn small :loading="form.processing" color="primary" variant="outlined" @click="submit">
                         <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
                     </v-btn>
+                    <!-- <v-btn small :loading="form.processing" color="success" variant="outlined" @click="submit">
+                        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
+                    </v-btn> -->
                 </v-card-actions>
-            </v-card>
         </v-form>
     </v-card-text>
 </v-card>

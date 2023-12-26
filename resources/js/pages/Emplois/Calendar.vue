@@ -25,9 +25,21 @@ export default {
         section_id: null
       }),
       config: {
-        // see configuration section
-       
-      }
+        locale: "fr-FR",
+        defaultMode: "month",
+        style: {
+          colorSchemes: {
+            meetings: {
+              color: "#fff",
+              backgroundColor: "#131313",
+            },
+            sports: {
+              color: "#fff",
+              backgroundColor: "#ff4081",
+            },
+          },
+        },
+      },
     };
   },
   methods: {

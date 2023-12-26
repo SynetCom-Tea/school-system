@@ -7,10 +7,14 @@ import {
   mdiAccount,
   mdiPurse,
   mdiHomeOutline,
+  mdiHumanCapacityIncrease,
   mdiPresentation,
   mdiGift,
+  mdiCalendarMultiple,
+  mdiMonitorDashboard,
   mdiSquareMedium,
   mdiCash,
+  mdiAlert,
   mdiGoogleClassroom,
   mdiClipboardEditOutline,
   mdiInstagram,
@@ -104,8 +108,7 @@ export function listMenus(page) {
     // Fin gestion note
   //  Début de menu pre-configs
   // console.log(page?.section_users)
-    if (page?.roles[0] == "Administrateur") {
-
+    if (page?.permissions.includes("manage_school")) {
       if (page?.sections[0]?.sections) {
         tabs = page?.sections[0].sections.map(function (el) {
           return el.libelle;
@@ -132,7 +135,7 @@ export function listMenus(page) {
   }
 
   // Fin de menu pre-configs
-    if (page?.roles[0]== "Enseignant") {
+    if (page?.permissions.includes("espace_enseignant")) {
       if (page?.section_users[0]?.libelle) {
         tab_s = page?.section_users.map(el =>el.libelle);
       }
@@ -154,7 +157,7 @@ export function listMenus(page) {
         title: "Evaluations",
         "icon-alt": mdiChevronLeft,
       model: false,
-         permissions:"enseignant",
+         permissions:"espace_enseignant",
         children: section_user,
   }
 
@@ -162,45 +165,47 @@ export function listMenus(page) {
 
 //Menu pour la gestion des cruds après config
 
-    let enfant = [];
-    let MenuGestion;
-    const section = [
-      { title: "Primaire", icon: mdiSchool, link: "/enseignement/gestion/1" },
-      { title: "Secondaire", icon: mdiSchool, link: "/enseignement/gestion/2" },
-      { title: 'Supérieure', icon: mdiSchool, link: ' /systeme/lmd/3' },
-      { title: 'Universitaire', icon: mdiSchool, link: '/systeme/lmd/4' },
-    ];
+  let enfantConfigs = [];
+  let MenuGestion;
+  const section = [
+    { title: "Primaire", icon: mdiSchool, link: "/enseignement/gestion/1" },
+    { title: "Secondaire", icon: mdiSchool, link: "/enseignement/gestion/2" },
+    { title: 'Supérieure', icon: mdiSchool, link: ' /systeme/lmd/3' },
+    { title: 'Universitaire', icon: mdiSchool, link: '/systeme/lmd/4' },
+  ];
 
-    if (page?.roles[0] == "Administrateur") {
-
-      if (page?.sections[0]?.sections) {
-        tab = page?.sections[0].sections.map(function (el) {
-          return el.libelle;
-        });
-      }
-
-
+  if (page?.permissions.includes("manage_school") || page?.permissions.includes("manage_config")) {
+    if (page?.sections[0]?.sections) {
+      tab = page?.sections[0].sections.map(function (el) {
+        return el.libelle;
+      });
+    }
     if (tab != []) {
         section.forEach((sect) => {
 
           if (tab.includes(sect.title)) {
 
-          enfant.push(sect);
+          enfantConfigs.push(sect);
         }
       });
     }
-       }
-MenuGestion = {
-      icon: mdiCogOutline,
-      title: "Post Configs",
-      "icon-alt": mdiChevronLeft,
-      model: false,
-      children: enfant,
-}
+  }
+  MenuGestion = {
+    icon: mdiCogOutline,
+    title: "Post Configs",
+    "icon-alt": mdiChevronLeft,
+    model: false,
+    children: enfantConfigs,
+  }
 
 //Fin du menu des cruds
-
-    let pageSections = page.sections? page.sections[0]?.sections:null
+  // console.log('section_users',page?.section_users, 'section', page.sections)
+  let pageSections 
+    // if(page?.permissions.includes("manage_school")){
+      pageSections = page.sections? page.sections[0]?.sections:null
+    // }else{
+    //   pageSections = page?.section_users
+    // }
 
     let listMenusSections = []
     let iconSection;
@@ -279,15 +284,15 @@ MenuGestion = {
             link: "/etablissements",
             permissions : "manage_system",
       },
-      {
-      icon:mdiBarn,
-      title: "Rôles/Permissions",
-      link: "/enseignement/roles",
-      color: "rgb(139,0,0)",
-      note: "Ce menu permet d'accèder à la liste des rôles  et permissions",
-      expand:false,
-      permissions: "manage_system",
-    }
+    //   {
+    //   icon:mdiBarn,
+    //   title: "Rôles/Permissions",
+    //   link: "/enseignement/roles",
+    //   color: "rgb(139,0,0)",
+    //   note: "Ce menu permet d'accèder à la liste des rôles  et permissions",
+    //   expand:false,
+    //   permissions: "manage_system",
+    // }
     ];
 
 
@@ -324,7 +329,7 @@ MenuGestion = {
         icon: mdiAccountCogOutline,
         title:pageSections?.length>1?"Gestion des sections":'Gestion de la section',
         "icon-alt": mdiChevronDown,
-        permissions: "manage_system",
+        permissions: "manage_school",
         model: false,
         children: [
       ...listMenusSections
@@ -353,7 +358,7 @@ let superAdminMenus=[]
          color: "rgb(205,92,92)",
          note: "Ce menu permet d'accèder à la liste des enseignants de l'établissement",
       expand:false,
-      permissions: "enseignant",
+      permissions: "espace_enseignant",
     },
     {
       icon: mdiSquareMedium,
@@ -362,14 +367,14 @@ let superAdminMenus=[]
       color: "rgb(139,0,0)",
       note: "Ce menu permet d'accèder à la liste des rôles de la section",
       expand:false,
-      permissions: "enseignant",
+      permissions: "espace_enseignant",
     }]
 
   menuTeachers= {
         icon: mdiHumanMaleBoard,
         title:"Gestion des enseignants",
         "icon-alt": mdiChevronDown,
-        permissions: "enseignant",
+        permissions: "espace_enseignant",
         model: false,
         children: [
       ...childrenTeachers
@@ -379,11 +384,11 @@ let superAdminMenus=[]
 
     /*********************Fin  Menu Gestion des enseignants  ************************ */
 
-    return{singleItems,gestionSections,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote}
+    return{singleItems,gestionSections,usersMenu,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote}
 }
 //Menu par section
 export function listMenusBySection(page, sectionID) {
-  let result
+  // let result
 
 
 
@@ -396,7 +401,17 @@ export function listMenusBySection(page, sectionID) {
          note: "Ce menu permet d'accèder à la liste des utilisateurs de la section",
       expand:false,
       image: "/assets/menusImage/users.jpg",
-      permissions: "manage_system",
+      permissions: ["manage_school"],
+    },
+    {
+      icon: mdiAccountGroup,
+      title: "Rôles/Permissions",
+         link: "/enseignement/roles",
+         color: "rgb(205,92,92)",
+         note: "Ce menu permet d'accèder à la liste des rôles  et permissions",
+      expand:false,
+      image: "/assets/menusImage/user_roles.png",
+      permissions: ["manage_school"],
     },
 
     {
@@ -407,7 +422,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder à la liste des inscrits de la section",
       expand:false,
       image: "/assets/menusImage/inscription1.jpg",
-      permissions: "manage_system"
+      permissions: ["manage_school", "liste_inscrit", "inscription"]
     },
     {
       icon: mdiCash,
@@ -417,7 +432,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'effectuer des versements de la section",
       expand:false,
       image: "/assets/menusImage/cash2.jpg",
-      permissions: "manage_system",
+      permissions: ["manage_school", "versement"],
     },
     {
       icon:mdiBookOpenPageVariantOutline,
@@ -427,7 +442,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder à la liste des emplois de la section",
       expand:false,
       image: "/assets/menusImage/emploi2.png",
-      permissions: "manage_system",
+      permissions: ["manage_school", "emplois.read", "emplois.create", "emplois.update", "emplois.delete"],
     },
     {
       icon:  mdiCalendar,
@@ -437,7 +452,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'ajouter un nouvel emploi de temps",
       expand:false,
       image: "/assets/menusImage/calendar1.png",
-      permissions: "manage_system",
+      permissions: ["manage_school", "calendrier"],
        },
       {
       title: "Évaluations",
@@ -447,7 +462,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
       image: "/assets/menusImage/note12.png",
-      permissions: "manage_system"
+      permissions: ["manage_school", "evaluation.read", "evaluation.create", "evaluation.update", "evaluation.delete"]
     },
     {
       title: "Absences",
@@ -457,7 +472,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'ajouter les absences",
       expand:false,
       image: "/assets/menusImage/emploi3.png",
-      permissions: "manage_system"
+      permissions: ["manage_school", "absent.read", "absent.create", "absent.update", "absent.delete"]
     },
       {
       title: "Notes",
@@ -467,7 +482,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
       image: "/assets/menusImage/note4.png",
-      permissions: "manage_system"
+      permissions: ["manage_school", "note.read", "note.create", "note.update", "note.delete"]
     },
     {
       title: "Bulletins",
@@ -477,7 +492,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
       image: "/assets/menusImage/rapport3.png",
-      permissions: "manage_system"
+      permissions: ["manage_school", "bulletin"]
     },
     {
       title: "Rapport",
@@ -487,10 +502,17 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet nn",
       expand:false,
       image: "/assets/menusImage/rapport.png",
-      permissions: "manage_system"
+      permissions: ["manage_school", "bulletin"]
     },
   ];
-  if (page?.roles[0] == "Administrateur") { result= [childrenBySection]}
+  let result = []
+  result = [childrenBySection.filter(item => {
+    return item.permissions && item.permissions.some(permission =>
+      page.permissions.some(userPermission => {
+        return userPermission.toLowerCase() === permission.toLowerCase();
+      })
+    );
+  })];
   return result??[]
 
 }
@@ -502,7 +524,16 @@ export function menusTuteur(page, sectionID) {
   let result
      let childrenBySection = [
     {
-      icon: mdiAccountGroup,
+      icon: mdiMonitorDashboard,
+      title: "Tableau de bord",
+         link: "dashboard",
+         color: "rgb(205,92,92)",
+         note: "Ce menu permet d'accèder au tableau de bord",
+      expand:false,
+      permissions: "tuteur",
+    },
+    {
+      icon: mdiHumanCapacityIncrease,
       title: "Mes enfants",
          link: "children",
          color: "rgb(205,92,92)",
@@ -512,6 +543,24 @@ export function menusTuteur(page, sectionID) {
     },
     {
       icon: mdiSquareMedium,
+      title: "Notes et résultats",
+      link: "result",
+      color: "rgb(139,0,0)",
+      note: "Ce menu permet d'accèder à la liste des notes et résultats de ses enfants",
+      expand:false,
+      permissions: "tuteur",
+    },
+    {
+      icon: mdiCalendarMultiple,
+      title: "Calendrier scolaire",
+      link: "calandar",
+      color: "rgb(139,0,0)",
+      note: "Ce menu permet d'accèder au calendrier scolaire de ses enfants",
+      expand:false,
+      permissions: "tuteur",
+    },
+    {
+      icon: mdiAlert,
       title: "Alertes/Avertissements",
       link: "alertes",
       color: "rgb(139,0,0)",

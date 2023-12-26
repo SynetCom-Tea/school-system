@@ -229,12 +229,12 @@
                                 
                     </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des classes" :headers="headers" :items="classes" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des classes" :headers="headers" :items="classes" :permission="'manage_school|classe.create'" :functionOnClickAddButton="create" >
              
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" v-permission:any="'manage_school|classe.update'" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" v-permission:any="'manage_school|classe.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

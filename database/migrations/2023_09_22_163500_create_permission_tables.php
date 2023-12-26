@@ -30,6 +30,9 @@ class CreatePermissionTables extends Migration
             $table->string('name');
             $table->string('description', 125);     // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
+            $table->foreignIdFor(\App\Models\section::class)->nullable()
+                ->index()
+                ->references('id')->on('sections');
             $table->timestamps();
 
             $table->unique(['name', 'guard_name']);
@@ -43,12 +46,39 @@ class CreatePermissionTables extends Migration
             }
             $table->string('name');       // For MySQL 8.0 use string('name', 125);
             $table->string('guard_name'); // For MySQL 8.0 use string('guard_name', 125);
+            $table->foreignIdFor(\App\Models\EtablissementSection::class)->nullable()
+                ->index()
+                ->references('id')->on('etablissement_section');
             $table->timestamps();
             if ($teams || config('permission.testing')) {
                 $table->unique([$columnNames['team_foreign_key'], 'name', 'guard_name']);
             } else {
                 $table->unique(['name', 'guard_name']);
             }
+        });
+
+        Schema::create('role_sections', function (Blueprint $table) {
+            $table->foreignIdFor(\App\Models\section::class)
+                ->index()
+                ->references('id')->on('sections');
+            $table->foreignIdFor(\App\Models\Role::class)
+                ->index()
+                ->references('id')->on('roles');
+        });
+
+        Schema::create('Permission_roles', function (Blueprint $table) {
+            $table->id();
+            $table->foreignIdFor(\App\Models\User::class)->nullable()
+                ->index()
+                ->references('id')->on('users');
+            $table->foreignIdFor(\App\Models\Permission::class)->nullable()
+                ->index()
+                ->references('id')->on('permissions');
+            $table->foreignIdFor(\App\Models\Role::class)->nullable()
+                ->index()
+                ->references('id')->on('roles');
+            $table->timestamps();
+            $table->softDeletes();
         });
 
         Schema::create($tableNames['model_has_permissions'], function (Blueprint $table) use ($tableNames, $columnNames, $teams) {

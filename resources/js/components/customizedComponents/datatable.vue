@@ -21,7 +21,10 @@ export default {
       type: Array,
       required: true,
     },
-
+    permission: {
+      type: String,
+      required: false,
+    },
     editedObject: {
       type: Object,
       required: false,
@@ -248,6 +251,7 @@ export default {
           :nameButton="libelleButton"
           title="Ajouter une nouvelle ligne"
           :prependIcon="icons.mdiPlus"
+          v-permission:any="permission"
           @click="onClickAddButton"
         >
         </Button>

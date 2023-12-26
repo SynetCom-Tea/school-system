@@ -43,11 +43,12 @@ export default {
     },
     mounted() {
         this.getMenus;
+        console.log('getMe',this.getMenus)
     },
     computed: {
         getMenus() {
             let list = this.listMenusBySection(this.authPage, 1);
-            console.log(list)
+            console.log('List',list)
             return list[0] ??[];
         },
     },
@@ -56,6 +57,9 @@ export default {
         goToPage(item) {
             if (item.link == "/users") {
                 this.form.get(route("users.index"));
+            }
+            if (item.link == "/enseignement/roles") {
+                this.form.get(route("roles.index"));
             }
             if (item.link == "/subscribers") {
                 this.form.get(route("inscriptions.index"));

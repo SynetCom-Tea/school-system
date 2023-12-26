@@ -15,32 +15,54 @@ class PermissionSeeder extends Seeder
         'role' => 'un rôle',
         'user' => 'un utilisateur',
         'permission' => 'une permission',
-        'evaluation' => 'une évaluation',
-        'matiere' => 'une matiere',
-        'niveau' => 'un niveau',
-        'Filiere' => 'une Filière',
-        'ue' => 'un ue',
-        'apprenant' => 'un apprenant',
-        'etablissement' => 'un etablissement',
-        'annee' => 'une annee',
+        'matiere' => 'une matière',
+        'frais' => 'un frais',
+        'classe' => 'une classe',
+        'enseignant' => 'un enseignant',
         'salle' => 'une salle',
-        'horaire' => 'un horaire',
+        'absent' => 'une absent',
+        'emplois' => 'un emplois',
+        'evaluation' => 'une évaluation',
         'note' => 'une note'
-
+    ];
+    public $modelsSup = [
+        'filiere' => 'une filière',
+        'ue' => 'un ue',
+        'section' => 'une section'
     ];
     public function run(): void
     {
+        Permission::create(['name' => 'manage_welcome', 'description' => 'Paramètrage du welcome']);
+        Permission::create(['name' => 'manage_system', 'description' => 'Paramètre systeme']);
+        Permission::create(['name' => 'manage_school', 'description' => 'Administrateur etablissement']);
+        Permission::create(['name' => 'manage_section', 'description' => 'Gestion des section']);
+        Permission::create(['name' => 'manage_config', 'description' => 'Post configurations']);
+        Permission::create(['name' => 'versement', 'description' => 'Effectuer un versement']);
+        Permission::create(['name' => 'liste_inscrit', 'description' => 'Liste des inscrits']);
+        Permission::create(['name' => 'inscription', 'description' => 'Faire une nouvelle inscription']);
+        Permission::create(['name' => 'calendrier', 'description' => 'Calendrier']);
+        Permission::create(['name' => 'bulletin', 'description' => 'Génération des bulletins']);
+        Permission::create(['name' => 'manage_etablissement', 'description' => 'Paramètre etablissement']);
+        Permission::create(['name' => 'espace_tuteur', 'description' => 'Espace tuteur']);
+        Permission::create(['name' => 'affectation_niveau_matiere.read', 'description' => 'Liste des affectation des matières au niveau']);
+        Permission::create(['name' => 'affectation_niveau_matiere.create', 'description' => 'Faire une affectation des matières au niveau']);
+        Permission::create(['name' => 'affectation_niveau_matiere.update', 'description' => 'Modifier une affectation des matières au niveau']);
+        Permission::create(['name' => 'affectation_niveau_matiere.delete', 'description' => 'Supprimer une affectation des matières au niveau']);
+        Permission::create(['name' => 'affectation_enseignant', 'description' => 'Affectation des enseignants']);
+        Permission::create(['name' => 'espace_enseignant', 'description' => 'Espace enseignant']);
+        Permission::create(['name' => 'espace_etudiant', 'description' => 'Espace Étudiant']);
+        Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
         foreach ($this->models as $k => $v) {
             Permission::create(['name' => $k . '.create', 'description' => 'Peut ajouter ' . $v]);
             Permission::create(['name' => $k . '.read', 'description' => 'Peut voir ' . $v]);
             Permission::create(['name' => $k . '.update', 'description' => 'Peut modifier ' . $v]);
             Permission::create(['name' => $k . '.delete', 'description' => 'Peut supprimer ' . $v]);
         }
-        Permission::create(['name' => 'manage_welcome', 'description' => 'Paramètrage du welcome']);
-        Permission::create(['name' => 'manage_system', 'description' => 'Paramètre systeme']);
-        Permission::create(['name' => 'enseignant', 'description' => 'Permission Enseignant']);
-        Permission::create(['name' => 'etudiant', 'description' => 'Permission Etudiant']);
-        Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
-        Permission::create(['name' => 'manage_school', 'description' => 'Permission Administrateur']);
+        foreach ($this->modelsSup as $k => $v) {
+            Permission::create(['name' => $k . '.create', 'description' => 'Peut ajouter ' . $v, 'section_id' => 3]);
+            Permission::create(['name' => $k . '.read', 'description' => 'Peut voir ' . $v, 'section_id' => 3]);
+            Permission::create(['name' => $k . '.update', 'description' => 'Peut modifier ' . $v, 'section_id' => 3]);
+            Permission::create(['name' => $k . '.delete', 'description' => 'Peut supprimer ' . $v, 'section_id' => 3]);
+        }
     }
 }

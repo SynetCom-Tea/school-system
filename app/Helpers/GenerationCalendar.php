@@ -47,6 +47,8 @@
                             'start' => $seance['date_seance'] . ' ' . $heureDebut,
                             'end' => $seance['date_seance'] . ' ' . $heureFin
                         ],
+                        'color' => "green",
+                        'colorScheme' => "sports",
                         'isEditable' => true,
                         'id' => uniqid(),
                         'colorScheme' => 'meetings',

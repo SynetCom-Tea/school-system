@@ -131,7 +131,7 @@ class InscriptionController extends Controller
         $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $section)->first();
         $year = getAnneeEncours()->id;
 
-            if ($nameRole == 'Administrateur') {
+            // if ($nameRole == 'Administrateur') {
                 // dd($section);
                 $list = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')->where(function ($query) use ($section,$et_sec_id) {
                     if($section == '1' || $section == '2'){
@@ -208,7 +208,7 @@ class InscriptionController extends Controller
                         return $collection->push($vTerre->filter()->all());
                     });
                 }
-            }
+            // }
             if($section == '1' || $section == '2'){
                 $flattened = $collection->flatten()->unique()->filter();
                 $flattened->all();
