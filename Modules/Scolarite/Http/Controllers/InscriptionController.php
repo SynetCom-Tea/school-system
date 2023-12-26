@@ -371,6 +371,7 @@ class InscriptionController extends Controller
             // DB::beginTransaction();
         
             if($request->apprenants){
+                // dd($request->apprenants,$request->section);
                 $find = Apprenant::where('nom',$request->apprenants['nom'])->where('prenom',$request->apprenants['prenom'])->where('sexe',$request->apprenants['sexe'])
                 ->where('date_naissance',$request->apprenants['date_naissance'])->where('lieu_naissance',$request->apprenants['lieu_naissance'])->where('telephone',$request->apprenants['telephone'])
                 ->where('etablissement_id',Auth::user()->etablissement_id)->first();
@@ -386,6 +387,9 @@ class InscriptionController extends Controller
                         'etablissement_id' => Auth::user()->etablissement_id
                     ]);
                     $id_apprenant = $item_apprenant->id;
+                    if ($request->section == '3'){
+                        CreationCompteEtudiant($item_apprenant);
+                    }
                 }else{
                     $id_apprenant = $find->id;
                 }

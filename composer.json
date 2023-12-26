@@ -48,7 +48,8 @@
             "app/Helpers/GenerationRang.php",
             "app/Helpers/CalculerResultatsClasse.php",
             "app/Helpers/CalculerResultatsClasseSuperieure.php",
-            "app/Helpers/CalculerMoyenneSuperierure.php"
+            "app/Helpers/CalculerMoyenneSuperierure.php",
+            "app/Helpers/CreationCompteEtudiant.php"
         ]
     },
     "autoload-dev": {
