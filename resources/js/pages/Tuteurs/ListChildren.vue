@@ -50,11 +50,11 @@ export default {
           key: "level",
         },
 
-        {
-          title: "Actions",
-          align: "center",
-          key: "actions",
-        },
+        // {
+        //   title: "Actions",
+        //   align: "center",
+        //   key: "actions",
+        // },
       ],
     };
   },

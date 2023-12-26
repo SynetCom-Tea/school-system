@@ -507,12 +507,12 @@ export default {
 
     </v-dialog>
     <v-card-text>
-        <Datatable titleDatatable="Liste des matières" :headers="headers" :items="matieres" :functionOnClickAddButton="create">
+        <Datatable titleDatatable="Liste des matières" :headers="headers" :items="matieres" :permission="'manage_school|matiere.create'" :functionOnClickAddButton="create">
 
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" v-permission:any="'manage_school|matiere.update'" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" v-permission:any="'manage_school|matiere.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

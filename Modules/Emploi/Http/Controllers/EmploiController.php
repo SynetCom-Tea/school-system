@@ -187,9 +187,9 @@ class EmploiController extends Controller
             ]);
         }
         DB::commit();
-        return redirect()->route('emplois.index', $request->section_id)->with('message', [
+        return redirect()->route('emplois.index', ['section_id' => $request->section])->with('message', [
             'type' => 'success',
-            'text' => "Emploi ajouter avec success !",
+            'text' => "Emploi ajouté avec succès!",
         ]);
         // die();
     }
@@ -261,7 +261,7 @@ class EmploiController extends Controller
             } else {
                 $events = [];
             }
-            // dd($resultats['events']);
+            // dd($events);
             // dd($events[1],$events[567],$events[500],$events[2],$events[4],$events[300],$events[200],$events[124]);
         }
         // if($request->emploi != null){

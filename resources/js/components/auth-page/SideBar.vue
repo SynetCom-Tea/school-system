@@ -94,21 +94,21 @@
                     </v-list-item>
                   </template>
 
-                                <v-list-item class="sub-list-group" v-for="(item, i) in itemSection.children" :key="i" @click="page(item.link)">
-                                    <template v-slot:prepend>
-                                        <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                                    </template>
+                      <v-list-item class="sub-list-group" v-for="(item, i) in itemSection.children" :key="i" @click="page(item.link)">
+                          <template v-slot:prepend>
+                              <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                          </template>
 
-                                    <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
-                                </v-list-item>
-                            </v-list-group>
-                        </div>
+                          <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                      </v-list-item>
+                  </v-list-group>
+              </div>
 
               <!-- Fin Super-Admin -->
               <!--Debut des menu sections -->
               <v-list-group
                 :value="menusBySection.title"
-                v-if="$page.props.roles[0] == 'Administrateur'"
+                v-permission:any="'manage_school|manage_section'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
@@ -144,7 +144,7 @@
               <!-- Debut evaluation  -->
               <v-list-group
                 :value="getListMenus.MenuEvaluation && getListMenus.MenuEvaluation.title"
-                v-if="$page.props.roles[0] == 'Enseignant'"
+                v-permission="'espace_enseignant'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
@@ -176,7 +176,7 @@
                         </v-list-group>
               <v-list-group
                 :value="getListMenus.MenuNote && getListMenus.MenuNote.title"
-                v-if="$page.props.roles[0] == 'Enseignant'"
+                v-permission="'espace_enseignant'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
@@ -202,17 +202,16 @@
                   <template v-slot:prepend>
                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                   </template>
-
-                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
-                            </v-list-item>
-                        </v-list-group>
+                      <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                  </v-list-item>
+              </v-list-group>
 
                         <!-- Fin evaluation -->
 
                         <!-- Debut du menu preconfig -->
 
-              <v-list-group
-                v-if="$page.props.roles[0] == 'Administrateur'"
+              <!-- <v-list-group
+                v-permission="'manage_school'"
                 :value="getListMenus.MenuAdmin.title"
               >
                 <template v-slot:activator="{ props }">
@@ -239,26 +238,23 @@
                   <template v-slot:prepend>
                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                   </template>
-
-                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
-                            </v-list-item>
-                        </v-list-group>
-                        <!-- Menu Gestion -->
-                        <v-list-group :value="MenuGestion.title" v-if="$page.props.roles[0] == 'Administrateur'">
-                            <template v-slot:activator="{ props }">
-                                <v-list-item class="group-title" v-bind="props">
-                                    <template v-slot:prepend>
-                                        <v-icon :title="MenuGestion.title" :icon="MenuGestion.icon"></v-icon>
-                                    </template>
-                                    <v-list-item-title class="text-wrap" v-text="MenuGestion.title"></v-list-item-title>
-                                </v-list-item>
-                            </template>
-
-                            <v-list-item class="sub-list-group" v-for="(item, i) in MenuGestion.children" :key="i" @click="page(item.link)">
-                                <template v-slot:prepend>
-                                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
-                                </template>
-
+                    <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                </v-list-item>
+              </v-list-group> -->
+              <!-- Menu Gestion -->
+              <v-list-group :value="MenuGestion.title" v-permission:any="'manage_school|manage_config'">
+                <template v-slot:activator="{ props }">
+                    <v-list-item class="group-title" v-bind="props">
+                        <template v-slot:prepend>
+                            <v-icon :title="MenuGestion.title" :icon="MenuGestion.icon"></v-icon>
+                        </template>
+                        <v-list-item-title class="text-wrap" v-text="MenuGestion.title"></v-list-item-title>
+                    </v-list-item>
+                </template>
+                <v-list-item class="sub-list-group" v-for="(item, i) in MenuGestion.children" :key="i" @click="page(item.link)">
+                  <template v-slot:prepend>
+                      <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                  </template>
                   <v-list-item-title
                     class="text-wrap"
                     v-text="item.title"
@@ -271,7 +267,7 @@
 
               <v-list-group
                 :value="menuTuteur.title"
-                v-if="$page.props.roles[0] == 'Tuteur'"
+                v-permission="'espace_tuteur'"
               >
                 <template v-slot:activator="{ props }">
                   <v-list-item class="group-title" v-bind="props">
@@ -375,9 +371,13 @@ export default {
   created() {
     this.getUserProfile;
     this.getOrganizationProfile;
+    this.$gates.setRoles(this.$page.props.roles);
+    this.$gates.setPermissions(this.$page.props.permissions);
     // listMenus(this.$page.props);
   },
   mounted() {
+    this.$gates.getRoles();
+    this.$gates.getPermissions();
     axios.interceptors.response.use(
       function (response) {
         return response;
@@ -392,9 +392,7 @@ export default {
         return Promise.reject(error);
       }
     );
-    this.$gates.setRoles(this.$page.props.roles);
-    this.$gates.setPermissions(this.$page.props.permissions);
-    // console.log()
+    console.log('permi',this.$page.props.permissions)
   },
   computed: {
     getOrganizationProfile() {
@@ -477,6 +475,7 @@ export default {
         singleItems,
         gestionSections,
         MenuAdmin,
+        usersMenu,
         MenuGestion,
         MenuEvaluation,
         MenuNote,
@@ -492,6 +491,8 @@ export default {
       this.superAdminMenus = superAdminMenus;
 
       this.menuTuteur = menusTuteur(this.$page.props);
+
+      console.log(this.MenuGestion)
       return list ?? null;
     },
   },

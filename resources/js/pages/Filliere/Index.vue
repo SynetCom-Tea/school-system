@@ -345,22 +345,22 @@
 
                     </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des filières" :headers="headers" :items="filieres" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des filières" :headers="headers" :permission="'manage_school|filiere.create'" :items="filieres" :functionOnClickAddButton="create" >
                 <template v-slot:item.cycle="{ item, index}">
                     <v-chip-group column selected-class="text-purple">
                         <v-chip v-for="tag in item.cycle">
                             {{ tag.cycle.name}}
-                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItemc(tag)" :icon="icons.mdiCloseCircle">
+                            <v-icon end  class="me-2" title="Supprimer cycle" @click="deleteItemc(tag)" v-permission:any="'manage_school|filiere.delete'" :icon="icons.mdiCloseCircle">
                             </v-icon>
                         </v-chip>
                     </v-chip-group>
                 </template>
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Ajouter des cycles" @click="createcycle(item)" :icon="icons.mdiPlusCircle" color="primary">
+                <v-icon size="small" class="me-2" title="Ajouter des cycles" @click="createcycle(item)" v-permission:any="'manage_school|filiere.create'" :icon="icons.mdiPlusCircle" color="primary">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" v-permission:any="'manage_school|filiere.update'" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" v-permission:any="'manage_school|filiere.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

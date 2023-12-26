@@ -59,7 +59,7 @@ export default {
           return matiereIds.includes(matiere.id);
         });
       }
-      if(this.sectionEnquestion.id == 3  || sectionEnquestion.id == 4){
+      if(this.sectionEnquestion.id == 3){
         console.log(this.$page.props.classes[0].niveau_id, niveau)
       }
     },
@@ -97,9 +97,7 @@ export default {
       this.form.seances[day] = this.form.seances[day].filter((seance) => seance !== p);
     },
     submit() {
-      console.log(this.form);
-      
-      this.form.post(route("emplois.store"), {
+      this.form.post(route("emplois.store", this.sectionEnquestion.id), {
         // onFinish: () => this.form.reset(),
         onError: (error) => {
           // Logique à exécuter en cas d'erreur
@@ -110,6 +108,21 @@ export default {
           );
           // console.log('Erreur de requête');
           console.log(error);
+        },
+        onFinish: () => {
+          this.close()
+          this.$swal({
+            icon: 'success',
+            iconColor: '#004980',
+            color: '#004980',
+            title: 'Enregistrement',
+            text: 'Emploi crées avec succès!',
+            toast: true,
+            position: 'top-end',
+            showConfirmButton: false,
+            timer: 3000,
+            timerProgressBar: true,
+          });
         },
       });
     },

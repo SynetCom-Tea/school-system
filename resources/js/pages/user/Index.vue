@@ -25,6 +25,7 @@ export default {
         email: "",
         password: "",
         password_confirmation: "",
+        section_id: null
       }),
       dataUsers: [],
       icon: {
@@ -54,7 +55,7 @@ export default {
         {
           title: "Type",
           align: "center",
-          key: "type_user",
+          key: "user.type_user",
         },
         {
           title: "Téléphone",
@@ -152,10 +153,11 @@ export default {
   },
   methods: {
     goTo() {
-      router.get(route("users.create"));
+      this.form.get(route('users.create'))
     },
   },
   created() {
+    this.form.section_id = this.sectionID
     if (this.$page.props.flash?.message?.type == "error") {
       this.$toast.error(this.$page.props.flash.message.text);
     }
@@ -174,7 +176,6 @@ export default {
   },
   mounted() {
     this.getDatatableTitle;
-
     this.customizedUsers;
   },
 };
@@ -192,6 +193,7 @@ export default {
         :titleDatatable="getDatatableTitle"
         :headers="headers"
         :items="dataUsers"
+        :permission="'manage_school|user.create'"
         :functionOnClickAddButton="goTo"
       >
         <template v-slot:item.actions="{ item }"> </template>

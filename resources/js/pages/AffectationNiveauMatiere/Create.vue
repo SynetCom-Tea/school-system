@@ -109,8 +109,6 @@
                     class="mt-2"
                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                   >
-
-
                   </AutoComplete>
                 </v-col>
                 <v-col md="2">

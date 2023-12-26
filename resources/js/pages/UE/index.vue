@@ -260,12 +260,12 @@
 
                     </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des unités des enseignementss" :headers="headers" :items="ues" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des unités des enseignementss" :headers="headers" :permission="'manage_school|ue.create'" :items="ues" :functionOnClickAddButton="create" >
 
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" v-permission:any="'manage_school|ue.update'" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item.raw)" v-permission:any="'manage_school|ue.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

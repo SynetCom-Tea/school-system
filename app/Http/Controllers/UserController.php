@@ -6,6 +6,7 @@ use App\Models\Annee;
 use App\Models\User;
 use App\Models\Apprenant;
 use App\Models\ApprenantClasseAnnee;
+use App\Models\ApprenantTuteur;
 use App\Models\ClasseAnnee;
 use App\Models\Role;
 use Inertia\Inertia;
@@ -25,6 +26,7 @@ use Illuminate\Support\Facades\Http;
 use Modules\Enseignement\Entities\Enseignant;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Inscription;
+use Modules\Scolarite\Entities\Tuteur;
 use Modules\Scolarite\Entities\Versement;
 
 class UserController extends Controller
@@ -150,7 +152,7 @@ class UserController extends Controller
     }
     public function index(Request $request)
     {
-        // dump('request:', $request->all());
+        // dd($request->all());
         $authUser = Auth::user();
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
@@ -158,35 +160,19 @@ class UserController extends Controller
                 'text' => 'Session expirée!',
             ]);
         }
+        // dump('request:', $request->all(), $authUser);
+        // die();
         $vUsers = null;
         // dump('T:', $request->section_id);
         if ($request->section_id != null) {
             $vUsers = User::where('users.etablissement_id', (int)$authUser->etablissement_id)
-                ->where('users.user_id', (int)$authUser->id)
-                // ->where('users.id', '<>', (int)$authUser->id)
-                ->join(
-                    'section_users',
-                    'users.id',
-                    '=',
-                    'section_users.user_id',
-                )
-                ->join(
-                    'etablissement_section',
-                    'section_users.etablissement_section_id',
-                    '=',
-                    'etablissement_section.id',
-                )
-                ->where('etablissement_section.section_id', (int)$request->section_id)
-                ->selectRaw('users.*')
-                ->with('apprenant', 'tuteur', 'enseignant')
-                ->get();
+            ->where('users.user_id', (int)$authUser->id)->get();
         }
         if ($request->section_id == null) {
             $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
                 ->where('users.user_id', (int)$authUser->id)
                 ->with('etablissement')->get();
         }
-
         return Inertia::render('User/Index', [
             'users' => $vUsers ?? [],
             'sectionID' => $request->section_id ?? null
@@ -196,7 +182,43 @@ class UserController extends Controller
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    private function getEnseignants($type)
+    {
+        if($type == 1){
+            $enseignants = Enseignant::where('etablissement_id', Auth::user()->etablissement_id)->get();
+
+            // Appliquer la transformation avec la méthode map
+            $enseignantsTransformed = $enseignants->map(function ($enseignant) {
+                return [
+                    'id' => $enseignant->id,
+                    'matricule' => $enseignant->matricule,
+                    'nom' => $enseignant->nom,
+                    'prenom' => $enseignant->prenom,
+                    'nomcomplet' => $enseignant->matricule . ' - ' . $enseignant->nom . ' ' . $enseignant->prenom
+                    // Ajoutez d'autres propriétés au besoin
+                ];
+            });
+        }else{
+            $tuteurs = ApprenantTuteur::whereHas('apprenant', function ($query) {
+                $query->where('etablissement_id', Auth::user()->etablissement_id);
+            })->with('tuteur')->get();
+
+            // Appliquer la transformation avec la méthode map
+            $enseignantsTransformed = $tuteurs->pluck('tuteur')->unique()->map(function ($tuteur) {
+                return [
+                    'id' => $tuteur->id,
+                    'nom' => $tuteur->nom,
+                    'prenom' => $tuteur->prenom,
+                    'nomcomplet' => $tuteur->nom . ' ' . $tuteur->prenom
+                    // Ajoutez d'autres propriétés au besoin
+                ];
+            });
+        }
+        
+
+        return $enseignantsTransformed;
+    }
+    public function create(Request $request)
     {
         $user = Auth::user();
         $sections = DB::select("
@@ -208,15 +230,15 @@ class UserController extends Controller
         ",
         [
             'etablissement_id' => $user->etablissement_id,
-            
-        ]); 
+        ]);
         return Inertia::render('User/Create', [
+            'section_id' => $request->section_id,
             'etablissements' => Etablissement::all(),
             'role' => Role::all(),
             'AllSections' => $sections,
             'permissions' => Permission::all(),
-            'enseignants' => Enseignant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
-            'apprenants' => Apprenant::where('etablissement_id', Auth::user()->etablissement_id)->get(),
+            'enseignants' => $this->getEnseignants(1),
+            'tuteurs' => $this->getEnseignants(2),
             'etablissement_sections' => Section::whereHas('etablissements.users', function ($q) use ($user) {
                 $q->where('id', $user->id);
             })->get()
@@ -228,54 +250,43 @@ class UserController extends Controller
      */
     public function store(Request $request)
     {
-
         $user = Auth::user();
-        $permis = [];
-        $etat = null;
         $nom = str_replace(' ', '', $request->nom);
         $prenom = str_replace(' ', '', $request->prenom);
-        $login  = strtolower($nom) . '-' . strtolower($prenom) . '@gmail.com';
-        if ($request->etablissement_id) {
-            $etat = $request->etablissement_id;
-        } else {
-            $etat = Auth::user()->etablissement_id;
+        $login = strtolower($nom) . '-' . strtolower($prenom) . '@gmail.com';
+
+        $permis = Role::find($request->roles);
+
+        $userData = [
+            'nom' => $request->nom,
+            'prenom' => $request->prenom,
+            'type_user' => $request->type_user,
+            'email' => $login,
+            'user_id' => $user->id,
+            'password' => Hash::make($login),
+            'etablissement_id' => $user->etablissement_id,
+        ];
+
+        if ($request->type_user == 'Tuteur' || $request->type_user == 'Enseignant') {
+            $userData[strtolower($request->type_user) . '_id'] = $request->{strtolower($request->type_user) . '_id'};
         }
-        if ($request->nom and $request->prenom) {
-            $user = User::create([
-                'nom' => $request->nom,
-                'prenom' => $request->prenom,
-                'email' => $login,
-                'user_id' => Auth::user()->id,
-                'password' => Hash::make($login),
-                'etablissement_id' => $etat,
-                'enseignant_id' => $request->enseignant_id,
-                'apprenant_id' => $request->apprenant_id
-            ]);
-            $permissions = PermissionRole::where('role_id', $request->roles)->where('user_id', Auth::user()->id)->get();
-            foreach ($permissions as $permission) {
-                $permis[] = $permission->permission_id;
-            }
-            $user->syncRoles($request->roles);
-            $user->syncPermissions($permis);
 
+        $user = User::create($userData);
+        $user->syncRoles($request->roles);
+        $user->syncPermissions($permis->permissions->pluck('id'));
+
+        if ($request->checkbox != null) {
             foreach ($request->section as $sec) {
-                $etablissement_sections  = DB::table('etablissement_section')->where('section_id', $sec)->where('etablissement_id', Auth::user()->etablissement_id)->get()[0];
-
+                $etablissement_sections = getSectionEtablissement($user->etablissement_id, $sec);
                 SectionUser::create([
                     'user_id' => $user->id,
-                    'etablissement_section_id' => $etablissement_sections->id
+                    'etablissement_section_id' => $etablissement_sections[0]
                 ]);
             }
-            if ($request->etablissement_id) {
-                $etablissement = Etablissement::find($request->etablissement_id);
-                $etablissement->sections()->attach($request->sections);
-            }
-
-            return redirect()->route('users.index')->with('message', 'Utilisateur a été crée avec succès !');
-        } else {
-            return redirect()->back()->with('messages', 'Veuillez réenseigner tous les champs ayant étoile rouge!');
-
         }
+
+        return redirect()->route('users.index')->with('message', 'Utilisateur a été créé avec succès !');
+
     }
 
     /**
@@ -291,7 +302,7 @@ class UserController extends Controller
      */
     public function NotFoud(Request $request)
     {
-        return Inertia::render('Page');
+        //return Inertia::render('Page');
     }
 
     /**

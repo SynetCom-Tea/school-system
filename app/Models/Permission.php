@@ -10,7 +10,7 @@ class Permission extends \Spatie\Permission\Models\Permission
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'guard_name', 'description'];
+    protected $fillable = ['name', 'guard_name', 'description', 'section_id'];
 
     public function toSearchableArray(): array
     {

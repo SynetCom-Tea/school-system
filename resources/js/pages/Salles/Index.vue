@@ -605,12 +605,12 @@
 
         </v-dialog>
         <v-card-text>
-            <Datatable titleDatatable="Liste des salles" :headers="headers" :items="salles" :functionOnClickAddButton="create" >
+            <Datatable titleDatatable="Liste des salles" :headers="headers" :items="salles" :permission="'manage_school|salle.create'" :functionOnClickAddButton="create" >
 
             <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icons.mdiPencil" color="orange">
+                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" v-permission:any="'manage_school|salle.update'" :icon="icons.mdiPencil" color="orange">
                 </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icons.mdiDelete" color="red">
+                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" v-permission:any="'manage_school|salle.delete'" :icon="icons.mdiDelete" color="red">
                 </v-icon>
             </template>
         </Datatable>

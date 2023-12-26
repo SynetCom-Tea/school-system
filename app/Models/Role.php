@@ -11,7 +11,7 @@ class Role extends \Spatie\Permission\Models\Role
 {
     use HasFactory;
 
-    protected $fillable = ['name', 'description', 'guard_name'];
+    protected $fillable = ['name', 'description', 'guard_name', 'etablissement_section_id'];
 
     public function toSearchableArray(): array
     {

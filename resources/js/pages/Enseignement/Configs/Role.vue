@@ -1,5 +1,6 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import Permission from "@/pages/Enseignement/Configs/Permission.vue"
 import {
     router,
     useForm
@@ -27,17 +28,19 @@ export default {
         mdiCheckCircle,
         mdiCloseCircle,
         mdiContentSaveEditOutline,
+        Permission
     },
     layout: AuthenticatedLayout,
-    props: ["permission_role_users", "allRoles", "permissions", "permission"],
+    props: ["allRoles", "Allpermissions", "section_id"],
     data() {
         return {
+            tab: null,
             role_p_a: null,
             role_p_u: null,
             form: useForm({
-                role_id: null,
-                name: "",
+                name: null,
                 permissions: [],
+                section_id: null
             }),
             icon: {
                 mdiPencil,
@@ -53,7 +56,7 @@ export default {
             headers: [{
                     title: "Libellé",
                     align: "center",
-                    key: "role.name",
+                    key: "name",
                 },
                 {
                     title: "Permissions",
@@ -119,13 +122,13 @@ export default {
                 });
             }
             this.dialogEdit = true;
-            this.form.role_id = item.role.id;
+            this.form.role = item.role.id;
             this.form.permissions = item.permissions.map((el) => el.permission);
         },
 
         update() {
-            // console.log(this.form.role_id)
-            this.form.put(route("roles.update", this.form.role_id), {
+            // console.log(this.form.role)
+            this.form.put(route("roles.update", this.form.role), {
                 onFinish: () => {
                     this.closeEdit()
                     this.dialogEdit = false,
@@ -179,29 +182,23 @@ export default {
         },
         close() {
             this.dialog = false;
-            this.form.role_id = null;
             this.form.name = null;
             this.form.permissions = null;
         },
         closeEdit() {
             this.dialogEdit = false;
-            this.form.role_id = null;
             this.form.name = null;
             this.form.permissions = null;
-        },
-        setPermission(e) {
-            this.$inertia.replace(this.$page.url, {
-                data: {
-                    role: e,
-                },
-            });
-        },
+        }
+    },
+    created(){
+        this.form.section_id = this.section_id
     },
     mounted() {
-        this.role_p_u = this.allRoles.filter(
-            (el) => el.name !== "Administrateur" && el.name !== "Super-administrateur"
-        );
-        this.role_p_a = this.allRoles.filter((el) => el.name !== "Super-administrateur");
+        // this.role_p_u = this.allRoles.filter(
+        //     (el) => el.name !== "Administrateur" && el.name !== "Super-administrateur"
+        // );
+        // this.role_p_a = this.allRoles.filter((el) => el.name !== "Super-administrateur");
     },
 };
 </script>
@@ -209,103 +206,119 @@ export default {
 <template>
 <v-card>
     <Toolbar :icon="icon.mdiSecurity" toolbarTitle="Gestion des rôles"></Toolbar>
-    <v-card-text>
-        <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
-            <v-card>
-                <v-toolbar dense style="background-color: #7d002c">
-                    <v-toolbar-title style="color: white">
-                        <v-icon left :icon="icon.mdiPlus"></v-icon> Nouveau Rôle
-                    </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="close()"></v-icon>
-                </v-toolbar>
-                <v-card-text>
-                    <v-form>
-                        <v-row v-if="$page.props.auth.user.id == 1">
-                            <v-col md="12">
-                                <Autocomplete label="Role" v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
-                                </Autocomplete>
-                            </v-col>
-                            <v-col md="12">
-                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permissions" variant="solo-filled" multiple chips clearable>
-                                </Autocomplete>
-                            </v-col>
-                        </v-row>
-                        <v-row v-if="$page.props.auth.user.id != 1">
-                            <v-col md="12">
-                                <Autocomplete label="Role" v-model="form.role_id" @update:modelValue="setPermission(form.role_id)" itemTitle="name" itemValue="id" :items="role_p_u" chips clearable>
-                                </Autocomplete>
-                            </v-col>
-                            <v-col md="12">
-                                <Autocomplete v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="permission" multiple chips clearable>
-                                </Autocomplete>
-                            </v-col>
-                        </v-row>
-                    </v-form>
-                </v-card-text>
-
-                <v-card-actions class="justify-end">
-                    <v-spacer></v-spacer>
-                    <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit"></Button>
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-        <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
-            <template v-slot:default="{ isActive }">
-                <v-card>
-                    <v-toolbar dense style="background-color: #7d002c">
-                        <v-toolbar-title style="color: white">
-                            <v-icon left :icon="icon.mdiPencil"></v-icon> Modification de Rôle
-                        </v-toolbar-title>
-                        <v-spacer></v-spacer>
-                        <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="closeEdit()"></v-icon>
-                    </v-toolbar>
+    <v-card>
+        <v-tabs
+            v-model="tab"
+            color="deep-purple-accent-4"
+            align-tabs="center"
+            >
+            <v-tab :value="1">Rôles</v-tab>
+            <v-tab :value="2">Permissions</v-tab>
+        </v-tabs>
+        <v-window v-model="tab">
+            <v-window-item
+                :value="1"
+            >
+                <v-container fluid>
                     <v-card-text>
-                        <v-form>
-                            <v-row v-if="$page.props.auth.user.id == 1">
-                                <v-col md="12">
-                                    <Autocomplete label="Rôle" class="mt-1" disabled v-model="form.role_id" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
-                                    </Autocomplete>
-                                </v-col>
-                                <v-col md="12">
-                                    <Autocomplete v-model="form.permissions" label="Permission" item-title="description" item-value="id" :items="permissions" variant="solo-filled" multiple chips clearable>
-                                    </Autocomplete>
-                                </v-col>
-                            </v-row>
-                            <v-row v-if="$page.props.auth.user.id != 1">
-                                <v-col md="12">
-                                    <Autocomplete label="Role" disabled v-model="form.role_id" item-title="name" item-value="id" :items="role_p_u" chips clearable>
-                                    </Autocomplete>
-                                </v-col>
-                                <v-col md="12">
-                                    <Autocomplete v-model="form.permissions" label="Permission" item-title="description" item-value="id" :items="permission" multiple chips clearable>
-                                    </Autocomplete>
-                                </v-col>
-                            </v-row>
-                        </v-form>
+                        <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="500px">
+                            <v-card>
+                                <v-toolbar dense style="background-color: #7d002c">
+                                    <v-toolbar-title style="color: white">
+                                        <v-icon left :icon="icon.mdiPlus"></v-icon> Nouveau Rôle
+                                    </v-toolbar-title>
+                                    <v-spacer></v-spacer>
+                                    <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="close()"></v-icon>
+                                </v-toolbar>
+                                <v-card-text>
+                                    <v-form>
+                                        <v-row>
+                                            <v-col md="12">
+                                                <text-field class="mt-4" name="name" label="Rôle" placeholder="Rôle" v-model="form.name"></text-field>
+                                            </v-col>
+                                            <v-col md="12">
+                                                <Autocomplete class="mt-4" v-model="form.permissions" label="Permission" itemTitle="description" itemValue="id" :items="Allpermissions" multiple chips clearable>
+                                                </Autocomplete>
+                                            </v-col>
+                                        </v-row>
+                                    </v-form>
+                                </v-card-text>
+
+                                <v-card-actions class="justify-end">
+                                    <v-spacer></v-spacer>
+                                    <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit"></Button>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="dialogEdit" transition="dialog-top-transition" persistent width="500px">
+                            <template v-slot:default="{ isActive }">
+                                <v-card>
+                                    <v-toolbar dense style="background-color: #7d002c">
+                                        <v-toolbar-title style="color: white">
+                                            <v-icon left :icon="icon.mdiPencil"></v-icon> Modification de Rôle
+                                        </v-toolbar-title>
+                                        <v-spacer></v-spacer>
+                                        <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="closeEdit()"></v-icon>
+                                    </v-toolbar>
+                                    <v-card-text>
+                                        <v-form>
+                                            <v-row>
+                                                <v-col md="12">
+                                                    <Autocomplete label="Rôle" class="mt-1" disabled v-model="form.role" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
+                                                    </Autocomplete>
+                                                </v-col>
+                                                <v-col md="12">
+                                                    <Autocomplete v-model="form.permissions" label="Permission" item-title="description" item-value="id" :items="permissions" variant="solo-filled" multiple chips clearable>
+                                                    </Autocomplete>
+                                                </v-col>
+                                            </v-row>
+                                            <v-row>
+                                                <v-col md="12">
+                                                    <Autocomplete label="Role" disabled v-model="form.role" item-title="name" item-value="id" :items="role_p_u" chips clearable>
+                                                    </Autocomplete>
+                                                </v-col>
+                                                <v-col md="12">
+                                                    <Autocomplete v-model="form.permissions" label="Permission" item-title="description" item-value="id" :items="permission" multiple chips clearable>
+                                                    </Autocomplete>
+                                                </v-col>
+                                            </v-row>
+                                        </v-form>
+                                    </v-card-text>
+                                    <v-card-actions class="justify-end">
+                                        <v-spacer></v-spacer>
+                                        <Button variant="outlined" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
+                                    </v-card-actions>
+                                </v-card>
+                            </template>
+                        </v-dialog>
+                        <Datatable titleDatatable="Liste des roles" :headers="headers" :items="allRoles" :functionOnClickAddButton="create">
+                            <template v-slot:item.permissions="{ item }">
+                                <v-chip-group column selected-class="text-purple">
+                                    <v-chip v-for="tag in item.permissions" :key="tag">
+                                        {{ tag.description }}
+                                    </v-chip>
+                                </v-chip-group>
+                            </template>
+                            <template v-slot:item.actions="{ item }">
+                                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icon.mdiPencil" color="orange">
+                                </v-icon>
+                                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icon.mdiDelete" color="red">
+                                </v-icon>
+                            </template>
+                        </Datatable>
                     </v-card-text>
-                    <v-card-actions class="justify-end">
-                        <v-spacer></v-spacer>
-                        <Button variant="outlined" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
-                    </v-card-actions>
-                </v-card>
-            </template>
-        </v-dialog>
-        <Datatable titleDatatable="Liste des roles" :headers="headers" :items="permission_role_users" :functionOnClickAddButton="create">
-            <template v-slot:item.permissions="{ item }">
-                <v-chip-group column selected-class="text-purple">
-                    <v-chip v-for="tag in item.permissions" :key="tag">
-                        {{ tag.permission.description }}
-                    </v-chip>
-                </v-chip-group>
-            </template>
-            <template v-slot:item.actions="{ item }">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" :icon="icon.mdiPencil" color="orange">
-                </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" :icon="icon.mdiDelete" color="red">
-                </v-icon>
-            </template>
-        </Datatable>
-    </v-card-text>
+                </v-container>
+            </v-window-item>
+            <v-window-item
+                :value="2"
+            >
+                <v-container fluid>
+                    <Permission
+                        :permissions="Allpermissions"
+                    />
+                </v-container>
+            </v-window-item>
+        </v-window>
+    </v-card>
 </v-card>
 </template>

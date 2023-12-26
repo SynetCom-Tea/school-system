@@ -64,12 +64,15 @@ Route::get('/dashboard', function () {
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
-        Route::resource('users', UserController::class);
+        
     });
+    Route::resource('users', UserController::class);
     // Début routes tuteurs
     Route::get('tuteurs/list-warnings', [TuteurController::class, 'listWarnings'])->name('tuteurs.listWarnings');
     Route::get('tuteurs/meetings', [TuteurController::class, 'listWarnings'])->name('tuteurs.meetings');
     Route::get('tuteurs/mail-box', [TuteurController::class, 'mailBox'])->name('tuteurs.mailBox');
+    Route::get('tuteurs/dashboard', [TuteurController::class, 'dashboard'])->name('tuteurs.dashboard');
+    Route::get('tuteurs/result', [TuteurController::class, 'result'])->name('tuteurs.result');
     // Fin routes tuteurs
     Route::get('menu-section-primaire', [MenuGestionController::class, 'indexPrimaire'])->name('indexPrimaire');
     Route::get('menu-section-secondaire', [MenuGestionController::class, 'indexSecondaire'])->name('indexSecondaire');
@@ -83,6 +86,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
     Route::resource('salles', SalleController::class);
     Route::get('getbulletinbyapprenant/{section_id}/{classe}/{periode}/{tab}/{apprenant}', [RapportController::class, 'create'])->name('bulletinbyapprenant');
+    Route::get('getdata/{section_id}/{classe}/{periode}/{type_evaluation}', [RapportController::class, 'index'])->name('rapportdata');
 });
 
 Route::resource('etudiants', EtudiantsController::class);

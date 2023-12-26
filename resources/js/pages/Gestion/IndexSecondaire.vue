@@ -59,6 +59,9 @@ export default {
             if (item.link == "/users") {
                 this.form.get(route("users.index"));
             }
+            if (item.link == "/enseignement/roles") {
+                this.form.get(route("roles.index"));
+            }
             if (item.link == "/subscribers") {
                 this.form.get(route("inscriptions.index"));
             }

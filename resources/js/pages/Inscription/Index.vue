@@ -138,6 +138,7 @@
               sizeButton="x-large"
               title="Nouvel inscription"
               :prepend-icon="icons.mdiPlus"
+              v-permission:any="'manage_school|inscription'"
               @click="addNewInscription(null)"
             >
               <!-- <template v-slot:prepend>
@@ -207,9 +208,11 @@
             <v-col></v-col>
             <v-col>
               <v-btn
-          @click="addNewInscription(null)"
-          variant="text"
-          >Nouvel inscription?</v-btn>
+                @click="addNewInscription(null)"
+                variant="text"
+                v-permission:any="'manage_school|inscription'"
+                >Nouvel inscription?
+              </v-btn>
             </v-col>
             <v-col></v-col>
           </v-row>

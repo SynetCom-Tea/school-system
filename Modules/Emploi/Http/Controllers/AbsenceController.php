@@ -30,14 +30,14 @@ class AbsenceController extends Controller
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
-        if($request->date){
+        if($request->date){ 
             $seanceId = [];
             $apprenantIds = DB::table('apprenant_classe_annees')
             ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
             ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
             ->select('apprenants.id')
             ->get();
-            dd(collect($apprenantIds)->pluck('id'));
+            // dd(collect($apprenantIds)->pluck('id'));
             $absencesUneSeance = Absence::with('apprenant')->where('date', $request->date)->whereNotNull('seance_id')->whereIn('apprenant_id', collect($apprenantIds)->pluck('id'))->get();
             $absencesJourneeEntiere = Absence::with('apprenant')->where('date', $request->date)->whereNull('seance_id')->whereIn('apprenant_id', collect($apprenantIds)->pluck('id'))->get();
             // dd($absencesUneSeance);

@@ -1,17 +1,13 @@
 <script>
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
-import { mdiSecurity } from "@mdi/js";
 export default {
-  components: {
-    mdiSecurity,
-  },
-  layout: AuthenticatedLayout,
-  props: ["permissions"],
+  props: {
+    permissions: {
+        type: Object,
+        required: true
+      }
+    },
   data() {
     return {
-      icon: {
-        mdiSecurity,
-      },
       headers: [
         {
           title: "ID",
@@ -27,10 +23,7 @@ export default {
 };
 </script>
 <template>
-  <v-card>
-    <Toolbar :icon="icon.mdiSecurity" toolbarTitle="Liste des permissions"></Toolbar>
-    <v-card-text>
-      <v-data-table :headers="headers" :items="permissions"> </v-data-table>
-    </v-card-text>
-  </v-card>
+  <v-card-text>
+    <Datatable titleDatatable="Liste des permissions" :headers="headers" :items="permissions" :displayAddButton="false"/>
+  </v-card-text>
 </template>

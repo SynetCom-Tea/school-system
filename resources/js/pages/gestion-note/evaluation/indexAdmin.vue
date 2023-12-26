@@ -510,7 +510,7 @@ export default {
                 </v-card-actions>
             </v-card>
         </v-dialog>
-        <Datatable titleDatatable="Liste des evaluations " :headers="headers" :items="evaluations" :functionOnClickAddButton="create">
+        <Datatable titleDatatable="Liste des evaluations " :headers="headers" :items="evaluations" :permission="'manage_school|inscription'" :functionOnClickAddButton="create">
             <template v-slot:[`item.actions`]="{ item }">
                 <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
                 </v-icon>
