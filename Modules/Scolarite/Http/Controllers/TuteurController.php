@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Modules\Emploi\Entities\Emploi;
 use Modules\GestionNote\Entities\Evaluation;
+use Modules\GestionNote\Entities\TypeEvaluation;
 
 class TuteurController extends Controller
 {
@@ -44,16 +45,55 @@ class TuteurController extends Controller
     {
         return Inertia::render('Tuteurs/Dashboard', []);
     }
-    public function result()
+    public function result(Request $request)
     {
+        // // Exemple d'utilisation
+        // // Exemple d'utilisation :
+        // $donnees = [
+        //     ['nom' => 'Alice', 'score' => 90],
+        //     ['nom' => 'Bob', 'score' => 85],
+        //     ['nom' => 'Charlie', 'score' => 90],
+        //     ['nom' => 'David', 'score' => 78],
+        // ];
+
+        // $rangs = calculerRangs($donnees);
+        // dd($rangs);
+        $resultatsFinauxQuery = [];
+        $bulletinsChild = [];
         $authUser = Auth::user();
         $vChildren = ApprenantTuteur::where('tuteur_id', (int) $authUser->tuteur_id)->with('apprenant')->get();
-        $childrenID = $vChildren->pluck('apprenant_id')->all();
-        $bulletinChildren = HistoriqueBulletin::with('historique_notes')->whereIn('apprenant_id', $childrenID)->get();
-        $resultatsFinauxQuery = getNoteTuteurChildren($childrenID);
-        dd($resultatsFinauxQuery, $bulletinChildren);
+        $vChildren->map(function ($item) {
+            $item->apprenant->full_name = $item->apprenant->matricule . ' ' . $item->apprenant->nom . ' ' . $item->apprenant->prenom;
+            return $item;
+        });
+        if($request->apprenant){
+            $childrenID = $vChildren->where('apprenant_id', $request->apprenant)->pluck('apprenant_id')->all();
+            $resultatsFinauxQuery = getNoteTuteurChildren($childrenID, $request->type_evaluation);
+            $bulletinsChild = HistoriqueBulletin::with('historique_notes')->whereIn('apprenant_id', $childrenID)->get();
+            // dd($resultatsFinauxQuery, $bulletinsChild);
+        }
+        if (!empty($resultatsFinauxQuery)){
+            $resultatsFinauxQuery = $resultatsFinauxQuery[0]['evaluations'];
+            // Organiser les résultats pour faciliter la création du graphe
+            $graphData = [];
+
+            foreach ($resultatsFinauxQuery as $evaluation) {
+                // dd($evaluation['matiere']);
+                $graphData[$evaluation['matiere']['id_matiere']][$evaluation['periode_evaluation']][] = [
+                    'id_evaluation' => $evaluation['id_evaluation'],
+                    'note' => $evaluation['note_obtenue'],
+                    'date' => $evaluation['date_evaluation'],
+                    'matiere' => $evaluation['matiere']['nom_matiere'],
+                ];
+            }
+            dd($resultatsFinauxQuery, $graphData);
+        }
+        // dd($resultatsFinauxQuery, $bulletinsChildren, $vChildren->pluck('apprenant'));
         return Inertia::render('Tuteurs/Result', [
-            'resultatsFinauxQuery' => $resultatsFinauxQuery
+            'resultatsFinauxQuery' => $resultatsFinauxQuery,
+            'children' => $vChildren->pluck('apprenant'),
+            'typeEvaluations' => TypeEvaluation::all(),
+            'bulletinsChild' => $bulletinsChild
         ]);
     }
     public function mailBox()

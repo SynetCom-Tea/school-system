@@ -13,7 +13,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Emploi\Entities\Emploi;
 
 if (!function_exists('getNoteTuteurChildren')) {
-    function getNoteTuteurChildren($childrenID) {
+    function getNoteTuteurChildren($childrenID, $type_evaluation = null) {
         $query = DB::table('notes')
             ->join('evaluations', 'notes.evaluation_id', '=', 'evaluations.id')
             ->join('type_evaluations', 'evaluations.type_evaluation_id', '=', 'type_evaluations.id')
@@ -21,6 +21,7 @@ if (!function_exists('getNoteTuteurChildren')) {
             ->join('enseignement_annees', 'evaluations.enseignement_annee_id', '=', 'enseignement_annees.id')
             ->join('apprenants', 'notes.apprenant_id', '=', 'apprenants.id')
             ->whereIn('apprenants.id', $childrenID)
+            ->where('type_evaluations.id', $type_evaluation)
             ->where('notes.statut', 1);
         $query->join('niveau_matieres', 'enseignement_annees.niveau_matiere_id', '=', 'niveau_matieres.id')
             ->join('matieres', 'niveau_matieres.matiere_id', '=', 'matieres.id')
@@ -47,6 +48,7 @@ if (!function_exists('getNoteTuteurChildren')) {
             $apprenant = [
                 'id_apprenant' => $result->id_apprenant,
                 'matricule' => $result->matricule_apprenant,
+                'fullName' => $result->nom_apprenant . ' ' . $result->nom_apprenant,
                 'nom' => $result->nom_apprenant,
                 'prenom' => $result->prenom_apprenant,
             ];
@@ -128,5 +130,39 @@ if (!function_exists('getAbsenceOfTuteurChildren')) {
             
         });
         return array_merge($absencesJourneeEntiereAll->toArray(), $absencesJourneeAll->toArray());
+    }
+}
+
+if (!function_exists('calculerRangs')) {
+    function calculerRangs($donnees) {
+        // 1. Triez les éléments par critère de classement principal (supposons que ce soit 'score').
+        usort($donnees, function ($a, $b) {
+            return $b['score'] <=> $a['score'];
+        });
+
+        // 2. Attribuez des rangs en fonction du classement principal.
+        $rangActuel = 1;
+        foreach ($donnees as $index => &$element) {
+            if ($index > 0 && $element['score'] < $donnees[$index - 1]['score']) {
+                $rangActuel = $index + 1;
+            }
+            $element['rang'] = $rangActuel;
+        }
+
+        // 3. Gérez les ex aequo (même score).
+        foreach ($donnees as &$element) {
+            $exAequo = array_filter($donnees, function ($e) use ($element) {
+                return $e['score'] === $element['score'];
+            });
+
+            if (count($exAequo) > 1) {
+                // Calculer le rang moyen pour les ex aequo.
+                $rangMoyen = array_sum(array_column($exAequo, 'rang')) / count($exAequo);
+                $element['rang'] = round($rangMoyen, 2); // Vous pouvez ajuster la précision selon vos besoins.
+                $element['ex_aequo'] = true; // Marquer comme ex aequo.
+            }
+        }
+
+        return $donnees;
     }
 }
