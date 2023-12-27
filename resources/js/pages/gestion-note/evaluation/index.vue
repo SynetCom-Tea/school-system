@@ -80,9 +80,6 @@ export default {
             this.dialog = true
             this.dialog_title = 'Nouvelle Evaluation'
         },
-        formatCode(item) {
-            return `${item.filiere.code } - ${item.cycle.name } `
-        },
         editItem(item) {
             // console.log('item', item)
             this.form.id = item.id
@@ -311,27 +308,27 @@ export default {
                             </Autocomplete>
                         </v-col>
                         <v-col md="4" v-if="types>=3">
-                            <Autocomplete v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                            <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']"></Autocomplete>
                         </v-col>
                         <v-col md="4" v-if="types>=3">
-                            <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux" :isRequired="true"></Autocomplete>
+                            <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']"></Autocomplete>
                         </v-col>
                         <v-col md="4" v-if="types>=3">
-                            <Autocomplete v-model="form.matiere" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres" :isRequired="true"></Autocomplete>
+                            <Autocomplete v-model="form.matiere" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']"></Autocomplete>
                         </v-col>
                         <v-col cols="6" v-if="types<=2">
-                            <Autocomplete label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable multiple :isRequired="true">
+                            <Autocomplete label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id "  chips clearable multiple :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                             </Autocomplete>
-                        </v-col>
-                        <v-col cols="6">
-                            <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
-                            </TextField>
                         </v-col>
                         <v-col cols="3" v-if="types>=3">
                             <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
                                 <v-radio label="1ère" value="Prémiere session"></v-radio>
                                 <v-radio label="2ème" value="deuxiéme session"></v-radio>
                             </v-radio-group>
+                        </v-col>
+                        <v-col cols="4">
+                            <TextField v-if="regime[0].regime_evaluation" :prepend-inner-icon="icon.mdiPercentOutline" label="Pourcentage" variant="outlined" placeholder="pourcentage" v-model="form.pourcentage" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                            </TextField>
                         </v-col>
                     </v-row>
                 </v-container>

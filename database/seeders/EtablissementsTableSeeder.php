@@ -21,7 +21,7 @@ class EtablissementsTableSeeder extends Seeder
         \DB::table('etablissements')->insert(array (
             0 => 
             array (
-                'id' => 1,
+                // 'id' => 2,
                 'name' => 'Groupe IAT',
                 'email' => 'iat@niger.edu',
                 'adresse' => 'Niamey-niger',
@@ -36,7 +36,7 @@ class EtablissementsTableSeeder extends Seeder
             ),
             1 => 
             array (
-                'id' => 2,
+                // 'id' => 3,
                 'name' => 'Hetech',
                 'email' => 'hetech@gmail.com',
                 'adresse' => 'Terminus',

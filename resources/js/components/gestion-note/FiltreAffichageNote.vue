@@ -2,10 +2,10 @@
 <v-row>
     <v-col md="1"></v-col>
     <v-col md="3">
-        <Autocomplete v-model="selectedClasse" :items="classes" :item-title="formatClasseLabel" item-value="id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
+        <Autocomplete v-model="selectedClasse" :items="classes" item-title="code" item-value="id" @update:modelValue="requete(selectedClasse)" outlined required dense chips small-chips label="Classes"></Autocomplete>
     </v-col>
     <v-col md="3">
-        <Autocomplete v-model="selectedEvaluation" :disabled="!selectedClasse" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
+        <Autocomplete v-model="selectedEvaluation" :disabled="!selectedClasse" :items="evaluations " item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
     </v-col>
     <v-col md="3">
         <Button color="secondary" variant="outlined" class="mb-3" @click="rechercher()" nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!selectedClasse || !selectedEvaluation"></Button>
@@ -51,21 +51,6 @@ export default {
     },
 
     methods: {
-        formatEvaluationLabel(item) {
-            if (item.enseignement_annee.niveau_matiere) {
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.niveau_matiere?.matiere?.nom : ''}`;
-            } else {
-                return `${item ? item?.type_evaluation?.libelle : 'Pas de données'} - ${item ? item?.enseignement_annee?.filiere_niveau_matiere_ue?.matiere?.nom : ''}`;
-            }
-        },
-        formatClasseLabel(item){
-            if (this.type >= 3) {
-                return `${item ? item?.cycle_filiere.filiere.code : 'Pas de données'} - ${item ? item.niveau.code : 'Pas de données'} - ${item ? item.libelle : 'Pas de données'}`
-            }
-            else{
-                return `${item ? item?.libelle : 'Pas de données'}`
-            }
-        },
         rechercher() {
             router.replace(this.$page.url, {
                 data: {

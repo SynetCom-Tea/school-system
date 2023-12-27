@@ -2,6 +2,7 @@
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\SectionUser;
 use Illuminate\Support\Facades\Auth;
 
 // namespace App\Helpers;
@@ -34,9 +35,21 @@ if (!function_exists('CreationCompte')) {
         // dd($data);
         $userCreate = User::create($data); 
         if ($role != null){
-            $permis = Role::find($role[0]->id);
+            $permis = Role::find($role);
             $userCreate->syncRoles($role);
             $userCreate->syncPermissions($permis->permissions->pluck('id')); 
-        }           
+        }
+        if ($request != null){
+            if ($request->checkbox != null) {
+                foreach ($request->section as $sec) {
+                    $etablissement_sections = getSectionEtablissement($user->etablissement_id, $sec);
+                    SectionUser::create([
+                        'user_id' => $userCreate->id,
+                        'etablissement_section_id' => $etablissement_sections[0]
+                    ]);
+                }
+            } 
+        }
+              
     }
 }

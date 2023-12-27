@@ -347,7 +347,7 @@ class InscriptionController extends Controller
         $section = $request->section;
         $tabs = EtablissementTypeDocument::where('etablissement_section_id',$et_sec_id)->where('obligatoire','1')->where('statut','1')->with('type_document')->get()->pluck('type_document_id')->unique()->values()->all();
         $type_user = 'Etudiant';
-        $role = Role::where('name','Etudiant')->get();
+        $role = Role::where('name','Etudiant')->exists() ? Role::where('name','Etudiant')->get()[0]->id : null;
         if($request->apprenants){
             if (isset($request->documents['documents'])) {
                 $p = collect($request->documents['documents'])->map(function($e){

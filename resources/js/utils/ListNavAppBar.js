@@ -82,7 +82,7 @@ export function listMenus(page) {
       { title: 'Universitaire', icon: mdiSchool, link: '/gestionnote/note/4' },
     ];
     // debut gestion note
-    if (page?.roles[0]== "Enseignant") {
+    if (page?.permissions.includes("espace_enseignant")) {
       if (page?.section_users[0]?.libelle) {
         note = page?.section_users.map(el =>el.libelle);
       }
@@ -135,6 +135,7 @@ export function listMenus(page) {
   }
 
   // Fin de menu pre-configs
+  // console.log(page?.section_users)
     if (page?.permissions.includes("espace_enseignant")) {
       if (page?.section_users[0]?.libelle) {
         tab_s = page?.section_users.map(el =>el.libelle);
@@ -148,6 +149,7 @@ export function listMenus(page) {
 
             section_user.push(s);
         }
+        // console.log(section_user)
       });
     }
 

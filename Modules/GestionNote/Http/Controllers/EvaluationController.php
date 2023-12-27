@@ -57,13 +57,21 @@ class EvaluationController extends Controller
             $periodes =  Periode::where('type',"Semestre")->get();
         }
         $regime = DB::table("etablissement_section")->where('etablissement_id',$user->etablissement_id)->where('section_id',$type)->get();
-        $filieres =  CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
+        $fil =  CycleFiliere::whereHas('filiere',function($filiere) use ($etat_section_id){
             $filiere->where('etablissement_section_id',$etat_section_id);
         })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($user){
             $enseignant->where('enseignant_id',$user->enseignant_id);
         })->whereHas('filiere_niveau_matiere_ues.enseignement_annees.classe_annee',function($anne) use($id_a){
             $anne->where('annee_id',$id_a);
-        })->with('filiere','cycle')->get() ;
+        })->with('filiere','cycle')->get();
+        $filieres = $fil->map(
+            function($value){
+                return [
+                    'id' => $value->id,
+                    'formatCode' => $value->filiere->code . ' - ' . $value ->cycle->name
+                ];
+            }
+        );
         $niveaux = Niveau::where('section_id',$type)->whereHas('filiere_niveau_matiere_ues.enseignement_annees.enseignant',function($enseignant) use($user){
             $enseignant->where('enseignant_id',$user->enseignant_id);
         })->get() ;

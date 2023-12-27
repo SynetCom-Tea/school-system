@@ -261,7 +261,7 @@ export default {
                 </v-col>
                 <v-col md="1" v-if="type <3"></v-col>
                 <v-col md="3">
-                    <Autocomplete v-model="selectedEvaluation" :disabled="!selectedClasse" :items="evaluations " :item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(selectedEvaluation)"></Autocomplete>
+                    <Autocomplete v-model="selectedEvaluation" :disabled="!selectedClasse" :items="evaluations " item-title="formatEvaluationLabel" item-value="id" outlined required dense chips small-chips label="Evaluations" @update:modelValue="rechercher(selectedEvaluation)"></Autocomplete>
                 </v-col>
             </v-row>
         </v-card>
