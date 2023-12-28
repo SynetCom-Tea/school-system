@@ -11,6 +11,8 @@ declare module 'vue' {
     RouterView: typeof import('vue-router')['RouterView']
     VC: typeof import('vuetify/lib')['VC']
     VCh: typeof import('vuetify/lib')['VCh']
+    VChart: typeof import('vuetify/lib')['VChart']
+    VChartkick: typeof import('vuetify/lib')['VChartkick']
     VChips: typeof import('vuetify/lib')['VChips']
     VDataIterator: typeof import('vuetify/labs/VDataIterator')['VDataIterator']
     VDataTable: typeof import('vuetify/labs/VDataTable')['VDataTable']

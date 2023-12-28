@@ -1,64 +1,59 @@
-<!-- AppreantChart.vue -->
+<!-- LineChart.vue -->
 <template>
-    <div>
-      <line-chart :data="chartData" :options="chartOptions" />
+    <div class="chart">
+      <canvas ref="myChartCanvas"></canvas>
     </div>
   </template>
   
-  <script>
-  import { Line, mixins } from 'vue-chart-3';
+  <script setup>
+  import { ref, watchEffect, onMounted } from 'vue';
+  import { Chart } from 'chart.js/auto';
   
-  export default {
-    extends: Line,
-    mixins: [mixins.reactiveData],
+  onMounted(() => {
+    // Données de test (remplacez cela par vos propres données)
+    const graphData = {
+      labels: ['Octobre', 'Novembre', 'Décembre'],
+      datasets: [
+        { label: 'Matière 1', data: [8, 7, 9] },
+        { label: 'Matière 2', data: [6, 5, 7] }
+        // Ajoutez d'autres matières selon vos besoins
+      ]
+    };
   
-    props: {
-      graphData: { type: Object, required: true },
-    },
+    watchEffect(() => {
+      updateChartData(graphData);
+    });
+  });
   
-    data() {
-      return {
-        chartData: null,
-        chartOptions: {
-          // Ajoutez les options de configuration du graphe Chart.js ici
-        },
-      };
-    },
+  const updateChartData = (data) => {
+    const canvasRef = ref(null);
   
-    watch: {
-      graphData: {
-        handler: 'updateChartData',
-        immediate: true,
-      },
-    },
+    const setCanvasRef = (el) => {
+      if (el) {
+        canvasRef.value = el;
+        const ctx = el.getContext('2d');
   
-    methods: {
-      updateChartData() {
-        const datasets = [];
-  
-        for (const matiereId in this.graphData) {
-          const matiereData = this.graphData[matiereId];
-  
-          for (const periode in matiereData) {
-            const periodeData = matiereData[periode];
-  
-            const dataset = {
-              label: `${matiereData[periode][0].matiere} - ${periode}`,
-              data: periodeData.map(item => ({
-                x: item.date,
-                y: item.note,
-              })),
-            };
-  
-            datasets.push(dataset);
-          }
+        if (ctx) {
+          new Chart(ctx, {
+            type: 'line',
+            data: data,
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              // Autres options Chart.js ici
+            }
+          });
         }
+      }
+    };
   
-        this.chartData = {
-          datasets,
-        };
-      },
-    },
+    return { setCanvasRef };
   };
   </script>
+  
+  <style scoped>
+  .chart {
+    height: 400px;
+  }
+  </style>
   

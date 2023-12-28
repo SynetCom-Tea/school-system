@@ -20,7 +20,7 @@ export default {
     mdiDelete,
     mdiPlus,
   },
-  props: ["children", "typeEvaluations", "resultatsFinauxQuery", "bulletinsChild"],
+  props: ["children", "typeEvaluations", "resultatsFinauxQuery", "bulletinsChild", "graphData"],
   data() {
     return {
       icons: { mdiViewDashboardOutline, mdiMagnify, mdiLogout, mdiPencil, mdiDelete, mdiPlus },
@@ -138,6 +138,9 @@ export default {
                 :items="bulletinsChild"
                 >
             </Datatable>
+            <div v-if="type_evaluation != null">
+                <apprenant-chart :graphData="graphData" />
+            </div>
       </v-card-text>
     </v-card>
   </AuthenticatedLayout>

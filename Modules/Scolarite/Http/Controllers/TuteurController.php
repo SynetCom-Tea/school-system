@@ -60,6 +60,7 @@ class TuteurController extends Controller
         // dd($rangs);
         $resultatsFinauxQuery = [];
         $bulletinsChild = [];
+        $graphData = [];
         $authUser = Auth::user();
         $vChildren = ApprenantTuteur::where('tuteur_id', (int) $authUser->tuteur_id)->with('apprenant')->get();
         $vChildren->map(function ($item) {
@@ -86,14 +87,15 @@ class TuteurController extends Controller
                     'matiere' => $evaluation['matiere']['nom_matiere'],
                 ];
             }
-            dd($resultatsFinauxQuery, $graphData);
+            // dd($resultatsFinauxQuery, $graphData);
         }
         // dd($resultatsFinauxQuery, $bulletinsChildren, $vChildren->pluck('apprenant'));
         return Inertia::render('Tuteurs/Result', [
             'resultatsFinauxQuery' => $resultatsFinauxQuery,
             'children' => $vChildren->pluck('apprenant'),
             'typeEvaluations' => TypeEvaluation::all(),
-            'bulletinsChild' => $bulletinsChild
+            'bulletinsChild' => $bulletinsChild,
+            "graphData" => $graphData
         ]);
     }
     public function mailBox()

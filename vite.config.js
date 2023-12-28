@@ -7,11 +7,6 @@ import { VuetifyResolver } from "unplugin-vue-components/resolvers";
 
 export default defineConfig({
     plugins: [
-        laravel({
-            input: "resources/js/app.ts",
-            ssr: "resources/js/ssr.ts",
-            refresh: true,
-        }),
         vue({
             template: {
                 transformAssetUrls: {
@@ -21,6 +16,11 @@ export default defineConfig({
             },
         }),
         vuetify({ autoImport: true }),
+        laravel({
+            input: "resources/js/app.ts",
+            ssr: "resources/js/ssr.ts",
+            refresh: true,
+        }),
         Components({
             resolvers: [
                 (componentName) => {
@@ -48,4 +48,7 @@ export default defineConfig({
             ],
         }),
     ],
+    optimizeDeps: {
+        exclude: ['echarts/charts'], // Exclure la résolution automatique de ce module par Vite
+    },
 });
