@@ -112,6 +112,24 @@
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
+                        <v-list-group :value="getListMenus.MenuEtudiant && getListMenus.MenuEtudiant.title" v-permission="'espace_etudiant'">
+                            <template v-slot:activator="{ props }">
+                                <v-list-item class="group-title" v-bind="props">
+                                    <template v-slot:prepend>
+                                        <v-icon :title="getListMenus.MenuEtudiant.title" :icon="getListMenus.MenuEtudiant.icon"></v-icon>
+                                    </template>
+                                    <v-list-item-title class="text-wrap" v-text="getListMenus.MenuEtudiant.title"></v-list-item-title>
+                                </v-list-item>
+                            </template>
+
+                            <v-list-item class="sub-list-group" v-for="(item, i) in getListMenus.MenuEtudiant.children" :key="i" @click="page(item.link)">
+                                <template v-slot:prepend>
+                                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                                </template>
+
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
                         <v-list-group :value="getListMenus.MenuNote && getListMenus.MenuNote.title" v-permission="'espace_enseignant'">
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">

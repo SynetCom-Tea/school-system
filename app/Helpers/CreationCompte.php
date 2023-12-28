@@ -2,6 +2,7 @@
 
 use App\Models\Role;
 use App\Models\User;
+use App\Models\Permission;
 use App\Models\SectionUser;
 use Illuminate\Support\Facades\Auth;
 
@@ -38,6 +39,9 @@ if (!function_exists('CreationCompte')) {
             $permis = Role::find($role);
             $userCreate->syncRoles($role);
             $userCreate->syncPermissions($permis->permissions->pluck('id')); 
+        }else if($role == null && $type_user == 'Etudiant') {
+            $permission = Permission::where('name','espace_etudiant')->get()[0]->id;
+            $userCreate->syncPermissions($permission);
         }
         if ($request != null){
             if ($request->checkbox != null) {

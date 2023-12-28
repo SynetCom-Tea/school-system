@@ -530,4 +530,40 @@ class NoteController extends Controller
             'matieres'=>$matieres
         ]);
     }
+    public function NoteEtudiant(Request $request){
+        $user = Auth::user();
+        $annee_id = getAnneeEncours()->id;
+        // dd($user->apprenant_id);
+        $classe_anne_id = ApprenantClasseAnnee::where('apprenant_id',$user->apprenant_id)->whereHas('classe_annee',function ($value) use($annee_id){
+            $value->where('annee_id',getAnneeEncours()->id);
+        })->get()[0]->classe_annee_id;
+        // dd($classe_anne_id);
+        $apprenant_id = Auth::user()->apprenant_id;
+        $notes = getNoteByClasses($classe_anne_id,3, 1,$user->apprenant_id);
+        // foreach (collect($notes) as $key => $value) {
+        //    dump($value->type_evaluation,$value->nom_matiere);
+        // }
+        // dd($notes);
+        $entetes =[
+            [
+                'title' => 'Type Evaluation',
+                'align' => 'start',
+                'sortable' => false,
+                'key' => 'type_evaluation',
+            ],
+        ];
+        foreach (collect($notes)->pluck('nom_matiere')->unique() as $key => $mat) {
+            $entetes [] = [
+                'title' => $mat,
+                'align' => 'start',
+                'sortable' => false,
+                'key' => $mat, // Utilisation d'une clé unique pour chaque matière
+            ];
+        }
+        // dd(collect($notes));
+        return Inertia::render('gestion-note/note/noteEtudiant',[
+            'entetes' => $entetes,
+            'notes' => $notes
+        ]);
+    }
 }

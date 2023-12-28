@@ -61,7 +61,7 @@ export function listMenus(page) {
     let enfants = [];
     let tab,tab_s = [];
     let section_user = [],notes = [],note = [];
-    let MenuEvaluation;
+    let MenuEvaluation,MenuEtudiant;
     let MenuAdmin,linkSection,MenuNote;
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
@@ -163,9 +163,7 @@ export function listMenus(page) {
         children: section_user,
   }
 
-
-
-//Menu pour la gestion des cruds après config
+  //Menu pour la gestion des cruds après config
 
   let enfantConfigs = [];
   let MenuGestion;
@@ -382,11 +380,31 @@ let superAdminMenus=[]
       ...childrenTeachers
         ],
     };
-
+  MenuEtudiant = {
+      icon: mdiCogOutline,
+      title: "Espace Etudiant",
+      "icon-alt": mdiChevronLeft,
+      model: false,
+      permissions:"espace_etudiant",
+      children: [
+        {
+          icon: mdiSquareMedium,
+          title: "Mes notes",
+          link: "/gestionnote/Note/Etudiant",
+          permissions: "espace_etudiant",
+      },
+      {
+          icon: mdiSquareMedium,
+          title: "Mon Emploi",
+          link: "#",
+          permissions: "espace_etudiant",
+      },
+      ],
+}
 
     /*********************Fin  Menu Gestion des enseignants  ************************ */
 
-    return{singleItems,gestionSections,usersMenu,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote}
+    return{singleItems,gestionSections,usersMenu,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote,MenuEtudiant}
 }
 //Menu par section
 export function listMenusBySection(page, sectionID) {
