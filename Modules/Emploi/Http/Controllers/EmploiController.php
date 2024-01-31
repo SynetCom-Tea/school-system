@@ -2,28 +2,29 @@
 
 namespace Modules\Emploi\Http\Controllers;
 
-use App\Models\Annee;
-use App\Models\Classe;
-use App\Models\ClasseAnnee;
-use App\Models\Cycle;
-use App\Models\Etablissement;
-use App\Models\EtablissementSection;
-use App\Models\Salle;
-use App\Models\Section;
-use Carbon\Carbon;
-use DateInterval;
 use DateTime;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use DateInterval;
+use Carbon\Carbon;
 use Inertia\Inertia;
+use App\Models\Annee;
+use App\Models\Cycle;
+use App\Models\Salle;
+use App\Models\Classe;
+use App\Models\Section;
+use App\Models\ClasseAnnee;
+use Illuminate\Http\Request;
+use App\Models\Etablissement;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 use Modules\Emploi\Entities\Emploi;
+use App\Models\ApprenantClasseAnnee;
+use App\Models\EtablissementSection;
+use Illuminate\Support\Facades\Auth;
 use Modules\Emploi\Entities\Horaire;
+use Modules\Enseignement\Entities\Niveau;
 use Modules\Enseignement\Entities\Filiere;
 use Modules\Enseignement\Entities\Matiere;
-use Modules\Enseignement\Entities\Niveau;
+use Illuminate\Contracts\Support\Renderable;
 
 class EmploiController extends Controller
 {
@@ -58,6 +59,7 @@ class EmploiController extends Controller
                 ];
                 $events[] = $event;
             }
+            // dd($events);
         }
         return Inertia::render('Emplois/Index', [
             'emplois' => $emplois,
@@ -273,6 +275,37 @@ class EmploiController extends Controller
             'niveaux' => $niveaux,
             'events' => $events,
             'sectionID' => $request->section_id
+        ]);
+    }
+    public function MonEmploi(Request $request){
+        $user = Auth::user();
+        $events = [];
+        $classe_anne_id = ApprenantClasseAnnee::where('apprenant_id',$user->apprenant_id)->get()[0]->classe_annee_id;
+        // dd($classe_anne_id);
+        $emplois = Emploi::getEmploisBySectionAndEtablissement(3, $user->etablissement_id, $classe_anne_id);
+        // dd($emplois);
+        $seances = $request->emploi ? Emploi::getEmploiwhitClasse(3, $classe_anne_id, $request->emploi) : Emploi::getEmploiwhitClasse(3, $classe_anne_id);
+        // dd($seances);
+        foreach ($seances as $seance) {
+            $heureDebut = substr($seance->heure_debut, 0, 5);  
+            $heureFin = substr($seance->heure_fin, 0, 5);  
+            $event = [
+                'title' => $seance->nom_matiere,
+                'with' => $seance->enseignant_nom . ' ' . $seance->enseignant_prenom,
+                'time' => [
+                    'start' => $seance->date_seance . ' ' . $heureDebut,
+                    'end' => $seance->date_seance . ' ' . $heureFin
+                ],
+                'isEditable' => true,
+                'id' => uniqid(), 
+                'colorScheme' => 'meetings',
+            ];
+            $events[] = $event;
+        }
+        // dd($events);
+        return Inertia::render('Emplois/MonEmploi',[
+            'emplois'=> $emplois,
+            'seances' => $events
         ]);
     }
 }

@@ -27,4 +27,6 @@ Route::prefix('emplois')->group(function() {
     Route::resource('emplois', \Modules\Emploi\Http\Controllers\EmploiController::class);
     Route::resource('absences', \Modules\Emploi\Http\Controllers\AbsenceController::class);
     Route::get('calendar', [\Modules\Emploi\Http\Controllers\EmploiController::class, 'calendar'])->name('calendar.index');
+    Route::get('etudiant/absences', [\Modules\Emploi\Http\Controllers\AbsenceController::class, 'AbsencesEtudiant'])->name('absences.etudiant');
+    Route::get('MonEmploi', [\Modules\Emploi\Http\Controllers\EmploiController::class, 'MonEmploi'])->name('mon.emploi');
 });

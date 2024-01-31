@@ -86,12 +86,12 @@ export default {
             this.form.date = item.date
             this.form.pourcentage = item.pourcentage
             this.form.periode_id = item.periode_id,
-                this.form.filiere = item.filiere,
-                this.form.matiere = item.matiere_id,
-                this.form.niveau = item.niveau
+            this.form.filiere = item.filiere,
+            this.form.matiere = item.matiere_id,
+            this.form.niveau = item.niveau
             this.form.type_evaluation_id = item.type_evaluation_id
             this.form.enseignement_annee_id = item.enseignement_annee_id,
-                this.form.session = item.session
+            this.form.session = item.session
             this.dialog = true
             this.dialog_title = 'Modifier Evaluation' + ' ' + item.code
             router.replace(this.$page.url, {
@@ -211,6 +211,10 @@ export default {
             this.form.periode_id = null
             this.form.type_evaluation_id = null
             this.form.enseignement_annee_id = null
+            this.form.filiere = null,
+            this.form.niveau = null,
+            this.form.matiere = null,
+            this.form.session = null
             this.dialog = false
         }
     },
@@ -239,11 +243,6 @@ export default {
                     key: 'code'
                 },
                 {
-                    title: 'Enseignant',
-                    align: 'center',
-                    key: 'enseignant'
-                },
-                {
                     title: 'Date Evaluation',
                     align: 'center',
                     key: 'date'
@@ -259,7 +258,7 @@ export default {
                     key: 'periode'
                 },
             ];
-            if (this.types >=3) {
+            if (this.types >= 3) {
                 headers.push({
                     title: 'Session',
                     align: 'center',
@@ -267,10 +266,10 @@ export default {
                 })
             }
             headers.push({
-                    title: 'Actions',
-                    align: 'center',
-                    key: 'actions'
-                })
+                title: 'Actions',
+                align: 'center',
+                key: 'actions'
+            })
             return headers;
         }
     }
@@ -317,13 +316,13 @@ export default {
                             <Autocomplete v-model="form.matiere" :items="matieres" itemTitle="nom" item-value="id" outlined required dense chips small-chips label="Matieres" :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']"></Autocomplete>
                         </v-col>
                         <v-col cols="6" v-if="types<=2">
-                            <Autocomplete label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id "  chips clearable multiple :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
+                            <Autocomplete label="Matiére/Classe" variant="outlined" item-title="code" item-value="id" :items="enseignements" v-model="form.enseignement_annee_id " chips clearable multiple :isRequired="true" :rules="[v => !!v || 'Ce champ est requis!']">
                             </Autocomplete>
                         </v-col>
-                        <v-col cols="3" v-if="types>=3">
+                        <v-col cols="3" v-if="types>=3 && form.type_evaluation_id == 6">
                             <v-radio-group inline label="Sessions ?" v-model="form.session" :rules="[v => !!v || 'Ce champ est requis!'] ">
-                                <v-radio label="1ère" value="Prémiere session"></v-radio>
-                                <v-radio label="2ème" value="deuxiéme session"></v-radio>
+                                <v-radio label="1ère" value="Session 1"></v-radio>
+                                <v-radio label="2ème" value="Session 2"></v-radio>
                             </v-radio-group>
                         </v-col>
                         <v-col cols="4">

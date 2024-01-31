@@ -395,8 +395,14 @@ let superAdminMenus=[]
       },
       {
           icon: mdiSquareMedium,
+          title: "Mes absences",
+          link: "/emplois/etudiant/absences",
+          permissions: "espace_etudiant",
+      },
+      {
+          icon: mdiSquareMedium,
           title: "Mon Emploi",
-          link: "#",
+          link: "/emplois/MonEmploi",
           permissions: "espace_etudiant",
       },
       ],

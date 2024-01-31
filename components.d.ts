@@ -16,6 +16,7 @@ declare module 'vue' {
     VDataTable: typeof import('vuetify/labs/VDataTable')['VDataTable']
     VDatatableRow: typeof import('vuetify/lib')['VDatatableRow']
     VDatePicker: typeof import('vuetify/lib')['VDatePicker']
+    VIf: typeof import('vuetify/lib')['VIf']
     VListItemContent: typeof import('vuetify/lib')['VListItemContent']
     VListItemGroup: typeof import('vuetify/lib')['VListItemGroup']
     VListTile: typeof import('vuetify/lib')['VListTile']

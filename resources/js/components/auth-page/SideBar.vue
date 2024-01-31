@@ -324,7 +324,7 @@ export default {
                 return Promise.reject(error);
             }
         );
-        console.log('permi', this.$page.props.permissions)
+        // console.log('permi', this.$page.props.permissions)
     },
     computed: {
         getOrganizationProfile() {
@@ -424,7 +424,7 @@ export default {
 
             this.menuTuteur = menusTuteur(this.$page.props);
 
-            console.log(this.MenuGestion)
+            // console.log(this.MenuGestion)
             return list ?? null;
         },
     },

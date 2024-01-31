@@ -30,13 +30,13 @@ class AbsenceController extends Controller
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $classes = getClasses(Annee::find(2)->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
-        if($request->date){ 
+        if ($request->date) {
             $seanceId = [];
             $apprenantIds = DB::table('apprenant_classe_annees')
-            ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
-            ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
-            ->select('apprenants.id')
-            ->get();
+                ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+                ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
+                ->select('apprenants.id')
+                ->get();
             // dd(collect($apprenantIds)->pluck('id'));
             $absencesUneSeance = Absence::with('apprenant')->where('date', $request->date)->whereNotNull('seance_id')->whereIn('apprenant_id', collect($apprenantIds)->pluck('id'))->get();
             $absencesJourneeEntiere = Absence::with('apprenant')->where('date', $request->date)->whereNull('seance_id')->whereIn('apprenant_id', collect($apprenantIds)->pluck('id'))->get();
@@ -49,7 +49,7 @@ class AbsenceController extends Controller
                     'date' => $absence['date'],
                     'journee' => $absence['journee'],
                     'matricule_apprenant' => $absence['apprenant']['matricule'],
-                    'nom_prenom_apprenant' => $absence['apprenant']['nom'] . ' - ' .$absence['apprenant']['prenom'],
+                    'nom_prenom_apprenant' => $absence['apprenant']['nom'] . ' - ' . $absence['apprenant']['prenom'],
                     'jour' => null,
                     'nom_matiere_heure_debut' => null,
                     'nom_prenom_enseignant' => null,
@@ -70,21 +70,20 @@ class AbsenceController extends Controller
                         'nom_prenom_enseignant' => $seance['enseignant_nom'] . ' - ' . $seance['enseignant_prenom'],
                         // Ajoutez d'autres champs de Seance que vous souhaitez inclure
                     ];
-                
+
                     // Sélectionner spécifiquement quelques informations de Absence
                     $absenceData = [
                         'id' => $absence['id'],
                         'date' => $absence['date'],
                         'journee' => $absence['journee'],
                         'matricule_apprenant' => $absence['apprenant']['matricule'],
-                        'nom_prenom_apprenant' => $absence['apprenant']['nom'] . ' - ' .$absence['apprenant']['prenom']
+                        'nom_prenom_apprenant' => $absence['apprenant']['nom'] . ' - ' . $absence['apprenant']['prenom']
                         // Ajoutez d'autres champs de Absence que vous souhaitez inclure
                     ];
-                
+
                     // Fusionner les informations sélectionnées de Seance avec Absence
                     return array_merge($absenceData, $seanceData);
                 }
-                
             });
             $absencesAll = array_merge($absencesJourneeEntiereAll->toArray(), $absencesJourneeAll->toArray());
             // dd($absencesUneSeance, $absencesJourneeEntiere, $absencesJourneeAll->toArray(), $absencesJourneeEntiereAll, $absencesJourneeAll, $absencesAll);
@@ -112,22 +111,21 @@ class AbsenceController extends Controller
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
         $cycle_filieres = DB::table('cycle_filieres')
-                ->whereIn('filiere_id', $filieres->pluck('id'))
-                ->get();
+            ->whereIn('filiere_id', $filieres->pluck('id'))
+            ->get();
         $cycles = Cycle::whereIn('id', $cycle_filieres->pluck('cycle_id'))->get();
-        if($request->section_id == 1 || $request->section_id == 2){
-            
-        }elseif($request->section_id == 3 || $request->section_id == 4){
+        if ($request->section_id == 1 || $request->section_id == 2) {
+        } elseif ($request->section_id == 3 || $request->section_id == 4) {
             // dd($filieres, $etablissement_section, Auth::user()->etablissement_id, $request->section_id);
             $filiere_niveau_matiere_ues = DB::table('filiere_niveau_matiere_ues')
                 ->whereIn('cycle_filiere_id', $cycle_filieres->pluck('id'))->get();
         }
         if ($request->classe != null) {
             $apprenants = DB::table('apprenant_classe_annees')
-            ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
-            ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
-            ->select('apprenants.*')
-            ->get();
+                ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+                ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
+                ->select('apprenants.*')
+                ->get();
             $seances = Emploi::getEmploiwhitClasse($request->section_id, $request->classe);
 
             // Filtrer les séances du jour
@@ -149,16 +147,16 @@ class AbsenceController extends Controller
                 // Obtient l'heure de début sans les secondes
                 $heureDebutSansSecondes = Carbon::parse($seance->heure_debut)->format('H:i');
                 $heureFinSansSecondes = Carbon::parse($seance->heure_fin)->format('H:i');
-            
+
                 // Concatène nom_matiere avec heure_debut sans les secondes
                 $seance->nom_matiere_heure_debut = $seance->nom_matiere . ' - ' . $heureDebutSansSecondes . ' à ' . $heureFinSansSecondes;
-            
+
                 return $seance;
             });
             $seancesMapped = $seancesMapped->values();
             $apprenantsMapped = $apprenants->map(function ($apprenant) {
                 $apprenant->nom_prenom = $apprenant->nom . ' - ' . $apprenant->prenom;
-            
+
                 return $apprenant;
             });
             // dd($seancesMapped);
@@ -182,7 +180,7 @@ class AbsenceController extends Controller
     public function store(Request $request)
     {
         // dd($request->all());
-        foreach($request->absences as $absence){
+        foreach ($request->absences as $absence) {
             // Vérifier si seance_id est défini
             $seanceId = isset($absence['seance']) ? $absence['seance'] : null;
 
@@ -234,8 +232,49 @@ class AbsenceController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Absence $absence)
+    public function AbsencesEtudiant(Request $request)
     {
-        //
+        $user = Auth::user();
+        $dateDuSysteme = Carbon::now()->format('Y-m-d');
+        // dd($dateDuSysteme);
+        if ($request->date) {
+            $abs = Absence::where('apprenant_id', $user->apprenant_id)->where('date', $request->date)->with('seance')->get();
+            $absences = $abs->map(function ($value) {
+                return [
+                    'nom_matiere' => $value->seance ? $value->seance->nom_matiere : '',
+                    'heure' => $value->seance ? Carbon::parse($value->seance->heure_debut)->format('H:i') . ' à ' . Carbon::parse($value->seance->heure_fin)->format('H:i') : '',
+                    'jour' => $value->seance ? $value->seance->jour : '',
+                    'toute_journnee' => $value->journee,
+                    'date' => $value->date
+                ];
+            });
+        } else if ($request->date1 && $request->date2) {
+            $abs = Absence::where('apprenant_id', $user->apprenant_id)->whereBetween('date', [$request->date1, $request->date2])->with('seance')->get();
+            // dd($abs);
+            $absences = $abs->map(function ($value) {
+                return [
+                    'nom_matiere' => $value->seance ? $value->seance->nom_matiere : '',
+                    'heure' => $value->seance ? Carbon::parse($value->seance->heure_debut)->format('H:i') . ' à ' . Carbon::parse($value->seance->heure_fin)->format('H:i') : '',
+                    'jour' => $value->seance ? $value->seance->jour : '',
+                    'toute_journnee' => $value->journee,
+                    'date' => $value->date
+                ];
+            });
+        } else {
+            $abs = Absence::where('apprenant_id', $user->apprenant_id)->where('date', $dateDuSysteme)->with('seance')->get();
+            $absences = $abs->map(function ($value) {
+                return [
+                    'nom_matiere' => $value->seance ? $value->seance->nom_matiere : '',
+                    'heure' => $value->seance ? Carbon::parse($value->seance->heure_debut)->format('H:i') . ' à ' . Carbon::parse($value->seance->heure_fin)->format('H:i') : '',
+                    'jour' => $value->seance ? $value->seance->jour : '',
+                    'toute_journnee' => $value->journee,
+                    'date' => $value->date
+                ];
+            });
+        }
+        // dd($absences);
+        return Inertia::render('Absence/AbsenceEtudiant', [
+            'absences' => $absences
+        ]);
     }
 }

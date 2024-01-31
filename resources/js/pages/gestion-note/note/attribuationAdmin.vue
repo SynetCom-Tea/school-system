@@ -1,9 +1,6 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {
-    Head
-} from "@inertiajs/vue3";
-import {
     router
 } from "@inertiajs/vue3";
 import {
@@ -80,19 +77,6 @@ export default {
                     key: "note"
                 },
             ],
-            rules: {
-                required: v => !!v || "Veuillez renseigner la note",
-                validator: v => !(Math.sign(v) == -1) || "La note doit être positif",
-                max: v => {
-                    if (this.evaluations[0].notation != null) {
-                        return v <= this.evaluations[0].notation || "La note ne doit pas dépasser " + this.evaluations[0].notation;
-                    } else if (this.evaluations[0].enseignement_annee.niveau_matiere_id != null) {
-                        return v <= this.evaluations[0].enseignement_annee.niveau_matiere.notation || "La note ne doit pas dépasser " + this.evaluations[0].enseignement_annee.niveau_matiere.notation;
-                    } else {
-                        return v <= 20 || "La note ne doit pas dépasser 20";
-                    }
-                }
-            },
             form: this.$inertia.form({
                 notes: [],
                 evaluation: null,
@@ -117,7 +101,6 @@ export default {
         }
     },
     created() {
-        // console.log(this.eleves)
         if (this.$page.props.flash ?.message ?.type == 'error') {
             this.$swal({
                 icon: 'error',
@@ -150,16 +133,15 @@ export default {
                         evaluation: e
                     }
                 });
-            if (this.evaluations.filter(el => el.id == e)[0].notation != null) {
-                this.info = this.evaluations.filter(el => el.id == e)[0].notation
-            } else if (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation != null) {
-                this.info = this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere.notation
-            } else if (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.filiere_niveau_matiere_ue_id != null || (this.evaluations.filter(el => el.id == e)[0].enseignement_annee.niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation == null)) {
+            if (this.evaluations.filter(el => el.id == e)[0].notation_evaluation != null) {
+                this.info = this.evaluations.filter(el => el.id == e)[0].notation_evaluation
+            } else if (this.evaluations.filter(el => el.id == e)[0].niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation_evaluation != null) {
+                this.info = this.evaluations.filter(el => el.id == e)[0].notation_niveau_matiere
+            } else if (this.evaluations.filter(el => el.id == e)[0].filiere_niveau_matiere_ue_id != null || (this.evaluations.filter(el => el.id == e)[0].niveau_matiere_id != null && this.evaluations.filter(el => el.id == e)[0].notation_evaluation == null)) {
                 this.info = 20
             }
         },
         SetFiliere(a) {
-            // console.log(this.form)
             router.replace(this.$page.url, {
                 data: {
                     annee: a,
@@ -177,7 +159,6 @@ export default {
             })
         },
         setClasse(n) {
-            // console.log(n)
             this.form.matiere = null,
                 router.replace(this.$page.url, {
                     data: {
@@ -196,6 +177,7 @@ export default {
                     this.dialogConfirmation = false;
                     this.form.reset();
                     this.question = false
+                    this.eleves.length = 0
                     if (this.$page.props.flash ?.message ?.type == 'error') {
                         this.$swal({
                             icon: 'error',
@@ -270,7 +252,6 @@ export default {
         }
     },
     mounted() {
-        // console.log(this.eleves)
         if (this.type == 1) {
             this.filtrer = this.type_evaluation.filter(el => el.libelle == "Composition" || el.libelle == "Contrôle")
         }
@@ -288,7 +269,7 @@ export default {
 <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion de notes (Attribution de notes)"></Toolbar>
 <br>
 <div style="margin: 20px">
-    <v-alert border="start" variant="tonal" color="primary" type="info" title="Information">
+    <v-alert border="start"  variant="tonal" color="primary" type="info" title="Information">
        <li> Le boutton <strong> "Ajouter" </strong> vous permet de créer une nouvelle évaluation si celle que vous voulez notée n'existe pas</li>
        <!-- <li>Chaque </li> -->
     </v-alert> 
@@ -389,11 +370,6 @@ export default {
             </template>
         </v-virtual-scroll>
         </v-card>
-        <!-- <Datatable titleDatatable="Listes des apprenant " :items="eleves" :headers="headers" :displayAddButton="false">
-            <template v-slot:item.note="{ item, index }">
-                <TextField label="" v-model="form.notes[item.id]" @update:modelValue="SetNote()" outlined dense :rules="[(v) => !(Math.sign(v) == -1) || 'La note doit être positif' ,(v) => !!v || 'Veuillez renseigner la note!', (v) => { if (form.evaluation !=null || form.enseignement_annee_id != null){ return v <= info || 'La note ne doit pas dépasser ' + info}} ]" style="max-width: 300px"></TextField>
-            </template>
-        </Datatable> -->
         <v-card-actions>
             <v-spacer />
             <v-btn :loading="form.processing" variant="outlined" :disabled="!valid" color="green" @click="dialog">
