@@ -8,6 +8,7 @@
  */
 
 use App\Models\Absence;
+use App\Models\ClasseAnnee;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Modules\Emploi\Entities\Emploi;
@@ -29,6 +30,7 @@ if (!function_exists('getNoteTuteurChildren')) {
                 'type_evaluations.libelle AS type_evaluation',
                 'periodes.libelle AS periode',
                 'notes.id AS note_id',
+                'enseignement_annees.classe_annee_id',
                 'notes.note',
                 'notes.date',
                 'apprenants.id AS id_apprenant',
@@ -54,6 +56,7 @@ if (!function_exists('getNoteTuteurChildren')) {
             ];
 
             $evaluationInfo = [
+                'classe' => ClasseAnnee::with('classe')->find($result->classe_annee_id)->classe->code,
                 'id_evaluation' => $result->note_id,
                 'periode_evaluation' => $result->periode,
                 'date_evaluation' => $result->date,
@@ -77,6 +80,7 @@ if (!function_exists('getNoteTuteurChildren')) {
             $resultatsQuery[$result->id_apprenant]['evaluations'][] = $evaluationInfo;
         }
         // Convertir le tableau associatif en une simple liste pour obtenir le résultat final
+        // dd($resultatsQuery);
         $resultatsFinauxQuery = array_values($resultatsQuery);
         return $resultatsFinauxQuery;
     }

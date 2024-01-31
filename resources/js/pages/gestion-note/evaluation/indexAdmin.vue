@@ -130,12 +130,6 @@ export default {
         }
     },
     methods: {
-        formatCode(item) {
-            return `${item.filiere.code } - ${item.cycle.name } `
-        },
-        formatEnseignant(item) {
-            return `${item.matricule } - ${item.nom }  ${item.prenom}`
-        },
         create() {
             this.dialog = true
             this.dialog_title = 'Nouvelle Evaluation'
@@ -396,7 +390,7 @@ export default {
                                     </Autocomplete>
                                 </v-col>
                                 <v-col cols="3" >
-                                    <Autocomplete label="Enseignants" v-model="form.enseignant_id" variant="outlined" :itemTitle="item => formatEnseignant(item)" item-value="id" :items="enseignants" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                    <Autocomplete label="Enseignants" v-model="form.enseignant_id" variant="outlined" itemTitle="nom_prenom" item-value="id" :items="enseignants" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                     </Autocomplete>
                                 </v-col>
                                 <v-col cols="3">
@@ -412,7 +406,7 @@ export default {
                                     </Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete  v-model="form.filiere" :items="filieres" :itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
+                                    <Autocomplete  v-model="form.filiere" :items="filieres" itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3 ">
                                     <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux"></Autocomplete>
@@ -467,7 +461,7 @@ export default {
                                     </Autocomplete>
                                 </v-col>
                                 <v-col cols="3">
-                                    <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setFiliere(form.enseignant_id)" variant="outlined" :itemTitle="formatEnseignant" item-value="id" :items="enseignants" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
+                                    <Autocomplete label="Enseignants" v-model="form.enseignant_id" @update:modelValue="setFiliere(form.enseignant_id)" variant="outlined" itemTitle="nom_prenom" item-value="id" :items="enseignants" :rules="[v => !!v || 'Ce champ est requis!'] " chips clearable :isRequired="true">
                                     </Autocomplete>
                                 </v-col>
                                 <v-col cols="3">
@@ -483,7 +477,7 @@ export default {
                                     </Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
-                                    <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Filieres" :rules="[v => !!v || 'Ce champ est requis!'] " :isRequired="true"></Autocomplete>
+                                    <Autocomplete v-model="form.filiere" :items="filieres" itemTitle="formatCode" item-value="id" outlined required dense chips small-chips label="Filieres" :rules="[v => !!v || 'Ce champ est requis!'] " :isRequired="true"></Autocomplete>
                                 </v-col>
                                 <v-col md="3" v-if="section_id>=3">
                                     <Autocomplete v-model="form.niveau" @update:modelValue="setClasse(form.niveau)" :items="niveaux" itemTitle="code" item-value="id" outlined required dense chips small-chips label="Niveaux" :rules="[v => !!v || 'Ce champ est requis!'] " :isRequired="true"></Autocomplete>

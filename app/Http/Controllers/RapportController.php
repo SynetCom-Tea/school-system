@@ -278,6 +278,7 @@ class RapportController extends Controller
                     ->get();
                 }
                 elseif($request->tab == 'option-2'){
+                    dd('fty');
                     $exception = true;
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
                     if($request->apprenant != null){
@@ -307,7 +308,6 @@ class RapportController extends Controller
                             return; // Exit the function if $details_notes is empty
                         }
                         foreach ($resultats as &$resultat) {
-                            // dd($resultat, $resultats);
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
                         }
                         // dd($historiqueBulletincheck, $resultats[0]['periode']);
@@ -318,6 +318,7 @@ class RapportController extends Controller
                         ->where('statut',true)
                         ->get();
                 }elseif($request->tab == 'option-2'){
+                    dd('section',$request->section_id);
                     $exception = true;
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
                     if($request->apprenant != null){
@@ -345,39 +346,98 @@ class RapportController extends Controller
             if ($request->classe != null || $request->classe2 != null) {
                 if($request->tab == 'option-1'){
                     // dd('option-1');
-                    $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
-                    if ($historiqueBulletincheck->isEmpty()) {
-                        $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode);
-                        if (empty($resultatsyy[0]['details_notes'])) {
-                            // Le tableau est vide
-                        } else {
-                            foreach ($resultatsyy as &$resultat) {
-                                ajouterHistoriqueBulletin($resultat, $request->section_id);
+                    $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->where('statut',true)->get();
+                        if ($request->session == 'Prémiere session'){
+                            if ($historiqueBulletincheck->isEmpty()) {
+                                $session = null;
+                                $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode,$session);
+                                // dd($resultatsyy);
+                                if (empty($resultatsyy[0]['details_notes'])) {
+                                // Le tableau est vide
+                                } else {
+                                    foreach ($resultatsyy as $resultat) {
+                                    // dump($resultat);
+                                        ajouterHistoriqueBulletin($resultat, $request->section_id);
+                                    }
+                                }
+                            }else {
+                                $resultats = HistoriqueBulletin::with('historique_notes')
+                                    ->where('classe_annee_id', $request->classe)
+                                    ->where('periode', Periode::where('id',$request->periode)->get()[0]->libelle)
+                                    ->where('statut',true)
+                                    ->get();
                             }
-                        }
-                    }
-                    $resultats = HistoriqueBulletin::with('historique_notes')
-                        ->where('classe_annee_id', $request->classe)
-                        ->where('periode', Periode::find($request->periode)->libelle)
-                        ->where('statut',true)
-                        ->get();
+                        } else if($request->session == 'Deuxiéme session'){
+                            // if ($historiqueBulletincheck->isEmpty()) {
+                                $session = true;
+                                $notes_apprenant = getNoteByClasses($request->classe, $request->section_id, $request->periode, null,$session);
+                                if ($notes_apprenant->isEmpty()){
+                                    // dd('hyhbk');
+                                }else {
+                                    // dd('hjh');
+                                    $historiqueBulletin = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->where('statut',true)->where('validation',0)->get();
+                                    foreach ($historiqueBulletin as $apprenant_id){
+                                    $apprenantIds = explode(',', $apprenant_id->apprenant_id);
+                                    $apprenantIds = array_map('trim', $apprenantIds);
+                                    $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
+                                    // dump($apprenantsSelect);
+                                    $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode,$apprenantsSelect,$session);
+                                    // dd($resultatsyy)
+                                    foreach ($resultatsyy as $resultat) {
+                                        // dump($resultat);
+                                        ajouterHistoriqueBulletin($resultat, $request->section_id);
+                                    }
+                                    // die();
+                                    $apprenant_id->statut = 0;
+                                    $apprenant_id->update();
+                                    }
+                                    $resultats = HistoriqueBulletin::with('historique_notes')
+                                    ->where('classe_annee_id', $request->classe)
+                                    ->where('periode', Periode::where('id',$request->periode)->get()[0]->libelle)
+                                    ->where('statut',true)
+                                    ->get();
+                                }   
+                            // }else {
+                                
+                            // }
+                        }   
                 } elseif($request->tab == 'option-2'){
                     $exception = true;
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
                     if($request->apprenant != null){
+                        // dd('hb');
                         // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
                         $apprenantIds = explode(',', $request->apprenant);
                         // Supprimer les espaces autour de chaque ID
                         $apprenantIds = array_map('trim', $apprenantIds);
                         $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
                         // dd('option-2', $request->apprenant, $apprenantIds, $apprenantsSelect);
-                        $resultatstz = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect);
-                        // dd($apprenantIds, $apprenantsSelect, $resultatstz);
-                        foreach ($resultatstz as &$resultat) {
-                            ajouterHistoriqueBulletin($resultat, $request->section_id, $exception);
+                        // $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
+                        $session = true;
+                        foreach($apprenantIds as $apprenantId){
+                            $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('apprenant_id',$apprenantId)->where('periode', Periode::find($request->periode)->libelle)->get();
+                            // return $historiqueBulletincheck;
+                            if ($historiqueBulletincheck->isEmpty()) {
+                                $resultatstz = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect,$session);
+                                // dd($apprenantIds, $apprenantsSelect, $resultatstz);
+                                foreach ($resultatstz as $resultat) {
+                                    ajouterHistoriqueBulletin($resultat, $request->section_id);
+                                }
+                                return $resultatstz;
+                            }else {
+                                $resultats = HistoriqueBulletin::with('historique_notes')
+                                    ->where('classe_annee_id', $request->classe)
+                                    ->where('periode', Periode::where('id',$request->periode)->get()[0]->libelle)
+                                    ->where('statut',true)
+                                    ->whereIn('apprenant_id',$apprenantIds)
+                                    ->get();
+                                // return $resultats;
+                            }
                         }
+                        
                     }
                 }
+                // dd( $request->apprenant);
             }
         }
         // dd('dd', $resultats);

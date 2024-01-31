@@ -28,7 +28,10 @@ export default {
 <template>
   <AuthenticatedLayout>
     <v-card>
-      <Toolbar :icon="icons.mdiMonitorDashboard" toolbarTitle="Tableau de bord personnalisé"></Toolbar>
+        <Toolbar :icon="icons.mdiMonitorDashboard" toolbarTitle="Tableau de bord personnalisé"></Toolbar>
+        <div>
+            <apprenant-chart/>
+        </div>
     </v-card>
   </AuthenticatedLayout>
 </template>

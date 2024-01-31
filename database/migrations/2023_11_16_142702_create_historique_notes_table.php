@@ -43,6 +43,7 @@ return new class extends Migration
             $table->string('volume_horaire_matiere')->nullable();
             $table->string('note_generale')->nullable();
             $table->string('note_generale_coefficiente')->nullable();
+            $table->boolean('session')->default(1);
             $table->softDeletes();
             $table->timestamps();
         });

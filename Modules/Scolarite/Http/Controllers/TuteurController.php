@@ -70,6 +70,7 @@ class TuteurController extends Controller
         if($request->apprenant){
             $childrenID = $vChildren->where('apprenant_id', $request->apprenant)->pluck('apprenant_id')->all();
             $resultatsFinauxQuery = getNoteTuteurChildren($childrenID, $request->type_evaluation);
+            // dd($resultatsFinauxQuery);
             $bulletinsChild = HistoriqueBulletin::with('historique_notes')->whereIn('apprenant_id', $childrenID)->get();
             // dd($resultatsFinauxQuery, $bulletinsChild);
         }

@@ -36,7 +36,7 @@ export default {
             },
             { title: 'Classe', align: 'center', key: 'nom_classe' },
             { title: 'Moyenne', align: 'center', key: 'moyenne_details_notes' },
-            {title: 'Actions', align: 'center', key: 'actions'},
+            // {title: 'Actions', align: 'center', key: 'actions'},
         ],
       headers: [
         {
@@ -49,6 +49,11 @@ export default {
           title: "Date Evalution",
           align: "center",
           key: "date_evaluation",
+        },
+        {
+          title: "Classe",
+          align: "center",
+          key: "classe",
         },
         {
           title: "Notation/Coefficient",

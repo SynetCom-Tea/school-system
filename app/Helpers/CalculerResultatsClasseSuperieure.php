@@ -10,23 +10,27 @@
 use App\Models\Annee;
 use App\Models\Classe;
 use App\Models\ClasseAnnee;
-use App\Models\HistoriqueBulletin;
 use App\Models\HistoriqueNote;
+use App\Models\HistoriqueBulletin;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Modules\GestionNote\Entities\Periode;
 
 if (!function_exists('calculerResultatsClasseSuperieure')) {
-    function calculerResultatsClasseSuperieure($classeId, $section, $etablissement_section, $periode, $apprenants = null) {
+    function calculerResultatsClasseSuperieure($classeId, $section, $etablissement_section, $periode, $apprenants = null,$session = null) {
         $resultatsClasse = [];
         $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
+        // dd($classe);
         if($apprenants != null){
             $apprenantsDeLaClasse = $apprenants;
             // dd($apprenants);
         }else{
             $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+            // dd($apprenantsDeLaClasse);
         }
-        foreach ($apprenantsDeLaClasse as $apprenant) {
-            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode);
+        // dd($apprenantsDeLaClasse);
+        foreach ($apprenantsDeLaClasse as $key=>$apprenant) {
+            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode,$session);
             $resultatsClasse[$apprenant->id] = [
                 'classe_annee_id' => $classeId,
                 'periode' => $resultatMoyenne['periode'],
@@ -37,11 +41,15 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
                 'total_volume_horaire' => $resultatMoyenne['total_volume_horaire'],
                 'total_coefficient' => $resultatMoyenne['total_coefficient'],
                 'somme_note_generale' => $resultatMoyenne['somme_note_generale'],
+                'credit'=>$resultatMoyenne['credit'],
                 'somme_note_generale_coefficient' => $resultatMoyenne['somme_note_generale_coefficient'],
                 'moyenne_details_notes' => $resultatMoyenne['moyenne_generale'],
                 'details_notes' => $resultatMoyenne['details_notes'], // Tableau des détails des notes
             ];
+            // dump($resultatsClasse);
         }
+        // die();
+       
         $resultatsClasseAvecRang = calculerRangApprenants($resultatsClasse);
         $moyenneClasse = calculerMoyenneClasse($resultatsClasse);
 
@@ -93,6 +101,7 @@ if (!function_exists('calculerMoyenneClasse')) {
 if (!function_exists('ajouterHistoriqueBulletin')) {
     function createHistoriqueBulletin($resultat, $section)
     {
+        // dd($resultat);
         $commonFields = [
             'apprenant_id' => $resultat['apprenant_id'],
             'nom_classe' => $resultat['nom_classe'],
@@ -122,6 +131,7 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
                     'somme_note_generale' => $resultat['somme_note_generale'],
                     'somme_note_generale_coefficient' => $resultat['somme_note_generale_coefficient'],
                     'total_volume_horaire' => $resultat['total_volume_horaire'],
+                    'total_credit'=>$resultat['credit']
                 ];
                 break;
             default:
@@ -130,12 +140,57 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
         }
 
         $historiqueBulletin = HistoriqueBulletin::create($commonFields);
-
         foreach ($resultat['details_notes'] as $detailNote) {
             createHistoriqueNote($historiqueBulletin->id, $detailNote, $section);
         }
+        foreach ($resultat['details_notes'] as $detailNote) {
+            ValidationDeSemestre($historiqueBulletin, $detailNote, $section,$resultat);
+        }
     }
-
+    function ValidationDeSemestre($historiqueBulletin, $detailNote, $section,$resultat){
+        // dd($resultat);
+        if ($section == 3){
+            $requetes = DB::select("
+                SELECT hn.id,hn.nom_eu ue,hn.historique_bulletin_id,hn.ue_id, (sum(hn.note_generale_coefficiente)/sum(hn.coefficient)) as note_ue FROM historique_notes hn 
+                JOIN historique_bulletins hb ON hb.id = hn.historique_bulletin_id
+                WHERE hb.id = :historique_bulletin_id group by hn.ue_id
+            ",[
+                "historique_bulletin_id"=>$historiqueBulletin->id
+            ]);
+            $validation = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$section)->get();
+            if ($validation[0]->regime_validation_id == 1){
+                // Validation par Capitalisation
+                foreach ($requetes as $key => $requete) {
+                    if ($requete->note_ue<10){
+                        $historiqueBulletin->validation = 0 ;
+                        $historiqueBulletin->update();
+                        $ue_non_valides = HistoriqueNote::where('ue_id',$requete->ue_id)->where('historique_bulletin_id',$historiqueBulletin->id)->get();
+                        foreach ($ue_non_valides as $key => $value) {
+                            $value->session = 0;
+                            $value->update();
+                        }
+                    }
+                }
+            }else if($validation[0]->regime_validation_id  == 2){
+                // Validation par Compansation Orienté
+                if ($historiqueBulletin->moyenne_details_notes<10 && $historiqueBulletin->total_credit<$validation[0]->nbre_credit){
+                    $historiqueBulletin->validation = 0 ;
+                    $historiqueBulletin->update();
+                    $ue_non_valides = HistoriqueNote::where('historique_bulletin_id',$historiqueBulletin->id)->get();
+                    foreach ($ue_non_valides as $key => $value) {
+                        $value->session = 0;
+                        $value->update();
+                    }
+                }
+            }else if ($validation[0]->regime_validation_id == 3){
+                // Validation par Compansation Ordinaire
+                if ($historiqueBulletin->moyenne_details_notes<10){
+                    $historiqueBulletin->validation = 0 ;
+                    $historiqueBulletin->update();
+                }
+            }
+        }
+    }
     function createHistoriqueNote($historiqueBulletinId, $detailNote, $section)
     {
         $commonFields = [
