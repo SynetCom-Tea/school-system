@@ -5,6 +5,7 @@ use App\Models\User;
 use App\Models\Permission;
 use App\Models\SectionUser;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 
 // namespace App\Helpers;
 /**

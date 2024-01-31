@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Modules\Enseignement\Entities\EnseignementAnnee;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Evaluation extends Model
 {
@@ -31,6 +32,11 @@ class Evaluation extends Model
     public function periode()
     {
         return $this->belongsTo(Periode::class);
+    }
+
+    public function notes()
+    {
+        return $this->hasMany(Note::class);
     }
 
     public static function getDetailEvaluationInferiere($etablissement_id,$evaluation_id){

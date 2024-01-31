@@ -1,7 +1,7 @@
 <script>
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import {
-  mdiAccountGroup,
+  mdiHumanCapacityIncrease,
   mdiMagnify,
   mdiLogout,
   mdiPencil,
@@ -11,7 +11,7 @@ import {
 export default {
   components: {
     AuthenticatedLayout,
-    mdiAccountGroup,
+    mdiHumanCapacityIncrease,
     mdiMagnify,
     mdiLogout,
     mdiPencil,
@@ -21,7 +21,7 @@ export default {
   props: ["children"],
   data() {
     return {
-      icons: { mdiAccountGroup, mdiMagnify, mdiLogout, mdiPencil, mdiDelete, mdiPlus },
+      icons: { mdiHumanCapacityIncrease, mdiMagnify, mdiLogout, mdiPencil, mdiDelete, mdiPlus },
       headers: [
         {
           title: "N°",
@@ -117,7 +117,7 @@ export default {
   <AuthenticatedLayout>
     <v-card>
       <Toolbar
-        :icon="icons.mdiAccountGroup"
+        :icon="icons.mdiHumanCapacityIncrease"
         toolbarTitle="Liste de mes enfants"
       ></Toolbar>
       <v-card-text>

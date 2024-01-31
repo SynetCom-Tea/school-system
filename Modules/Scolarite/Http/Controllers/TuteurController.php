@@ -5,6 +5,7 @@ namespace Modules\Scolarite\Http\Controllers;
 use App\Models\Absence;
 use App\Models\ApprenantClasseAnnee;
 use App\Models\ApprenantTuteur;
+use App\Models\HistoriqueBulletin;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -13,7 +14,10 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Redirect;
 use Modules\Scolarite\Entities\Tuteur;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Modules\Emploi\Entities\Emploi;
+use Modules\GestionNote\Entities\Evaluation;
+use Modules\GestionNote\Entities\TypeEvaluation;
 
 class TuteurController extends Controller
 {
@@ -26,53 +30,8 @@ class TuteurController extends Controller
     {
         $authUser = Auth::user();
         $vChildren = ApprenantTuteur::where('tuteur_id', (int) $authUser->tuteur_id)->with('apprenant')->get();
-        $absences = Absence::whereIn('apprenant_id', $vChildren->pluck('apprenant')->pluck('id'))->get();
-        $absencesUneSeance = Absence::with('apprenant')->whereNotNull('seance_id')->whereIn('apprenant_id', $vChildren->pluck('apprenant')->pluck('id'))->get();
-        $absencesJourneeEntiere = Absence::with('apprenant')->whereNull('seance_id')->whereIn('apprenant_id', $vChildren->pluck('apprenant')->pluck('id'))->get();
-        $seances = Emploi::getSeancesByIds($absencesUneSeance->pluck('seance_id'));
-        $seancesById = collect($seances)->keyBy('id');
-        $absencesJourneeEntiereAll = collect($absencesJourneeEntiere)->map(function ($absence) {
-            $absenceData = [
-                'id' => $absence['id'],
-                'date' => Carbon::parse($absence['date'])->locale('fr_FR')->isoFormat('dddd D MMMM YYYY'),
-                'journee' => $absence['journee'],
-                'nom_complet' => $absence['apprenant']['matricule'] . ' - ' . $absence['apprenant']['nom'] . '  ' .$absence['apprenant']['prenom'],
-                'jour' => null,
-                'nom_matiere_heure_debut' => null,
-                'nom_prenom_enseignant' => null,
-                // Ajoutez d'autres champs de Absence que vous souhaitez inclure
-            ];
-            return $absenceData;
-        });
-        // Parcourir les absencesUneSeance et ajouter les informations de la séance correspondante
-        $absencesJourneeAll = collect($absencesUneSeance)->map(function ($absence) use ($seancesById) {
-            if ($absence['seance_id'] !== null) {
-                $seance = $seancesById->get($absence['seance_id']);
-                // Sélectionner spécifiquement quelques informations de Seance
-                $heureDebutSansSecondes = Carbon::parse($seance['heure_debut'])->format('H:i');
-                $heureFinSansSecondes = Carbon::parse($seance['heure_fin'])->format('H:i');
-                $seanceData = [
-                    'jour' => $seance['jour'],
-                    'nom_matiere_heure_debut' => $seance['nom_matiere'] . ' - ' . $heureDebutSansSecondes . ' à ' . $heureFinSansSecondes,
-                    'nom_prenom_enseignant' => $seance['enseignant_nom'] . ' - ' . $seance['enseignant_prenom'],
-                    // Ajoutez d'autres champs de Seance que vous souhaitez inclure
-                ];
-            
-                // Sélectionner spécifiquement quelques informations de Absence
-                $absenceData = [
-                    'id' => $absence['id'],
-                    'date' => Carbon::parse($absence['date'])->locale('fr_FR')->isoFormat('dddd D MMMM YYYY'),
-                    'journee' => $absence['journee'],
-                    'nom_complet' => $absence['apprenant']['matricule'] . ' - ' . $absence['apprenant']['nom'] . '  ' .$absence['apprenant']['prenom'],
-                    // Ajoutez d'autres champs de Absence que vous souhaitez inclure
-                ];
-            
-                // Fusionner les informations sélectionnées de Seance avec Absence
-                return array_merge($absenceData, $seanceData);
-            }
-            
-        });
-        $absencesAll = array_merge($absencesJourneeEntiereAll->toArray(), $absencesJourneeAll->toArray());
+        $childrenID = $vChildren->pluck('apprenant_id')->all();
+        $absencesAll = getAbsenceOfTuteurChildren($childrenID);
         // dd($authUser->tuteur_id, $absencesAll);
         return Inertia::render('Tuteurs/ListWarnings', [
             'absencesAll' => $absencesAll
@@ -86,9 +45,59 @@ class TuteurController extends Controller
     {
         return Inertia::render('Tuteurs/Dashboard', []);
     }
-    public function result()
+    public function result(Request $request)
     {
-        return Inertia::render('Tuteurs/Result', []);
+        // // Exemple d'utilisation
+        // // Exemple d'utilisation :
+        // $donnees = [
+        //     ['nom' => 'Alice', 'score' => 90],
+        //     ['nom' => 'Bob', 'score' => 85],
+        //     ['nom' => 'Charlie', 'score' => 90],
+        //     ['nom' => 'David', 'score' => 78],
+        // ];
+
+        // $rangs = calculerRangs($donnees);
+        // dd($rangs);
+        $resultatsFinauxQuery = [];
+        $bulletinsChild = [];
+        $graphData = [];
+        $authUser = Auth::user();
+        $vChildren = ApprenantTuteur::where('tuteur_id', (int) $authUser->tuteur_id)->with('apprenant')->get();
+        $vChildren->map(function ($item) {
+            $item->apprenant->full_name = $item->apprenant->matricule . ' ' . $item->apprenant->nom . ' ' . $item->apprenant->prenom;
+            return $item;
+        });
+        if($request->apprenant){
+            $childrenID = $vChildren->where('apprenant_id', $request->apprenant)->pluck('apprenant_id')->all();
+            $resultatsFinauxQuery = getNoteTuteurChildren($childrenID, $request->type_evaluation);
+            // dd($resultatsFinauxQuery);
+            $bulletinsChild = HistoriqueBulletin::with('historique_notes')->whereIn('apprenant_id', $childrenID)->get();
+            // dd($resultatsFinauxQuery, $bulletinsChild);
+        }
+        if (!empty($resultatsFinauxQuery)){
+            $resultatsFinauxQuery = $resultatsFinauxQuery[0]['evaluations'];
+            // Organiser les résultats pour faciliter la création du graphe
+            $graphData = [];
+
+            foreach ($resultatsFinauxQuery as $evaluation) {
+                // dd($evaluation['matiere']);
+                $graphData[$evaluation['matiere']['id_matiere']][$evaluation['periode_evaluation']][] = [
+                    'id_evaluation' => $evaluation['id_evaluation'],
+                    'note' => $evaluation['note_obtenue'],
+                    'date' => $evaluation['date_evaluation'],
+                    'matiere' => $evaluation['matiere']['nom_matiere'],
+                ];
+            }
+            // dd($resultatsFinauxQuery, $graphData);
+        }
+        // dd($resultatsFinauxQuery, $bulletinsChildren, $vChildren->pluck('apprenant'));
+        return Inertia::render('Tuteurs/Result', [
+            'resultatsFinauxQuery' => $resultatsFinauxQuery,
+            'children' => $vChildren->pluck('apprenant'),
+            'typeEvaluations' => TypeEvaluation::all(),
+            'bulletinsChild' => $bulletinsChild,
+            "graphData" => $graphData
+        ]);
     }
     public function mailBox()
     {

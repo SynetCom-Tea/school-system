@@ -38,6 +38,7 @@
         },
         "files": [
             "app/Helpers/CountDayRepet.php",
+            "app/Helpers/TuteurRequest.php",
             "app/Helpers/GetClasses.php",
             "app/Helpers/AddEmploi.php",
             "app/Helpers/GetNoteByClasse.php",

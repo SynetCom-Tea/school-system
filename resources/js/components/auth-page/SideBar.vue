@@ -442,7 +442,15 @@ export default {
             if (item == "meetings") {
                 router.get(route("tuteurs.meetings"));
             }
-
+            if (item == "dashboard") {
+                router.get(route("tuteurs.dashboard"));
+            }
+            if (item == "result") {
+                router.get(route("tuteurs.result"));
+            }
+            if (item == "meetings") {
+                router.get(route("tuteurs.meetings"));
+            }
             if (item == "mailBox") {
                 router.get(route("tuteurs.mailBox"));
             }
