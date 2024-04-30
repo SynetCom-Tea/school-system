@@ -541,7 +541,15 @@ class NoteController extends Controller
         })->get()[0]->classe_annee_id;
         $notes_s1 = getNoteByClasses($classe_anne_id, 3, 1, $user->apprenant_id);
         $notes_s2 = getNoteByClasses($classe_anne_id, 3, 2, $user->apprenant_id);
-        $entetes = [
+        $entetes_s1 = [
+            [
+                'title' => 'Type Evaluation',
+                'align' => 'start',
+                'sortable' => false,
+                'key' => 'type_evaluation',
+            ],
+        ];
+        $entetes_s2 = [
             [
                 'title' => 'Type Evaluation',
                 'align' => 'start',
@@ -564,17 +572,17 @@ class NoteController extends Controller
         }
         // die();
         foreach (collect($notes_s1)->pluck('nom_matiere')->unique() as $key => $mat) {
-            $entetes[] = [
+            $entetes_s1[] = [
                 'title' => $mat,
                 'align' => 'start',
                 'sortable' => false,
                 'key' => $mat, // Utilisation d'une clé unique pour chaque matiè     re
             ];
-            // dump($notes_s1);
+            // dump($entetes);
         }
         // die();
         foreach (collect($notes_s2)->pluck('nom_matiere')->unique() as $key => $mat) {
-            $entetes[] = [
+            $entetes_s2[] = [
                 'title' => $mat,
                 'align' => 'start',
                 'sortable' => false,
@@ -583,7 +591,8 @@ class NoteController extends Controller
         }
         // dd($notes_s1);
         return Inertia::render('gestion-note/note/noteEtudiant', [
-            'entetes' => $entetes,
+            'entetes_s1' => $entetes_s1,
+            'entetes_s2' => $entetes_s2,
             'notes_s1' => $notes_s1,
             'notes_s2' => $notes_s2,
             'matricule'=> $matricule

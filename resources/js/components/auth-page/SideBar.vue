@@ -32,7 +32,7 @@
                     <v-slide-x-transition mode="in-out" leave-absolute class="text-wrap">
                         <v-list-item id="profile-name" lines="two" :title="getOrganizationProfile.organization.name">
                             <template v-slot:subtitle="{ subtitle }">
-                                <span class="text-wrap" style="font-size: 0.9em, color:bold">
+                                <span class="text-wrap" style="font-size: 0.9em; color:bold">
                                     {{ getOrganizationProfile.organization.type }}
                                 </span>
                             </template>
@@ -306,6 +306,7 @@ export default {
         this.$gates.setRoles(this.$page.props.roles);
         this.$gates.setPermissions(this.$page.props.permissions);
         // listMenus(this.$page.props);
+        console.log('Vuegates',this.$gates.setRoles(this.$page.props.roles))
     },
     mounted() {
         this.$gates.getRoles();

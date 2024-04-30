@@ -35,7 +35,6 @@ if (!function_exists('CreationCompte')) {
         } else if ($request->type_user == 'Tuteur' || $request->type_user == 'Enseignant') {
             $data[strtolower($request->type_user) . '_id'] = $request->{strtolower($request->type_user) . '_id'};
         }
-        // dd($data);
         $userCreate = User::create($data);
         if ($role != null) {
             $permis = Role::find($role);

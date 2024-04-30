@@ -2,7 +2,7 @@
 <Datatable :displayAddButton="false" :titleDatatable="typeEvaluation" :headers="headers" :items="data" item-key="nom_apprenant">
     <template v-for="header in headers" v-slot:[`item.${header.key}`]="{ item }">
         <template v-if="header.key !== 'nom_apprenant' && header.key !== 'moyenne' && header.key !== 'action'">
-            <v-chip :color="getColor(item[header.key])">
+            <v-chip style="background-color: black;" :color="getColor(item[header.key])">
                 {{ item[header.key] }}
             </v-chip>
         </template>

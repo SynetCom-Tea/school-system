@@ -118,8 +118,7 @@ export default {
             showConfirmButton: false,
             timer: 5000,
             timerProgressBar: true,
-            //netstat -ano | findstr :8000
-            //chkdsk/f
+            
           });
         },
       });

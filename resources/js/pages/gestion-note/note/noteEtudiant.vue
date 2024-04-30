@@ -10,7 +10,7 @@ export default {
         mdiCircleSlice2
     },
     layout: AuthenticatedLayout,
-    props: ['notes_s1', 'entetes', 'notes_s2','matricule'],
+    props: ['notes_s1', 'entetes_s1','entetes_s2', 'notes_s2','matricule'],
     data() {
         return {
             icon: {
@@ -98,11 +98,11 @@ export default {
 </v-tabs>
 <v-window v-model="tab">
     <v-window-item value="semestre1">
-        <Datatable titleDatatable="Notes du semestre 1" :headers="entetes" :items="formattedDataS1" :displayAddButton="false">
+        <Datatable titleDatatable="Notes du semestre I" :headers="entetes_s1" :items="formattedDataS1" :displayAddButton="false">
         </Datatable>
     </v-window-item>
     <v-window-item value="semestre2">
-        <Datatable titleDatatable="Notes du semestre 1" :headers="entetes" :items="formattedDataS2" :displayAddButton="false">
+        <Datatable titleDatatable="Notes du semestre II" :headers="entetes_s2" :items="formattedDataS2" :displayAddButton="false">
         </Datatable>
     </v-window-item>
 </v-window>
