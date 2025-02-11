@@ -128,7 +128,7 @@ class InscriptionController extends Controller
         $list = [];
         $authUser =  Auth::user();
         $collection = collect();
-        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        // $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
         $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $section)->first();
         $year = getAnneeEncours()->id;
 
@@ -391,12 +391,12 @@ class InscriptionController extends Controller
                     // CreationCompte($item_apprenant,$section);
                     $apprenant = Apprenant::where('id',$id_apprenant)->get()[0];
                     if ($section == '3'){
-                    CreationCompte($apprenant,$section,$type_user,$role);
+                    // CreationCompte($apprenant,$section,$type_user,$role);
                     }
                 }else{
                     $id_apprenant = $find->id;
                     $apprenant = Apprenant::where('id',$id_apprenant)->get()[0];
-                    CreationCompte($apprenant,$section,$type_user,$role);
+                    // CreationCompte($apprenant,$section,$type_user,$role);
                 }
             }else{
                 $id_apprenant = $request->annees['apprenant']['more']['apprenant']['id'];

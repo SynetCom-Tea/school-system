@@ -231,7 +231,7 @@
             >
               <v-card>
                 <v-card-title class="subheading font-weight-bold">
-                  {{ item.raw?.matricule }}
+                  Matricule : {{ item.raw?.matricule }}
                 </v-card-title>
 
                 <v-divider></v-divider>

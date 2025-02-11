@@ -65,6 +65,7 @@ if (!function_exists('getNoteByClasses')) {
                     'filiere_niveau_matiere_ues.coefficient AS coefficient_matiere',
                     'filiere_niveau_matiere_ues.volume_horaire AS volume_horaire_matiere'
                 );
+            // dd($query->get(), $session);
             }else {
                 $query->join('filiere_niveau_matiere_ues', 'enseignement_annees.filiere_niveau_matiere_ue_id', '=', 'filiere_niveau_matiere_ues.id')
                 ->join('matieres', 'filiere_niveau_matiere_ues.matiere_id', '=', 'matieres.id')

@@ -179,7 +179,7 @@ class RapportController extends Controller
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         if ($request->classe != null || $request->classe2 != null) {
             $notes_reforme = getNoteByClasses($request->classe, $request->section_id, $request->periode);
-            // dd($notes_reforme, $request->classe);
+            //dd($notes_reforme, $request->classe, $request->section_id, $request->periode);
             if($request->section_id == 1){
                 $typesNotIn = ['TP', 'Examen', 'Devoir', 'Interrogation', 'Autre', 'Devoir / Devoir Surveillé'];
                 $periode = Periode::where('type',"Trimestre")->get();
@@ -195,7 +195,7 @@ class RapportController extends Controller
                 $note_devoirs = collect($notes_reforme)->where('type_evaluation', 'Examen')->values();
                 $note_examens = collect($notes_reforme)->where('type_evaluation', 'Devoir')->values();
                 $periode = Periode::where('type',"Semestre")->get();
-                // dd($filieres);
+                // dd($note_examens, $note_devoirs, $notes_reforme);
             }
             $types = TypeEvaluation::whereNotIn('libelle', $typesNotIn)->get();
             $headers = [
