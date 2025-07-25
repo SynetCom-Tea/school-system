@@ -176,8 +176,7 @@ class InscriptionController extends Controller
                 // dd($year);
                 // dd($list);
                 if($section == '1' || $section == '2'){
-                    $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first()->id;
-
+                    $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->where('etablissement_id', (int)$authUser->etablissement_id)->first()->id;
                     $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
                         ->whereHas('classe_annee', function ($query) use ($year, $matricule,$nom,$prenom,$findEtabSection) {
                             $query->whereHas('classe', function ($query) use ($findEtabSection){
@@ -236,11 +235,12 @@ class InscriptionController extends Controller
     public function checkClasse($niveau,$etabSection)
     {
         // dd($niveau,$etabSection);
+        $etablisement_seion = getSectionEtablissement(Auth::user()->etablissement_id, $etabSection)->first();
         $donnees = [];
         $tabs = [];
         if($niveau && $etabSection){
-            $result = ClasseAnnee::whereHas('classe', function ($query) use ($niveau,$etabSection){
-                $query->where('niveau_id',$niveau)->where('etablissement_section_id',$etabSection);
+            $result = ClasseAnnee::whereHas('classe', function ($query) use ($niveau,$etablisement_seion){
+                $query->where('niveau_id',$niveau)->where('etablissement_section_id',$etablisement_seion);
             })->with('classe.niveau')->get();
             // dd($result);
             if($result->count() > 0){

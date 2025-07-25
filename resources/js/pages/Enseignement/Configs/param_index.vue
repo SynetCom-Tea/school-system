@@ -20,7 +20,7 @@
                 </li>
             </v-alert>
         </div>
-        <v-expansion-panels>
+        <v-expansion-panels v-model="panel">
             <v-expansion-panel>
                 <v-expansion-panel-title>
                     <template v-slot:default="{ open }">
@@ -232,6 +232,7 @@
             mdiContentSave,
             mdiCurrencyUsd,
         },
+        panel: [0, 1, 2],
         headers_frais: [
           { title: 'Libelle', key: 'libelle' },
         ],
