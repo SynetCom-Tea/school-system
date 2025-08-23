@@ -306,7 +306,7 @@ export default {
         this.$gates.setRoles(this.$page.props.roles);
         this.$gates.setPermissions(this.$page.props.permissions);
         // listMenus(this.$page.props);
-        console.log('Vuegates',this.$gates.setRoles(this.$page.props.roles))
+        // console.log('Vuegates',this.$gates.setRoles(this.$page.props.roles))
     },
     mounted() {
         this.$gates.getRoles();

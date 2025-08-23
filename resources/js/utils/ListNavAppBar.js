@@ -108,7 +108,7 @@ export function listMenus(page) {
   }
     // Fin gestion note
   //  Début de menu pre-configs
-  // console.log(page?.section_users)
+  console.log('Section userse',page?.section_users)
     if (page?.permissions.includes("manage_school")) {
       if (page?.sections[0]?.sections) {
         tabs = page?.sections[0].sections.map(function (el) {

@@ -260,7 +260,7 @@ class InscriptionController extends Controller
             }
 
     }
-
+}
     public function getFrais($niveau, $annee)
     {
         // dd($niveau);

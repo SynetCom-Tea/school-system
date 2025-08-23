@@ -221,6 +221,8 @@ class UserController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id,  $request->section_id);
+        // dd($etablissement_section[0]);
         $sections = DB::select("
             SELECT s.id,s.libelle FROM sections s
             JOIN etablissement_section es ON s.id = es.section_id
@@ -234,7 +236,7 @@ class UserController extends Controller
         return Inertia::render('User/Create', [
             'section_id' => $request->section_id,
             'etablissements' => Etablissement::all(),
-            'role' => Role::all(),
+            'role' => Role::where('etablissement_section_id', $etablissement_section[0])->get(),
             'AllSections' => $sections,
             'permissions' => Permission::all(),
             'enseignants' => $this->getEnseignants(1),

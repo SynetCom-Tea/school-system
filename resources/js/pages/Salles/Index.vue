@@ -566,10 +566,10 @@
                                     <v-card-text>
                                         <v-row style="height: 90px">
                                             <v-col>
-                                                <v-switch v-model="form.importation" color="#004980" inset :label="'Importation d\'un fichier pour alimenter les matières'"></v-switch>
+                                                <v-switch v-model="form.importation" color="#004980" inset :label="'Importation d\'un fichier pour alimenter les salles'"></v-switch>
                                             </v-col>
                                             <v-col v-if="form.importation">
-                                                <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_salle" label="Charger le fichier des Matières" variant="solo-inverted"></v-file-input>
+                                                <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_salle" label="Charger le fichier des Salles" variant="solo-inverted"></v-file-input>
                                             </v-col>
                                             <v-col v-if="form.importation">
                                                 <v-btn class="ma-2" outlined type="button" color="primary" href="../models/salles.xlsx" download>
@@ -589,7 +589,7 @@
                                                 </v-col>
 
                                                 <v-col cols="3"  style="height: 80px">
-                                                    <text-field  class="mt-2" label="Capacité" placeholder="Capacité" v-model="donnee.capacite"  :rules="rules"></text-field>
+                                                    <text-field  class="mt-2" label="Capacité" placeholder="Capacité" v-model="donnee.capacite" isRequired  :rules="rules"></text-field>
 
                                                 </v-col>
 

@@ -117,13 +117,13 @@ export default {
             if (this.$page.props.auth.user.id != 1) {
                 this.$inertia.replace(this.$page.url, {
                     data: {
-                        role: item.role.id,
+                        role: item.id,
                     },
                 });
             }
             this.dialogEdit = true;
-            this.form.role = item.role.id;
-            this.form.permissions = item.permissions.map((el) => el.permission);
+            this.form.role = item.id;
+            this.form.permissions = item.permissions.map((el) => el.id);
         },
 
         update() {
@@ -195,10 +195,10 @@ export default {
         this.form.section_id = this.section_id
     },
     mounted() {
-        // this.role_p_u = this.allRoles.filter(
-        //     (el) => el.name !== "Administrateur" && el.name !== "Super-administrateur"
-        // );
-        // this.role_p_a = this.allRoles.filter((el) => el.name !== "Super-administrateur");
+        this.role_p_u = this.allRoles.filter(
+             (el) => el.name !== "Administrateur" && el.name !== "Super-administrateur"
+        );
+         this.role_p_a = this.allRoles.filter((el) => el.name !== "Super-administrateur");
     },
 };
 </script>

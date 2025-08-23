@@ -25,6 +25,7 @@ class ClasseController extends Controller
     {
         $ets_id = Auth::user()->etablissement_id;
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
+        //dd($table, $ets_id);
         return Inertia::render('Classe/Index', [
             'classes' => Classe::where('etablissement_section_id',$table->id)->get(),
             'section_id' => $type,
