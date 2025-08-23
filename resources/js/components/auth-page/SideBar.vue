@@ -32,7 +32,7 @@
                     <v-slide-x-transition mode="in-out" leave-absolute class="text-wrap">
                         <v-list-item id="profile-name" lines="two" :title="getOrganizationProfile.organization.name">
                             <template v-slot:subtitle="{ subtitle }">
-                                <span class="text-wrap" style="font-size: 0.9em, color:bold">
+                                <span class="text-wrap" style="font-size: 0.9em; color:bold">
                                     {{ getOrganizationProfile.organization.type }}
                                 </span>
                             </template>
@@ -105,6 +105,24 @@
                             </template>
 
                             <v-list-item class="sub-list-group" v-for="(item, i) in getListMenus.MenuEvaluation.children" :key="i" @click="page(item.link)">
+                                <template v-slot:prepend>
+                                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                                </template>
+
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
+                        <v-list-group :value="getListMenus.MenuEtudiant && getListMenus.MenuEtudiant.title" v-permission="'espace_etudiant'">
+                            <template v-slot:activator="{ props }">
+                                <v-list-item class="group-title" v-bind="props">
+                                    <template v-slot:prepend>
+                                        <v-icon :title="getListMenus.MenuEtudiant.title" :icon="getListMenus.MenuEtudiant.icon"></v-icon>
+                                    </template>
+                                    <v-list-item-title class="text-wrap" v-text="getListMenus.MenuEtudiant.title"></v-list-item-title>
+                                </v-list-item>
+                            </template>
+
+                            <v-list-item class="sub-list-group" v-for="(item, i) in getListMenus.MenuEtudiant.children" :key="i" @click="page(item.link)">
                                 <template v-slot:prepend>
                                     <v-icon :title="item.title" :icon="item.icon"></v-icon>
                                 </template>
@@ -288,6 +306,7 @@ export default {
         this.$gates.setRoles(this.$page.props.roles);
         this.$gates.setPermissions(this.$page.props.permissions);
         // listMenus(this.$page.props);
+        console.log('Vuegates',this.$gates.setRoles(this.$page.props.roles))
     },
     mounted() {
         this.$gates.getRoles();
@@ -306,7 +325,7 @@ export default {
                 return Promise.reject(error);
             }
         );
-        console.log('permi', this.$page.props.permissions)
+        // console.log('permi', this.$page.props.permissions)
     },
     computed: {
         getOrganizationProfile() {
@@ -406,7 +425,7 @@ export default {
 
             this.menuTuteur = menusTuteur(this.$page.props);
 
-            console.log(this.MenuGestion)
+            // console.log(this.MenuGestion)
             return list ?? null;
         },
     },

@@ -36,6 +36,7 @@ class EnseignantController extends Controller
     {
         // dd('salut');
         $ets_id = Auth::user()->etablissement_id;
+        $annee= Annee::where('actif', 1)->first();
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
 
 

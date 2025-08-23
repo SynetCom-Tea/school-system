@@ -7,9 +7,10 @@
  * @return response()
  */
 
-use App\Models\EtablissementSection;
 use App\Models\RegimeEvaluation;
 use Illuminate\Support\Facades\DB;
+use App\Models\EtablissementSection;
+use Illuminate\Support\Facades\Auth;
 
  if (!function_exists('calculerMoyenneSuperierure')) {
     function calculerMoyenneSuperierure($classeID, $apprenantID, $section, $periode,$session = null) {

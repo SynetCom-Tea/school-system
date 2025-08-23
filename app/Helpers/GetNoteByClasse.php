@@ -42,7 +42,7 @@ if (!function_exists('getNoteByClasses')) {
                     'matieres.id AS id_matiere',
                     'matieres.nom AS nom_matiere',
                     'niveau_matieres.coefficient AS coefficient_matiere',
-                    'niveau_matieres.notation AS notation_matiere'
+                    'niveau_matieres.notation AS notation_matiere',
                 );
         } elseif ($section == 3) {
             if ($session == null ){
@@ -63,7 +63,8 @@ if (!function_exists('getNoteByClasses')) {
                     'matieres.nom AS nom_matiere',
                     'ues.libelle AS nom_ue',
                     'filiere_niveau_matiere_ues.coefficient AS coefficient_matiere',
-                    'filiere_niveau_matiere_ues.volume_horaire AS volume_horaire_matiere'
+                    'filiere_niveau_matiere_ues.volume_horaire AS volume_horaire_matiere',
+                    'evaluations.id AS id_Ev'
                 );
             // dd($query->get(), $session);
             }else {

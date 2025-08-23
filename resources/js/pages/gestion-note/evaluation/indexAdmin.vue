@@ -361,9 +361,6 @@ export default {
 </script>
 
 <template>
-<!-- <Head title="Dashboard" /> -->
-
-<!-- <AuthenticatedLayout> -->
 <v-card>
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des evaluations"></Toolbar>
     <v-card-text>
@@ -509,7 +506,7 @@ export default {
                     </Button>
                 </v-card-actions>
             </v-card>
-        </v-dialog>
+        </v-dialog> 
         <Datatable titleDatatable="Liste des evaluations " :headers="headers" :items="evaluations" :permission="'manage_school|inscription'" :functionOnClickAddButton="create">
             <template v-slot:[`item.actions`]="{ item }">
                 <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
@@ -520,5 +517,4 @@ export default {
         </Datatable>
     </v-card-text>
 </v-card>
-<!-- </AuthenticatedLayout> -->
 </template>

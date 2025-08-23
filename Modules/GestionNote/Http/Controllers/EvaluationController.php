@@ -123,7 +123,7 @@ class EvaluationController extends Controller
         // dd($evaluation_secondaires);
         $evaluation_superieures = DB::select("
             SELECT m.nom matiere,c.code code,e.NomComplet enseignant,ev.date,t.libelle type,p.libelle periode,
-            ev.pourcentage,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ev.id,
+            ev.pourcentage,t.id type_evaluation_id,p.id periode_id,ea.id enseignement_annee_id,ev.id,ev.session,
             fnmu.cycle_filiere_id filiere,fnmu.matiere_id matiere_id,fnmu.niveau_id niveau,ev.session,ev.pourcentage
             FROM evaluations ev
             JOIN enseignement_annees ea ON ea.id = ev.enseignement_annee_id
@@ -470,25 +470,33 @@ class EvaluationController extends Controller
     {
         if ($request->section_id >=3){
             $fnmus = FiliereNiveauMatiereUe::where('matiere_id',$request->matieres)->where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get();
-
             $classe_id = Classe::where('cycle_filiere_id',$request->filiere)->where('niveau_id',$request->niveau)->get()[0]->id;
-                // dd($fnmu->id);
-                $enseigement_anne = EnseignementAnnee::where('filiere_niveau_matiere_ue_id',$fnmus[0]->id)->where('enseignant_id',$request->enseignant_id)->whereHas('classe_annee',function($classe) use ($request,$classe_id){
-                    $classe->where('classe_id',$classe_id)->where('annee_id',$request->annee_id);
-                })->where('niveau_matiere_id','=',null)->get();
-                $id_enseignement = $enseigement_anne[0]->id;
-                // dd($id_enseignement);
+            $enseigement_anne = EnseignementAnnee::where('filiere_niveau_matiere_ue_id',$fnmus[0]->id)->where('enseignant_id',$request->enseignant_id)->whereHas('classe_annee',function($classe) use ($request,$classe_id){
+                $classe->where('classe_id',$classe_id)->where('annee_id',$request->annee_id);
+            })->where('niveau_matiere_id','=',null)->get();
+            $id_enseignement = $enseigement_anne[0]->id;
+            $type = TypeEvaluation::where('id',$request->type_evaluation_id)->get()[0];
+            $data = ['session'=>$request->session,'notation'=>$request->notation,'date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
+            if ($type->libelle == "Examen"){
                 $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$id_enseignement)->where('session',$request->session)->get();
                 if ($evaluation->count() == 0){
-                    $data = ['session'=>$request->session,'notation'=>$request->notation,'date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $id_enseignement , 'statut' =>0?? 'RAS'];
                     Evaluation::create($data);
-                }
+                }    
+            }else {
+                Evaluation::create($data);
+            }
+            $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$id_enseignement)->where('session',$request->session)->get();
         }else {
             foreach ($request->enseignement_annee_id as $key => $value) {
-                $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$value)->get();
-                if ($evaluation->count() == 0){
+                $type = TypeEvaluation::where('id',$request->type_evaluation_id)->get()[0];
                 $data = ['notation'=>$request->notation,'date' => $request->date,'periode_id' => $request->periode_id,'type_evaluation_id' => $request->type_evaluation_id ,'enseignement_annee_id' => $value , 'statut' =>0?? 'RAS'];
-                Evaluation::create($data);
+                if ($type->libelle == "Composition"){
+                    $evaluation = Evaluation::where('type_evaluation_id',$request->type_evaluation_id )->where('periode_id',$request->periode_id )->where('enseignement_annee_id',$value)->get();
+                    if ($evaluation->count() == 0){
+                        Evaluation::create($data);
+                    }    
+                }else {
+                    Evaluation::create($data);
                 }
             }
         }

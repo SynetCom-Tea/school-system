@@ -35,4 +35,5 @@ Route::prefix('gestionnote')->group(function() {
     Route::delete('/delete/note/{id}',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'destroy'])->name('note.destroy');
     Route::get('/admin/note',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'indexAdmin'])->name('note.index_admin');
     Route::get('/attribution/admin',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'attributionAdmin'])->name('note.attribution_admin');
+    Route::get('/Note/Etudiant',[\Modules\GestionNote\Http\Controllers\NoteController::class, 'NoteEtudiant'])->name('note.etudiant');
 });     

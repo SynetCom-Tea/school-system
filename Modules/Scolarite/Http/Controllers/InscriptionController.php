@@ -53,7 +53,7 @@ class InscriptionController extends Controller
 
             return Inertia::render('Inscription/Index', [
                 'vSectionID' => (int)$request->section_id,
-                'inscriptions' => $this->ajaxInscriptionListe($request,null,$request->section_id)
+                'inscriptions' => $this->ajaxInscriptionListe($request, null, $request->section_id)
             ]);
         } catch (\Throwable $th) {
             //throw $th;
@@ -71,25 +71,25 @@ class InscriptionController extends Controller
         // dd($apprenant);
         $section = json_decode($request->query('section'));
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $section);
-        $p = Parametre::where('etablissement_section_id',$etablissement_section)->first();
-        if(!is_null($p)){
+        $p = Parametre::where('etablissement_section_id', $etablissement_section)->first();
+        if (!is_null($p)) {
             $nbre_limite_eleve_classe_par_etab_section = $p->nbre_limite_eleve_par_classe;
-        }else{
+        } else {
             $nbre_limite_eleve_classe_par_etab_section = null;
         }
         // dd($section,$p,$etablissement_section[0]);
-        if($section == '3' || $section == '4'){
+        if ($section == '3' || $section == '4') {
             // dd('3 ou 4');
-            $cf = CycleFiliere::where('cycle_id',$request->cycle_id ? $request->cycle_id : 1)->whereHas('filiere', function($query) use ($section, $etablissement_section){
-                $query->where('etablissement_section_id',$etablissement_section)->where(function ($query) use ($section) {
-                    if($section == '3'){
+            $cf = CycleFiliere::where('cycle_id', $request->cycle_id ? $request->cycle_id : 1)->whereHas('filiere', function ($query) use ($section, $etablissement_section) {
+                $query->where('etablissement_section_id', $etablissement_section)->where(function ($query) use ($section) {
+                    if ($section == '3') {
                         return $query->whereNull('departement_id');
-                    } elseif($section == '4') {
+                    } elseif ($section == '4') {
                         return $query->whereNotNull('departement_id');
                     }
                 });
-            })->with('filiere','cycle')->get();
-        }else{
+            })->with('filiere', 'cycle')->get();
+        } else {
 
             $cf = [];
             // dd('aucun');
@@ -105,13 +105,15 @@ class InscriptionController extends Controller
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
-            'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id',$etablissement_section)->where('statut','1')->with('type_document')->get(),
-            'tuteurs' => ApprenantTuteur::whereHas('apprenant', function($query){$query->where('etablissement_id',Auth::user()->etablissement_id);})->with('tuteur')->get()
+            'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id', $etablissement_section)->where('statut', '1')->with('type_document')->get(),
+            'tuteurs' => ApprenantTuteur::whereHas('apprenant', function ($query) {
+                $query->where('etablissement_id', Auth::user()->etablissement_id);
+            })->with('tuteur')->get()
         ]);
     }
 
     // Debut requete AXIOS
-    public function ajaxInscriptionListe(Request $request,$mat = null,$sec = null)
+    public function ajaxInscriptionListe(Request $request, $mat = null, $sec = null)
     {
         // dd($request->all());
         // dd($request->nom);
@@ -119,10 +121,10 @@ class InscriptionController extends Controller
         $prenom = null;
         $section = $sec ? $sec : $request->section;
         $matricule = null;
-        if($request->matricule == null && $mat == null){
+        if ($request->matricule == null && $mat == null) {
             $nom = $request->nom;
             $prenom = $request->prenom;
-        }elseif($request->matricule != null && $mat == null){
+        } elseif ($request->matricule != null && $mat == null) {
             $matricule = $request->matricule;
         }
         $list = [];
@@ -132,31 +134,70 @@ class InscriptionController extends Controller
         $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $section)->first();
         $year = getAnneeEncours()->id;
 
-            // if ($nameRole == 'Administrateur') {
-                // dd($section);
-                $list = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')->where(function ($query) use ($section,$et_sec_id) {
-                    if($section == '1' || $section == '2'){
-                        $query->whereNull('cycle_filiere_id');
-                    }elseif($section == '3') {
-                        $query->whereNotNull('cycle_filiere_id')->whereHas('cycleFiliere.filiere', function($query) use ($et_sec_id) {
-                            return $query->where('etablissement_section_id',$et_sec_id)->whereNull('departement_id');
-                        });
-                    }elseif($section == '4'){
-                        dump('4');
-                        return $query->whereNotNull('cycle_filiere_id')->whereHas('cycleFiliere', function($query) {
-                            $query->whereHas('filiere', function($query){
-                                $query->where('etablissement_id',Auth::user()->etablissement_id)->whereNull('departement_id');
-                            });
-                        });
-                    }
-                    // dd('ggg');
-                })->where(function ($query) use ($section,$matricule,$year,$nom,$prenom) {
-                    if($matricule !== null || $nom !== null || $prenom !== null){
+        // if ($nameRole == 'Administrateur') {
+        // dd($section);
+        $list = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')->where(function ($query) use ($section, $et_sec_id) {
+            if ($section == '1' || $section == '2') {
+                $query->whereNull('cycle_filiere_id');
+            } elseif ($section == '3') {
+                $query->whereNotNull('cycle_filiere_id')->whereHas('cycleFiliere.filiere', function ($query) use ($et_sec_id) {
+                    return $query->where('etablissement_section_id', $et_sec_id)->whereNull('departement_id');
+                });
+            } elseif ($section == '4') {
+                dump('4');
+                return $query->whereNotNull('cycle_filiere_id')->whereHas('cycleFiliere', function ($query) {
+                    $query->whereHas('filiere', function ($query) {
+                        $query->where('etablissement_id', Auth::user()->etablissement_id)->whereNull('departement_id');
+                    });
+                });
+            }
+            // dd('ggg');
+        })->where(function ($query) use ($section, $matricule, $year, $nom, $prenom) {
+            if ($matricule !== null || $nom !== null || $prenom !== null) {
+            } else {
 
-                    }else{
+                $query->where('annee_id', $year);
+                // dd($year);
+            }
+        })
+            ->whereHas('apprenant', function ($query) use ($authUser, $matricule, $nom, $prenom) {
+                if ($matricule !== null) {
+                    $query->where('matricule', 'like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                    // dump('matricule',$matricule);
+                } elseif ($nom != null && $prenom != null) {
+                    $query->where('nom', 'like', '%' . $nom . '%')->where('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                } else {
+                    $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                }
+                // else{
+                //     $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                //     // dump('non matricule');
+                // }
+            })->get();
+        // dd($year);
+        // dd($list);
+        if ($section == '1' || $section == '2') {
+            $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first()->id;
 
-                        $query->where('annee_id',$year);
-                        // dd($year);
+            $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
+                ->whereHas('classe_annee', function ($query) use ($year, $matricule, $nom, $prenom, $findEtabSection) {
+                    $query->whereHas('classe', function ($query) use ($findEtabSection) {
+                        $query->where('etablissement_section_id', $findEtabSection);
+                    })->whereHas('annee', function ($query) use ($year, $matricule, $nom, $prenom) {
+                        if ($matricule !== null || $nom !== null || $prenom !== null) {
+                        } else {
+                            $query->where('annee_id', $year);
+                        }
+                    });
+                })
+                ->whereHas('apprenant', function ($query) use ($matricule, $nom, $prenom, $authUser) {
+                    if ($matricule !== null) {
+                        $query->where('matricule', 'like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                        // dump('matricule',$matricule);
+                    } elseif ($nom != null && $prenom != null) {
+                        $query->where('nom', 'like', '%' . $nom . '%')->where('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                    } else {
+                        $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
                     }
                 })
                 ->whereHas('apprenant', function ($query) use ($authUser,$matricule,$nom,$prenom) {
@@ -220,19 +261,19 @@ class InscriptionController extends Controller
 
     }
 
-    public function getFrais($niveau,$annee)
+    public function getFrais($niveau, $annee)
     {
         // dd($niveau);
         $frais_scolarite = 0;
-        $frais = Frais::where('type_frais_id',2)->where('annee_id',$annee)->where('etablissement_id',Auth::user()->etablissement_id)->where('niveau_id',$niveau)->first();
-        if($frais){
+        $frais = Frais::where('type_frais_id', 2)->where('annee_id', $annee)->where('etablissement_id', Auth::user()->etablissement_id)->where('niveau_id', $niveau)->first();
+        if ($frais) {
             $frais_scolarite = $frais->montant;
         }
         // dd($frais_scolarite);
         return $frais_scolarite;
     }
 
-    public function checkClasse($niveau,$etabSection)
+    public function checkClasse($niveau, $etabSection)
     {
         // dd($niveau,$etabSection);
         $etablisement_seion = getSectionEtablissement(Auth::user()->etablissement_id, $etabSection)->first();
@@ -243,9 +284,9 @@ class InscriptionController extends Controller
                 $query->where('niveau_id',$niveau)->where('etablissement_section_id',$etablisement_seion);
             })->with('classe.niveau')->get();
             // dd($result);
-            if($result->count() > 0){
-                foreach($result as $key => $item){
-                    $nbre = ApprenantClasseAnnee::where('classe_annee_id',$item->id)->count();
+            if ($result->count() > 0) {
+                foreach ($result as $key => $item) {
+                    $nbre = ApprenantClasseAnnee::where('classe_annee_id', $item->id)->count();
                     $tabs = [
                         'classe' => $item,
                         'nbre' => $nbre
@@ -253,11 +294,11 @@ class InscriptionController extends Controller
                     $donnees[$key] = $tabs;
                 }
 
-                return ['code'=> 1, 'result' => $donnees ?? []];
-            }else{
-                return ['code'=> 0];
+                return ['code' => 1, 'result' => $donnees ?? []];
+            } else {
+                return ['code' => 0];
             }
-        }else{
+        } else {
             return 'ERREUR';
         }
     }
@@ -270,7 +311,8 @@ class InscriptionController extends Controller
 
         $mat = "";
         $words = preg_split(
-            "/(\s|\-|\.)/",Etablissement::find($donnees['annees']['etablissement_section_id']['pivot']['etablissement_id'])->name
+            "/(\s|\-|\.)/",
+            Etablissement::find($donnees['annees']['etablissement_section_id']['pivot']['etablissement_id'])->name
         );
         $n = "";
         $o = 0;
@@ -278,8 +320,8 @@ class InscriptionController extends Controller
         foreach ($words as $w) {
             $n .= substr($w, 0, 1);
         }
-        $o = Apprenant::where('etablissement_id',$donnees['annees']['etablissement_section_id']['pivot']['etablissement_id'])->count() + 1;
-        $mat = 'US-'.$n.'-0'.$o;
+        $o = Apprenant::where('etablissement_id', $donnees['annees']['etablissement_section_id']['pivot']['etablissement_id'])->count() + 1;
+        $mat = 'US-' . $n . '-0' . $o;
         return $mat ?? "";
     }
 
@@ -289,7 +331,8 @@ class InscriptionController extends Controller
         $mat = "";
         $s = substr($this->getNameSection($donnees['section']), 0, 1);
         $words = preg_split(
-            "/(\s|\-|\.)/",Niveau::find($donnees['annees']['niveau'])->libelle
+            "/(\s|\-|\.)/",
+            Niveau::find($donnees['annees']['niveau'])->libelle
         );
         $n = "";
         $o = 0;
@@ -298,16 +341,16 @@ class InscriptionController extends Controller
             $n .= substr($w, 0, 1);
         }
         $a = Annee::find($donnees['annees']['annee'])->libelle;
-        if($donnees['section'] == '1' || $donnees['section'] == '2'){
-            $o = Inscription::where('annee_id',$donnees['annees']['annee'])->where('niveau_id',$donnees['annees']['niveau'])->count() + 1;
-        }elseif($donnees['section'] == '3' || $donnees['section'] == '4'){
-            $o = Inscription::where('annee_id',$donnees['annees']['annee'])->where('niveau_id',$donnees['annees']['niveau'])->where('cycle_filiere_id',$donnees['annees']['cycle_filiere'])->count() + 1;
+        if ($donnees['section'] == '1' || $donnees['section'] == '2') {
+            $o = Inscription::where('annee_id', $donnees['annees']['annee'])->where('niveau_id', $donnees['annees']['niveau'])->count() + 1;
+        } elseif ($donnees['section'] == '3' || $donnees['section'] == '4') {
+            $o = Inscription::where('annee_id', $donnees['annees']['annee'])->where('niveau_id', $donnees['annees']['niveau'])->where('cycle_filiere_id', $donnees['annees']['cycle_filiere'])->count() + 1;
         }
-        if($donnees['section'] == '1' || $donnees['section'] == '2'){
-            $mat = 'US-'.$s.'-'.$a.'-'.$n.'-'.$o;
-        }elseif($donnees['section'] == '3' || $donnees['section'] == '4'){
+        if ($donnees['section'] == '1' || $donnees['section'] == '2') {
+            $mat = 'US-' . $s . '-' . $a . '-' . $n . '-' . $o;
+        } elseif ($donnees['section'] == '3' || $donnees['section'] == '4') {
             $f = substr(CycleFiliere::find($donnees['annees']['cycle_filiere'])->with('filiere')->first()->filiere->name, 0, 1);
-            $mat = 'US-'.'-'.$s.'-'.$a.'-'.$n.'-'.$f.'-'.$o;
+            $mat = 'US-' . '-' . $s . '-' . $a . '-' . $n . '-' . $f . '-' . $o;
         }
         return $mat ?? "";
     }
@@ -345,20 +388,20 @@ class InscriptionController extends Controller
         $code_inscription = $this->generateCodeInscription($request->all());
         $id_apprenant = null;
         $section = $request->section;
-        $tabs = EtablissementTypeDocument::where('etablissement_section_id',$et_sec_id)->where('obligatoire','1')->where('statut','1')->with('type_document')->get()->pluck('type_document_id')->unique()->values()->all();
+        $tabs = EtablissementTypeDocument::where('etablissement_section_id', $et_sec_id)->where('obligatoire', '1')->where('statut', '1')->with('type_document')->get()->pluck('type_document_id')->unique()->values()->all();
         $type_user = 'Etudiant';
-        $role = Role::where('name','Etudiant')->exists() ? Role::where('name','Etudiant')->get()[0]->id : null;
-        if($request->apprenants){
+        $role = Role::where('name', 'Etudiant')->exists() ? Role::where('name', 'Etudiant')->get()[0]->id : null;
+        if ($request->apprenants) {
             if (isset($request->documents['documents'])) {
-                $p = collect($request->documents['documents'])->map(function($e){
+                $p = collect($request->documents['documents'])->map(function ($e) {
                     return (int)$e['type'];
                 })->toArray();
-            }else{
+            } else {
                 $p = [];
             }
-            $i = array_intersect($p,$tabs);
+            $i = array_intersect($p, $tabs);
             // dd($tabs,$p,$i);
-            if(count($i) != count($tabs)){
+            if (count($i) != count($tabs)) {
                 return redirect()->back()->with('message', [
                     'type' => 'error',
                     'text' => 'Merci de renseigner tous les documents obligatoires',
@@ -370,13 +413,13 @@ class InscriptionController extends Controller
         try {
             // Démarrez la transaction
             // DB::beginTransaction();
-        
-            if($request->apprenants){
+
+            if ($request->apprenants) {
                 // dd($request->apprenants,$request->section);
-                $find = Apprenant::where('nom',$request->apprenants['nom'])->where('prenom',$request->apprenants['prenom'])->where('sexe',$request->apprenants['sexe'])
-                ->where('date_naissance',$request->apprenants['date_naissance'])->where('lieu_naissance',$request->apprenants['lieu_naissance'])->where('telephone',$request->apprenants['telephone'])
-                ->where('etablissement_id',Auth::user()->etablissement_id)->first();
-                if($find == null){
+                $find = Apprenant::where('nom', $request->apprenants['nom'])->where('prenom', $request->apprenants['prenom'])->where('sexe', $request->apprenants['sexe'])
+                    ->where('date_naissance', $request->apprenants['date_naissance'])->where('lieu_naissance', $request->apprenants['lieu_naissance'])->where('telephone', $request->apprenants['telephone'])
+                    ->where('etablissement_id', Auth::user()->etablissement_id)->first();
+                if ($find == null) {
                     $item_apprenant = Apprenant::create([
                         'matricule' => $matricule,
                         'nom' => $request->apprenants['nom'],
@@ -393,25 +436,18 @@ class InscriptionController extends Controller
                     if ($section == '3'){
                     // CreationCompte($apprenant,$section,$type_user,$role);
                     }
-                }else{
+                } else {
                     $id_apprenant = $find->id;
                     $apprenant = Apprenant::where('id',$id_apprenant)->get()[0];
                     // CreationCompte($apprenant,$section,$type_user,$role);
                 }
-            }else{
+            } else {
                 $id_apprenant = $request->annees['apprenant']['more']['apprenant']['id'];
             }
-            // dd($id_apprenant);
+            $check = Inscription::where('annee_id', $request->annees['annee'])->where('apprenant_id', $id_apprenant)->get();
 
-            // Inscription
-            // dd($request->tuteurs);
-
-
-
-            $check = Inscription::where('annee_id',$request->annees['annee'])->where('apprenant_id',$id_apprenant)->get();
-
-            if($check->count() == 0){
-                if($request->section == '1' || $request->section == '2'){
+            if ($check->count() == 0) {
+                if ($request->section == '1' || $request->section == '2') {
                     $inscription = Inscription::create([
                         'code' => $code_inscription,
                         'date_inscription' => date('Y-m-d'),
@@ -420,7 +456,7 @@ class InscriptionController extends Controller
                         'apprenant_id' => $id_apprenant,
                         'statut' => 0
                     ]);
-                }elseif($request->section == '3' || $request->section == '4'){
+                } elseif ($request->section == '3' || $request->section == '4') {
                     $inscription = Inscription::create([
                         'code' => $code_inscription,
                         'date_inscription' => date('Y-m-d'),
@@ -431,7 +467,7 @@ class InscriptionController extends Controller
                         'statut' => 0
                     ]);
                 }
-            }else{
+            } else {
                 return redirect()->back()->with('message', [
                     'type' => 'error',
                     'text' => 'Cette inscription existe déjà',
@@ -439,56 +475,54 @@ class InscriptionController extends Controller
             }
             $classe = null;
             $niv = Niveau::find($request->annees['niveau']);
-            if($request->section == '1' || $request->section == '2'){
+            if ($request->section == '1' || $request->section == '2') {
 
-                if($request->annees['classe'] == null){
+                if ($request->annees['classe'] == null) {
 
-                    if($niv->code != '6e' && $niv->code != '5e' && $niv->code != '4e' && $niv->code != '3e' )
-                    {
+                    if ($niv->code != '6e' && $niv->code != '5e' && $niv->code != '4e' && $niv->code != '3e') {
                         $cod = '1';
-                    }else{
+                    } else {
                         $cod = 'A';
                     }
                     $cl = Classe::create([
-                        'code' => $niv->code.$cod,
-                        'libelle' => $niv->libelle.$cod,
+                        'code' => $niv->code . $cod,
+                        'libelle' => $niv->libelle . $cod,
                         'niveau_id' => $request->annees['niveau'],
                         'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
                     ]);
                     $classe = $cl->id;
-                }else{
+                } else {
                     $classe = $request->annees['classe'];
                 }
-            }elseif($request->section == '3' || $request->section == '4'){
+            } elseif ($request->section == '3' || $request->section == '4') {
 
-                $classe = Classe::where('niveau_id',$request->annees['niveau'])->where('etablissement_section_id',$et_sec_id)->where('cycle_filiere_id',$request->annees['cycle_filiere'])->first();
-                if(is_null($classe)){
+                $classe = Classe::where('niveau_id', $request->annees['niveau'])->where('etablissement_section_id', $et_sec_id)->where('cycle_filiere_id', $request->annees['cycle_filiere'])->first();
+                if (is_null($classe)) {
                     $cycleFiliere = CycleFiliere::find($request->annees['cycle_filiere']);
                     $cl = Classe::create([
-                        'code' => $cycleFiliere->code.'/ '.$niv->code,
-                        'libelle' => $cycleFiliere->code.'/ '.$niv->libelle,
+                        'code' => $cycleFiliere->code . '/ ' . $niv->code,
+                        'libelle' => $cycleFiliere->code . '/ ' . $niv->libelle,
                         'niveau_id' => $request->annees['niveau'],
                         'cycle_filiere_id' => $request->annees['cycle_filiere'],
                         'etablissement_section_id' => $request->annees['etablissement_section_id']['id']
                     ]);
                     $classe = $cl->id;
-                }else{
+                } else {
                     $classe = $classe->id;
                 }
-
             }
 
 
 
-            $checkAnneeClasse = ClasseAnnee::where('annee_id',$request->annees['annee'])->where('classe_id',$classe)->first();
+            $checkAnneeClasse = ClasseAnnee::where('annee_id', $request->annees['annee'])->where('classe_id', $classe)->first();
 
             $classe_annee = null;
-            if($checkAnneeClasse == null){
+            if ($checkAnneeClasse == null) {
                 $classe_annee = ClasseAnnee::create([
                     'annee_id' => $request->annees['annee'],
                     'classe_id' => $classe
                 ]);
-            }else{
+            } else {
                 $classe_annee = $checkAnneeClasse;
             }
 
@@ -521,7 +555,6 @@ class InscriptionController extends Controller
                         $tuteur['sexe'] === null &&
                         $tuteur['email'] === null
                     ) {
-                        
                     } else {
                         $item_tuteur = Tuteur::create([
                             'nom' => $tuteur['nom'],
@@ -538,7 +571,7 @@ class InscriptionController extends Controller
                     }
                 }
             } else {
-                for($i = 0; $i < count($request->tuteurs['selectTuteurs']); $i++){
+                for ($i = 0; $i < count($request->tuteurs['selectTuteurs']); $i++) {
                     // dd($id_apprenant,$request->tuteurs['selectTuteurs'][$i]);
                     ApprenantTuteur::create([
                         'apprenant_id' => $id_apprenant,
@@ -579,12 +612,12 @@ class InscriptionController extends Controller
 
 
             if (isset($request->documents['documents'])) {
-                foreach($request->documents['documents'] as $document){
+                foreach ($request->documents['documents'] as $document) {
                     // dd($document);
-                    if(isset($document['file'][0])){
+                    if (isset($document['file'][0])) {
                         $file_name = $document['file'][0]->getClientOriginalName();
                         $document['file'][0]->move('test/', $document['file'][0]->getClientOriginalName());
-                    }else{
+                    } else {
                         $file_name = null;
                     }
                     $item_tuteur = Document::create([
@@ -601,7 +634,6 @@ class InscriptionController extends Controller
                 'type' => 'success',
                 'text' => 'Inscription effectuée avec succès',
             ]);
-
         } catch (\Exception $e) {
             // En cas d'erreur, annulez la transaction
             // DB::rollback();
@@ -612,13 +644,13 @@ class InscriptionController extends Controller
             // Gérez l'erreur (log, renvoyez une réponse, etc.)
             throw $e;
         }
-  
     }
 
-    public function recuInscription(Request $request){
+    public function recuInscription(Request $request)
+    {
         // dd($request->all());
         $etb = Etablissement::find(Auth::user()->etablissement_id);
-        $ins = Inscription::where('id',$request->id)->with('annee','apprenant','niveau','cycleFiliere')->first();
+        $ins = Inscription::where('id', $request->id)->with('annee', 'apprenant', 'niveau', 'cycleFiliere')->first();
 
 
         $data = [

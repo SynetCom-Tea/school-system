@@ -224,7 +224,7 @@ export default {
             <v-col md="3">
                 <Autocomplete v-model="form.evaluation" :disabled="!form.classe" :items="evaluations " item-title="code" item-value="id" outlined required dense chips small-chips label="Evaluations"></Autocomplete>
             </v-col>
-            <v-col md="3">
+            <v-col md="3" class="pt-5">
                 <Button color="secondary" variant="outlined" class="mb-3" @click="rechercher()" nameButton="Recherche.." title="Rechercher..." style="height: 40px" :prependIcon="icon.mdiSearchWeb" :loading="form.processing" :disabled="!form.classe || !form.evaluation"></Button>
             </v-col>
             <v-col md="2"></v-col>
