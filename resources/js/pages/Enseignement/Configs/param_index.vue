@@ -242,6 +242,7 @@
         ],
         items_frais: [],
         items_documents: [],
+        alertFirst:false,
         form: useForm({
             nbre_limite: null,
             selected_frais: [],
@@ -289,11 +290,11 @@
                     }
                     this.items_documents.push(e.type_document.libelle)
                     return e.type_document?.id
-                }) 
+                })
             }
             this.form.nbre_limite = this.nbre ? this.nbre : null
             console.log('type_document',this.type_documents,this.form.selected_frais,this.items_frais,this.form.selected_documents,this.items_documents);
-    
+
             // // Vous pouvez ajouter une logique ici pour gérer les mises à jour du champ de saisie.
             // console.log(`Mise à jour de customField pour l'élément ${item.id} : ${item.obligatoire}`);
         },

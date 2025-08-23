@@ -151,10 +151,10 @@
                 :label="'Attribution des matières par classe'"
               ></v-switch>
             </v-col>
-                <v-col cols="12" md="12" v-if="!form.importation">
+                <v-col cols="12" md="12" v-if="!form.importation"  >
                <v-row disabled :key="matiere.id" v-for="(matiere, i) in form.matieres" >
 
-                 <v-col cols="5" md="5" style="height: 90px" >
+                 <v-col cols="5" md="5"  >
                    <Autocomplete
                      label="Matière"
                      placeholder="Matière"
@@ -171,7 +171,7 @@
                    </Autocomplete>
                  </v-col>
 
-                 <v-col cols="5" md="5" style="height: 90px">
+                 <v-col cols="5" md="5" >
                    <Autocomplete
                        v-model="matiere.classes"
                        isRequired
@@ -224,7 +224,7 @@
             <v-col cols="12" md="12" v-if="form.importation && section_id=='1'">
                <v-row disabled :key="classe.id" v-for="(classe, i) in form.classes" >
 
-                 <v-col cols="5" md="5" style="height: 90px" >
+                 <v-col cols="5" md="5"  >
                    <Autocomplete
                      label="Classe"
                      placeholder="Classe"
@@ -241,7 +241,7 @@
                    </Autocomplete>
                  </v-col>
 
-                 <v-col cols="5" md="5" style="height: 90px">
+                 <v-col cols="5" md="5" >
                    <Autocomplete
                        v-model="classe.matieres"
                        isRequired
@@ -538,54 +538,81 @@
 
      async submit() {
            console.log('enseignant',this.form.enseignant,'matiere', this.form.matieres);
-           if(this.form.importation==false){
+        if(this.form.importation==false){
             if (await this.isValid()) {
                console.log(this.form)
-               this.form.post(route('enseignants.store',this.section_id), {
-                   onFinish: () => {
-                       this.$swal({
-                           icon: 'success',
-                               iconColor: '#004980',
-                               color: '#004980',
-                               title: 'Enregistrement',
-                               text: 'Affectation a été enrégistré avec succès!',
-                               toast: true,
-                               position: 'top-end',
-                               showConfirmButton: false,
-                               timer: 5000,
-                               timerProgressBar: true,
-                       });
-                   },
-               });
+               this.$swal({
+                    title: 'Etês-vous sûr de vouloir enregistrer?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#004980',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, Enregistrer !',
+                    cancelButtonText: 'Non, annulez !',
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.form.post(route('enseignants.store',this.section_id), {
+                            onFinish: () => {
+                                this.$swal({
+                                    icon: 'success',
+                                        iconColor: '#004980',
+                                        color: '#004980',
+                                        title: 'Enregistrement',
+                                        text: 'Affectation a été enrégistré avec succès!',
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 5000,
+                                        timerProgressBar: true,
+                                });
+                            },
+                        });
+                    }
+                })
            }else{
                this.$swal.fire({
-               title: "Erreur",
-               text:
-                 "Veuillez remplir tous les champs du formulaire !",
-               icon: "warning",
-               confirmButtonText: "OK",
-             });
+                    title: "Erreur",
+                    text:
+                        "Veuillez remplir tous les champs du formulaire !",
+                    icon: "warning",
+                    confirmButtonText: "OK",
+                });
 
-           }}else{
+           }
+        }else{
 
             if (await this.isValidc()) {
                console.log(this.form)
-               this.form.post(route('enseignants.store',this.section_id), {
-                   onFinish: () => {
-                       this.$swal({
-                           icon: 'success',
-                               iconColor: '#004980',
-                               color: '#004980',
-                               title: 'Enregistrement',
-                               text: 'Affectation a été enrégistré avec succès!',
-                               toast: true,
-                               position: 'top-end',
-                               showConfirmButton: false,
-                               timer: 5000,
-                               timerProgressBar: true,
-                       });
-                   },
-               });
+               this.$swal({
+                    title: 'Etês-vous sûr de vouloir enregistrer?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#004980',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, Enregistrer !',
+                    cancelButtonText: 'Non, annulez !',
+                    }).then((result) => {
+                    if (result.isConfirmed) {
+                        this.form.post(route('enseignants.store',this.section_id), {
+                            onFinish: () => {
+                                this.$swal({
+                                    icon: 'success',
+                                        iconColor: '#004980',
+                                        color: '#004980',
+                                        title: 'Enregistrement',
+                                        text: 'Affectation a été enrégistré avec succès!',
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 5000,
+                                        timerProgressBar: true,
+                                });
+                            },
+                        });
+                    }
+                })
            }else{
                this.$swal.fire({
                title: "Erreur",

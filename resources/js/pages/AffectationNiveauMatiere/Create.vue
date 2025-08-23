@@ -179,7 +179,10 @@
                 </v-col>
               </v-row>
             </v-card-text>
-            <v-card-actions class="justify-end">
+
+          </v-card>
+          <br />
+          <v-card-actions class="justify-end">
                 <v-spacer></v-spacer>
                 <Button variant="outlined" class="mb-2" style="height: 30px" small type="button" color="red" @click="goBack">
                     <v-icon :icon="icons.mdiCancel" left></v-icon> Annuler
@@ -188,8 +191,6 @@
                     <v-icon :icon="icons.mdiContentSave" left></v-icon> Enregistrer
                 </Button>
             </v-card-actions>
-          </v-card>
-          <br />
           <!-- <v-row class="text-center ml-3 mb-3"
             ><v-col cols="auto">
               <Button
@@ -384,23 +385,35 @@
       async submit() {
 
             if (await this.isValid()) {
-
-                this.form.post(route('affectations.store',this.section_id), {
-                    onFinish: () => {
-                        this.$swal({
-                            icon: 'success',
-                            iconColor: '#004980',
-                            color: '#004980',
-                            title: 'Enregistrement',
-                            text: 'La matière a été affectée aux niveaux avec succès!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 5000,
-                            timerProgressBar: true,
-                        });
-                    },
-                });
+                this.$swal({
+                        title: 'Etês-vous sûr de vouloir enregistrer?',
+                        text: "Vous ne pourrez pas revenir en arrière !",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#004980',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Oui, Enregistrer !',
+                        cancelButtonText: 'Non, annulez !',
+                        }).then((result) => {
+                        if (result.isConfirmed) {
+                            this.form.post(route('affectations.store',this.section_id), {
+                                onFinish: () => {
+                                    this.$swal({
+                                        icon: 'success',
+                                        iconColor: '#004980',
+                                        color: '#004980',
+                                        title: 'Enregistrement',
+                                        text: 'La matière a été affectée aux niveaux avec succès!',
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 5000,
+                                        timerProgressBar: true,
+                                    });
+                                },
+                            });
+                        }
+                    })
             }
         },
         close() {

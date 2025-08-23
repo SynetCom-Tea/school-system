@@ -248,27 +248,40 @@ class FraisController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function supprimer($id)
+    public function supprimer($id,Request $fil)
     {
-        dump($id);
-        // try{
-        //     $frais = Frais::find($id);
-        //     $niveau = Niveau::where('id',$frais->niveau_id)->first();
-        //     $frais->delete();
-        // }
-        // catch(\Illuminate\Database\QueryException $e){
-        //     if($e->getCode() == "23000"){
-        //         return redirect()->route('frais.index',$niveau->section_id)->with('message', [
-        //             'type' => 'error',
-        //             'text' => "Désolé, vous ne pouvez pas supprimer ce frais!",
-        //         ]);
+        // DD($fil);
+        try{
 
-        //     }
-        // }
-        // return redirect()->route('frais.index',$niveau->section_id)->with('message', [
-        //     'type' => 'success',
-        //     'text' => "Le frais a été supprimé avec succès !",
-        // ]);
+
+            if($fil->type==1 || $fil->type==2  ){
+                $frais = Frais::where('niveau_id',$id)->get();
+
+            }else if($fil->type==3 || $fil->type==4){
+
+                $frais = Frais::where('niveau_id',$id)->where('cycle_filiere_id',$fil->filiere)->get();
+            }
+
+            $table = Niveau::where('id',$id)->first();
+
+            foreach($frais as $frai){
+                $frai->delete();
+            }
+
+        }
+        catch(\Illuminate\Database\QueryException $e){
+            if($e->getCode() == "23000"){
+                return redirect()->route('frais.index',$table->section_id)->with('message', [
+                    'type' => 'error',
+                    'text' => "Désolé, vous ne pouvez pas supprimer ce frais!",
+                ]);
+
+            }
+        }
+        return redirect()->route('frais.index',$table->section_id)->with('message', [
+            'type' => 'success',
+            'text' => "Le frais a été supprimé avec succès !",
+        ]);
     }
 
 

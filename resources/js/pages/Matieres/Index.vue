@@ -128,17 +128,24 @@ export default {
             const array = this.form.donnees.filter(el => el.nom !== null && el.nom == p.nom)
             if (array.length > 1) {
                 this.removeRow(p)
-
-                this.$swal({
+                this.dialog=false;
+                this.$swal.fire({
                     icon: 'error',
                     title: 'Erreur',
                     text: 'Cette matière existe déjà!',
-                    toast: true,
-                    position: 'top-end',
-                    showConfirmButton: false,
-                    timer: 5000,
-                    timerProgressBar: true,
+                    // toast: true,
+                    // position: 'top-end',
+                    // showConfirmButton: false,
+                    // timer: 5000,
+                    // timerProgressBar: true,
+                    // icon: "success",
+                    confirmButtonText: "OK",
+
+                }).then(() => {
+                    // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
+                    this.dialog = true;
                 });
+
             } else {
                 return true
             }
@@ -241,12 +248,16 @@ export default {
 
                             if (typeof missingDataIndex === "number") {
                                 this.form.fichier=this.data;
+                                this.dialog=false;
                                 this.$swal.fire({
                                     class:"alert",
                                     title: "Validé",
                                     text: "Votre fichier est valide!",
                                     icon: "success",
                                     confirmButtonText: "OK",
+                                }).then(() => {
+                                    // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
+                                    this.dialog = true;
                                 });
                             } else {
                                 this.form.fichier_matiere = null;
@@ -268,14 +279,18 @@ export default {
                             }
                         } else {
                             this.form.fichier_matiere = null;
+                            this.dialog = false;
                             //this.submitForm(null);
-                            this.close()
+
                             this.$swal.fire({
                                 class:"alert",
                                 title: "Erreur",
                                 text: "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaité veuillez corriger !",
                                 icon: "warning",
                                 confirmButtonText: "OK",
+                            }).then(() => {
+                                // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
+                                this.dialog = true;
                             });
                         }
                     }
@@ -284,14 +299,17 @@ export default {
             } else {
                 this.form.fichier_matiere = null;
                             //this.submitForm(null);
-                this.close()
+                 this.dialog = false;
                 this.$swal.fire({
                         class:"alert",
                         title: "Erreur",
                         text: "Votre fichier n'est pas valide veuillez charger un fichier de type excel !",
                         icon: "warning",
                         confirmButtonText: "OK",
-                });
+                }).then(() => {
+                                // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
+                                this.dialog = true;
+                    });
             }
             }
         },
@@ -329,25 +347,40 @@ export default {
                 valid
             } = await this.$refs.form.validate()
             if (!this.form.id && valid) {
-                this.form.post(route('matieres.store', this.section_id), {
-                    onFinish: () => {
-                        //console.log(this.form)
-                        this.close()
+                this.dialog=false;
+                this.$swal({
+                    title: 'Etês-vous sûr de vouloir enregistrer?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#004980',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, Enregistrer !',
+                    cancelButtonText: 'Non, annulez !',
+                    }).then((result) => {
+                    this.dialog=true;
+                    if (result.isConfirmed) {
+                        this.form.post(route('matieres.store', this.section_id), {
+                            onFinish: () => {
+                                //console.log(this.form)
+                                this.close()
 
-                        this.$swal({
-                            icon: 'success',
-                            iconColor: '#004980',
-                            color: '#004980',
-                            title: 'Enregistrement',
-                            text: 'Matière créée avec succès!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 5000,
-                            timerProgressBar: true,
+                                this.$swal({
+                                    icon: 'success',
+                                    iconColor: '#004980',
+                                    color: '#004980',
+                                    title: 'Enregistrement',
+                                    text: 'Matière créée avec succès!',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    timerProgressBar: true,
+                                });
+                            },
                         });
-                    },
-                });
+                    }
+                })
 
             } else if (this.form.id && valid) {
 
@@ -356,23 +389,37 @@ export default {
                     code,
                     nom
                 } = this.form
-
-                this.form.put(route('matieres.update', this.form.id), {
-                    onFinish: () => {
-                        this.close()
-                        this.$swal({
-                            icon: 'success',
-                            iconColor: '#004980',
-                            color: '#004980',
-                            title: 'Modification',
-                            text: 'Matière modifiée avec succès!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 5000,
-                            timerProgressBar: true,
-                        });
-                    },
+                this.dialog=false;
+                this.$swal({
+                    title: 'Etês-vous sûr de vouloir enregistrer?',
+                    text: "Vous ne pourrez pas revenir en arrière !",
+                    icon: 'warning',
+                    showCancelButton: true,
+                    confirmButtonColor: '#004980',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Oui, Enregistrer !',
+                    cancelButtonText: 'Non, annulez !',
+                    }).then((result) => {
+                    this.dialog=true;
+                    if (result.isConfirmed) {
+                        this.form.put(route('matieres.update', this.form.id), {
+                            onFinish: () => {
+                                this.close()
+                                this.$swal({
+                                    icon: 'success',
+                                    iconColor: '#004980',
+                                    color: '#004980',
+                                    title: 'Modification',
+                                    text: 'Matière modifiée avec succès!',
+                                    toast: true,
+                                    position: 'top-end',
+                                    showConfirmButton: false,
+                                    timer: 5000,
+                                    timerProgressBar: true,
+                                });
+                            },
+                        })
+                    }
                 })
             }
 
@@ -449,7 +496,7 @@ export default {
                                 <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_matiere" label="Charger le fichier des Matières" variant="solo-inverted"></v-file-input>
                             </v-col>
                             <v-col v-if="form.importation">
-                                <v-btn class="ma-2" outlined type="button" color="primary" href="../models/echantillons/fiche_echantillonage.ods" download>
+                                <v-btn class="ma-2" outlined type="button" color="primary" href="../models/Matieres.xlsx" download>
                                     Télécharger le Modèle
                                 </v-btn>
                             </v-col>

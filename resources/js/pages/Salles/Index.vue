@@ -346,43 +346,71 @@
                 if(this.form.id && valid) {
 
                      const {id,code,libelle} = this.form
-
-                    this.form.put(route('salles.update', this.form.id), {
-                        onFinish: () => {
-                           this.close()
-                            this.$swal({
-                                icon: 'success',
-                                iconColor: '#004980',
-                                color: '#004980',
-                                title: 'Modification',
-                                text: 'Salle modifiée avec succès!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-                        },
+                     this.dialog=false;
+                    this.$swal({
+                        title: 'Etês-vous sûr de vouloir enregistrer?',
+                        text: "Vous ne pourrez pas revenir en arrière !",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#004980',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Oui, Enregistrer !',
+                        cancelButtonText: 'Non, annulez !',
+                        }).then((result) => {
+                        this.dialog=true;
+                        if (result.isConfirmed) {
+                            this.form.put(route('salles.update', this.form.id), {
+                                onFinish: () => {
+                                this.close()
+                                    this.$swal({
+                                        icon: 'success',
+                                        iconColor: '#004980',
+                                        color: '#004980',
+                                        title: 'Modification',
+                                        text: 'Salle modifiée avec succès!',
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 5000,
+                                        timerProgressBar: true,
+                                    });
+                                },
+                            })
+                        }
                     })
                 }else if (valid){
-
-                    this.form.post(route('salles.store'), {
-                        onFinish: () => {
-                            this.close();
-                            this.$swal({
-                                icon: 'success',
-                                iconColor: '#004980',
-                                color: '#004980',
-                                title: 'Enregistrement',
-                                text: 'Salles créées avec succès!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
+                    this.ajoutdialog=false;
+                    this.$swal({
+                        title: 'Etês-vous sûr de vouloir enregistrer?',
+                        text: "Vous ne pourrez pas revenir en arrière !",
+                        icon: 'warning',
+                        showCancelButton: true,
+                        confirmButtonColor: '#004980',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Oui, Enregistrer !',
+                        cancelButtonText: 'Non, annulez !',
+                        }).then((result) => {
+                        this.ajoutdialog=true;
+                        if (result.isConfirmed) {
+                            this.form.post(route('salles.store'), {
+                                onFinish: () => {
+                                    this.close();
+                                    this.$swal({
+                                        icon: 'success',
+                                        iconColor: '#004980',
+                                        color: '#004980',
+                                        title: 'Enregistrement',
+                                        text: 'Salles créées avec succès!',
+                                        toast: true,
+                                        position: 'top-end',
+                                        showConfirmButton: false,
+                                        timer: 5000,
+                                        timerProgressBar: true,
+                                    });
+                                },
                             });
-                        },
-                    });
+                        }
+                    })
                 }
 
             },
@@ -544,7 +572,7 @@
                                                 <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_salle" label="Charger le fichier des Matières" variant="solo-inverted"></v-file-input>
                                             </v-col>
                                             <v-col v-if="form.importation">
-                                                <v-btn class="ma-2" outlined type="button" color="primary" href="../models/echantillons/fiche_echantillonage.ods" download>
+                                                <v-btn class="ma-2" outlined type="button" color="primary" href="../models/salles.xlsx" download>
                                                     Télécharger le Modèle
                                                 </v-btn>
                                             </v-col>

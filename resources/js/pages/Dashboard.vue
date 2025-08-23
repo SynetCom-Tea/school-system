@@ -44,7 +44,6 @@ const students = [
 
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
 import { Head } from "@inertiajs/vue3";
-
 import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
@@ -224,7 +223,7 @@ export default {
   },
   mounted() {
     this.extractSubjects();
-    
+
   },
 
   methods: {
@@ -281,7 +280,7 @@ export default {
       :icon="icons.mdiHome"
       toolbarTitle="Acceuil"
     ></Toolbar>
-    <div class="mt-10">
+    <!-- <div class="mt-10">
       <Vue3Marquee :duration="25">
         <v-row>
           <v-col
@@ -304,9 +303,9 @@ export default {
         </v-row>
       </Vue3Marquee>
     </div>
-    <br /><br /><br /><br /><br /><br />
-   
-    <div>
+    <br /><br /><br /><br /><br /><br /> -->
+
+    <!-- <div>
       <h2>Tableau Récapitulatif des Notes par Matière avec Moyenne Ponderée</h2>
       <v-card>
         <v-card-title>Notes des Élèves</v-card-title>
@@ -335,6 +334,6 @@ export default {
       :prependIcon="icons.mdiAccount"
       :appendIcon="icons.mdiGift"
       :onClickButton="onClickBt"
-    ></Button>
+    ></Button> -->
   </AuthenticatedLayout>
 </template>

@@ -111,14 +111,14 @@ Route::resource('frais', FraisController::class)->only(['update', 'destroy']);
 Route::get('frais/{type}', [FraisController::class, 'index'])->name('frais.index');
 Route::get('Frais/{type}', [FraisController::class, 'create'])->name('frais.create');
 Route::post('frais/{type}', [FraisController::class, 'store'])->name('frais.store');
-Route::delete('frais/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
+Route::delete('frais_sup/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
 Route::resource('affectations', AffectationController::class)->only(['update', 'destroy']);
 Route::delete('affectationivausup/{type}', [AffectationController::class, 'niveausupprime'])->name('affectations.niveausupprime');
 Route::delete('affectationsup/{type}', [AffectationController::class, 'supprimerUE'])->name('affectationsup.supprimerUE');
 Route::get('affectation/{type}', [AffectationController::class, 'create'])->name('affectations.create');
 Route::get('affectations/{type}', [AffectationController::class, 'index'])->name('affectations.index');
 Route::post('affectations/{type}', [AffectationController::class, 'store'])->name('affectations.store');
-Route::delete('frais/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
+// Route::delete('frais/{type}', [FraisController::class, 'supprimer'])->name('frais.supprimer');
 // Route::resource('calendrierscolaire/{parameter}', CalendrierscolaireController::class);
 Route::prefix('calendrierscolaire')->group(function () {
     Route::resource('{type}', CalendrierscolaireController::class)->only(['create', 'store', 'index']);
@@ -137,6 +137,7 @@ Route::get('affectationEnseignants/{type}', [AffectationEnseignantController::cl
 Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'index'])->name('AffectationEnseignants.index');
 Route::post('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'store'])->name('AffectationEnseignants.store');
 Route::get('AffectationEnseignants', [AffectationEnseignantController::class, 'edit'])->name('AffectationEnseignants.edit');
+Route::delete('AffectationEnseignantssup/{type}', [AffectationEnseignantController::class, 'supprimerE'])->name('AffectationEnseignants.supprimerE');
 Route::resource('filieres', FilliereController::class)->only([ 'update', 'destroy']);
 Route::get('filierescreate/{type}', [FilliereController::class, 'create'])->name('filieres.create');
 Route::post('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
