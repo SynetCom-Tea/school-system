@@ -53,6 +53,9 @@ export default {
         },
         submit() {
             this.form.post(route('users.store'), {
+                onSuccess: () => {
+                    console.log('User created successfully');
+                },
                 onFinish: () => {
                     // this.form.reset()
                     if (this.$page.props.flashd.messages) {
@@ -92,8 +95,17 @@ export default {
             }
         },
     },
+    // created() {
+    //     this.role_p_u = this.role.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
+    // },
+
+    // Dans User/Create.vue
     created() {
-        this.role_p_u = this.role.filter(el => el.name !== 'Administrateur' && el.name !== 'Super-administrateur')
+        this.role_p_u = this.role.filter(el => 
+            el.name !== 'Administrateur' && 
+            el.name !== 'Super-administrateur' //&&
+            // el.etablissement_id === this.$page.props.auth.user.etablissement_id
+        );
     },
     mounted() {
         //  this.updateUserTypes(this.section_id);

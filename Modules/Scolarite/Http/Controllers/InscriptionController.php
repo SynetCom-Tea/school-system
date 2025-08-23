@@ -71,7 +71,7 @@ class InscriptionController extends Controller
         // dd($apprenant);
         $section = json_decode($request->query('section'));
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $section);
-        $p = Parametre::where('etablissement_section_id',$etablissement_section)->first();
+        $p = Parametre::where('etablissement_section_id',$etablissement_section[0])->first(); //modifier par Sam avec ajout [0] car la fonction getSectionEtablissement() retourne un tableau mais vous essayez de l'utiliser comme une valeur simple dans la requête
         if(!is_null($p)){
             $nbre_limite_eleve_classe_par_etab_section = $p->nbre_limite_eleve_par_classe;
         }else{
@@ -81,7 +81,7 @@ class InscriptionController extends Controller
         if($section == '3' || $section == '4'){
             // dd('3 ou 4');
             $cf = CycleFiliere::where('cycle_id',$request->cycle_id ? $request->cycle_id : 1)->whereHas('filiere', function($query) use ($section, $etablissement_section){
-                $query->where('etablissement_section_id',$etablissement_section)->where(function ($query) use ($section) {
+                $query->where('etablissement_section_id',$etablissement_section[0])->where(function ($query) use ($section) { //modifier par Sam avec ajout [0] car la fonction getSectionEtablissement() retourne un tableau mais vous essayez de l'utiliser comme une valeur simple dans la requête
                     if($section == '3'){
                         return $query->whereNull('departement_id');
                     } elseif($section == '4') {
@@ -105,7 +105,7 @@ class InscriptionController extends Controller
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
-            'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id',$etablissement_section)->where('statut','1')->with('type_document')->get(),
+            'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id',$etablissement_section[0])->where('statut','1')->with('type_document')->get(), // Récupération des types de documents modifier par Sam avec ajout [0] car la fonction getSectionEtablissement() retourne un tableau mais vous essayez de l'utiliser comme une valeur simple dans la requête
             'tuteurs' => ApprenantTuteur::whereHas('apprenant', function($query){$query->where('etablissement_id',Auth::user()->etablissement_id);})->with('tuteur')->get()
         ]);
     }

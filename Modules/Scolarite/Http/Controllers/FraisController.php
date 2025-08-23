@@ -26,6 +26,10 @@ class FraisController extends Controller
     {
 
         $ets_id = getSectionEtablissement(Auth::user()->etablissement_id, $type)->first();
+        
+         // AJOUTEZ CES LIGNES POUR DEBUGUER
+    // dd($ets_id, Auth::user()->etablissement_id, $type);
+    // Si vous voyez s'afficher "null" ou un array, vous avez trouvé le problème.
         // dd($ets_id);
         // $frais=Frais::with('annee','niveau','etablissement_type_frais.type_frais')->whereHas('etablissement_type_frais',function ($query) use ($ets_id){
         //     $query->where('etablissement_section_id',$ets_id);
@@ -141,9 +145,17 @@ class FraisController extends Controller
      * @return Renderable
      */
     public function create($type)
-    {
-        $ets_id = getSectionEtablissement(Auth::user()->etablissement_id, $type);
+    {  
+        // modifier
+        $ets_id_collection = getSectionEtablissement(Auth::user()->etablissement_id, $type);
 
+    // Transformez la collection en un simple tableau
+        $ets_id = $ets_id_collection->toArray(); // [12, 13]
+        // $ets_id = getSectionEtablissement(Auth::user()->etablissement_id, $type);
+
+      // AJOUTEZ CES LIGNES POUR DEBUGUER
+    // dd($ets_id, Auth::user()->etablissement_id, $type);
+     // Si vous voyez s'afficher "null" ou un array, vous avez trouvé le problème.
         return Inertia::render('Frais/Create', [
             'typefrais' => EtablissementTypeFrais::where('etablissement_section_id',$ets_id)->where('statut',1)->with('type_frais')->get(),
             'section_id' => $type,
@@ -162,12 +174,15 @@ class FraisController extends Controller
      */
     public function store(Request $request,$type)
     {
+        //modifier
         // dd($request->all());
         $ets_id = Auth::user()->etablissement_id;
-        $ets_section_id = getSectionEtablissement(Auth::user()->etablissement_id, $type);
-
+        $ets_section_ids = getSectionEtablissement(Auth::user()->etablissement_id, $type);
+        // Transformez la collection en tableau
+         $ets_section_id = $ets_section_ids->toArray(); // [12, 13]
         foreach($request->donnees as $donnee){
-            $etab_type_frais = EtablissementTypeFrais::where('etablissement_section_id',$ets_section_id)->where('statut',1)->where('type_frais_id',$donnee['type_frais_id'])->first();
+             // Utilisez whereIn au lieu de where
+            $etab_type_frais = EtablissementTypeFrais::whereIn('etablissement_section_id',$ets_section_id)->where('statut',1)->where('type_frais_id',$donnee['type_frais_id'])->first();
             foreach($donnee['niveau_id'] as $niv){
             if($type ==3 || $type== 4)
                { Frais::updateOrInsert([

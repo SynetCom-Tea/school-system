@@ -120,7 +120,7 @@ class EnseignantController extends Controller
             // $classes = ClasseAnnee::with('classe')->whereHas('classe',function($classe) use ($mat){
             //     $classe->where('etablissement_section_id',$mat->etablissement_section_id);
             // })->where('annee_id',$annee->id)->get();
-
+            // dd($annee);
             foreach($classes as $classe){
                 $trouver=false;
                 if($type<=2){

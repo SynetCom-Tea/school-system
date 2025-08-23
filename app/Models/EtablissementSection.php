@@ -13,6 +13,11 @@ class EtablissementSection extends Model
 {
 
     use HasFactory, SoftDeletes;
+     // AJOUTEZ CETTE LIGNE POUR SPÉCIFIER LE NOM DE LA TABLE
+    protected $table = 'etablissement_section';
+    // AJOUTEZ CETTE LIGNE POUR SPÉCIFIER LES CHAMPS FILLABLES
+    // Vous pouvez ajouter d'autres champs si nécessaire
+    
     protected $fillable =  [
         'code',
         'regime_evaluation_id',

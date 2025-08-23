@@ -15,9 +15,7 @@ export default {
     mdiPlus,
   },
   layout: AuthenticatedLayout,
-  props: ["users", "sectionID"],
-  // Properties returned from data() become reactive state
-  // and will be exposed on `this`.
+  props: ["users", "sectionID", "timestamp"], // AJOUTEZ timestamp
   data() {
     return {
       form: this.$inertia.form({
@@ -100,45 +98,30 @@ export default {
     },
     customizedUsers() {
       let list = this.users;
-      let vlist = [],
-        apprenant,
-        tuteur,
-        superadmin,
-        enseignant;
-
+      let vlist = [];
+      
       if (list && list.length > 0) {
         list.forEach((element, index) => {
-          if (element) {
-            apprenant = element.apprenant ? element.apprenant : null;
-            tuteur = element.tuteur ? element.tuteur : null;
-            enseignant = element.enseignant ? element.enseignant : null;
-            superadmin = element.etablissement_id == null ? element : null;
-          }
+          let apprenant = element.apprenant ? element.apprenant : null;
+          let tuteur = element.tuteur ? element.tuteur : null;
+          let enseignant = element.enseignant ? element.enseignant : null;
+          let superadmin = element.etablissement_id == null ? element : null;
+          
           vlist.push({
-            type_user: apprenant
-              ? "Apprenant"
-              : tuteur
-              ? "Tuteur"
-              : enseignant
-              ? "Enseignant"
-              : superadmin
-              ? "Super-Administrateur"
-              : "Administrateur",
+            type_user: apprenant ? "Apprenant" :
+                      tuteur ? "Tuteur" :
+                      enseignant ? "Enseignant" :
+                      superadmin ? "Super-Administrateur" : "Administrateur",
             count: index + 1,
-            user: element.nom
-              ? element
-              : apprenant
-              ? apprenant
-              : tuteur
-              ? tuteur
-              : enseignant,
+            user: element.nom ? element :
+                  apprenant ? apprenant :
+                  tuteur ? tuteur :
+                  enseignant,
             login: element.email,
           });
         });
       }
-
-      this.dataUsers = vlist ?? [];
-
+      
       return vlist;
     },
   },
@@ -150,6 +133,15 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
+    // AJOUTEZ CE WATCHER
+    users: {
+      handler(newUsers) {
+        console.log('Users updated, refreshing data');
+        this.dataUsers = this.customizedUsers;
+      },
+      deep: true,
+      immediate: true
+    }
   },
   methods: {
     goTo() {
@@ -176,7 +168,7 @@ export default {
   },
   mounted() {
     this.getDatatableTitle;
-    this.customizedUsers;
+    this.dataUsers = this.customizedUsers;
   },
 };
 </script>
@@ -190,6 +182,7 @@ export default {
 
     <v-card-text>
       <Datatable
+        :key="timestamp"
         :titleDatatable="getDatatableTitle"
         :headers="headers"
         :items="dataUsers"

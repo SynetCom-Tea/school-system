@@ -99,14 +99,27 @@ class AffectationEnseignantController extends Controller
 
             foreach($enseignement_annees as $enseignement_annee){
 
-                if($enseignant->id == $enseignement_annee->enseignant->id){
-                    $tabs[$key] = [
-                        'enseignant'=>$enseignement_annee->enseignant,
-                        'list' => $list1[$enseignant->id],
-                        'annee'=>$enseignement_annee->classe_annee->annee->libelle,
-                    ];
+                // if($enseignant->id == $enseignement_annee->enseignant->id){
+                //     $tabs[$key] = [
+                //         'enseignant'=>$enseignement_annee->enseignant,
+                //         'list' => $list1[$enseignant->id],
+                //         'annee'=>$enseignement_annee->classe_annee->annee->libelle,
+                //     ];
 
-                }
+                // }
+
+                // On vérifie chaque niveau d'accès aux propriétés
+                if($enseignement_annee->enseignant !== null &&
+                $enseignement_annee->classe_annee !== null &&
+                $enseignement_annee->classe_annee->annee !== null &&
+                $enseignant->id == $enseignement_annee->enseignant->id) {
+
+                    $tabs[$key] = [
+                        'enseignant' => $enseignement_annee->enseignant,
+                        'list' => $list1[$enseignant->id] ?? [], // '?? []' est aussi une vérification de null pour le tableau !
+                        'annee' => $enseignement_annee->classe_annee->annee->libelle, // Maintenant cette ligne est safe
+                    ];
+}
 
             }
 

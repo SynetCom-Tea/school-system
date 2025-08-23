@@ -150,44 +150,140 @@ class UserController extends Controller
 
         return $list ?? [];
     }
-    public function index(Request $request)
-    {
-        // dd($request->all());
-        $authUser = Auth::user();
-        if (Auth::user() == null) {
-            return redirect('/login')->with('message', [
-                'type' => 'error',
-                'text' => 'Session expirée!',
-            ]);
-        }
-        // dump('request:', $request->all(), $authUser);
-        // die();
-        $vUsers = null;
-        // dump('T:', $request->section_id);
-        if ($request->section_id != null) {
-            $vUsers = User::where('users.etablissement_id', (int)$authUser->etablissement_id)
-            ->where('users.user_id', (int)$authUser->id)->get();
-        }
-        if ($request->section_id == null) {
-            $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
-                ->where('users.user_id', (int)$authUser->id)
-                ->with('etablissement')->get();
-        }
-        return Inertia::render('User/Index', [
-            'users' => $vUsers ?? [],
-            'sectionID' => $request->section_id ?? null
-        ]);
+    // public function index(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $authUser = Auth::user();
+    //     if (Auth::user() == null) {
+    //         return redirect('/login')->with('message', [
+    //             'type' => 'error',
+    //             'text' => 'Session expirée!',
+    //         ]);
+    //     }
+    //     // dump('request:', $request->all(), $authUser);
+    //     // die();
+    //     $vUsers = null;
+    //     // dump('T:', $request->section_id);
+    //     if ($request->section_id != null) {
+    //         $vUsers = User::where('users.etablissement_id', (int)$authUser->etablissement_id)
+    //         ->where('users.user_id', (int)$authUser->id)->get();
+    //     }
+    //     if ($request->section_id == null) {
+    //         $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
+    //             ->where('users.user_id', (int)$authUser->id)
+    //             ->with('etablissement')->get();
+    //     }
+    //     return Inertia::render('User/Index', [
+    //         'users' => $vUsers ?? [],
+    //         'sectionID' => $request->section_id ?? null,
+    //         'timestamp' => now()->timestamp // ← NOUVEAU: ajoutez un timestamp
+    //     ]);
+    // }
+
+public function index(Request $request)
+{
+    $authUser = Auth::user();
+    if (Auth::user() == null) {
+        return redirect('/login');
     }
 
+    // REQUÊTE SIMPLE : tous les users de l'établissement
+    $vUsers = User::where('etablissement_id', (int)$authUser->etablissement_id)
+                ->with(['etablissement', 'roles'])
+                ->get();
+
+    return Inertia::render('User/Index', [
+        'users' => $vUsers,
+        'sectionID' => $request->section_id ?? null,
+        'timestamp' => now()->timestamp
+    ]);
+}
     /**
      * Show the form for creating a new resource.
      */
+    // private function getEnseignants($type)
+    // {
+    //     if($type == 1){
+    //         $enseignants = Enseignant::where('etablissement_id', Auth::user()->etablissement_id)->get();
+
+    //         // Appliquer la transformation avec la méthode map
+    //         $enseignantsTransformed = $enseignants->map(function ($enseignant) {
+    //             return [
+    //                 'id' => $enseignant->id,
+    //                 'matricule' => $enseignant->matricule,
+    //                 'nom' => $enseignant->nom,
+    //                 'prenom' => $enseignant->prenom,
+    //                 'nomcomplet' => $enseignant->matricule . ' - ' . $enseignant->nom . ' ' . $enseignant->prenom
+    //                 // Ajoutez d'autres propriétés au besoin
+    //             ];
+    //         });
+    //     }else{
+    //         $tuteurs = ApprenantTuteur::whereHas('apprenant', function ($query) {
+    //             $query->where('etablissement_id', Auth::user()->etablissement_id);
+    //         })->with('tuteur')->get();
+
+    //         // Appliquer la transformation avec la méthode map
+    //         $enseignantsTransformed = $tuteurs->pluck('tuteur')->unique()->map(function ($tuteur) {
+    //             return [
+    //                 'id' => $tuteur->id,
+    //                 'nom' => $tuteur->nom,
+    //                 'prenom' => $tuteur->prenom,
+    //                 'nomcomplet' => $tuteur->nom . ' ' . $tuteur->prenom
+    //                 // Ajoutez d'autres propriétés au besoin
+    //             ];
+    //         });
+    //     }
+        
+
+    //     return $enseignantsTransformed;
+    // }
+    
+
+    // private function getEnseignants($type)
+    // {
+    //     $authUser = Auth::user();
+        
+    //     if($type == 1){
+    //         // FILTREZ LES ENSEIGNANTS PAR ÉTABLISSEMENT
+    //         $enseignants = Enseignant::where('etablissement_id', $authUser->etablissement_id)->get();
+
+    //         $enseignantsTransformed = $enseignants->map(function ($enseignant) {
+    //             return [
+    //                 'id' => $enseignant->id,
+    //                 'matricule' => $enseignant->matricule,
+    //                 'nom' => $enseignant->nom,
+    //                 'prenom' => $enseignant->prenom,
+    //                 'nomcomplet' => $enseignant->matricule . ' - ' . $enseignant->nom . ' ' . $enseignant->prenom
+    //             ];
+    //         });
+    //     } else {
+    //         // FILTREZ LES TUTEURS PAR ÉTABLISSEMENT
+    //         $tuteurs = ApprenantTuteur::whereHas('apprenant', function ($query) use ($authUser) {
+    //             $query->where('etablissement_id', $authUser->etablissement_id);
+    //         })->with('tuteur')->get();
+
+    //         $enseignantsTransformed = $tuteurs->pluck('tuteur')->unique()->map(function ($tuteur) {
+    //             return [
+    //                 'id' => $tuteur->id,
+    //                 'nom' => $tuteur->nom,
+    //                 'prenom' => $tuteur->prenom,
+    //                 'nomcomplet' => $tuteur->nom . ' ' . $tuteur->prenom
+    //             ];
+    //         });
+    //     }
+
+    //     return $enseignantsTransformed;
+    // }
+
+
     private function getEnseignants($type)
     {
+        $authUser = Auth::user();
+        
         if($type == 1){
-            $enseignants = Enseignant::where('etablissement_id', Auth::user()->etablissement_id)->get();
+            // Filtrer les enseignants par établissement
+            $enseignants = Enseignant::where('etablissement_id', $authUser->etablissement_id)->get();
 
-            // Appliquer la transformation avec la méthode map
             $enseignantsTransformed = $enseignants->map(function ($enseignant) {
                 return [
                     'id' => $enseignant->id,
@@ -195,56 +291,87 @@ class UserController extends Controller
                     'nom' => $enseignant->nom,
                     'prenom' => $enseignant->prenom,
                     'nomcomplet' => $enseignant->matricule . ' - ' . $enseignant->nom . ' ' . $enseignant->prenom
-                    // Ajoutez d'autres propriétés au besoin
                 ];
             });
-        }else{
-            $tuteurs = ApprenantTuteur::whereHas('apprenant', function ($query) {
-                $query->where('etablissement_id', Auth::user()->etablissement_id);
+        } else {
+            // Filtrer les tuteurs par établissement
+            $tuteurs = ApprenantTuteur::whereHas('apprenant', function ($query) use ($authUser) {
+                $query->where('etablissement_id', $authUser->etablissement_id);
             })->with('tuteur')->get();
 
-            // Appliquer la transformation avec la méthode map
             $enseignantsTransformed = $tuteurs->pluck('tuteur')->unique()->map(function ($tuteur) {
                 return [
                     'id' => $tuteur->id,
                     'nom' => $tuteur->nom,
                     'prenom' => $tuteur->prenom,
                     'nomcomplet' => $tuteur->nom . ' ' . $tuteur->prenom
-                    // Ajoutez d'autres propriétés au besoin
                 ];
             });
         }
-        
 
         return $enseignantsTransformed;
     }
-    public function create(Request $request)
-    {
-        $user = Auth::user();
-        $sections = DB::select("
-            SELECT s.id,s.libelle FROM sections s
-            JOIN etablissement_section es ON s.id = es.section_id
-            JOIN etablissements e ON e.id = es.etablissement_id
-            JOIN users u ON e.id = u.etablissement_id
-            WHERE e.id = :etablissement_id 
-        ",
-        [
-            'etablissement_id' => $user->etablissement_id,
-        ]);
-        return Inertia::render('User/Create', [
-            'section_id' => $request->section_id,
-            'etablissements' => Etablissement::all(),
-            'role' => Role::all(),
-            'AllSections' => $sections,
-            'permissions' => Permission::all(),
-            'enseignants' => $this->getEnseignants(1),
-            'tuteurs' => $this->getEnseignants(2),
-            'etablissement_sections' => Section::whereHas('etablissements.users', function ($q) use ($user) {
-                $q->where('id', $user->id);
-            })->get()
-        ]);
-    }
 
+
+    // public function create(Request $request)
+    // {
+    //     $user = Auth::user();
+    //     $sections = DB::select("
+    //         SELECT s.id,s.libelle FROM sections s
+    //         JOIN etablissement_section es ON s.id = es.section_id
+    //         JOIN etablissements e ON e.id = es.etablissement_id
+    //         JOIN users u ON e.id = u.etablissement_id
+    //         WHERE e.id = :etablissement_id 
+    //     ",
+    //     [
+    //         'etablissement_id' => $user->etablissement_id,
+    //     ]);
+    //     return Inertia::render('User/Create', [
+    //         'section_id' => $request->section_id,
+    //         'etablissements' => Etablissement::all(),
+    //         'role' => Role::all(),
+    //         'AllSections' => $sections,
+    //         'permissions' => Permission::all(),
+    //         'enseignants' => $this->getEnseignants(1),
+    //         'tuteurs' => $this->getEnseignants(2),
+    //         'etablissement_sections' => Section::whereHas('etablissements.users', function ($q) use ($user) {
+    //             $q->where('id', $user->id);
+    //         })->get()
+    //     ]);
+    // }
+
+  public function create(Request $request)
+{
+    $user = Auth::user();
+    
+    $sections = DB::select("
+        SELECT s.id, s.libelle FROM sections s
+        JOIN etablissement_section es ON s.id = es.section_id
+        WHERE es.etablissement_id = :etablissement_id 
+    ", ['etablissement_id' => $user->etablissement_id]);
+
+    // SOUS-REQUÊTE POUR FILTRER LES RÔLES
+    $roles = Role::whereNull('etablissement_section_id')
+            ->orWhereIn('etablissement_section_id', function($query) use ($user) {
+                $query->select('id')
+                      ->from('etablissement_section')
+                      ->where('etablissement_id', $user->etablissement_id);
+            })
+            ->get();
+
+    return Inertia::render('User/Create', [
+        'section_id' => $request->section_id,
+        'etablissements' => Etablissement::all(),
+        'role' => $roles, // RÔLES FILTRÉS
+        'AllSections' => $sections,
+        'permissions' => Permission::all(),
+        'enseignants' => $this->getEnseignants(1),
+        'tuteurs' => $this->getEnseignants(2),
+        'etablissement_sections' => Section::whereHas('etablissements', function($q) use ($user) {
+            $q->where('etablissements.id', $user->etablissement_id);
+        })->get()
+    ]);
+}
     /**
      * Store a newly created resource in storage.
      */
@@ -252,7 +379,11 @@ class UserController extends Controller
     {
         CreationCompte(null,null,$request->type_user,$request->roles,$request);
 
-        return redirect()->route('users.index')->with('message', 'Utilisateur a été créé avec succès !');
+        // return redirect()->route('users.index')->with('message', 'Utilisateur a été créé avec succès !');
+        // REDIRIGEZ AVEC LE SECTION_ID POUR GARDER LE CONTEXTE
+        return redirect()->route('users.index', [
+            'section_id' => $request->section_id
+        ])->with('message', 'Utilisateur créé avec succès !');
 
     }
 
