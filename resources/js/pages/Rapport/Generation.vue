@@ -143,7 +143,7 @@ export default {
             // window.location.href = route('bulletin', { type: 1, classe: this.classe, periode: this.periode, section: this.sectionID}) 
         },
         async generate() {
-            // console.log(this.tab)
+            
             if (this.tab == 'option-1') {
                 this.$inertia.replace(this.$page.url, {
                     data: {
@@ -160,7 +160,9 @@ export default {
                     this.setData(this.classe)
                     // this.data = this.resultats;
                 }
+                console.log(this.data)
                 this.data = this.resultats;
+
             } else if (this.tab == 'option-2') {
                 await axios
                     .get(

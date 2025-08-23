@@ -14,13 +14,14 @@ use Modules\Enseignement\Entities\Matiere;
 
     if (!function_exists('getClasses')) {
         function getClasses($anneeScolaireId, $sectionEtablissement, $classe = null) {
+            //dd('GezClasse function',$anneeScolaireId, $sectionEtablissement);
             $query = Classe::join('classe_annees', 'classes.id', '=', 'classe_annees.classe_id')
-                ->whereIn('classe_annees.annee_id', [$anneeScolaireId])
+                ->where('classe_annees.annee_id', $anneeScolaireId)
                 ->whereIn('classes.etablissement_section_id', $sectionEtablissement);
-
+            // dd('Quey',$query->firstOrFail());
             // Add condition if $classe is not null
             if ($classe !== null) {
-                $query->where('classe_annees.id', $classe);
+                $query->where('classe_annees.classe_id', $classe);
             }
 
             $classes = $query->get();

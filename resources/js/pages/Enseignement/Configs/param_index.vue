@@ -69,7 +69,7 @@
                 <v-expansion-panel-title v-slot="{ open }">
                     <v-row no-gutters>
                         <v-col cols="4" class="d-flex justify-start">
-                            Cocher les&nbsp;<span style="font-size: 15px; color: blue;">TYPES DE DOCUMENTS</span>&nbsp;que vous utilisiez
+                            Cocher les&nbsp;<span style="font-size: 15px; color: blue;">DOCUMENTS REQUIS</span>&nbsp;que vous utilisiez
                         </v-col>
                         <v-col
                         cols="8"

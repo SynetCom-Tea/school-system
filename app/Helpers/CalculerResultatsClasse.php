@@ -70,17 +70,25 @@ if (!function_exists('calculerResultatsClasse')) {
 }
 
 if (!function_exists('calculerResultatsClassePrimaire')) {
-    function calculerResultatsClassePrimaire($classeId, $section, $etablissement_section, $periode, $apprenants = null) {
+    
+    function calculerResultatsClassePrimaire($classeId, $section, $etablissement_section, $periode, $apprenants = null){
+        $annee = Annee::where('actif',1)->first();
+
+        //dd(Annee::all(), $annee);
         $resultatsClasse = [];
-        $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
+        $classe = getClasses($annee->id, $etablissement_section, $classeId)->firstOrFail();
+        $classe_annee_id = ClasseAnnee::where('classe_id', $classeId)->where('annee_id', $annee->id)->first()->id;
+        // dd('Calcul', $classe);
         if($apprenants != null){
             $apprenantsDeLaClasse = $apprenants;
             // dd($apprenants);
         }else{
-            $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+            $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->where('classe_id', $classeId)->where('annee_id', $annee->id)->first()->apprenants;
+            
         }
+        // dd('apprenantsDeLaClasse',$apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $apprenant) {
-            $notes_apprenant = getNoteByClasses($classeId, $section, $periode, $apprenant->id);
+            $notes_apprenant = getNoteByClasses($classe_annee_id, $section, $periode, $apprenant->id);
             $moyenne = calculerMoyennePrimaire($notes_apprenant);
             $notes = array_column($notes_apprenant->toArray(), 'note');
             $sommeNotes = array_sum($notes);
@@ -96,9 +104,9 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
                     'note' => $note->note
                 ];
             }
-        
+            // dd('notes_apprenant', $notes_apprenant);
             $resultatsClasse[] = [
-                'classe_annee_id' => $classeId,
+                'classe_annee_id' => $classe_annee_id,
                 'periode' => $notes_apprenant[0]->periode,
                 'nom_classe' => $classe->libelle,
                 'apprenant_id' => $apprenant->id,
@@ -124,7 +132,10 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
             $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
             $prevRank = $rank;
             $rank++;
+            dump($resultat);
         }
+        die();
+
         return $resultatsClasse;
     }
 }

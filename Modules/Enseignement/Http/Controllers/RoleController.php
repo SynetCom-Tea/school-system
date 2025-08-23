@@ -11,6 +11,7 @@ use App\Models\PermissionRole;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Http\Controllers\Controller;
+use FontLib\Table\Type\name;
 
 class RoleController extends Controller
 {
@@ -103,23 +104,42 @@ class RoleController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
-    {
-        $permission_roles = PermissionRole::where('user_id', Auth::user()->id)->where('role_id', $id)->get();
-
-        foreach ($permission_roles as $permission_role) {
-            // dd($permission_role->id);
-            $permission_role_users = PermissionRole::find($permission_role->id);
-            // dump($permission_role_users->id);
-            foreach ($request->permissions as $permission) {
-                $permission_role_users->updateOrCreate([
-                    'user_id' => Auth::user()->id,
-                    'role_id' => $request->role,
-                    'permission_id' => $permission
-                ]);
+    public function update (Request $request,$id){
+        $role = Role::find($id);
+        $role->name = $request->name ;
+        // dd($request);
+        $role->update();
+        $role->syncPermissions($request->permissions);
+        $roles = Role::with('users')->where('id',$request->id)->get()[0];
+        // dd($roles->users);
+        if ($roles->users != []){
+            foreach ($roles->users as $key => $user) {
+                $user->syncPermissions($request->permissions);
             }
-        } // die();
+        }
+        return redirect()->back()->with('message', [
+            'type' => 'success',
+            'text' => 'Rôle modifié avec succès!',
+        ]);
     }
+    // public function update(Request $request, string $id)
+    // {
+    //     $permission_roles = PermissionRole::where('user_id', Auth::user()->id)->where('role_id', $id)->get();
+    //     $role = Role::find($id);
+    //     $role->name = $request->name;
+    //     $role->update();
+    //     foreach ($permission_roles as $permission_role) {
+    //         $permission_role_users = PermissionRole::find($permission_role->id);
+    //         // dump($permission_role_users->id);
+    //         foreach ($request->permissions as $permission) {
+    //             $permission_role_users->updateOrCreate([
+    //                 'user_id' => Auth::user()->id,
+    //                 'role_id' => $request->role,
+    //                 'permission_id' => $permission
+    //             ]);
+    //         }
+    //     } // die();
+    // }
     /**
      * Remove the specified resource from storage.
      */

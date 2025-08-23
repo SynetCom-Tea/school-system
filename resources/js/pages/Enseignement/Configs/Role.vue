@@ -34,10 +34,12 @@ export default {
     props: ["allRoles", "Allpermissions", "section_id"],
     data() {
         return {
+            title : "",
             tab: null,
             role_p_a: null,
             role_p_u: null,
             form: useForm({
+                id : null,
                 name: null,
                 permissions: [],
                 section_id: null
@@ -79,6 +81,7 @@ export default {
     methods: {
         create() {
             this.dialog = true;
+            this.title = "Nouveau"
         },
         submit() {
             // console.log(this.form)
@@ -113,6 +116,7 @@ export default {
             });
         },
         editItem(item) {
+            this.title = "Modifie"
             // console.log(item.role.id)
             if (this.$page.props.auth.user.id != 1) {
                 this.$inertia.replace(this.$page.url, {
@@ -121,17 +125,18 @@ export default {
                     },
                 });
             }
-            this.dialogEdit = true;
-            this.form.role = item.id;
+            this.dialog = true;
+            this.form.id = item.id;
+            this.form.name = item.name;
             this.form.permissions = item.permissions.map((el) => el.id);
         },
 
         update() {
             // console.log(this.form.role)
-            this.form.put(route("roles.update", this.form.role), {
+            this.form.put(route("roles.update", this.form.id), {
                 onFinish: () => {
                     this.closeEdit()
-                    this.dialogEdit = false,
+                    this.dialog = false,
 
                     this.$swal({
                         position: "top-end",
@@ -193,13 +198,7 @@ export default {
     },
     created(){
         this.form.section_id = this.section_id
-    },
-    mounted() {
-        this.role_p_u = this.allRoles.filter(
-             (el) => el.name !== "Administrateur" && el.name !== "Super-administrateur"
-        );
-         this.role_p_a = this.allRoles.filter((el) => el.name !== "Super-administrateur");
-    },
+    }
 };
 </script>
 
@@ -225,7 +224,8 @@ export default {
                             <v-card>
                                 <v-toolbar dense style="background-color: #7d002c">
                                     <v-toolbar-title style="color: white">
-                                        <v-icon left :icon="icon.mdiPlus"></v-icon> Nouveau Rôle
+                                        <v-icon left :icon="icon.mdiPlus" v-if="!form.id"></v-icon> 
+                                        <v-icon left :icon="icon.mdiPencil" v-else></v-icon> {{ title }} Rôle
                                     </v-toolbar-title>
                                     <v-spacer></v-spacer>
                                     <v-icon :icon="icon.mdiCloseCircle" title="Annuler" size="large" style="margin: 10px" color="white" @click="close()"></v-icon>
@@ -246,7 +246,8 @@ export default {
 
                                 <v-card-actions class="justify-end">
                                     <v-spacer></v-spacer>
-                                    <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit"></Button>
+                                    <Button variant="outlined" class="mb-2" nameButton="Modifier" title="Valider et Fermer la modale" v-if="form.id" style="height: 30px" :prependIcon="icon.mdiPencil" @click="update"></Button>
+                                    <Button variant="outlined" class="mb-2" nameButton="Enreistrer" title="Valider et Fermer la modale"  style="height: 30px" :prependIcon="icon.mdiContentSaveEditOutline" @click="submit" v-else></Button>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
@@ -263,20 +264,10 @@ export default {
                                     <v-card-text>
                                         <v-form>
                                             <v-row>
-                                                <v-col md="12">
-                                                    <Autocomplete label="Rôle" class="mt-1" disabled v-model="form.role" item-title="name" item-value="id" :items="role_p_a" variant="solo-filled" chips clearable>
-                                                    </Autocomplete>
-                                                </v-col>
-                                                <v-col md="12">
-                                                    <Autocomplete v-model="form.permissions" label="Permission" item-title="description" item-value="id" :items="permissions" variant="solo-filled" multiple chips clearable>
-                                                    </Autocomplete>
-                                                </v-col>
-                                            </v-row>
-                                            <v-row>
-                                                <v-col md="12">
-                                                    <Autocomplete label="Role" disabled v-model="form.role" item-title="name" item-value="id" :items="role_p_u" chips clearable>
-                                                    </Autocomplete>
-                                                </v-col>
+                                               <v-col md="12">
+                                                <text-field class="mt-4" name="name" label="Rôle" placeholder="Rôle" v-model="form.name"></text-field>
+                                            </v-col>
+                                            
                                                 <v-col md="12">
                                                     <Autocomplete v-model="form.permissions" label="Permission" item-title="description" item-value="id" :items="permission" multiple chips clearable>
                                                     </Autocomplete>

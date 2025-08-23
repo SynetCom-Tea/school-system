@@ -28,6 +28,10 @@ class RapportController extends Controller
     public function bulletin(Request $request)
     {
         // dd($request->all());
+        // dd('ismo');
+        // $pdf = PDF::loadView('primaire/tester');
+        // return $pdf->stream('itsolutionstuff.pdf');
+        // dd('ok');
         $etab = Etablissement::find(Auth::user()->etablissement_id);
         $annee_encours = getAnneeEncours();
         $periode = $request->periode ? Periode::find($request->periode) : null;
@@ -135,6 +139,33 @@ class RapportController extends Controller
                 ];
 
                 $pdf = PDF::loadView('secondaire/bulletin_par_classe', $data);
+            }elseif($request->section == '3'){
+                $tabs = [];
+                $bulletins = $request->classe && $periode ?  HistoriqueBulletin::where('statut',1)->where('periode',$periode->libelle)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
+                    $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
+                })->with('classe_annee.annee', 'apprenant','historique_notes','classe_annee.classe.niveau')->get() : [];
+
+                
+
+                foreach ($bulletins as $key => $bulletin) {
+                    $bulletin->groupUe = $bulletin->historique_notes->groupBy('nom_eu');
+                    $tabs[$bulletin->apprenant_id]=[
+                        'classe' => $bulletin->classe_annee->classe,
+                        'bulletin' => $bulletin,
+                    ];
+                }
+            
+                // dd($tabs);
+                $request->classe;
+                $data = [
+                    'etablissement' => $etab,
+                    'section' => $request->section,
+                    'donnees' => $tabs,
+                    'title' => 'Bulletin Semestriel',
+                    'date' => date('m/d/Y'),
+                ];
+            
+                $pdf = PDF::loadView('superieur/bulletin_par_classe', $data);
             }
         }
 
@@ -251,7 +282,8 @@ class RapportController extends Controller
         $filieres = [];
         $cycle_filieres = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $annee = Annee::where('actif',1)->first();
+        $classes = getClasses($annee->id, $etablissement_section);
         if ($request->section_id == 1) {
             $apprenant = 'Élève';
             $section = 'Primaire';
@@ -261,7 +293,9 @@ class RapportController extends Controller
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
                         $premieregeneration = true;
+                        //dd('ds');
                         $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                        //dd('F',$resultats);
                         foreach ($resultats as &$resultat) {
                             ajouterHistoriqueBulletin($resultat, $request->section_id);
                         }
