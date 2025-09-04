@@ -118,6 +118,8 @@ export default {
     },
     mounted() {
         this.form.section_id = this.sectionID
+        console.log(this.
+        AllClasses)
     }
 };
 </script>

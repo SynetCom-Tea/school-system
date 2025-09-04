@@ -1,5 +1,4 @@
 <?php
-
 namespace Modules\Scolarite\Http\Controllers;
 
 use App\Models\Etablissement;
@@ -23,26 +22,48 @@ class VersementController extends Controller
 {
 
     // FUNCTION AJAX
+    // public function ajaxGetInscriptionAboutMle(Request $request)
+    // {
+    //     // dd($request->all());
+    //     $recherche = $request->search;
+    //     $section = $request->section;
+
+    //     if($recherche && $section){
+    //         $items = $recherche ? Inscription::whereHas('apprenant', function($query) use ($recherche){
+    //             $query->where('etablissement_id',Auth::user()->etablissement_id)->where('matricule','like', '%' . $recherche . '%')->orWhere('nom','like', '%' . $recherche . '%')->orWhere('prenom','like', '%' . $recherche . '%');
+    //         })->whereHas('niveau', function($query) use ($section){
+    //             $query->where('section_id',$section);
+    //         })->with('apprenant','annee','niveau')->get() : [];
+
+    //         // dd($items);
+    //         return $items;
+    //     }else{
+    //         return 'ERREUR';
+    //     }
+    // }
+
     public function ajaxGetInscriptionAboutMle(Request $request)
-    {
-        // dd($request->all());
-        $recherche = $request->search;
-        $section = $request->section;
+{
+    $recherche = $request->search;
+    $section = $request->section;
 
-        if($recherche && $section){
-            $items = $recherche ? Inscription::whereHas('apprenant', function($query) use ($recherche){
-                $query->where('etablissement_id',Auth::user()->etablissement_id)->where('matricule','like', '%' . $recherche . '%')->orWhere('nom','like', '%' . $recherche . '%')->orWhere('prenom','like', '%' . $recherche . '%');
-            })->whereHas('niveau', function($query) use ($section){
-                $query->where('section_id',$section);
-            })->with('apprenant','annee','niveau')->get() : [];
+    if($recherche && $section){
+        $items = Inscription::whereHas('apprenant', function($query) use ($recherche) {
+            $query->where('etablissement_id', Auth::user()->etablissement_id)
+                ->where(function($q) use ($recherche) {
+                    $q->where('matricule', 'like', '%' . $recherche . '%')
+                        ->orWhere('nom', 'like', '%' . $recherche . '%')
+                        ->orWhere('prenom', 'like', '%' . $recherche . '%');
+                });
+        })->whereHas('niveau', function($query) use ($section) {
+            $query->where('section_id', $section);
+        })->with('apprenant', 'annee', 'niveau')->get();
 
-            // dd($items);
-            return $items;
-        }else{
-            return 'ERREUR';
-        }
+        return response()->json($items->toArray());
+    } else {
+        return response()->json(['error' => 'Paramètres manquants'], 400);
     }
-
+}
     public function ajaxGetInscriptionForVersement(Request $request)
     {
         // dd($request->all());

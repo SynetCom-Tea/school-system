@@ -27,9 +27,12 @@
                 Cette section vous permet d'attribuer les matières et classes aux enseignants
               </li>
               <li>
-                Le formulaire sera valide si et seulement si tous les champs obligatoires
+                Le formulaire sera valide si et seulement si tous les <strong>champs obligatoires</strong>
                 marqués par <span style="color: red">*</span> sont renseignés
               </li>
+               <li>
+            le message<strong>  "No data available"</strong> indique que toutes les ressources sont déjà attribuées             
+            </li>
             </v-alert>
 
             <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">

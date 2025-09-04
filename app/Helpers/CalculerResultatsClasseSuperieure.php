@@ -19,7 +19,8 @@ use Modules\GestionNote\Entities\Periode;
 if (!function_exists('calculerResultatsClasseSuperieure')) {
     function calculerResultatsClasseSuperieure($classeId, $section, $etablissement_section, $periode, $apprenants = null,$session = null) {
         $resultatsClasse = [];
-        $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
+        $annee = Annee::where('actif',1)->first();
+        $classe = getClasses($annee->id, $etablissement_section, $classeId)->firstOrFail();
         // dd($classe);
         if($apprenants != null){
             $apprenantsDeLaClasse = $apprenants;

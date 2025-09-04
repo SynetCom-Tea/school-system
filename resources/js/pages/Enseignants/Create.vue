@@ -1,3 +1,4 @@
+RESSOURCE/JS/PAGES/ENSEIGNANTS/CREATE.VUE
 <template>
      <Toolbar
       styleToolbar="background-color: white;"
@@ -27,9 +28,12 @@
                Cette section vous permet d'ajouter un enseignant attribuer les matières et affecter les classes
              </li>
              <li>
-               Le formulaire sera valide si et seulement si tous les champs obligatoires
+               Le formulaire sera valide si et seulement si tous les <strong>Champs obligatoires :</strong> 
                marqués par <span style="color: red">*</span> sont renseignés
              </li>
+             <li>
+            le message<strong>  "No data available"</strong> indique que toutes les ressources sont déjà attribuées             
+            </li>
            </v-alert>
 
            <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">

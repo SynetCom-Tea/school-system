@@ -50,6 +50,12 @@ export default {
     goBack() {
       router.get(route("emplois.index"));
     },
+
+     // AJOUTEZ CETTE MÉTHODE
+    close() {
+      this.$router.back(); // ou window.history.back()
+    },
+
     setClasse(niveau) {
       this.classes = this.$page.props.classes.filter((classe) => classe.niveau_id == niveau);
       if(this.sectionEnquestion.id == 1 || this.sectionEnquestion.id == 2){

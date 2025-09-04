@@ -7,9 +7,9 @@
  * @return response()
  */
 
- if (!function_exists('generationCalendar')) {
+if (!function_exists('generationCalendar')) {
     function generationCalendar($startDate, $endDate, $seances) {
-        $occurrences = array(
+        $occurrences = [
             'Dimanche' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
             'Lundi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
             'Mardi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
@@ -17,53 +17,77 @@
             'Jeudi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
             'Vendredi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null],
             'Samedi' => ['occurrences' => 0, 'seances' => [], 'date_debut' => null]
-        );
+        ];
+        
+        $events = [];
+        
+        try {
+            $startDateTime = new DateTime($startDate);
+            $endDateTime = new DateTime($endDate);
+            $currentDate = clone $startDateTime;
 
-        $startDateTime = new DateTime($startDate);
-        $endDateTime = new DateTime($endDate);
+            // Premièrement, créer un mapping des jours de la semaine
+            $daysMapping = [
+                'Lundi' => 'Monday',
+                'Mardi' => 'Tuesday', 
+                'Mercredi' => 'Wednesday',
+                'Jeudi' => 'Thursday',
+                'Vendredi' => 'Friday',
+                'Samedi' => 'Saturday',
+                'Dimanche' => 'Sunday'
+            ];
 
-        $currentDate = $startDateTime;
-        while ($currentDate <= $endDateTime) {
-            $dayOfWeek = $currentDate->format('l');
-            $dayOfWeekFrench = translateDayToFrench($dayOfWeek);
+            while ($currentDate <= $endDateTime) {
+                $dayOfWeek = $currentDate->format('l'); // Jour en anglais
+                $dayOfWeekFrench = translateDayToFrench($dayOfWeek);
 
-            // Incrémenter le compteur pour ce jour de la semaine
-            $occurrences[$dayOfWeekFrench]['occurrences']++;
+                if (isset($occurrences[$dayOfWeekFrench])) {
+                    $occurrences[$dayOfWeekFrench]['occurrences']++;
 
-            // Ajouter les séances pour ce jour de la semaine
-            foreach ($seances as $key => $seance) {
-                if ($seance['jour'] === $dayOfWeekFrench) {
-                    $dateSeance = (new DateTime($seance['date_debut']))->add(new DateInterval('P' . ($key * 7) . 'D'));
-                    $seance['date_seance'] = $dateSeance->format('Y-m-d');
-                    $occurrences[$dayOfWeekFrench]['seances'][] = $seance;
+                    foreach ($seances as $seance) {
+                        // Convertir l'objet en tableau si nécessaire
+                        $seanceArray = is_object($seance) ? $seance->toArray() : $seance;
+                        
+                        if ($seanceArray['jour'] === $dayOfWeekFrench) {
+                            // Utiliser la date courante plutôt qu'un calcul basé sur $key
+                            $dateSeance = clone $currentDate;
+                            
+                            // Générer l'événement
+                            $heureDebut = substr($seanceArray['heure_debut'], 0, 5);
+                            $heureFin = substr($seanceArray['heure_fin'], 0, 5);
+                            
+                            $event = [
+                                'title' => $seanceArray['nom_matiere'] . ', Salle de classe',
+                                'with' => ($seanceArray['enseignant_nom'] ?? '') . ' ' . ($seanceArray['enseignant_prenom'] ?? ''),
+                                'time' => [
+                                    'start' => $dateSeance->format('Y-m-d') . ' ' . $heureDebut,
+                                    'end' => $dateSeance->format('Y-m-d') . ' ' . $heureFin
+                                ],
+                                'color' => "green",
+                                'colorScheme' => "meetings",
+                                'isEditable' => true,
+                                'id' => uniqid(),
+                            ];
+                            
+                            $events[] = $event;
+                            
+                            // Ajouter à occurrences
+                            $seanceWithDate = $seanceArray;
+                            $seanceWithDate['date_seance'] = $dateSeance->format('Y-m-d');
+                            $occurrences[$dayOfWeekFrench]['seances'][] = $seanceWithDate;
 
-                    // Générer l'événement
-                    $heureDebut = substr($seance['heure_debut'], 0, 5);
-                    $heureFin = substr($seance['heure_fin'], 0, 5);
-                    $event = [
-                        'title' => $seance['nom_matiere'] . ', ' . 'Salle de classe',
-                        'with' => $seance['enseignant_nom'] . ' ' . $seance['enseignant_prenom'],
-                        'time' => [
-                            'start' => $seance['date_seance'] . ' ' . $heureDebut,
-                            'end' => $seance['date_seance'] . ' ' . $heureFin
-                        ],
-                        'color' => "green",
-                        'colorScheme' => "sports",
-                        'isEditable' => true,
-                        'id' => uniqid(),
-                        'colorScheme' => 'meetings',
-                    ];
-                    $events[] = $event;
-
-                    if ($occurrences[$dayOfWeekFrench]['date_debut'] === null) {
-                        $occurrences[$dayOfWeekFrench]['date_debut'] = $currentDate->format('Y-m-d');
+                            if ($occurrences[$dayOfWeekFrench]['date_debut'] === null) {
+                                $occurrences[$dayOfWeekFrench]['date_debut'] = $currentDate->format('Y-m-d');
+                            }
+                        }
                     }
                 }
+                
+                $currentDate->modify('+1 day');
             }
-            // Passer au jour suivant
-            $currentDate->modify('+1 day');
+        } catch (Exception $e) {
+            error_log("Erreur dans generationCalendar: " . $e->getMessage());
         }
-
 
         return ['occurrences' => $occurrences, 'events' => $events];
     }

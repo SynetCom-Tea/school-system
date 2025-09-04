@@ -195,7 +195,8 @@ class RapportController extends Controller
         $note_interrogations = [];
         $note_devoir_surveilles = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $annee = Annee::where('actif',1)->first();
+        $classes = getClasses($annee->id, $etablissement_section);
         if ($request->section_id == 3) {
             $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
             $cycle_filieres = DB::table('cycle_filieres')

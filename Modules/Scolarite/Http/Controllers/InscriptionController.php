@@ -71,8 +71,10 @@ class InscriptionController extends Controller
         // dd($apprenant);
         $section = json_decode($request->query('section'));
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $section);
-        $p = Parametre::where('etablissement_section_id', $etablissement_section)->first();
-        if (!is_null($p)) {
+        // $p = Parametre::where('etablissement_section_id', $etablissement_section)->first();
+        // if (!is_null($p)) {
+        $p = Parametre::where('etablissement_section_id',$etablissement_section[0])->first(); //modifier par Sam avec ajout [0] car la fonction getSectionEtablissement() retourne un tableau mais vous essayez de l'utiliser comme une valeur simple dans la requête
+        if(!is_null($p)){
             $nbre_limite_eleve_classe_par_etab_section = $p->nbre_limite_eleve_par_classe;
         } else {
             $nbre_limite_eleve_classe_par_etab_section = null;
@@ -80,9 +82,12 @@ class InscriptionController extends Controller
         // dd($section,$p,$etablissement_section[0]);
         if ($section == '3' || $section == '4') {
             // dd('3 ou 4');
-            $cf = CycleFiliere::where('cycle_id', $request->cycle_id ? $request->cycle_id : 1)->whereHas('filiere', function ($query) use ($section, $etablissement_section) {
-                $query->where('etablissement_section_id', $etablissement_section)->where(function ($query) use ($section) {
-                    if ($section == '3') {
+            // $cf = CycleFiliere::where('cycle_id', $request->cycle_id ? $request->cycle_id : 1)->whereHas('filiere', function ($query) use ($section, $etablissement_section) {
+            //     $query->where('etablissement_section_id', $etablissement_section)->where(function ($query) use ($section) {
+            //         if ($section == '3') {
+            $cf = CycleFiliere::where('cycle_id',$request->cycle_id ? $request->cycle_id : 1)->whereHas('filiere', function($query) use ($section, $etablissement_section){
+                $query->where('etablissement_section_id',$etablissement_section[0])->where(function ($query) use ($section) { //modifier par Sam avec ajout [0] car la fonction getSectionEtablissement() retourne un tableau mais vous essayez de l'utiliser comme une valeur simple dans la requête
+                    if($section == '3'){
                         return $query->whereNull('departement_id');
                     } elseif ($section == '4') {
                         return $query->whereNotNull('departement_id');
@@ -105,162 +110,138 @@ class InscriptionController extends Controller
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
-            'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id', $etablissement_section)->where('statut', '1')->with('type_document')->get(),
-            'tuteurs' => ApprenantTuteur::whereHas('apprenant', function ($query) {
-                $query->where('etablissement_id', Auth::user()->etablissement_id);
-            })->with('tuteur')->get()
+            // 'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id', $etablissement_section)->where('statut', '1')->with('type_document')->get(),
+            // 'tuteurs' => ApprenantTuteur::whereHas('apprenant', function ($query) {
+            //     $query->where('etablissement_id', Auth::user()->etablissement_id);
+            // })->with('tuteur')->get()
+             'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id',$etablissement_section[0])->where('statut','1')->with('type_document')->get(), // Récupération des types de documents modifier par Sam avec ajout [0] car la fonction getSectionEtablissement() retourne un tableau mais vous essayez de l'utiliser comme une valeur simple dans la requête
+            'tuteurs' => ApprenantTuteur::whereHas('apprenant', function($query){$query->where('etablissement_id',Auth::user()->etablissement_id);})->with('tuteur')->get()
         ]);
     }
 
     // Debut requete AXIOS
     public function ajaxInscriptionListe(Request $request, $mat = null, $sec = null)
     {
-        // dd($request->all());
-        // dd($request->nom);
         $nom = null;
         $prenom = null;
         $section = $sec ? $sec : $request->section;
         $matricule = null;
+        
         if ($request->matricule == null && $mat == null) {
             $nom = $request->nom;
             $prenom = $request->prenom;
         } elseif ($request->matricule != null && $mat == null) {
             $matricule = $request->matricule;
         }
-        $list = [];
-        $authUser =  Auth::user();
-        $collection = collect();
-        // $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
-        $et_sec_id = getSectionEtablissement(Auth::user()->etablissement_id, $section)->first();
+        
+        $authUser = Auth::user();
+        $etablissement_id = $authUser->etablissement_id;
+        
+        // Récupération de l'ID de la section d'établissement
+        $et_sec_id = getSectionEtablissement($etablissement_id, $section)->first();
+        
         $year = getAnneeEncours()->id;
-
-        // if ($nameRole == 'Administrateur') {
-        // dd($section);
-        $list = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')->where(function ($query) use ($section, $et_sec_id) {
-            if ($section == '1' || $section == '2') {
-                $query->whereNull('cycle_filiere_id');
-            } elseif ($section == '3') {
-                $query->whereNotNull('cycle_filiere_id')->whereHas('cycleFiliere.filiere', function ($query) use ($et_sec_id) {
-                    return $query->where('etablissement_section_id', $et_sec_id)->whereNull('departement_id');
-                });
-            } elseif ($section == '4') {
-                dump('4');
-                return $query->whereNotNull('cycle_filiere_id')->whereHas('cycleFiliere', function ($query) {
-                    $query->whereHas('filiere', function ($query) {
-                        $query->where('etablissement_id', Auth::user()->etablissement_id)->whereNull('departement_id');
-                    });
-                });
-            }
-            // dd('ggg');
-        })->where(function ($query) use ($section, $matricule, $year, $nom, $prenom) {
-            if ($matricule !== null || $nom !== null || $prenom !== null) {
-            } else {
-
-                $query->where('annee_id', $year);
-                // dd($year);
-            }
-        })
-            ->whereHas('apprenant', function ($query) use ($authUser, $matricule, $nom, $prenom) {
-                if ($matricule !== null) {
-                    $query->where('matricule', 'like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                    // dump('matricule',$matricule);
-                } elseif ($nom != null && $prenom != null) {
-                    $query->where('nom', 'like', '%' . $nom . '%')->where('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                } else {
-                    $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                }
-                // else{
-                //     $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                //     // dump('non matricule');
-                // }
-            })->get();
-        // dd($year);
-        // dd($list);
+        
+        // Construction de la requête pour les inscriptions
+        $query = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')
+            ->whereHas('apprenant', function($query) use ($etablissement_id) {
+                $query->where('etablissement_id', $etablissement_id);
+            });
+        
+        // Filtrage par section
         if ($section == '1' || $section == '2') {
-            $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->first()->id;
-
+            $query->whereNull('cycle_filiere_id');
+        } elseif ($section == '3') {
+            $query->whereNotNull('cycle_filiere_id')
+                ->whereHas('cycleFiliere.filiere', function($query) use ($et_sec_id) {
+                    $query->where('etablissement_section_id', $et_sec_id)
+                        ->whereNull('departement_id');
+                });
+        } elseif ($section == '4') {
+            $query->whereNotNull('cycle_filiere_id')
+                ->whereHas('cycleFiliere.filiere', function($query) use ($etablissement_id) {
+                    $query->where('etablissement_id', $etablissement_id)
+                        ->whereNotNull('departement_id');
+                });
+        }
+        
+        // Filtrage par année (sauf si recherche spécifique)
+        if ($matricule === null && $nom === null && $prenom === null) {
+            $query->where('annee_id', $year);
+        }
+        
+        // Filtrage par matricule, nom ou prénom
+        if ($matricule !== null) {
+            $query->whereHas('apprenant', function($query) use ($matricule) {
+                $query->where('matricule', 'like', '%' . $matricule . '%');
+            });
+        } else {
+            if ($nom !== null) {
+                $query->whereHas('apprenant', function($query) use ($nom) {
+                    $query->where('nom', 'like', '%' . $nom . '%');
+                });
+            }
+            if ($prenom !== null) {
+                $query->whereHas('apprenant', function($query) use ($prenom) {
+                    $query->where('prenom', 'like', '%' . $prenom . '%');
+                });
+            }
+        }
+        
+        $list = $query->get();
+        
+        // Pour les sections 1 et 2, récupérer également les apprenants par classe
+        if ($section == '1' || $section == '2') {
             $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
-                ->whereHas('classe_annee', function ($query) use ($year, $matricule, $nom, $prenom, $findEtabSection) {
-                    $query->whereHas('classe', function ($query) use ($findEtabSection) {
-                        $query->where('etablissement_section_id', $findEtabSection);
-                    })->whereHas('annee', function ($query) use ($year, $matricule, $nom, $prenom) {
-                        if ($matricule !== null || $nom !== null || $prenom !== null) {
-                        } else {
-                            $query->where('annee_id', $year);
-                        }
-                    });
+                ->whereHas('classe_annee.classe', function($query) use ($et_sec_id) {
+                    $query->where('etablissement_section_id', $et_sec_id);
                 })
-                ->whereHas('apprenant', function ($query) use ($matricule, $nom, $prenom, $authUser) {
-                    if ($matricule !== null) {
-                        $query->where('matricule', 'like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                        // dump('matricule',$matricule);
-                    } elseif ($nom != null && $prenom != null) {
-                        $query->where('nom', 'like', '%' . $nom . '%')->where('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                    } else {
-                        $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                    }
+                ->whereHas('apprenant', function($query) use ($etablissement_id) {
+                    $query->where('etablissement_id', $etablissement_id);
                 })
-                ->whereHas('apprenant', function ($query) use ($authUser,$matricule,$nom,$prenom) {
-                    if($matricule !== null){
-                        $query->where('matricule','like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                        // dump('matricule',$matricule);
-                    }elseif($nom != null && $prenom != null){
-                        $query->where('nom','like', '%' . $nom . '%')->where('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                    }else{
-                        $query->where('nom','like', '%' . $nom . '%')->orWhere('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
+                ->whereHas('classe_annee.annee', function($query) use ($year, $matricule, $nom, $prenom) {
+                    if ($matricule === null && $nom === null && $prenom === null) {
+                        $query->where('id', $year);
                     }
-                    // else{
-                    //     $query->where('nom', 'like', '%' . $nom . '%')->orWhere('prenom', 'like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                    //     // dump('non matricule');
-                    // }
-                })->get();
-                // dd($year);
-                // dd($list);
-                if($section == '1' || $section == '2'){
-                    $findEtabSection = DB::table('etablissement_section')->where('section_id', (int)$section)->where('etablissement_id', (int)$authUser->etablissement_id)->first()->id;
-                    $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
-                        ->whereHas('classe_annee', function ($query) use ($year, $matricule,$nom,$prenom,$findEtabSection) {
-                            $query->whereHas('classe', function ($query) use ($findEtabSection){
-                                $query->where('etablissement_section_id',$findEtabSection);
-                            })->whereHas('annee', function ($query) use ($year, $matricule,$nom,$prenom){
-                                if($matricule !== null || $nom !== null || $prenom !== null){
-
-                                }else{
-                                    $query->where('annee_id',$year);
-                                }
-                            });
-                        })
-                        ->whereHas('apprenant', function ($query) use ($matricule,$nom,$prenom,$authUser) {
-                            if($matricule !== null){
-                                $query->where('matricule','like', '%' . $matricule . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                                // dump('matricule',$matricule);
-                            }elseif($nom != null && $prenom != null){
-                                $query->where('nom','like', '%' . $nom . '%')->where('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                            }else{
-                                $query->where('nom','like', '%' . $nom . '%')->orWhere('prenom','like', '%' . $prenom . '%')->where('etablissement_id', (int)$authUser->etablissement_id);
-                            }
-                        })
-                        ->get();
-                        // dd($apprenantsCABySection,$list);
-                    $list->map(function ($element) use ($apprenantsCABySection, $collection) {
-                        $vTerre = $apprenantsCABySection->filter(function ($el) use ($element) {
-                            return $el['apprenant_id'] == $element['apprenant_id'];
-                        });
-                        return $collection->push($vTerre->filter()->all());
+                });
+            
+            // Filtrage supplémentaire par matricule, nom ou prénom
+            if ($matricule !== null) {
+                $apprenantsCABySection->whereHas('apprenant', function($query) use ($matricule) {
+                    $query->where('matricule', 'like', '%' . $matricule . '%');
+                });
+            } else {
+                if ($nom !== null) {
+                    $apprenantsCABySection->whereHas('apprenant', function($query) use ($nom) {
+                        $query->where('nom', 'like', '%' . $nom . '%');
                     });
                 }
-            // }
-            if($section == '1' || $section == '2'){
-                $flattened = $collection->flatten()->unique()->filter();
-                $flattened->all();
-                // dd($flattened);
-                return $flattened ?? [];
-            }elseif($section == '3' || $section == '4'){
-                return $list ?? [];
+                if ($prenom !== null) {
+                    $apprenantsCABySection->whereHas('apprenant', function($query) use ($prenom) {
+                        $query->where('prenom', 'like', '%' . $prenom . '%');
+                    });
+                }
             }
-
+            
+            $apprenantsCABySection = $apprenantsCABySection->get();
+            
+            // Fusionner les résultats
+            $collection = collect();
+            $list->map(function($element) use ($apprenantsCABySection, $collection) {
+                $vTerre = $apprenantsCABySection->filter(function($el) use ($element) {
+                    return $el['apprenant_id'] == $element['apprenant_id'];
+                });
+                if ($vTerre->isNotEmpty()) {
+                    $collection->push($vTerre->first());
+                }
+            });
+            
+            $flattened = $collection->flatten()->unique()->filter();
+            return $flattened->values()->all() ?? [];
+        }
+        
+        return $list ?? [];
     }
-}
     public function getFrais($niveau, $annee)
     {
         // dd($niveau);
@@ -273,36 +254,65 @@ class InscriptionController extends Controller
         return $frais_scolarite;
     }
 
-    public function checkClasse($niveau, $etabSection)
-    {
-        // dd($niveau,$etabSection);
-        $etablisement_seion = getSectionEtablissement(Auth::user()->etablissement_id, $etabSection)->first();
-        $donnees = [];
-        $tabs = [];
-        if($niveau && $etabSection){
-            $result = ClasseAnnee::whereHas('classe', function ($query) use ($niveau,$etablisement_seion){
-                $query->where('niveau_id',$niveau)->where('etablissement_section_id',$etablisement_seion);
-            })->with('classe.niveau')->get();
-            // dd($result);
-            if ($result->count() > 0) {
-                foreach ($result as $key => $item) {
-                    $nbre = ApprenantClasseAnnee::where('classe_annee_id', $item->id)->count();
-                    $tabs = [
-                        'classe' => $item,
-                        'nbre' => $nbre
-                    ];
-                    $donnees[$key] = $tabs;
-                }
-
-                return ['code' => 1, 'result' => $donnees ?? []];
+  public function checkClasse($niveau, $etabSection)
+{
+    try {
+        $etablissement_id = Auth::user()->etablissement_id;
+        
+        // Obtenez l'ID de section d'établissement (suppose que getSectionEtablissement retourne un ID integer)
+        $etablisement_section_id = getSectionEtablissement($etablissement_id, $etabSection);
+        
+        // Si ce n'est pas un integer, essayez de trouver l'ID autrement
+        if (!is_int($etablisement_section_id)) {
+            // Essayez de trouver l'ID via la table etablissement_section
+            $etablissement_section = DB::table('etablissement_section')
+                ->where('etablissement_id', $etablissement_id)
+                ->where('section_id', $etabSection)
+                ->first();
+                
+            if ($etablissement_section) {
+                $etablisement_section_id = $etablissement_section->id;
             } else {
-                return ['code' => 0];
+                return ['code' => 0, 'message' => 'Section d\'établissement non trouvée'];
             }
-        } else {
-            return 'ERREUR';
         }
-    }
+        
+        // Vérifiez les classes pour ce niveau et section
+        $classes = Classe::where('niveau_id', $niveau)
+            ->where('etablissement_section_id', $etablisement_section_id)
+            ->get();
+        
+        if ($classes->isEmpty()) {
+            return ['code' => 0, 'message' => 'Aucune classe trouvée pour ce niveau et section'];
+        }
+        
+        // Vérifiez les classes-années pour l'année en cours
+        $annee_encours = getAnneeEncours()->id;
+        $result = ClasseAnnee::whereIn('classe_id', $classes->pluck('id'))
+            ->where('annee_id', $annee_encours)
+            ->with('classe.niveau')
+            ->get();
+        
+        if ($result->count() > 0) {
+            $donnees = [];
+            foreach ($result as $item) {
+                $nbre = ApprenantClasseAnnee::where('classe_annee_id', $item->id)->wherehas('apprenant', function ($query) use ($etablissement_id) {
+                    $query->where('etablissement_id', $etablissement_id);
+                })->count();
+                $donnees[] = [
+                    'classe' => $item,
+                    'nbre' => $nbre
+                ];
+            }
 
+            return ['code' => 1, 'result' => $donnees];
+        } else {
+            return ['code' => 0, 'message' => 'Aucune classe-année trouvée pour l\'année en cours'];
+        }
+    } catch (\Exception $e) {
+        return ['code' => -1, 'message' => 'Erreur: ' . $e->getMessage()];
+    }
+}
     // Fin requete AXIOS
 
     // DEBUT FUNCTION HELPERS

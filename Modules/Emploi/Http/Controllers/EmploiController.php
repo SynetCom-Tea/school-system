@@ -35,8 +35,12 @@ class EmploiController extends Controller
     public function index(Request $request)
     {
         // dd('r:', $request->all());
-        $classes = getClasses(Annee::find(2)->id, getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id), $request->section_id);
+        $annee = Annee::where('actif',1)->first();
+        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
+       
+        $classes = getClasses($annee->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
+        // dd($classes);
         $events = [];
         $emplois = [];
         if ($request->classe != null) {
@@ -78,7 +82,8 @@ class EmploiController extends Controller
     {
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
         $matieres = getMatieres($etablissement_section);
-        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $annee = Annee::where('actif',1)->first();
+        $classes = getClasses($annee->id, $etablissement_section);
         $niveauMatiere = [];
         $filiere_niveau_matiere_ues = [];
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
@@ -116,22 +121,48 @@ class EmploiController extends Controller
      * @return Renderable
      */
     public function store(Request $request)
-    {
-        // dd($request->all());
-        $dateDebut = Carbon::parse($request->date[0]);
-        $dateFin = Carbon::parse($request->date[1]);
-        $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
-        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section);
-        $classe = getClasses(Annee::find(2)->id, $etablissement_section, $request->classe)->firstOrFail();
-        // dd($occurrences, $request->all());
-        // dd($classeAnnee, $request->classe, Annee::find(2)->id);
-        try {
-            DB::beginTransaction();
-            $emploi = Emploi::create([
-                'date_debut' => $request->date[0],
-                'date_fin' => $request->date[1],
-                'classe_annee_id' => $request->classe
-            ]);
+   {
+    // Validation des données
+    $validated = $request->validate([
+        'date' => 'required|array|size:2',
+        'date.0' => 'required|date',
+        'date.1' => 'required|date|after_or_equal:date.0',
+        'section' => 'required|exists:sections,id',
+        'classe' => 'required|exists:classe_annees,id',
+        'seances' => 'required|array'
+    ]);
+
+    $dateDebut = Carbon::parse($request->date[0]);
+    $dateFin = Carbon::parse($request->date[1]);
+    $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
+    
+    // Récupérer directement la classe_annee
+    $classeAnnee = ClasseAnnee::find($request->classe);
+    
+    if (!$classeAnnee) {
+        return redirect()->back()
+            ->withErrors(['classe' => 'La classe sélectionnée n\'existe pas.'])
+            ->withInput();
+    }
+
+    // Vérifier que la classe appartient à la bonne section
+    $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section);
+    $isValid = $classeAnnee->classe->etablissement_section_id == $etablissement_section->first();
+    
+    if (!$isValid) {
+        return redirect()->back()
+            ->withErrors(['classe' => 'La classe ne fait pas partie de la section sélectionnée.'])
+            ->withInput();
+    }
+
+    // Utiliser $classeAnnee pour la suite
+    try {
+        DB::beginTransaction();
+        $emploi = Emploi::create([
+            'date_debut' => $request->date[0],
+            'date_fin' => $request->date[1],
+            'classe_annee_id' => $request->classe
+        ]);
             foreach ($occurrences as $jour => $seancesDuJour) {
                 // Vérifie s'il y a des horaires pour ce jour
                 if (count($seancesDuJour['seances']) > 0 && $seancesDuJour['seances'][0]['matiere'] != null) {
@@ -240,7 +271,8 @@ class EmploiController extends Controller
     public function calendar(Request $request)
     {
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $annee = Annee::where('actif',1)->first();
+        $classes = getClasses($annee->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $resultats = [];
         $emplois = [];
@@ -252,7 +284,13 @@ class EmploiController extends Controller
             if($request->emploi != null){
                 $emploiUnique = Emploi::find($request->emploi);
             }else{
-                $emploiUnique = $emplois[0];
+                // CORRECTION : Vérifier si le tableau n'est pas vide avant d'accéder à l'index 0
+                $emploiUnique = !empty($emplois) ? $emplois[0] : null;
+            }
+            // Add additional validation before using $emploiUnique
+            if (!$emploiUnique) {
+                // Handle the case where no emploi is found
+                return back()->with('error', 'Aucun emploi du temps trouvé pour cette classe');
             }
             $dateDebut = Carbon::parse($emploiUnique->date_debut);
             $dateFin = Carbon::parse($emploiUnique->date_fin);

@@ -28,7 +28,8 @@ class AbsenceController extends Controller
     {
         $absencesAll = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $annee = Annee::where('actif',1)->first();
+        $classes = getClasses($annee->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         if ($request->date) {
             $seanceId = [];
@@ -107,7 +108,8 @@ class AbsenceController extends Controller
         $seancesDuJour = [];
         $filiere_niveau_matiere_ues = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $classes = getClasses(Annee::find(2)->id, $etablissement_section);
+        $annee = Annee::where('actif',1)->first();
+        $classes = getClasses($annee->id, $etablissement_section);
         $niveaux = Niveau::where('section_id', $request->section_id)->get();
         $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
         $cycle_filieres = DB::table('cycle_filieres')
@@ -120,10 +122,20 @@ class AbsenceController extends Controller
             $filiere_niveau_matiere_ues = DB::table('filiere_niveau_matiere_ues')
                 ->whereIn('cycle_filiere_id', $cycle_filieres->pluck('id'))->get();
         }
+        // if ($request->classe != null) {
+        //     $apprenants = DB::table('apprenant_classe_annees')
+        //         ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+        //         ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
+                
+        //         ->select('apprenants.*')
+        //         ->get();
+
         if ($request->classe != null) {
             $apprenants = DB::table('apprenant_classe_annees')
                 ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
-                ->where('apprenant_classe_annees.classe_annee_id', $request->classe)
+                ->where('apprenant_classe_annees.classe_annee_id', $request->classe)                
+                ->whereNull('apprenant_classe_annees.deleted_at')
+                ->where('apprenants.etablissement_id', Auth::user()->etablissement_id)
                 ->select('apprenants.*')
                 ->get();
             $seances = Emploi::getEmploiwhitClasse($request->section_id, $request->classe);

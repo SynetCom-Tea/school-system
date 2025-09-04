@@ -22,7 +22,8 @@ if (!function_exists('addEmploi')) {
         $dateFin = Carbon::parse($request->date[1]);
         $occurrences = countWeekdayOccurrences($dateDebut, $dateFin, $request->seances);
         // dd($occurrences);
-        $classeAnnee = ClasseAnnee::where('annee_id', Annee::find(2)->id)
+        $annee = Annee::where('actif',1)->first();
+        $classeAnnee = ClasseAnnee::where('annee_id', $annee->id)
             ->where('classe_id', $request->classe)
             ->first();
         // dd($classeAnnee, $request->classe, Annee::find(2)->id);
