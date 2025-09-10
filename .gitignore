@@ -19,3 +19,7 @@ yarn-error.log
 /.idea
 /.vscode
 node_modules
+# Créer ou éditer .gitignore
+echo "127_0_0_1.sql" >> .gitignore
+echo "public/logos/Capture*d'écran*.jpeg" >> .gitignore
+echo "public/logos/" >> .gitignore
