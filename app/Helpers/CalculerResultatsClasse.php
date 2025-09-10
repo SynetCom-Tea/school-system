@@ -15,7 +15,8 @@ use Illuminate\Support\Facades\DB;
 if (!function_exists('calculerResultatsClasse')) {
     function calculerResultatsClasse($classeId, $section, $etablissement_section, $periode, $apprenants = null) {
         $resultatsClasse = [];
-        $classe = getClasses(Annee::find(2)->id, $etablissement_section, $classeId)->firstOrFail();
+        $annee = Annee::where('actif',1)->first();
+        $classe = getClasses($annee->id, $etablissement_section, $classeId)->firstOrFail();
         if($apprenants != null){
             $apprenantsDeLaClasse = $apprenants;
             // dd($apprenants);
@@ -74,7 +75,7 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
     function calculerResultatsClassePrimaire($classeId, $section, $etablissement_section, $periode, $apprenants = null){
         $annee = Annee::where('actif',1)->first();
 
-        //dd(Annee::all(), $annee);
+        // dd(Annee::all(), $classeId);
         $resultatsClasse = [];
         $classe = getClasses($annee->id, $etablissement_section, $classeId)->firstOrFail();
         $classe_annee_id = ClasseAnnee::where('classe_id', $classeId)->where('annee_id', $annee->id)->first()->id;
@@ -132,9 +133,9 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
             $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
             $prevRank = $rank;
             $rank++;
-            dump($resultat);
+            // dump($resultat);
         }
-        die();
+        // die();
 
         return $resultatsClasse;
     }

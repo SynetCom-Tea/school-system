@@ -13,10 +13,10 @@ import {
     watchEffect,
     onMounted
 } from 'vue';
-import {
-    Chart
-} from 'chart.js/auto';
-
+// import {
+//     Chart
+// } from 'chart.js/auto';
+import { Chart } from 'chart.js';
 onMounted(() => {
     // Données de test (remplacez cela par vos propres données)
     const graph = {

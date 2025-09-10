@@ -1,5 +1,5 @@
 <script setup>
-import avatar1 from '@/assets/avatar-1.png'
+// import avatar1 from '@/assets/avatar-1.png'
 import { ref } from 'vue'
 import { Link, useForm, usePage } from '@inertiajs/vue3';
 import { mdiContentSave } from "@mdi/js";

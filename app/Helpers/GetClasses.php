@@ -23,9 +23,9 @@ use Modules\Enseignement\Entities\Matiere;
             if ($classe !== null) {
                 $query->where('classe_annees.classe_id', $classe);
             }
-
-            $classes = $query->get();
-            return $classes;
+            // dd($query->get());
+            //
+            return $query->select('classes.*', 'classe_annees.id as classe_annee_id')  ->get();
         }
     }
 

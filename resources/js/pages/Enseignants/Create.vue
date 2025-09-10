@@ -1,4 +1,3 @@
-RESSOURCE/JS/PAGES/ENSEIGNANTS/CREATE.VUE
 <template>
      <Toolbar
       styleToolbar="background-color: white;"

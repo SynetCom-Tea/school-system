@@ -18,7 +18,7 @@ export default defineConfig({
         vuetify({ autoImport: true }),
         laravel({
             input: "resources/js/app.ts",
-            ssr: "resources/js/ssr.ts",
+            // ssr: "resources/js/ssr.ts",
             refresh: true,
         }),
         Components({
