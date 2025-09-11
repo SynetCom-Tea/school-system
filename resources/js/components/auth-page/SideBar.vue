@@ -363,7 +363,7 @@ export default {
                     type: organizationName ?? organization.type,
                 },
                 photo: {
-                    file: organization.logo ?? "team.png",
+                    file: organization.logo ?? "team1.png",
                     title: "photo de l'établissement",
                 },
             };
@@ -396,7 +396,7 @@ export default {
                 name: fullName,
                 typeUser: vRoles,
                 photo: {
-                    file: "team.png",
+                    file: "team1.png",
                     title: "photo de l'établissement",
                 },
             };

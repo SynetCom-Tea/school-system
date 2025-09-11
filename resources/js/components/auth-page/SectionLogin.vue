@@ -43,7 +43,7 @@
 
         <v-col cols="6" md="6" class="bg-primary rounded-xl rounded-be-0">
             <v-card-text style="text-align: center">
-                <div><img src="team.png" class="team-img pt-1" /></div>
+                <div><img src="team1.png" class="team-img pt-1" /></div>
                 <v-card-text class="white--text">
                     <h3 class="text-center">Vous n'avez pas encore de compte?</h3>
                     <h6 class="text-center">

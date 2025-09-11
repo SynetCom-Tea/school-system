@@ -51,7 +51,7 @@
                 :title="getOrganizationProfile.organization.name"
               >
                 <template v-slot:subtitle="{ subtitle }">
-                  <span class="text-wrap" style="font-size: 0.9em, color:bold">
+                  <span class="text-wrap" style="font-size: 0.9em; font-weight: bold">
                     {{ getOrganizationProfile.organization.type }}
                   </span>
                 </template>
@@ -431,7 +431,7 @@ export default {
           type: organizationName ?? organization.type,
         },
         photo: {
-          file: organization.logo ?? "team.png",
+          file: organization.logo ?? "team1.png",
           title: "photo de l'établissement",
         },
       };
@@ -464,7 +464,7 @@ export default {
         name: fullName,
         typeUser: vRoles,
         photo: {
-          file: "team.png",
+          file: "team1.png",
           title: "photo de l'établissement",
         },
       };

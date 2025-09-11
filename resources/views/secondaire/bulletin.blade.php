@@ -61,22 +61,22 @@
             padding-top: 250px;
         }
     
-        .10p {
+       .p10 {
             width: 10%;
         }
-        .15p {
+        .p15 {
             width: 15%;
         }
-        .25p {
+        .p25 {
             width: 25%;
         }
-        .50p {
+        .p50 {
             width: 50%;
         }
-        .60p {
+        .p60 {
             width: 60%;
         }
-        .75p {
+        .p75 {
             width: 75%;
         }
     </style>
@@ -95,7 +95,12 @@
                     <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
         </div>
         <div style="position:absolute;margin-top:10px;margin-left:300px">
-        <img style="max-width:50%; height:auto" src="logos/iat-logo.png" alt="Logo de l'entreprise">
+        <!-- <img style="max-width:50%; height:auto" src="logos/iat-logo.png" alt="Logo de l'entreprise"> -->
+          @if($etablissement->logo === null)
+            <img style="max-width:30%; height: 11%;" src="logos/defaultLogo.png" alt="Logo de l'entreprise">
+            @else
+            <img style="max-width:30%; height:11%" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
+            @endif
         </div>
         <div style="position:absolute;margin-top:10px;margin-left:500px">
         <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : 2023-2024</i>&nbsp;&nbsp;</b><br>

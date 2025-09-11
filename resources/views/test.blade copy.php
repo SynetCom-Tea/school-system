@@ -61,22 +61,22 @@
             padding-top: 250px;
         }
     
-        .10p {
+        .p10 {
             width: 10%;
         }
-        .15p {
+        .p15 {
             width: 15%;
         }
-        .25p {
+        .p25 {
             width: 25%;
         }
-        .50p {
+        .p50 {
             width: 50%;
         }
-        .60p {
+        .p60 {
             width: 60%;
         }
-        .75p {
+        .p75 {
             width: 75%;
         }
     </style>

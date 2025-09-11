@@ -3,7 +3,7 @@
     <v-row>
       <v-col cols="6" md="6">
         <div style="text-align: center; padding: 80px 0">
-          <div><img src="team.png" class="team-img pt-1" /></div>
+          <div><img src="team1.png" class="team-img pt-1" /></div>
           <v-card-text class="white--text">
             <h3 class="text-center">Déjà enregistré(e)?</h3>
             <br />
