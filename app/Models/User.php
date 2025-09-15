@@ -31,6 +31,7 @@ class User extends Authenticatable
         'type_user',
         'email',
         'user_id',
+        'username',
         'etablissement_id',
         'tuteur_id',
         'etablissement_section_id',

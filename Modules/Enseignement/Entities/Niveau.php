@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Modules\Enseignement\Entities\FiliereNiveauMatiereUe;
-
+use Modules\Scolarite\Entities\Inscription;
 class Niveau extends Model
 {
     use HasFactory, SoftDeletes;
@@ -38,10 +38,15 @@ class Niveau extends Model
     {
         return $this->hasMany(Frais::class);
     }
-    public function inscriptions()
+    // public function inscriptions()
+    // {
+    //     return $this->hasMany(Cycle::class);
+    // }
+    public function inscriptions(): HasMany
     {
-        return $this->hasMany(Cycle::class);
+        return $this->hasMany(Inscription::class);
     }
+
     public function filiere_niveau_matiere_ues(): HasMany
     {
         return $this->hasMany(FiliereNiveauMatiereUe::class);

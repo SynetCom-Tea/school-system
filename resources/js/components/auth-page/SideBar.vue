@@ -200,6 +200,22 @@
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
+                        <v-list-group :value="MenuUser.title" >
+                            <template v-slot:activator="{ props }">
+                                <v-list-item class="group-title" v-bind="props">
+                                    <template v-slot:prepend>
+                                        <v-icon :title="MenuUser.title" :icon="MenuUser.icon"></v-icon>
+                                    </template>
+                                    <v-list-item-title class="text-wrap" v-text="MenuUser.title"></v-list-item-title>
+                                </v-list-item>
+                            </template>
+                            <v-list-item class="sub-list-group" v-for="(item, i) in MenuUser.children" :key="i" @click="page(item.link)">
+                                <template v-slot:prepend>
+                                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                                </template>
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
                         <!-- Fin Menu Gestion -->
 
                         <!-- Début menu Tuteur -->
@@ -280,6 +296,7 @@ export default {
         return {
             menuTuteur: null,
             MenuGestion: [],
+            MenuUser: [],
             menusBySection: [],
             menuTeachers: [],
             superAdminMenus: [],
@@ -410,6 +427,7 @@ export default {
                 MenuAdmin,
                 usersMenu,
                 MenuGestion,
+                MenuUser,
                 MenuEvaluation,
                 MenuNote,
                 superAdminMenus,
@@ -421,6 +439,7 @@ export default {
             this.menusBySection = gestionSections ?? [];
 
             this.MenuGestion = MenuGestion;
+            this.MenuUser = MenuUser;
             this.superAdminMenus = superAdminMenus;
 
             this.menuTuteur = menusTuteur(this.$page.props);

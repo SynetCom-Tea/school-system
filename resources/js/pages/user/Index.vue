@@ -48,6 +48,11 @@ export default {
           key: "user.nom",
         },
         {
+          title: "Nom utilisateur",
+          align: "center",
+          key: "user.username",
+        },
+        {
           title: "Prénom",
           align: "center",
           key: "user.prenom",

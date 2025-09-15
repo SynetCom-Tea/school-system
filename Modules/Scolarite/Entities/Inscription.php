@@ -10,6 +10,9 @@ use App\Models\Annee;
 use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\Versement;
+use Modules\Scolarite\Entities\Frais;
+use Modules\Scolarite\Entities\classe_annee;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Inscription extends Model
 {
@@ -43,4 +46,13 @@ class Inscription extends Model
     {
         return $this->belongsTo(Niveau::class);
     }
+    
+
+    public function frais()
+    {
+        return $this->hasOne(Frais::class, 'niveau_id', 'niveau_id');
+    }
+
+    
+
 }

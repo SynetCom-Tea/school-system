@@ -5,6 +5,40 @@
         :icon="icons.mdiAccountSchool"
         :toolbarTitle="'ESPACE DE VERSEMENT ' + Title   "
       ></Toolbar>
+       <!-- Section d'exportation - AJOUTEZ ICI -->
+      <div class="export-buttons">
+        <h3>Exporter les inscriptions</h3>
+        
+        <v-btn @click="exportData('all', 'pdf')" color="error" class="mr-2 mb-2">
+          <v-icon left>mdi-file-pdf</v-icon> PDF (Tous)
+        </v-btn>
+        
+        <v-btn @click="exportData('all', 'excel')" color="success" class="mr-2 mb-2">
+          <v-icon left>mdi-file-excel</v-icon> Excel (Tous)
+        </v-btn>
+        
+        <v-btn @click="exportData('all', 'word')" color="primary" class="mr-2 mb-2">
+          <v-icon left>mdi-file-word</v-icon> Word (Tous)
+        </v-btn>
+        
+        <v-btn @click="exportData('payees', 'pdf')" color="error" class="mr-2 mb-2">
+          <v-icon left>mdi-file-pdf</v-icon> PDF (Payés)
+        </v-btn>
+        
+        <v-btn @click="exportData('payees', 'excel')" color="success" class="mr-2 mb-2">
+          <v-icon left>mdi-file-excel</v-icon> Excel (Payés)
+        </v-btn>
+        
+        <v-btn @click="exportData('non-payees', 'pdf')" color="error" class="mr-2 mb-2">
+          <v-icon left>mdi-file-pdf</v-icon> PDF (Non payés)
+        </v-btn>
+        
+        <v-btn @click="exportData('non-payees', 'excel')" color="success" class="mr-2 mb-2">
+          <v-icon left>mdi-file-excel</v-icon> Excel (Non payés)
+        </v-btn>
+      </div>
+      <!-- Fin de la section d'exportation -->
+
       <div style="margin: 10px; border: 2px solid #7d002c; padding: 10px; border-radius: 25px"
         class="mt-3">
         <v-container class="bg-primary-variant">
@@ -17,7 +51,7 @@
                 <TextField class="mt-5" label="Entrer le Code de l'inscription" :isRequired="true" placeholder="Taper le code" v-model="code"></TextField>
             </v-col>
             <v-col cols="3">
-              <v-btn color="primary" @click="RechercheInscription()" style="height=80px;text-transform: none; font-size: 10px">Rechercher</v-btn>
+              <v-btn color="primary" @click="RechercheInscription()" style="height:80px;text-transform: none; font-size: 10px">Rechercher</v-btn>
             </v-col>
           </v-row>
         </v-container>
@@ -247,6 +281,7 @@
     </vue3-html2pdf> -->
         <!-- </div>
       </template> -->
+ 
     </AuthenticatedLayout>
   </template>
   <script>
@@ -275,6 +310,8 @@
     mdiCheck,
     mdiPencil,
     mdiAlertCircle,
+    mdiFile,
+  
   } from "@mdi/js";
   export default {
     components: {
@@ -297,6 +334,7 @@
       mdiPencil,
       mdiAlertCircle,
     },
+  
     //*403#
     // layout: AuthenticatedLayout,
     props: ["section","type_frais","resultCalculFrais"],
@@ -351,6 +389,8 @@
           mdiCheck,
           mdiPencil,
           mdiAlertCircle,
+          mdiFile,
+         
         },
         code: '',
         search: '',
@@ -370,6 +410,7 @@
         }),
       };
     },
+  
     async mounted() {
       
     },
@@ -618,13 +659,36 @@
         }
 
       },
+
+  exportData(type, format) {
+        let routeName = '';
+        if (type === 'all') {
+          routeName = 'inscriptions.export';
+        } else if (type === 'payees') {
+          routeName = 'inscriptions.export.payees';
+        } else if (type === 'non-payees') {
+          routeName = 'inscriptions.export.non-payees';
+        } else {
+          console.error('Type d\'exportation inconnu');
+          return;
+        }
+    
+        // Construire l'URL avec Inertia.js
+        const url = route(routeName, { format: format });
+    
+        // Rediriger vers l'URL pour déclencher le téléchargement
+        window.location.href = url;
+      },  
+        
     },
     provide() {
       return {
         vmodeldialogFrais: computed(() => this.dialogFrais),
       };
     },
+    
   };
+  
   </script>
   <style scoped>
   .form-wizard-vue .fw-body-list .fw-list-progress-active {
@@ -677,5 +741,25 @@
       transform: rotate(360deg);
     }
   }
+
+  .export-buttons {
+    margin: 20px;
+    padding: 15px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    background-color: #f9f9f9;
+  }
+
+  .export-buttons h3 {
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #7d002c;
+    font-weight: bold;
+  }
+
+  .export-buttons .v-btn {
+    text-transform: none;
+    font-weight: 500;
+}
   </style>
   

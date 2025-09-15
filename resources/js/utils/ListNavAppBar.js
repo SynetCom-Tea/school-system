@@ -26,6 +26,7 @@ import {
   mdiAccountBoxMultiple,
   mdiCogOutline,
   mdiHomeCity,
+  mdiAccountCircle,
   mdiLinkedin,
   mdiCartArrowUp,
   mdiStocking,
@@ -63,7 +64,7 @@ export function listMenus(page) {
     let tab,tab_s = [];
     let section_user = [],notes = [],note = [];
     let MenuEvaluation,MenuEtudiant;
-    let MenuAdmin,linkSection,MenuNote;
+    let MenuAdmin,linkSection,MenuNote,MenuUser;
     const sections = [
       { title: "Primaire", icon: mdiSchool, link: "/enseignement/configuration/1" },
       { title: "Secondaire", icon: mdiSchool, link: "/enseignement/configuration/2" },
@@ -197,6 +198,30 @@ export function listMenus(page) {
     "icon-alt": mdiChevronLeft,
     model: false,
     children: enfantConfigs,
+  }
+  MenuUser = {
+    icon: mdiAccountCircle,
+    title: "Utilisateurs",
+    "icon-alt": mdiChevronLeft,
+    model: false,
+    children: [ {
+                icon: mdiSquareMedium,
+                title: "Liste utilisateurs",
+                link: "/users",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Rôles",
+                link: "/enseignement/roles",
+                permissions: "manage_system",
+            },
+            {
+                icon: mdiSquareMedium,
+                title: "Permissions",
+                link: "/enseignement/permissions",
+                permissions: "manage_system",
+            },]
   }
 
 //Fin du menu des cruds
@@ -411,7 +436,7 @@ let superAdminMenus=[]
 
     /*********************Fin  Menu Gestion des enseignants  ************************ */
 
-    return{singleItems,gestionSections,usersMenu,MenuAdmin,MenuGestion,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote,MenuEtudiant}
+    return{singleItems,gestionSections,usersMenu,MenuAdmin,MenuGestion,MenuUser,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote,MenuEtudiant}
 }
 //Menu par section
 export function listMenusBySection(page, sectionID) {
@@ -420,26 +445,6 @@ export function listMenusBySection(page, sectionID) {
 
 
      let childrenBySection = [
-    {
-      icon: mdiAccountGroup,
-      title: "Utilisateurs",
-         link: "/users",
-         color: "rgb(205,92,92)",
-         note: "Ce menu permet d'accèder à la liste des utilisateurs de la section",
-      expand:false,
-      image: "/assets/menusImage/users.jpg",
-      permissions: ["manage_school"],
-    },
-    {
-      icon: mdiAccountGroup,
-      title: "Rôles/Permissions",
-         link: "/enseignement/roles",
-         color: "rgb(205,92,92)",
-         note: "Ce menu permet d'accèder à la liste des rôles  et permissions",
-      expand:false,
-      image: "/assets/menusImage/user_roles.png",
-      permissions: ["manage_school"],
-    },
 
     {
       title: "Inscription",

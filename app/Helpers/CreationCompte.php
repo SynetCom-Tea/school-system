@@ -26,6 +26,7 @@ if (!function_exists('CreationCompte')) {
             'prenom' => $item_apprenant ? $item_apprenant->prenom : $request->prenom,
             'type_user' => $type_user,
             'email' => $login,
+            'username' => strtolower($nom) . '-' . strtolower($prenom),
             'user_id' => $user->id,
             'password' => Hash::make($login),
             'etablissement_id' => $user->etablissement_id,

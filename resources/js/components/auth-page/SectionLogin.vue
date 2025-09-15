@@ -7,7 +7,7 @@
                     <v-col cols="12" sm="8" class="login">
                         <h2 class="text-center">Page de connexion</h2>
                         <v-form>
-                            <TextField label="Identifiant" outlined :isRequired="true" v-model="form.email" dense class="mt-5" :error-messages="form.errors.email && 'Email invalide!!'" hint="Respecter le format email,le mail est obligatoire" :prepend-inner-icon="icons.mdiEmailOutline" />
+                            <TextField label="Identifiant" outlined :isRequired="true" v-model="form.username" dense class="mt-5" hint="le nom d'utilisateur est obligatoire" :prepend-inner-icon="icons.mdiEmailOutline" />
                             <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
                                 Mot de passe
 
@@ -142,7 +142,7 @@ export default {
         },
         errors: {},
         form: useForm({
-            email: "",
+            username: "",
             password: "",
             remember_me: false,
         }),

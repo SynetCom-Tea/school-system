@@ -11,6 +11,7 @@ use App\Models\PermissionRole;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use App\Http\Controllers\Controller;
+use App\Models\EtablissementSection;
 use FontLib\Table\Type\name;
 
 class RoleController extends Controller
@@ -21,19 +22,15 @@ class RoleController extends Controller
     public function index(Request $request)
     {
         // dd($request->all());
-        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $permissions = [];
-        if($request->section_id == 1 || $request->section_id == 2){
-            $permissions = DB::table('permissions')
-                ->where('name', '<>', 'manage_welcome')
-                ->where('name', '<>', 'manage_system')
-                ->where('section_id', '=', null)->get();
-        }
-        if($request->section_id == 3){
-            $permissions = DB::select(" SELECT *
-                FROM permissions  WHERE name <> 'manage_welcome'
-                AND name <> 'manage_system'");
-        }
+        $etablissement_section = DB::table('etablissement_section')
+                    ->where('etablissement_id', Auth::user()->etablissement_id)
+                    ->pluck('id');
+        
+        $permissions = DB::table('permissions')
+            ->where('name', '<>', 'manage_welcome')
+            ->where('name', '<>', 'manage_system')
+            ->where('section_id', '=', null)->get();
+
         $all = [];
         $roles = Role::with(['permissions'])->whereIn('etablissement_section_id', $etablissement_section)->get();
         // dd($roles);
@@ -57,7 +54,9 @@ class RoleController extends Controller
      */
     public function store(Request $request)
     {
-        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
+       $etablissement_section = DB::table('etablissement_section')
+                    ->where('etablissement_id', Auth::user()->etablissement_id)
+                    ->pluck('id');
         // dd($request->all(), $request->section_id);
         $data = $this->validate($request, [
             'name' => 'required|string',

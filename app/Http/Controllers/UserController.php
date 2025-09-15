@@ -170,7 +170,7 @@ class UserController extends Controller
         }
         if ($request->section_id == null) {
             $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
-                ->where('users.user_id', (int)$authUser->id)
+
                 ->with('etablissement')->get();
         }
         return Inertia::render('User/Index', [
@@ -221,7 +221,9 @@ class UserController extends Controller
     public function create(Request $request)
     {
         $user = Auth::user();
-        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id,  $request->section_id);
+         $etablissement_section = DB::table('etablissement_section')
+                    ->where('etablissement_id', Auth::user()->etablissement_id)
+                    ->pluck('id');
         // dd($etablissement_section[0]);
         $sections = DB::select("
             SELECT s.id,s.libelle FROM sections s

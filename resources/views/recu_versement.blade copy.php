@@ -94,9 +94,9 @@
         </div>
         <div style="margin-bottom: 20px; text-align:right; margin-top:-130px;">
             @if($etablissement->logo === null)
-            <img style="max-width:30%; height: 20%;" src="logos/iat-logo.png" alt="Logo de l'entreprise">
+            <img style="max-width:30%; height: 11%;" src="logos/defaultLogo.png" alt="Logo de l'entreprise">
             @else
-            <img style="max-width:30%; height:20%" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
+            <img style="max-width:30%; height:11%" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
             @endif
         </div>
         <p style="margin-bottom: 20px; text-align:center; margin-top:-120px;">

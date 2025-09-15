@@ -19,6 +19,26 @@
         Route::get('/inscription/checkClasse/{niveau}/{etabSection}',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'checkClasse'])->name('getcheckClasse'); 
         Route::get('/inscription/getFrais/{niveau}/{annee}',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'getFrais'])->name('getfrais'); 
         Route::get('/liste_inscription_by_recherche',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxInscriptionListe'])->name('getInscriptionsByRecherche'); 
+        // Route::get('/liste_inscription_about_mle',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxGetInscriptionAboutMle'])->name('getInscriptionAboutMle'); 
+        // Route::get('/liste_inscription_by_niveau',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxInscriptionByNiveau'])->name('getInscriptionsByNiveau'); 
+        // Route::get('/liste_inscription_by_classe',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxInscriptionByClasse'])->name('getInscriptionsByClasse'); 
+        // Route::get('/liste_inscription_by_cycle_filiere',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxInscriptionByCycleFiliere'])->name('getInscriptionsByCycleFiliere'); 
+        // Route::get('/liste_inscription_by_statut',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxInscriptionByStatut'])->name('getInscriptionsByStatut'); 
+        // Route::get('/liste_inscription_by_annee',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxInscriptionByAnnee'])->name('getInscriptionsByAnnee'); 
+        // Route::get('/liste_inscription_by_section',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxInscriptionBySection'])->name('getInscriptionsBySection'); 
+        // Route::get('/delete_inscription',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'supInscription'])->name('deleteInscription'); 
+        // Route::get('/generate_releve_note',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'releveNote'])->name('generateReleveNote'); 
+        // Route::get('/export_inscriptions',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'exportInscriptions'])->name('exportInscriptions');     
+        
+        // Routes d'export avec des noms cohérents
+        Route::get('/inscriptions/export/{format}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'exportInscriptions'])
+        ->name('inscriptions.export');
+    
+        Route::get('/inscriptions/export-payees/{format}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'exportInscriptionsPayees'])
+        ->name('inscriptions.export.payees');
+    
+        Route::get('/inscriptions/export-non-payees/{format}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'exportInscriptionsNonPayees'])
+        ->name('inscriptions.export.non-payees');
         
         // les routes pour le versement
         Route::resource('versements', \Modules\Scolarite\Http\Controllers\VersementController::class);

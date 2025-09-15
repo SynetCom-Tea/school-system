@@ -30,6 +30,12 @@ use Modules\Scolarite\Entities\Versement;
 use Modules\Scolarite\Entities\Inscription;
 use Modules\Enseignement\Entities\CycleFiliere;
 use Modules\Scolarite\Entities\EtablissementTypeDocument;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Scolarite\Exports\InscriptionsExport;
+use Modules\Scolarite\Exports\InscriptionsPayeesExport;
+use Modules\Scolarite\Exports\InscriptionsNonPayeesExport;
+use Illuminate\Contracts\Support\Renderable;
+
 
 class InscriptionController extends Controller
 {
@@ -143,7 +149,7 @@ class InscriptionController extends Controller
         $year = getAnneeEncours()->id;
         
         // Construction de la requête pour les inscriptions
-        $query = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee')
+        $query = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee', 'versements')
             ->whereHas('apprenant', function($query) use ($etablissement_id) {
                 $query->where('etablissement_id', $etablissement_id);
             });
@@ -715,5 +721,367 @@ class InscriptionController extends Controller
     public function destroy($id)
     {
         //
+    }
+
+ /**
+ * Exporter la liste des inscrits
+ * @param Request $request
+ * @param string $format
+ * @return mixed
+ */
+public function exportInscriptions(Request $request, $format)
+{
+    try {
+        $section = $request->section;
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        if ($format === 'pdf') {
+            $etb = Etablissement::find(Auth::user()->etablissement_id);
+            $data = [
+                'etablissement' => $etb,
+                'inscriptions' => $inscriptions,
+                'section' => $section,
+                'title' => 'Liste des inscrits',
+                'date' => date('d/m/Y'),
+            ];
+            
+            $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
+            return $pdf->download('liste_inscrits_' . date('Ymd_His') . '.pdf');
+        } 
+        elseif ($format === 'excel') {
+            // CORRECTION: Utiliser la réponse BinaryFileResponse
+            $fileName = 'liste_inscrits_' . date('Ymd_His') . '.xlsx';
+            $export = new InscriptionsExport($inscriptions, $section);
+            
+            return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
+                'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            ]);
+        }
+        // elseif ($format === 'word') {
+        //     $etb = Etablissement::find(Auth::user()->etablissement_id);
+        //     $data = [
+        //         'etablissement' => $etb,
+        //         'inscriptions' => $inscriptions,
+        //         'section' => $section,
+        //         'title' => 'Liste des inscrits',
+        //         'date' => date('d/m/Y'),
+        //     ];
+            
+        //     $html = view('exports.inscriptions_word', $data)->render();
+            
+        //     return response()->streamDownload(function () use ($html) {
+        //         echo $html;
+        //     }, 'liste_inscrits_' . date('Ymd_His') . '.doc', [
+        //         'Content-Type' => 'application/vnd.ms-word',
+        //     ]);
+        // }
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Exporter la liste des inscrits ayant fini leur paiement
+ * @param Request $request
+ * @param string $format
+ * @return mixed
+ */
+public function exportInscriptionsPayees(Request $request, $format)
+{
+    try {
+        $section = $request->section;
+        $inscriptions = $this->getInscriptionsAvecPaiement($request, 'payees');
+         $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        
+        if (count($inscriptions) === 0) {
+            return response()->json(['error' => 'Aucune inscription avec paiement complet à exporter'], 404);
+        }
+        
+        if ($format === 'pdf') {
+            $etb = Etablissement::find(Auth::user()->etablissement_id);
+            $data = [
+                'etablissement' => $etb,
+                'inscriptions' => $inscriptions,
+                'section' => $section,
+                'title' => 'Liste des inscrits ayant fini leur paiement',
+                'date' => date('d/m/Y'),
+            ];
+            
+            $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
+            return $pdf->download('liste_inscrits_payes_' . date('Ymd_His') . '.pdf');
+        } 
+         elseif ($format === 'excel') {
+            // CORRECTION: Utiliser la réponse BinaryFileResponse
+            // $fileName = 'liste_inscrits_payes_' . date('Ymd_His') . '.xlsx';
+            // $export = new InscriptionsPayeesExport($inscriptions, $section);
+              $fileName = 'liste_inscrits_payes_' . date('Ymd_His') . '.xlsx';
+            $export = new \Modules\Scolarite\Exports\InscriptionsPayeesExport($inscriptions, $section);
+
+            // return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
+            //     'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            // ]);
+            
+            return Excel::download($export, $fileName); 
+        }
+        elseif ($format === 'word') {
+            $etb = Etablissement::find(Auth::user()->etablissement_id);
+            $data = [
+                'etablissement' => $etb,
+                'inscriptions' => $inscriptions,
+                'section' => $section,
+                'title' => 'Liste des inscrits ayant fini leur paiement',
+                'date' => date('d/m/Y'),
+            ];
+            
+            $html = view('exports.inscriptions_word', $data)->render();
+            
+            return response()->streamDownload(function () use ($html) {
+                echo $html;
+            }, 'liste_inscrits_payes_' . date('Ymd_His') . '.doc', [
+                'Content-Type' => 'application/vnd.ms-word',
+            ]);
+        }
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Exporter la liste des inscrits n'ayant pas fini leur paiement
+ * @param Request $request
+ * @param string $format
+ * @return mixed
+ */
+public function exportInscriptionsNonPayees(Request $request, $format)
+{
+    try {
+        $section = $request->section;
+        $inscriptions = $this->getInscriptionsAvecPaiement($request, 'non_payees');
+         $inscriptions = $this->calculerMontantsRestants($inscriptions);
+
+        // Calculer les montants restants pour chaque inscription
+        $inscriptionsAvecMontants = [];
+        foreach ($inscriptions as $inscription) {
+            $montantRestant = $this->calculerMontantRestant($inscription);
+            $inscription['montant_restant'] = $montantRestant;
+            $inscriptionsAvecMontants[] = $inscription;
+        }
+        if (count($inscriptions) === 0) {
+            return response()->json(['error' => 'Aucune inscription avec paiement incomplet à exporter'], 404);
+        }
+        
+        if ($format === 'pdf') {
+            $etb = Etablissement::find(Auth::user()->etablissement_id);
+            $data = [
+                'etablissement' => $etb,
+                'inscriptions' => $inscriptions,
+                'section' => $section,
+                'title' => 'Liste des inscrits n\'ayant pas fini leur paiement',
+                'date' => date('d/m/Y'),
+            ];
+            
+            $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
+            return $pdf->download('liste_inscrits_non_payes_' . date('Ymd_His') . '.pdf');
+        } 
+         elseif ($format === 'excel') {
+            // CORRECTION: Utiliser la réponse BinaryFileResponse
+            // $fileName = 'liste_inscrits_non_payes_' . date('Ymd_His') . '.xlsx';
+            // $export = new InscriptionsNonPayeesExport($inscriptions, $section);
+            
+            // return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
+            //     'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+            // ]);
+             $fileName = 'liste_inscrits_non_payes_' . date('Ymd_His') . '.xlsx';
+            $export = new \Modules\Scolarite\Exports\InscriptionsNonPayeesExport($inscriptions, $section);
+            return Excel::download($export, $fileName);
+        }
+        elseif ($format === 'word') {
+            $etb = Etablissement::find(Auth::user()->etablissement_id);
+            $data = [
+                'etablissement' => $etb,
+                'inscriptions' => $inscriptions,
+                'section' => $section,
+                'title' => 'Liste des inscrits n\'ayant pas fini leur paiement',
+                'date' => date('d/m/Y'),
+            ];
+            
+            $html = view('exports.inscriptions_word', $data)->render();
+            
+            return response()->streamDownload(function () use ($html) {
+                echo $html;
+            }, 'liste_inscrits_non_payes_' . date('Ymd_His') . '.doc', [
+                'Content-Type' => 'application/vnd.ms-word',
+            ]);
+        }
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
+    }
+}
+
+
+// Nouvelle méthode pour calculer tous les montants
+private function calculerMontantsRestants($inscriptions)
+{
+    $anneeId = getAnneeEncours()->id;
+    
+    // Récupérer tous les IDs d'inscription et de niveau
+    $inscriptionIds = [];
+    $niveauIds = [];
+    
+    foreach ($inscriptions as $inscription) {
+        $inscriptionIds[] = $inscription['id'] ?? null;
+        $niveauIds[] = $inscription['niveau_id'] ?? null;
+    }
+    
+    // Calculer les frais totaux par niveau (une seule requête)
+    $fraisParNiveau = DB::table('frais')
+        ->whereIn('niveau_id', array_filter(array_unique($niveauIds)))
+        ->where('annee_id', $anneeId)
+        ->where('etablissement_id', Auth::user()->etablissement_id)
+        ->select('niveau_id', DB::raw('SUM(montant) as total_frais'))
+        ->groupBy('niveau_id')
+        ->pluck('total_frais', 'niveau_id')
+        ->toArray();
+    
+    // Calculer les versements totaux par inscription (une seule requête)
+    $versementsParInscription = DB::table('versements')
+        ->whereIn('inscription_id', array_filter(array_unique($inscriptionIds)))
+        ->select('inscription_id', DB::raw('SUM(montant) as total_verse'))
+        ->groupBy('inscription_id')
+        ->pluck('total_verse', 'inscription_id')
+        ->toArray();
+    
+    // Ajouter les montants restants à chaque inscription
+    foreach ($inscriptions as &$inscription) {
+        $niveauId = $inscription['niveau_id'] ?? null;
+        $inscriptionId = $inscription['id'] ?? null;
+        
+        $totalFrais = $fraisParNiveau[$niveauId] ?? 0;
+        $totalVerse = $versementsParInscription[$inscriptionId] ?? 0;
+        
+        $inscription['montant_restant'] = max(0, $totalFrais - $totalVerse);
+        $inscription['montant_total_frais'] = $totalFrais;
+        $inscription['montant_total_verse'] = $totalVerse;
+    }
+    
+    return $inscriptions;
+}
+
+    /**
+     * Calculer le montant restant à payer pour une inscription
+     * @param array $inscription
+     * @return float
+     */
+    private function calculerMontantRestant($inscription)
+    {
+        try {
+            $apprenantId = isset($inscription['apprenant_id']) 
+                ? $inscription['apprenant_id'] 
+                : ($inscription['apprenant']['id'] ?? null);
+            $anneeId = $inscription['annee_id'] ?? (getAnneeEncours()->id);     
+            if (!$apprenantId) {
+                return 0;
+            }   
+            // Méthode alternative sans utiliser les relations problématiques
+            $totalFrais = DB::table('frais')
+                ->join('niveaux', 'frais.niveau_id', '=', 'niveaux.id')
+                ->join('inscriptions', 'niveaux.id', '=', 'inscriptions.niveau_id')
+                ->where('frais.annee_id', $anneeId)
+                ->where('inscriptions.apprenant_id', $apprenantId)
+                ->where('inscriptions.annee_id', $anneeId)
+                ->sum('frais.montant');         
+            $totalVerse = DB::table('versements')
+                ->join('inscriptions', 'versements.inscription_id', '=', 'inscriptions.id')
+                ->where('inscriptions.apprenant_id', $apprenantId)
+                ->where('inscriptions.annee_id', $anneeId)
+                ->sum('versements.montant');         
+            $montantRestant = max(0, $totalFrais - $totalVerse);
+            return $montantRestant;
+        } catch (\Exception $e) {
+            \Log::error('Erreur calcul montant restant: ' . $e->getMessage());
+            return 0;
+        }
+    }                       
+    /**
+     * Obtenir les inscriptions avec statut de paiement
+     * @param Request $request
+     * @param string $type
+     * @return array
+     */
+    private function getInscriptionsAvecPaiement(Request $request, $type = 'all')
+    {
+        try {
+            $inscriptions = $this->ajaxInscriptionListe($request, null, $request->section);
+            
+            $result = [];
+            $anneeId = $request->annee_id ?? getAnneeEncours()->id;
+            
+            foreach ($inscriptions as $inscription) {
+                try {
+                    $apprenantId = isset($inscription['apprenant_id']) 
+                        ? $inscription['apprenant_id'] 
+                        : ($inscription['apprenant']['id'] ?? null);
+                    
+                    if (!$apprenantId) {
+                        continue;
+                    }
+                    
+                    // Vérifier le statut de paiement
+                    $estPaye = $this->verifierPaiementComplet($apprenantId, $anneeId);
+                    
+                    if (($type === 'payees' && $estPaye) || 
+                        ($type === 'non_payees' && !$estPaye) || 
+                        $type === 'all') {
+                        $result[] = $inscription;
+                    }
+                } catch (\Exception $e) {
+                    \Log::error('Erreur traitement inscription: ' . $e->getMessage());
+                    continue;
+                }
+            }
+            
+            return $result;
+        } catch (\Exception $e) {
+            \Log::error('Erreur getInscriptionsAvecPaiement: ' . $e->getMessage());
+            return [];
+        }
+    }
+
+        
+        /**
+     * Vérifier si un apprenant a complété son paiement
+     * @param int $apprenantId
+     * @param int $anneeId
+     * @return bool
+     */
+    private function verifierPaiementComplet($apprenantId, $anneeId)
+    {
+        try {
+            // Méthode alternative sans utiliser les relations problématiques
+            $totalFrais = DB::table('frais')
+                ->join('niveaux', 'frais.niveau_id', '=', 'niveaux.id')
+                ->join('inscriptions', 'niveaux.id', '=', 'inscriptions.niveau_id')
+                ->where('frais.annee_id', $anneeId)
+                ->where('inscriptions.apprenant_id', $apprenantId)
+                ->where('inscriptions.annee_id', $anneeId)
+                ->sum('frais.montant');
+            
+            // Si aucun frais n'est défini, considérer comme payé
+            if ($totalFrais <= 0) {
+                return true;
+            }
+            
+            $totalVerse = DB::table('versements')
+                ->join('inscriptions', 'versements.inscription_id', '=', 'inscriptions.id')
+                ->where('inscriptions.apprenant_id', $apprenantId)
+                ->where('inscriptions.annee_id', $anneeId)
+                ->sum('versements.montant');
+            
+            return $totalVerse >= $totalFrais;
+        } catch (\Exception $e) {
+            // En cas d'erreur, logger l'erreur et retourner false
+            \Log::error('Erreur vérification paiement: ' . $e->getMessage());
+            return false;
+        }
     }
 }
