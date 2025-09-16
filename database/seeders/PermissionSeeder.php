@@ -50,6 +50,7 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'affectation_niveau_matiere.delete', 'description' => 'Supprimer une affectation des matières au niveau']);
         Permission::create(['name' => 'affectation_enseignant', 'description' => 'Affectation des enseignants']);
         Permission::create(['name' => 'espace_enseignant', 'description' => 'Espace enseignant']);
+        Permission::create(['name' => 'espace_comptable', 'description' => 'Espace comptable']);
         Permission::create(['name' => 'espace_etudiant', 'description' => 'Espace Étudiant']);
         Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
         foreach ($this->models as $k => $v) {

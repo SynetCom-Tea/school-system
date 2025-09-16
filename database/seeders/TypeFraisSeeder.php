@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
+use Mockery\Matcher\Type;
 use Modules\Scolarite\Entities\TypeFrais;
 
 class TypeFraisSeeder extends Seeder
@@ -17,6 +18,9 @@ class TypeFraisSeeder extends Seeder
 
         TypeFrais::create(['id' => 1, 'libelle' => 'Frais d\'inscription']);
         TypeFrais::create(['id' => 2, 'libelle' => 'Frais de scolarité']);
+        TypeFrais::create(['id' => 2, 'libelle' => 'Frais de laboratoire']);
+        TypeFrais::create(['id' => 3, 'libelle' => 'Frais de Bibliothèque et de tenue']);
+        TypeFrais::create(['id' => 3, 'libelle' => 'Frais de logement']);
         TypeFrais::create(['id' => 3, 'libelle' => 'Frais de transport commun']);
         TypeFrais::create(['id' => 4, 'libelle' => 'Frais de cantine']);
         TypeFrais::create(['id' => 5, 'libelle' => 'Frais de Formation']);

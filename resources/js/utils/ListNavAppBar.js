@@ -373,6 +373,60 @@ let superAdminMenus=[]
    superAdminMenus.push(usersMenu)
   }
 
+
+  /********************Menu gestion comptable**************************/
+  let MenuComptable;
+  let childrenComptable = [
+    {
+      icon: mdiPurse,
+      title: "Factures",
+      link: "/comptabilite/factures",
+      permissions: "espace_comptable",
+    },
+    {
+      icon: mdiWalletMembership,
+      title: "Paiements",
+      link: "/comptabilite/paiements",
+      permissions: "espace_comptable",
+    },
+    {
+      icon: mdiReceiptTextSendOutline,
+      title: "Reçus émis",
+      link: "/comptabilite/recus-emis",
+      permissions: "espace_comptable",
+    },
+    {
+      icon: mdiReceiptTextCheckOutline,
+      title: "Reçus reçus",
+      link: "/comptabilite/recus-recus",
+      permissions: "espace_comptable",
+    },
+    {
+      icon: mdiCash,
+      title: "Versements",
+      link: "versements",
+      color: "rgb(24,18,42)",
+      note: "Ce menu permet d'effectuer des versements de la section",
+      expand:false,
+      image: "/assets/menusImage/cash2.jpg",
+      permissions: ["manage_school", "versement"],
+    },
+  ];
+
+  MenuComptable = {
+    icon: mdiCogOutline,
+    title: "Espace Comptable",
+    "icon-alt": mdiChevronDown,
+    permissions: "espace_comptable",
+    model: false,
+    children: [...childrenComptable],
+  };
+  if (page?.roles[0] == "Comptable") {
+    superAdminMenus.push(MenuComptable)
+  }
+  /********************Fin Menu gestion comptable**************************/
+
+
   /********************* Menu Gestion des enseignants  ************************ */
 
   let menuTeachers, childrenTeachers;
@@ -436,7 +490,7 @@ let superAdminMenus=[]
 
     /*********************Fin  Menu Gestion des enseignants  ************************ */
 
-    return{singleItems,gestionSections,usersMenu,MenuAdmin,MenuGestion,MenuUser,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote,MenuEtudiant}
+    return{singleItems,gestionSections,usersMenu,MenuAdmin,MenuGestion,MenuUser,MenuEvaluation,superAdminMenus, menuTeachers,MenuNote,MenuEtudiant, MenuComptable}
 }
 //Menu par section
 export function listMenusBySection(page, sectionID) {

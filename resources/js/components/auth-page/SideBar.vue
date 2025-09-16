@@ -239,6 +239,28 @@
                             </v-list-item>
                         </v-list-group>
                         <!-- Fin Menu Tuteur -->
+                        <!-- Debut Menu Comptable-->
+                        <v-list-group :value="getListMenus.MenuComptable && getListMenus.MenuComptable.title" v-permission="'espace_comptable'">
+                            <template v-slot:activator="{ props }">
+                                <v-list-item class="group-title" v-bind="props">
+                                    <template v-slot:prepend>
+                                        <v-icon :title="getListMenus.MenuComptable.title" :icon="getListMenus.MenuComptable.icon"></v-icon>
+                                    </template>
+                                    <v-list-item-title class="text-wrap" v-text="getListMenus.MenuComptable.title"></v-list-item-title>
+                                </v-list-item>
+                            </template>
+
+                            <v-list-item class="sub-list-group" v-for="(item, i) in getListMenus.MenuComptable.children" :key="i" @click="page(item.link)">
+                                <template v-slot:prepend>
+                                    <v-icon :title="item.title" :icon="item.icon"></v-icon>
+                                </template>
+                                <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
+                            </v-list-item>
+                        </v-list-group>
+
+                        <!-- Fin Menu Comptable-->
+                        
+                        <!-- Fin du menu preconfig -->
 
                         <!-- Déconnexion doit etre le dernier menu -->
                         <v-list-item class="list-case" @click="logout" key="logout">

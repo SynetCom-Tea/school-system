@@ -143,7 +143,7 @@ export default {
             // window.location.href = route('bulletin', { type: 1, classe: this.classe, periode: this.periode, section: this.sectionID}) 
         },
         async generate() {
-            
+            console.log('vcv',this.$page.url)
             if (this.tab == 'option-1') {
                 this.$inertia.replace(this.$page.url, {
                     data: {

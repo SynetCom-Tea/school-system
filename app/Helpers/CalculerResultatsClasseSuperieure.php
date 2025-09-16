@@ -158,6 +158,7 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             ",[
                 "historique_bulletin_id"=>$historiqueBulletin->id
             ]);
+            dd($requetes);
             $validation = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$section)->get();
             if ($validation[0]->regime_validation_id == 1){
                 // Validation par Capitalisation

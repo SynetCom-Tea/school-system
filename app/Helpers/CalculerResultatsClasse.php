@@ -22,10 +22,12 @@ if (!function_exists('calculerResultatsClasse')) {
             // dd($apprenants);
         }else{
             $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+            
         }
         //dd($apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $apprenant) {
             $details_notes = calculerMoyenneSecondaire($classeId, $section, $periode, $apprenant->id);
+            //dd('details_notes', $details_notes);
             if (empty($details_notes)) {
                 return; // Exit the function if $details_notes is empty
             }        
@@ -39,7 +41,6 @@ if (!function_exists('calculerResultatsClasse')) {
                 'details_notes' => $details_notes, // Tableau des détails des notes
             ];
         }
-
         // Transformer le tableau associatif en tableau indexé pour trier
         $resultatsClasse = array_values($resultatsClasse);
 

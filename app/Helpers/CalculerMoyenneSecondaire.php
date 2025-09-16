@@ -12,8 +12,9 @@
     function calculerMoyenneSecondaire($classeID, $section, $periode, $apprenantID) {
         $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
         $notestypeComposition = collect($notes_apprenant)->where('type_evaluation', 'Composition');
-        $notesDeClasses = collect($notes_apprenant)->whereIn('type_evaluation', ['Interrogation', 'Devoir Surveillé', 'Devoir']);
+        $notesDeClasses = collect($notes_apprenant)->whereIn('type_evaluation', ['Interrogation', 'Devoir Surveillé', 'Devoir', 'Devoir / Devoir Surveillé']);
         $groupedNotes = $notesDeClasses->groupBy('nom_matiere');
+        //dd('notes_apprenant', $notes_apprenant,'notestypeComposition', $notestypeComposition,'notesDeClasses', $notesDeClasses, 'groupedNotes', $groupedNotes);
         $details_notes = [];
         foreach ($groupedNotes as $matiere => $notes) {
             // dd($notes);

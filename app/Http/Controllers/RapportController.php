@@ -27,7 +27,6 @@ class RapportController extends Controller
 
     public function bulletin(Request $request)
     {
-        // dd($request->all());
         // dd('ismo');
         // $pdf = PDF::loadView('primaire/tester');
         // return $pdf->stream('itsolutionstuff.pdf');
@@ -40,6 +39,7 @@ class RapportController extends Controller
             if ($request->section == '1') {
                 // dd('fin');
                 $bulletin = $request->id ? HistoriqueBulletin::where('id', $request->id)->with('classe_annee.annee', 'classe_annee.classe.niveau')->first() : null;
+                
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id', $bulletin->id)->get() : [];
                 // dd($bulletin,$detail);
                 $data = [
@@ -331,7 +331,9 @@ class RapportController extends Controller
                 if ($request->tab == 'option-1') {
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
+                        //dd($request->classe, $request->section_id, $etablissement_section, $request->periode);
                         $resultats = calculerResultatsClasse($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                        //dd($resultats);
                         if (empty($resultats)) {
                             return; // Exit the function if $details_notes is empty
                         }
@@ -450,6 +452,7 @@ class RapportController extends Controller
                 }
             }
         }
+        //dd($resultats);
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
             "resultats" => $resultats,

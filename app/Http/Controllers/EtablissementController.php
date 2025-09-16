@@ -79,6 +79,7 @@ class EtablissementController extends Controller
             'nom' => $request->nom, 
             'prenom' => $request->prenom, 
             'email' => $request->mail,
+            'username' => strtolower($request->nom) . '-' . strtolower($request->prenom),
             'password' => $request->password ?? Hash::make('password'), 
             'etablissement_id' => $ets->id
         ];
