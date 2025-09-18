@@ -148,9 +148,10 @@
             <b style="font-size: 13px;">Moyenne obtenue : {{$donnee['bulletin']->moyenne_details_notes}} / 20</b>
         </div>
        
-        <!-- <div style="margin-top: 10px; position:absolute ;margin-left:460px;">
-            <b style="font-size: 13px;">Rang : {{ $donnee['bulletin']->rang}}</b>
-        </div> -->
+        <div style="margin-top: 10px; margin-left: 400px; position:absolute">
+            <b style="font-size: 13px;">Matricule : {{$donnee['bulletin']->matricule_apprenant}}</b> <br>
+            <b style="font-size: 13px;">Rang : {{$donnee['bulletin']->rang}}e</b>
+        </div>
        
         <!-- Fin informations sur le professeur et rang -->
 
@@ -184,8 +185,10 @@
                         <td style="text-align:center;" width="30">{{$line->moyenne}}</td>
                         <td style="text-align:center;" width="35">{{$line->coefficient}}</td>
                         <td style="text-align:center;" width="40">{{$line->moyenne_coefficiente}}</td>
-                        <td style="text-align:center;" width="35"></td>
+                        <td style="text-align:center;" width="35">{{$line->rang}}</td>
+                        
                         <td style="text-align:center;" width="70">
+                            
                             @if($line->moyenne <= 2)
                             NULL
                             @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
@@ -253,7 +256,80 @@
                     <label></label><br>
                 </td>
                 <td width="153"  height="20" colspan=3>
-                    <input type="checkbox" checked="checked"><label>Bien</label><br>
+
+                    <input type="checkbox"><label>Honorable</label><br>
+                    <input type="checkbox"><label>Excellent</label><br>
+                    <input type="checkbox"><label>Très Bien</label><br>
+                    <input type="checkbox" ><label>Bien</label><br>
+                    <input type="checkbox"><label>Assez Bien</label><br>
+                    <input type="checkbox"><label>Passable</label><br>
+                    <input type="checkbox"><label>Peut mieux faire</label><br>
+                    <input type="checkbox"><label>Insuffisant</label><br>
+                    <!-- <input type="checkbox"><label>Faible</label><br>
+                    <input type="checkbox"><label>Médiocre</label><br>
+                    <input type="checkbox"><label>Très Faible</label><br>
+                    <input type="checkbox"><label>Échec</label><br>
+                    <input type="checkbox"><label>À revoir</label><br>
+                    <input type="checkbox"><label>À améliorer</label><br>
+                    <input type="checkbox"><label>Non fait</label><br>
+                    <input type="checkbox"><label>Insuffisant</label><br>
+                    <input type="checkbox"><label>À surveiller</label><br>
+                    <input type="checkbox"><label>À encourager</label><br>
+                    <input type="checkbox"><label>À féliciter</label><br>
+                    <input type="checkbox"><label>À récompenser</label><br>
+                    <input type="checkbox"><label>À motiver</label><br>
+                    <input type="checkbox"><label>À soutenir</label><br>
+                    <input type="checkbox"><label>À guider</label><br>
+                    <input type="checkbox"><label>À conseiller</label><br>
+                    <input type="checkbox"><label>À orienter</label><br>
+                    <input type="checkbox"><label>À former</label><br>
+                    <input type="checkbox"><label>À instruire</label><br>
+                    <input type="checkbox"><label>À éduquer</label><br>
+                    <input type="checkbox"><label>À cultiver</label><br>
+                    <input type="checkbox"><label>À développer</label><br>
+                    <input type="checkbox"><label>À perfectionner</label><br>
+                    <input type="checkbox"><label>À renforcer</label><br>
+                    <input type="checkbox"><label>À consolider</label><br>
+                    <input type="checkbox"><label>À améliorer</label><br>
+                    <input type="checkbox"><label>À progresser</label><br>
+                    <input type="checkbox"><label>À réussir</label><br>
+                    <input type="checkbox"><label>À exceller</label><br>
+                    <input type="checkbox"><label>À briller</label><br>
+                    <input type="checkbox"><label>À triompher</label><br>
+                    <input type="checkbox"><label>À conquérir</label><br>
+                    <input type="checkbox"><label>À dominer</label><br>
+                    <input type="checkbox"><label>À régner</label><br>
+                    <input type="checkbox"><label>À gouverner</label><br>
+                    <input type="checkbox"><label>À diriger</label><br> 
+                    <input type="checkbox"><label>À administrer</label><br>
+                    <input type="checkbox"><label>À gérer</label><br>
+                    <input type="checkbox"><label>À organiser</label><br>
+                    <input type="checkbox"><label>À planifier</label><br>
+                    <input type="checkbox"><label>À structurer</label><br>
+                    <input type="checkbox"><label>À coordonner</label><br>
+                    <input type="checkbox"><label>À superviser</label><br>
+                    <input type="checkbox"><label>À contrôler</label><br>
+                    <input type="checkbox"><label>À évaluer</label><br>
+                    <input type="checkbox"><label>À apprécier</label><br>
+                    <input type="checkbox"><label>À juger</label><br>
+                    <input type="checkbox"><label>À critiquer</label><br>
+                    <input type="checkbox"><label>À analyser</label><br>
+                    <input type="checkbox"><label>À synthétiser</label><br>
+                    <input type="checkbox"><label>À résumer</label><br>
+                    <input type="checkbox"><label>À reformuler</label><br>
+                    <input type="checkbox"><label>À expliquer</label><br>
+                    <input type="checkbox"><label>À illustrer</label><br>
+                    <input type="checkbox"><label>À démontrer</label><br>
+                    <input type="checkbox"><label>À prouver</label><br>
+                    <input type="checkbox"><label>À confirmer</label><br>
+                    <input type="checkbox"><label>À valider</label><br>
+                    <input type="checkbox"><label>À certifier</label><br>
+                    <input type="checkbox"><label>À homologuer</label><br>
+                    <input type="checkbox"><label>À accréditer</label><br>
+                    <input type="checkbox"><label>À reconnaître</label><br>
+                    <input type="checkbox"><label>À approuver</label><br> -->
+                    <!-- <input type="checkbox" checked="checked"><label>Insuffisant</label><br> -->
+                    <label></label><br>
                 </td>
                 <td width="153"  height="20" colspan=3>
                     <input type="checkbox"><label>Inscrit(e)</label><br>
@@ -262,8 +338,15 @@
                     <input type="checkbox"><label>Non inscrit(e)</label><br>
                     <label></label><br>
                 </td>
-                <td style="text-align:center" valign="center" width="153"  height="20" colspan=3><span style="color:green">R.A.S</span></td>
-            </tr>
+                <td width="153"  height="20" colspan=3>
+                    <input type="checkbox"><label>Assidu</label><br>
+                    <input type="checkbox"><label>Retardataire</label><br>
+                    <input type="checkbox"><label>Absentéiste</label><br>
+                    <label></label><br>
+                    <label></label><br>
+                </td>
+                
+                </tr>
         </table>
         <!-- <div style="margin-top: 5px;">
             <b style="font-size: 13px;">Appréciation du proviseur&nbsp;</b> 

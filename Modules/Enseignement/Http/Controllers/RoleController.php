@@ -61,13 +61,19 @@ class RoleController extends Controller
         $data = $this->validate($request, [
             'name' => 'required|string',
         ]);
+        $role_id = Role::all()->last();
         $data['etablissement_section_id'] = $etablissement_section[0];
+        $data['guard_name'] = 'web' . $role_id->id;
         $permissions = $this->validate($request, [
             'permissions' => 'required'
         ]);
         // dd($data, $permissions);
         $role = Role::create($data);
-        $role->syncPermissions($permissions);
+        foreach ($permissions['permissions'] as $permssion) {
+            DB::table('role_has_permissions')->insert(
+                ['permission_id' => $permssion,
+                'role_id' => $role->id
+            ]);}
         // $role = Role::find($request->role_id);
         return redirect()->back()->with('message', 'Rôle créé avec succès!');
         // if (PermissionRole::where('role_id', $role->id)->where('user_id', Auth::user()->id)->exists()) {

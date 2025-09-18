@@ -94,6 +94,27 @@
             <b><i style="font-size: 13px; margin: 5px;">DDEN NIAMEY IV</i></b><br>
             <b><i style="font-size: 13px; margin: 5px;">IESG NY IV</i></b><br>
             <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : {{$donnee['bulletin']->classe_annee->annee->libelle}}</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : {{$donnee['bulletin']->periode }}</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">SECTION :  @if($section == '1') Primaire @elseif($section == '2') Sécondaire @elseif($section == '3') Supérieur @endif</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$donnee['bulletin']->classe_annee->classe->niveau->libelle}} </i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">FILIERE : {{$donnee['bulletin']->nom_classe }} </i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">{{$etablissement->adresse}}</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">Tel: {{$etablissement->telephone}} / Email: {{$etablissement->email}}</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">{{$etablissement->ville}} - Niger</i></b><br>
+            @else
+            <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">MINISTERE DE L'ENSEIGNEMENT SUPERIEUR</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$donnee['bulletin']->classe_annee->classe->niveau->libelle}} </i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">FILIERE : {{$donnee['bulletin']->nom_classe }} </i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">{{$etablissement->adresse}}</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">Tel: {{$etablissement->telephone}} / Email: {{$etablissement->email}}</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">{{$etablissement->ville}} - Niger</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
+            <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : {{$donnee['bulletin']->periode }}</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">SECTION :  @if($section == '1') Primaire @elseif($section == '2') Sécondaire @elseif($section == '3') Supérieur @endif</i>&nbsp;&nbsp;</b><br>
+            <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : {{$donnee['bulletin']->classe_annee->annee->libelle}}</i>&nbsp;&nbsp;</b><br>      
+        
             @endif
             @if($section == '3' || $section == '4')
             <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>

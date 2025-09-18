@@ -39,8 +39,13 @@ if (!function_exists('calculerResultatsClasse')) {
                 'matricule_apprenant' => $apprenant->matricule,
                 'nom_prenom_apprenant' => $apprenant->nom . ' ' . $apprenant->prenom,
                 'details_notes' => $details_notes, // Tableau des détails des notes
+                'moyenne_details_notes' => 0, // Initialiser à 0, sera calculé plus tard
+                'somme_notation' => array_sum(array_column($details_notes, 'note_de_classe')), // Somme des notations
+                'somme_note_generale' => array_sum(array_column($details_notes, 'moyenne')), // Somme des notes générales
+                'rang' => 0, // Initialiser à 0, sera calculé plus tard
             ];
         }
+        dd('resultatsClasse', $resultatsClasse);
         // Transformer le tableau associatif en tableau indexé pour trier
         $resultatsClasse = array_values($resultatsClasse);
 

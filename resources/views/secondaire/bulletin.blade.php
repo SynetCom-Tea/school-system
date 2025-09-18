@@ -90,9 +90,11 @@
         <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>
                     <b><i style="font-size: 13px; margin: 5px;">MINISTERE DE L'EDUCATION NATIONALE</i></b><br>
                     <b><i style="font-size: 13px; margin: 5px;">DREN NIAMEY</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">DDEN NIAMEY IV</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">IESG NY IV</i></b><br>
                     <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
+                    <b><i style="font-size: 13px; margin: 5px;">Rue de {{$etablissement->adresse}}</i></b><br>
+                    <b><i style="font-size: 13px; margin: 5px;">Tel: {{$etablissement->telephone}}</i></b><br>
+                    <b><i style="font-size: 13px; margin: 5px;">{{$etablissement->ville}}-Niger</i></b><br> 
+
         </div>
         <div style="position:absolute;margin-top:10px;margin-left:300px">
         <!-- <img style="max-width:50%; height:auto" src="logos/iat-logo.png" alt="Logo de l'entreprise"> -->
@@ -103,11 +105,11 @@
             @endif
         </div>
         <div style="position:absolute;margin-top:10px;margin-left:500px">
-        <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : 2023-2024</i>&nbsp;&nbsp;</b><br>
+        <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : {{$etablissement->annee_scolaire}}</i>&nbsp;&nbsp;</b><br>
                     <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : {{$bulletin->periode }}</i>&nbsp;&nbsp;</b><br>
                     <b><i style="font-size: 13px; margin: 5px;">SECTION : @if($section == '1') Primaire @elseif($section == '2' and $bulletin->classe_annee->classe->niveau->id <= 10) Collège @else Lycée @endif</i>&nbsp;&nbsp;</b><br>
                     <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$bulletin->classe_annee->classe->niveau->libelle}}</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">Rédouble : <span style="color:green">Jamais Rédoublé</span></i>&nbsp;&nbsp;</b><br>
+                    <!-- <b><i style="font-size: 13px; margin: 5px;">Rédouble : <span style="color:green">Jamais Rédoublé</span></i>&nbsp;&nbsp;</b><br> -->
         </div>
     </div>
                 <!-- <div style="text-align: left; border-right: 0; border-bottom: 0; border-left: 0; border-top:0" class="50p">

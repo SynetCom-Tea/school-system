@@ -164,13 +164,8 @@ class UserController extends Controller
         // die();
         $vUsers = null;
         // dump('T:', $request->section_id);
-        if ($request->section_id != null) {
-            $vUsers = User::where('users.etablissement_id', (int)$authUser->etablissement_id)
-            ->where('users.user_id', (int)$authUser->id)->get();
-        }
         if ($request->section_id == null) {
-            $vUsers = User::whereNull('apprenant_id')->whereNull('tuteur_id')->whereNull('enseignant_id')
-
+            $vUsers = User::where('user_id', (int)$authUser->id)
                 ->with('etablissement')->get();
         }
         return Inertia::render('User/Index', [
