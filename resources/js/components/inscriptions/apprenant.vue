@@ -37,10 +37,10 @@
                 </v-row>
                 <v-row>
                     <v-col cols="4">
-                        <TextField label="Date de naissance" :isRequired="true" type="date" placeholder="Date de naissance" @update:modelValue="submitForm()" v-model="form.date_naissance" :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
+                        <TextField label="Date de naissance" type="date" placeholder="Date de naissance" @update:modelValue="submitForm()" v-model="form.date_naissance" ></TextField>
                     </v-col>
                     <v-col cols="4">
-                        <TextField label="Lieu de naissance" :isRequired="true" @update:modelValue="submitForm()" placeholder="Lieu de naissance" v-model="form.lieu_naissance" :rules="[(v) => !!v || 'Ce champ est requis!']"></TextField>
+                        <TextField label="Lieu de naissance" @update:modelValue="submitForm()" placeholder="Lieu de naissance" v-model="form.lieu_naissance"></TextField>
                     </v-col>
                     <v-col cols="4">
                         <TextField label="Téléphone" @update:modelValue="submitForm()" placeholder="Téléphone" v-model="form.telephone" :rules="[(v) => /^[+][0-9]+$/.test(v) || 'Le numéro de téléphone doit être dans le format (00227 xx xx xx xx ou xx xx xx xx)' ]"></TextField>
@@ -127,10 +127,10 @@ export default {
                     required
                 },
                 date_naissance: {
-                    required
+                    // required
                 },
                 lieu_naissance: {
-                    required,
+                    // required
                     alpha
                 }
             }

@@ -250,7 +250,7 @@
 
                       <div class="text-center" :key="index" v-else>
                         <v-row>
-                          <v-col cols="5">
+                          <v-col cols="20">
                             <a
                               style="cursor: pointer"
                               class="text-caption text-decoration-none text-primary"
@@ -260,7 +260,7 @@
                               Réçu</a
                             ></v-col
                           >
-                          <v-col cols="3" @click="onclickFrais(item.raw)">
+                          <!-- <v-col cols="3" @click="onclickFrais(item.raw)">
                             <a
                               style="cursor: pointer"
                               class="text-caption text-decoration-none text-secondary"
@@ -277,7 +277,7 @@
                             >
                               Tuteurs</a
                             ></v-col
-                          >
+                          > -->
                         </v-row>
                         <v-row>
                           <v-col cols="4"></v-col>

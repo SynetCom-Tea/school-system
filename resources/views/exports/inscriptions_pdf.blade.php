@@ -115,7 +115,7 @@
         
         <div class="classe-header">
             Classe: {{ $classeName }} 
-            <span class="resume-classe">({{ $totalClasse }} élève(s) - Restant à payer: {{ number_format($totalRestantClasse, 0, ',', ' ') }} FCFA)</span>
+            <span class="resume-classe">({{ $totalClasse }} élève(s) - Restant à payer: {{ number_format($totalRestantClasse, 0, ',', ' ') }} FCFA) et Total payé: {{ number_format($totalClasse > 0 ? ($inscriptions->sum('montant_total_frais') - $totalRestantClasse) : 0, 0, ',', ' ') }} FCFA</span>
         </div>
         
         <table>
@@ -172,6 +172,7 @@
         <p>Généré le {{ date('d/m/Y à H:i') }} | 
            Total: {{ $totalGeneral }} inscription(s) | 
            Total restant à payer: {{ number_format($totalMontantRestant, 0, ',', ' ') }} FCFA
+           Total payé: {{ number_format($totalGeneral > 0 ? ($inscriptions->sum('montant_total_frais') - $totalMontantRestant) : 0, 0, ',', ' ') }} FCFA
         </p>
     </div>
 </body>

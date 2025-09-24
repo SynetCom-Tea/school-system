@@ -20,14 +20,14 @@
             padding: 20px;
         }
         .receipt h1 {
-            font-size: 18px;
-            color: #333;
+            font-size: 17px;
+            color: #0c0202ff;
             text-align: center;
             margin-bottom: 20px;
         }
         .receipt p {
-            font-size: 12px;
-            color: #555;
+            font-size: 18px;
+            color: #0e0101ff;
             margin: 8px 0;
         }
         .receipt .info {
@@ -54,7 +54,7 @@
         <div class="logo">
             <img src="team.png" alt="Logo de l'entreprise">
         </div>
-        <div style="margin-bottom: 20px; text-align:right; margin-top:-130px;">
+        <div style="margin-bottom: 20px; text-align:right; margin-top:-160px;">
             @if($etablissement->logo === null)
             <img style="max-width:30%; height: 11%;" src="logos/defaultLogo.png" alt="Logo de l'entreprise">
             @else
@@ -69,6 +69,10 @@
             <b style="margin-top: 5px;">{{$etablissement->ville}}-Niger</b>
       
         </p>
+        <br>
+        <br>
+        <br>
+        <div class="dotted-line"></div>
         <h1>Reçu d'inscription</h1>
         <h1 style="font-size: 16px;">Date de l'inscription: {{$inscription->date_inscription}}</h1>
         <p><span style="float: left;">Nom & Prénom: <strong>{{$inscription->apprenant->nom}} {{$inscription->apprenant->prenom}}</strong></span> &nbsp; <span style="float:right;">Référence de l'inscription: <strong>{{$inscription->apprenant->matricule}}</strong></span> </p>
@@ -82,6 +86,7 @@
             <p>Section: {{$inscription->niveau->code}} {{$inscription->cycleFiliere->code}} </p>
             @endif
         </div>
+         <p style="text-align: center; margin-top: 20px;">Merci pour votre inscription!</p>      
     </div>
 </body>
 </html>

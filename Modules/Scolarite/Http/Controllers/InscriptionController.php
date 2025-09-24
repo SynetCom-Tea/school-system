@@ -351,16 +351,38 @@ class InscriptionController extends Controller
             Niveau::find($donnees['annees']['niveau'])->libelle
         );
         $n = "";
-        $o = 0;
+        $o = 1;
         $f = "";
         foreach ($words as $w) {
             $n .= substr($w, 0, 1);
         }
         $a = Annee::find($donnees['annees']['annee'])->libelle;
         if ($donnees['section'] == '1' || $donnees['section'] == '2') {
-            $o = Inscription::where('annee_id', $donnees['annees']['annee'])->where('niveau_id', $donnees['annees']['niveau'])->count() + 1;
+            //$o = Inscription::where('annee_id', $donnees['annees']['annee'])->where('niveau_id', $donnees['annees']['niveau'])->count() + 1;
+            $os = Inscription::where('annee_id', $donnees['annees']['annee'])
+                ->where('niveau_id', $donnees['annees']['niveau'])
+                ->latest('id') // Trie par la colonne 'id'
+                ->first();
+                 if ($os) {
+                    // Si un enregistrement existe, incrémenter le dernier code
+                    $chaine = $os->code;
+                    $dernierChiffre = substr($chaine, strrpos($chaine, '-') + 1);
+                    $o = (int)$dernierChiffre + 1;
+                }
+                
         } elseif ($donnees['section'] == '3' || $donnees['section'] == '4') {
-            $o = Inscription::where('annee_id', $donnees['annees']['annee'])->where('niveau_id', $donnees['annees']['niveau'])->where('cycle_filiere_id', $donnees['annees']['cycle_filiere'])->count() + 1;
+            //$o = Inscription::where('annee_id', $donnees['annees']['annee'])->where('niveau_id', $donnees['annees']['niveau'])->where('cycle_filiere_id', $donnees['annees']['cycle_filiere'])->count() + 1;
+            $os = Inscription::where('annee_id', $donnees['annees']['annee'])
+                ->where('niveau_id', $donnees['annees']['niveau'])
+                ->where('cycle_filiere_id', $donnees['annees']['cycle_filiere'])
+                ->latest('id') // Trie par la colonne 'id'
+                ->first();
+               if ($os) {
+                    // Si un enregistrement existe, incrémenter le dernier code
+                    $chaine = $os->code;
+                    $dernierChiffre = substr($chaine, strrpos($chaine, '-') + 1);
+                    $o = (int)$dernierChiffre + 1;
+                }
         }
         if ($donnees['section'] == '1' || $donnees['section'] == '2') {
             $mat = 'US-' . $s . '-' . $a . '-' . $n . '-' . $o;
@@ -667,7 +689,7 @@ class InscriptionController extends Controller
         // dd($request->all());
         $etb = Etablissement::find(Auth::user()->etablissement_id);
         $ins = Inscription::where('id', $request->id)->with('annee', 'apprenant', 'niveau', 'cycleFiliere')->first();
-
+        
 
         $data = [
             'etablissement' => $etb,
@@ -729,12 +751,19 @@ class InscriptionController extends Controller
  * @param string $format
  * @return mixed
  */
+/**
+ * Exporter la liste des inscrits
+ * @param Request $request
+ * @param string $format
+ * @return mixed
+ */
 public function exportInscriptions(Request $request, $format)
 {
     try {
         $section = $request->section;
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        
         if ($format === 'pdf') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
             $data = [
@@ -749,35 +778,82 @@ public function exportInscriptions(Request $request, $format)
             return $pdf->download('liste_inscrits_' . date('Ymd_His') . '.pdf');
         } 
         elseif ($format === 'excel') {
-            // CORRECTION: Utiliser la réponse BinaryFileResponse
             $fileName = 'liste_inscrits_' . date('Ymd_His') . '.xlsx';
-            $export = new InscriptionsExport($inscriptions, $section);
+            $export = new InscriptionsExport($inscriptions, $section, 'Liste des inscrits');
             
             return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
             ]);
         }
-        // elseif ($format === 'word') {
-        //     $etb = Etablissement::find(Auth::user()->etablissement_id);
-        //     $data = [
-        //         'etablissement' => $etb,
-        //         'inscriptions' => $inscriptions,
-        //         'section' => $section,
-        //         'title' => 'Liste des inscrits',
-        //         'date' => date('d/m/Y'),
-        //     ];
-            
-        //     $html = view('exports.inscriptions_word', $data)->render();
-            
-        //     return response()->streamDownload(function () use ($html) {
-        //         echo $html;
-        //     }, 'liste_inscrits_' . date('Ymd_His') . '.doc', [
-        //         'Content-Type' => 'application/vnd.ms-word',
-        //     ]);
-        // }
     } catch (\Exception $e) {
         return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
     }
+}
+
+/**
+ * Générer le récapitulatif par type de frais
+ * @param array $inscriptions
+ * @return array
+ */
+private function genererRecapitulatifParTypeFrais($inscriptions)
+{
+    $recapitulatif = [];
+    $totalPaye = 0;
+    $totalRestant = 0;
+    
+    // Récupérer tous les types de frais
+    $typesFrais = TypeFrais::all();
+    
+    foreach ($typesFrais as $typeFrais) {
+        $totalTypePaye = 0;
+        $totalTypeRestant = 0;
+        
+        foreach ($inscriptions as $inscription) {
+            // Calculer les versements pour ce type de frais
+            $versementsType = DB::table('versements')
+                ->join('frais', 'versements.frais_id', '=', 'frais.id')
+                ->where('versements.inscription_id', $inscription['id'] ?? null)
+                ->where('frais.type_frais_id', $typeFrais->id)
+                ->sum('versements.montant');
+                
+            // Calculer les frais totaux pour ce type
+            $fraisType = DB::table('frais')
+                ->where('niveau_id', $inscription['niveau_id'] ?? null)
+                ->where('annee_id', getAnneeEncours()->id)
+                ->where('type_frais_id', $typeFrais->id)
+                ->where('etablissement_id', Auth::user()->etablissement_id)
+                ->sum('montant');
+                
+            $totalTypePaye += $versementsType;
+            $totalTypeRestant += max(0, $fraisType - $versementsType);
+        }
+        
+        $pourcentage = $fraisType > 0 ? round(($totalTypePaye / $fraisType) * 100, 2) : 0;
+        
+        $recapitulatif[] = [
+            'type_frais' => $typeFrais->libelle,
+            'total_paye' => $totalTypePaye,
+            'total_restant' => $totalTypeRestant,
+            'pourcentage' => $pourcentage
+        ];
+        
+        $totalPaye += $totalTypePaye;
+        $totalRestant += $totalTypeRestant;
+    }
+    
+    // Ajouter le total général
+    $totalGeneralPourcentage = ($totalPaye + $totalRestant) > 0 
+        ? round(($totalPaye / ($totalPaye + $totalRestant)) * 100, 2) 
+        : 0;
+        
+    $recapitulatif[] = [
+        'type_frais' => 'TOTAL GÉNÉRAL',
+        'total_paye' => $totalPaye,
+        'total_restant' => $totalRestant,
+        'pourcentage' => $totalGeneralPourcentage
+    ];
+    
+    return $recapitulatif;
 }
 
 /**

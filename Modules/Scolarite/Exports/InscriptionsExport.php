@@ -13,45 +13,91 @@ use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
+use Illuminate\Support\Collection;
+use Modules\Scolarite\Entities\Inscription;
+use Modules\Scolarite\Entities\TypeFrais;
 
 class InscriptionsExport implements WithMultipleSheets
 {
-    protected $inscriptions;
-    protected $section;
-    protected $title;
+    protected Collection $inscriptions;
+    protected ?array $section;
+    protected string $title;
+    protected Collection $typesFrais;
 
-    public function __construct($inscriptions, $section, $title = 'Liste des inscrits')
-    {
+    public function __construct($inscriptions, ?array $section = null, string $title = 'Liste des inscrits')
+    { //cette fonction peut recevoir des objets ou des tableaux associatifs et permet de filtrer par section si besoin
+        // Convertir en collection pour une manipulation plus facile   
         $this->inscriptions = collect($inscriptions);
         $this->section = $section;
         $this->title = $title;
+        $this->typesFrais = $this->loadTypesFrais();
     }
 
     public function sheets(): array
     {
         $sheets = [];
         
-        // Grouper par classe
-        $groupedByClasse = $this->groupInscriptionsByClasse();
+        // Feuille de résumé général avec types de frais
+        $sheets[] = new ResumeGeneralSheet($this->inscriptions, $this->title, $this->typesFrais);
+
+        // Feuille de résumé par section si applicable
+        if ($this->section) {
+            $inscriptionsSection = $this->filterInscriptionsBySection();
+            if ($inscriptionsSection->isNotEmpty()) {
+                $sectionTitle = 'Résumé - Section: ' . ($this->section['libelle'] ?? 'N/A');
+                $sheets[] = new ResumeGeneralSheet($inscriptionsSection, $sectionTitle, $this->typesFrais);
+            }
+        }
         
-        // Feuille de résumé général
-        $sheets[] = new ResumeGeneralSheet($this->inscriptions, $this->title);
-        
-        // Feuilles par classe
-        foreach ($groupedByClasse as $classeName => $inscriptionsClasse) {
-            $sheets[] = new InscriptionsPerClasseSheet($inscriptionsClasse, $classeName);
+        // Feuilles détaillées par classe
+        foreach ($this->getInscriptionsGroupedByClass() as $classeName => $inscriptionsClasse) {
+            $sheets[] = new InscriptionsPerClasseSheet(
+                collect($inscriptionsClasse), 
+                $classeName,
+                $this->typesFrais
+            );
         }
         
         return $sheets;
     }
     
-    private function groupInscriptionsByClasse()
+    private function loadTypesFrais(): Collection
+    {
+        // Charger les types de frais depuis la base de données
+        try {
+            return TypeFrais::where('statut', 1)->get();
+        } catch (\Exception $e) {
+            // Fallback si les types de frais ne sont pas disponibles
+            return collect([
+                (object)['id' => 1, 'libelle' => 'Frais de Scolarité'],
+                (object)['id' => 2, 'libelle' => 'Frais d\'Inscription'],
+                (object)['id' => 3, 'libelle' => 'Frais Divers']
+            ]);
+        }
+    }
+    
+    private function filterInscriptionsBySection(): Collection
+    {
+        return $this->inscriptions->filter(function($inscription) {
+            // Gérer à la fois les tableaux et les objets
+            if ($inscription instanceof Inscription) {
+                return $inscription->classeAnnee && 
+                       $inscription->classeAnnee->classe && 
+                       $inscription->classeAnnee->classe->section &&
+                       $inscription->classeAnnee->classe->section->id === $this->section['id'];
+            } else {
+                return isset($inscription['classe_annee']['classe']['section']) && 
+                       $inscription['classe_annee']['classe']['section']['id'] === $this->section['id'];
+            }
+        })->values();
+    }
+    
+    private function getInscriptionsGroupedByClass(): array
     {
         $grouped = [];
         
         foreach ($this->inscriptions as $inscription) {
-            $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 
-                         ($inscription['niveau']['libelle'] ?? 'Non classé');
+            $classeName = $this->getClasseName($inscription);
             
             if (!isset($grouped[$classeName])) {
                 $grouped[$classeName] = [];
@@ -60,93 +106,355 @@ class InscriptionsExport implements WithMultipleSheets
             $grouped[$classeName][] = $inscription;
         }
         
-        // Trier les classes par ordre (6ème, 5ème, etc.)
-        uksort($grouped, function($a, $b) {
-            preg_match('/\d+/', $a, $matchesA);
-            preg_match('/\d+/', $b, $matchesB);
-            
-            $numA = isset($matchesA[0]) ? (int)$matchesA[0] : 99;
-            $numB = isset($matchesB[0]) ? (int)$matchesB[0] : 99;
-            
-            // Ordre décroissant : 6ème avant 5ème
-            if ($numA !== $numB) {
-                return $numB - $numA;
+        return $this->sortClassesAndStudents($grouped);
+    }
+    
+    private function getClasseName($inscription): string
+    {
+        if ($inscription instanceof Inscription) {
+            // Gestion des objets Eloquent
+            if ($inscription->classeAnnee && $inscription->classeAnnee->classe) {
+                return $inscription->classeAnnee->classe->libelle;
             }
+            if ($inscription->niveau) {
+                return $inscription->niveau->libelle;
+            }
+        } else {
+            // Gestion des tableaux
+            return $inscription['classe_annee']['classe']['libelle'] ?? 
+                   $inscription['niveau']['libelle'] ?? 
+                   'Non classé';
+        }
+        
+        return 'Non classé';
+    }
+    
+    private function sortClassesAndStudents(array $groupedInscriptions): array
+    {
+        // Trier les classes par ordre numérique décroissant
+        uksort($groupedInscriptions, function($a, $b) {
+            $numA = $this->extractClassNumber($a);
+            $numB = $this->extractClassNumber($b);
             
-            return strcmp($a, $b);
+            return $numB <=> $numA ?: strcmp($a, $b);
         });
         
-        // Trier les élèves par nom dans chaque classe
-        foreach ($grouped as $classeName => $inscriptions) {
-            usort($grouped[$classeName], function($a, $b) {
-                $nomA = $a['apprenant']['nom'] ?? '';
-                $nomB = $b['apprenant']['nom'] ?? '';
-                $prenomA = $a['apprenant']['prenom'] ?? '';
-                $prenomB = $b['apprenant']['prenom'] ?? '';
+        // Trier les élèves par nom puis prénom dans chaque classe
+        foreach ($groupedInscriptions as $classeName => &$inscriptions) {
+            usort($inscriptions, function($a, $b) {
+                $nomA = $this->getStudentName($a, 'nom');
+                $nomB = $this->getStudentName($b, 'nom');
                 
                 if ($nomA === $nomB) {
+                    $prenomA = $this->getStudentName($a, 'prenom');
+                    $prenomB = $this->getStudentName($b, 'prenom');
                     return strcmp($prenomA, $prenomB);
                 }
+                
                 return strcmp($nomA, $nomB);
             });
         }
         
-        return $grouped;
+        return $groupedInscriptions;
+    }
+    
+    private function getStudentName($inscription, string $field): string
+    {
+        if ($inscription instanceof Inscription) {
+            return $inscription->apprenant ? $inscription->apprenant->$field : '';
+        } else {
+            return $inscription['apprenant'][$field] ?? '';
+        }
+    }
+    
+    private function extractClassNumber(string $className): int
+    {
+        preg_match('/\d+/', $className, $matches);
+        return isset($matches[0]) ? (int)$matches[0] : 99;
     }
 }
 
 class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, WithTitle, ShouldAutoSize
 {
-    protected $inscriptions;
-    protected $title;
+    protected Collection $inscriptions;
+    protected string $title;
+    protected Collection $typesFrais;
+    protected array $classSummary = [];
+    protected array $fraisSummary = [];
 
-    public function __construct($inscriptions, $title)
+    public function __construct(Collection $inscriptions, string $title, Collection $typesFrais)
     {
         $this->inscriptions = $inscriptions;
         $this->title = $title;
+        $this->typesFrais = $typesFrais;
+        $this->calculateClassSummary();
+        $this->calculateFraisSummary();
     }
 
-    public function collection()
+    public function collection(): Collection
     {
-        $data = [];
+        $data = collect();
         
-        // Résumé par classe
-        $grouped = [];
-        foreach ($this->inscriptions as $inscription) {
-            $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 
-                         ($inscription['niveau']['libelle'] ?? 'Non classé');
-            
-            if (!isset($grouped[$classeName])) {
-                $grouped[$classeName] = ['count' => 0, 'total_restant' => 0];
-            }
-            
-            $grouped[$classeName]['count']++;
-            $grouped[$classeName]['total_restant'] += $inscription['montant_restant'] ?? 0;
-        }
+        // Titre principal
+        $data->push([$this->title]);
+        $data->push(['']); // Ligne vide
         
-        // Données pour le tableau
-        $data[] = ['RÉSUMÉ GÉNÉRAL'];
-        $data[] = [''];
-        $data[] = ['Classe', 'Nombre d\'élèves', 'Total restant à payer'];
-        $data[] = [''];
+        // SECTION 1: RÉSUMÉ PAR CLASSE
+        $data->push(['RÉSUMÉ PAR CLASSE']);
+        $data->push(['']); // Ligne vide
         
-        $totalEleves = 0;
-        $totalRestant = 0;
+        // En-têtes du tableau des classes
+        $data->push([
+            'Classe', 
+            'Nombre d\'élèves', 
+            'Total Frais (FCFA)', 
+            'Total Payé (FCFA)', 
+            'Total Restant (FCFA)',
+            'Taux de Paiement'
+        ]);
         
-        foreach ($grouped as $classeName => $stats) {
-            $data[] = [
+        $data->push(['']); // Ligne vide
+        
+        // Données par classe
+        foreach ($this->classSummary as $classeName => $stats) {
+            $tauxPaiement = $stats['total_frais'] > 0 
+                ? round(($stats['total_paye'] / $stats['total_frais']) * 100, 1)
+                : 0;
+                
+            $data->push([
                 $classeName,
                 $stats['count'],
-                number_format($stats['total_restant'], 0, ',', ' ') . ' FCFA'
-            ];
-            $totalEleves += $stats['count'];
-            $totalRestant += $stats['total_restant'];
+                number_format($stats['total_frais'], 0, ',', ' '),
+                number_format($stats['total_paye'], 0, ',', ' '),
+                number_format($stats['total_restant'], 0, ',', ' '),
+                $tauxPaiement . '%'
+            ]);
         }
         
-        $data[] = [''];
-        $data[] = ['TOTAL GÉNÉRAL', $totalEleves, number_format($totalRestant, 0, ',', ' ') . ' FCFA'];
+        // Ligne de séparation
+        $data->push(['']);
         
-        return collect($data);
+        // Totaux généraux pour les classes
+        $totals = $this->calculateGrandTotals();
+        $tauxPaiementGeneral = $totals['total_frais'] > 0 
+            ? round(($totals['total_paye'] / $totals['total_frais']) * 100, 1)
+            : 0;
+        
+        $data->push([
+            'TOTAL GÉNÉRAL',
+            $totals['count'],
+            number_format($totals['total_frais'], 0, ',', ' '),
+            number_format($totals['total_paye'], 0, ',', ' '),
+            number_format($totals['total_restant'], 0, ',', ' '),
+            $tauxPaiementGeneral . '%'
+        ]);
+        
+        // SECTION 2: DÉTAIL PAR TYPE DE FRAIS
+        $data->push(['']);
+        $data->push(['']);
+        $data->push(['DÉTAIL PAR TYPE DE FRAIS']);
+        // $data->push(['']); // Ligne vide
+        
+        // En-têtes du tableau des frais
+        $fraisHeaders = ['Type de Frais', 'Total Frais (FCFA)', 'Total Payé (FCFA)', 'Total Restant (FCFA)', 'Taux de Paiement'];
+        $data->push($fraisHeaders);
+        // $data->push(['']); // Ligne vide
+        
+        // Données par type de frais
+        foreach ($this->fraisSummary as $typeFraisId => $stats) {
+            $typeFrais = $this->typesFrais->firstWhere('id', $typeFraisId);
+            $libelle = $typeFrais ? $typeFrais->libelle : 'Type Inconnu';
+            
+            $tauxPaiement = $stats['total_frais'] > 0 
+                ? round(($stats['total_paye'] / $stats['total_frais']) * 100, 1)
+                : 0;
+                
+            $data->push([
+                $libelle,
+                number_format($stats['total_frais'], 0, ',', ' '),
+                number_format($stats['total_paye'], 0, ',', ' '),
+                number_format($stats['total_restant'], 0, ',', ' '),
+                $tauxPaiement . '%'
+            ]);
+        }
+        
+        // Totaux pour les frais
+        $fraisTotals = $this->calculateFraisGrandTotals();
+        $tauxPaiementFrais = $fraisTotals['total_frais'] > 0 
+            ? round(($fraisTotals['total_paye'] / $fraisTotals['total_frais']) * 100, 1)
+            : 0;
+        
+        $data->push(['']);
+         $data->push(['']);
+        $data->push([
+            'TOTAL FRAIS',
+            number_format($fraisTotals['total_frais'], 0, ',', ' '),
+            number_format($fraisTotals['total_paye'], 0, ',', ' '),
+            number_format($fraisTotals['total_restant'], 0, ',', ' '),
+            $tauxPaiementFrais . '%'
+        ]);
+        
+        return $data;
+    }
+
+    private function calculateClassSummary(): void
+    {
+        $this->classSummary = [];
+        
+        foreach ($this->inscriptions as $inscription) {
+            $classeName = $this->getClasseName($inscription);
+            
+            if (!isset($this->classSummary[$classeName])) {
+                $this->classSummary[$classeName] = [
+                    'count' => 0,
+                    'total_frais' => 0,
+                    'total_paye' => 0,
+                    'total_restant' => 0
+                ];
+            }
+            
+            $frais = $this->getMontant($inscription, 'montant_total_frais');
+            $paye = $this->getMontant($inscription, 'montant_total_verse');
+            $restant = $this->getMontant($inscription, 'montant_restant');
+            
+            $this->classSummary[$classeName]['count']++;
+            $this->classSummary[$classeName]['total_frais'] += $frais;
+            $this->classSummary[$classeName]['total_paye'] += $paye;
+            $this->classSummary[$classeName]['total_restant'] += $restant;
+        }
+        
+        // Trier les classes par ordre
+        uksort($this->classSummary, function($a, $b) {
+            preg_match('/\d+/', $a, $matchesA);
+            preg_match('/\d+/', $b, $matchesB);
+            $numA = isset($matchesA[0]) ? (int)$matchesA[0] : 99;
+            $numB = isset($matchesB[0]) ? (int)$matchesB[0] : 99;
+            return $numB <=> $numA ?: strcmp($a, $b);
+        });
+    }
+    
+    private function calculateFraisSummary(): void
+    {
+        $this->fraisSummary = [];
+        
+        // Pour chaque inscription, analyser les versements par type de frais
+        foreach ($this->inscriptions as $inscription) {
+            if ($inscription instanceof Inscription) {
+                // Gestion des objets Eloquent
+                if ($inscription->versements) {
+                    foreach ($inscription->versements as $versement) {
+                        if ($versement->frais && $versement->frais->etablissement_type_frais) {
+                            $typeFraisId = $versement->frais->etablissement_type_frais->type_frais_id;
+                            
+                           
+                            
+                            if (!isset($this->fraisSummary[$typeFraisId])) {
+                                $this->fraisSummary[$typeFraisId] = [
+                                    'total_frais' => 0,
+                                    'total_paye' => 0,
+                                    'total_restant' => 0
+                                ];
+                            }
+                            
+                            // Montant total du frais
+                            $montantFrais = $versement->frais->montant ?? 0;
+                            $montantPaye = $versement->montant ?? 0;
+                            
+                            $this->fraisSummary[$typeFraisId]['total_frais'] += $montantFrais;
+                            $this->fraisSummary[$typeFraisId]['total_paye'] += $montantPaye;
+                            $this->fraisSummary[$typeFraisId]['total_restant'] += ($montantFrais - $montantPaye);
+                        }
+                    }
+                }
+            } else {
+                // Gestion des tableaux
+                if (isset($inscription['versements'])) {
+                    foreach ($inscription['versements'] as $versement) {
+                        if (isset($versement['frais']['etablissement_type_frais']['type_frais_id'])) {
+                            $typeFraisId = $versement['frais']['etablissement_type_frais']['type_frais_id'];
+                            
+                            if (!isset($this->fraisSummary[$typeFraisId])) {
+                                $this->fraisSummary[$typeFraisId] = [
+                                    'total_frais' => 0,
+                                    'total_paye' => 0,
+                                    'total_restant' => 0
+                                ];
+                            }
+                            
+                            $montantFrais = $versement['frais']['montant'] ?? 0;
+                            $montantPaye = $versement['montant'] ?? 0;
+                            
+                            $this->fraisSummary[$typeFraisId]['total_frais'] += $montantFrais;
+                            $this->fraisSummary[$typeFraisId]['total_paye'] += $montantPaye;
+                            $this->fraisSummary[$typeFraisId]['total_restant'] += ($montantFrais - $montantPaye);
+                        }
+                    }
+                }
+            }
+        }
+    }
+    
+    private function getClasseName($inscription): string
+    {
+        if ($inscription instanceof Inscription) {
+            if ($inscription->classeAnnee && $inscription->classeAnnee->classe) {
+                return $inscription->classeAnnee->classe->libelle;
+            }
+            if ($inscription->niveau) {
+                return $inscription->niveau->libelle;
+            }
+        } else {
+            return $inscription['classe_annee']['classe']['libelle'] ?? 
+                   $inscription['niveau']['libelle'] ?? 
+                   'Non classé';
+        }
+        
+        return 'Non classé';
+    }
+    
+    private function getMontant($inscription, string $field): float
+    {
+        if ($inscription instanceof Inscription) {
+            return (float)($inscription->$field ?? 0);
+        } else {
+            return (float)($inscription[$field] ?? 0);
+        }
+    }
+    
+    private function calculateGrandTotals(): array
+    {
+        $totals = [
+            'count' => 0,
+            'total_frais' => 0,
+            'total_paye' => 0,
+            'total_restant' => 0
+        ];
+        
+        foreach ($this->classSummary as $stats) {
+            $totals['count'] += $stats['count'];
+            $totals['total_frais'] += $stats['total_frais'];
+            $totals['total_paye'] += $stats['total_paye'];
+            $totals['total_restant'] += $stats['total_restant'];
+        }
+        
+        return $totals;
+    }
+    
+    private function calculateFraisGrandTotals(): array
+    {
+        $totals = [
+            'total_frais' => 0,
+            'total_paye' => 0,
+            'total_restant' => 0
+        ];
+        
+        foreach ($this->fraisSummary as $stats) {
+            $totals['total_frais'] += $stats['total_frais'];
+            $totals['total_paye'] += $stats['total_paye'];
+            $totals['total_restant'] += $stats['total_restant'];
+        }
+        
+        return $totals;
     }
 
     public function headings(): array
@@ -156,62 +464,147 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
 
     public function title(): string
     {
-        return 'Résumé';
+        return 'Résumé Général';
     }
 
-    public function styles(Worksheet $sheet)
+    public function styles(Worksheet $sheet): void
     {
-        $lastRow = count($this->inscriptions) + 10;
+        $lastClassRow = count($this->classSummary) + 6;
+        $fraisStartRow = $lastClassRow + 4;
+        $lastFraisRow = $fraisStartRow + count($this->fraisSummary) + 3;
+        $lastRow = $lastFraisRow + 2;
         
-        $sheet->mergeCells('A1:C1');
+        // Titre principal
+        $sheet->mergeCells('A1:F1');
         $sheet->setCellValue('A1', $this->title);
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(14);
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-        
-        $sheet->getStyle('A3:C3')->applyFromArray([
-            'font' => ['bold' => true],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'E8F5E9']],
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 16, 'color' => ['rgb' => '2C3E50']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'ECF0F1']]
         ]);
         
-        $sheet->getStyle('A4:C' . $lastRow)->applyFromArray([
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
+        // SECTION CLASSES
+        // Titre section classes
+        $sheet->mergeCells('A3:F3');
+        $sheet->getStyle('A3')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2980B9']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
         ]);
         
-        $sheet->getStyle('A' . ($lastRow - 1) . ':C' . $lastRow)->applyFromArray([
-            'font' => ['bold' => true],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFF9C4']]
+        // En-têtes du tableau classes
+        $sheet->getStyle('A5:F5')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
         ]);
         
-        return [];
+        // Données des classes
+        if ($lastClassRow > 5) {
+            $sheet->getStyle('A6:F' . $lastClassRow)->applyFromArray([
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
+            ]);
+            
+            // Style alterné pour les lignes
+            for ($i = 6; $i <= $lastClassRow; $i++) {
+                $fillColor = $i % 2 === 0 ? 'F8F9FA' : 'FFFFFF';
+                $sheet->getStyle("A{$i}:F{$i}")
+                    ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($fillColor);
+            }
+            
+            // Alignement des colonnes numériques
+            $sheet->getStyle("B6:F{$lastClassRow}")->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        }
+        
+        // Ligne des totaux généraux classes
+        $sheet->getStyle("A{$lastClassRow}:F{$lastClassRow}")->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => '2C3E50']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFF9C4']],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_MEDIUM]]
+        ]);
+        
+        // SECTION FRAIS
+        // Titre section frais
+        $sheet->mergeCells("A{$fraisStartRow}:E{$fraisStartRow}");
+        $sheet->getStyle("A{$fraisStartRow}")->applyFromArray([
+            'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2980B9']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
+        ]);
+        
+        // En-têtes du tableau frais
+        $fraisHeaderRow = $fraisStartRow + 2;
+        $sheet->getStyle("A{$fraisHeaderRow}:E{$fraisHeaderRow}")->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+        ]);
+        
+        // Données des frais
+        if ($lastFraisRow > $fraisHeaderRow) {
+            $dataStartRow = $fraisHeaderRow + 1;
+            $sheet->getStyle("A{$dataStartRow}:E{$lastFraisRow}")->applyFromArray([
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+                'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
+            ]);
+            
+            // Style alterné pour les lignes
+            for ($i = $dataStartRow; $i <= $lastFraisRow; $i++) {
+                $fillColor = $i % 2 === 0 ? 'F8F9FA' : 'FFFFFF';
+                $sheet->getStyle("A{$i}:E{$i}")
+                    ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($fillColor);
+            }
+            
+            // Alignement des colonnes numériques
+            $sheet->getStyle("B{$dataStartRow}:E{$lastFraisRow}")->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        }
+        
+        // Ligne des totaux généraux frais
+        $sheet->getStyle("A{$lastRow}:E{$lastRow}")->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => '2C3E50']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFF9C4']],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_MEDIUM]]
+        ]);
+        
+        // Ajuster la largeur des colonnes
+        foreach (range('A', 'F') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
     }
 }
 
 class InscriptionsPerClasseSheet implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithTitle, WithStyles
 {
-    protected $inscriptions;
-    protected $classeName;
+    protected Collection $inscriptions;
+    protected string $classeName;
+    protected Collection $typesFrais;
+    protected array $classStats;
 
-    public function __construct($inscriptions, $classeName)
+    public function __construct(Collection $inscriptions, string $classeName, Collection $typesFrais)
     {
-        $this->inscriptions = collect($inscriptions);
+        $this->inscriptions = $inscriptions;
         $this->classeName = $classeName;
+        $this->typesFrais = $typesFrais;
+        $this->classStats = $this->calculateClassStatistics();
     }
 
-    public function collection()
+    public function collection(): Collection
     {
         return $this->inscriptions;
     }
 
     public function title(): string
     {
-        // Limiter à 31 caractères (limite Excel)
-        return substr(str_replace(['/', '\\', '?', '*', '[', ']'], '', $this->classeName), 0, 31);
+        $cleanName = str_replace(['/', '\\', '?', '*', '[', ']', ':'], ' ', $this->classeName);
+        return substr(trim($cleanName), 0, 31) ?: 'Classe';
     }
 
     public function headings(): array
     {
-        return [
+        $headings = [
             'N°',
             'Matricule',
             'Nom',
@@ -222,76 +615,193 @@ class InscriptionsPerClasseSheet implements FromCollection, WithHeadings, WithMa
             'Statut',
             'Total Frais (FCFA)',
             'Total Payé (FCFA)',
-            'Restant (FCFA)'
+            'Restant (FCFA)',
+            'Taux Paiement'
         ];
+        
+        return $headings;
     }
 
     public function map($inscription): array
     {
         static $numero = 1;
         
+        $frais = $this->getMontant($inscription, 'montant_total_frais');
+        $paye = $this->getMontant($inscription, 'montant_total_verse');
+        $restant = $this->getMontant($inscription, 'montant_restant');
+        $tauxPaiement = $frais > 0 ? round(($paye / $frais) * 100, 1) : 0;
+        
         return [
             $numero++,
-            $inscription['apprenant']['matricule'] ?? '',
-            $inscription['apprenant']['nom'] ?? '',
-            $inscription['apprenant']['prenom'] ?? '',
-            $inscription['apprenant']['date_naissance'] ?? '',
-            $inscription['apprenant']['sexe'] ?? '',
-            $inscription['date_inscription'] ?? '',
-            $this->getStatutText($inscription['statut'] ?? 0),
-            number_format($inscription['montant_total_frais'] ?? 0, 0, ',', ' '),
-            number_format($inscription['montant_total_verse'] ?? 0, 0, ',', ' '),
-            number_format($inscription['montant_restant'] ?? 0, 0, ',', ' ')
+            $this->getStudentField($inscription, 'matricule'),
+            $this->getStudentField($inscription, 'nom'),
+            $this->getStudentField($inscription, 'prenom'),
+            $this->formatDate($this->getStudentField($inscription, 'date_naissance')),
+            $this->getStudentField($inscription, 'sexe'),
+            $this->formatDate($this->getInscriptionDate($inscription)),
+            $this->getStatutText($this->getStatut($inscription)),
+            number_format($frais, 0, ',', ' '),
+            number_format($paye, 0, ',', ' '),
+            number_format($restant, 0, ',', ' '),
+            $tauxPaiement . '%'
         ];
     }
 
-    private function getStatutText($statut)
+    private function getStudentField($inscription, string $field): string
     {
-        switch ($statut) {
-            case 0: return 'En attente';
-            case 1: return 'Validé';
-            case 2: return 'Rejeté';
-            default: return 'Inconnu';
+        if ($inscription instanceof Inscription) {
+            return $inscription->apprenant ? ($inscription->apprenant->$field ?? '') : '';
+        } else {
+            return $inscription['apprenant'][$field] ?? '';
+        }
+    }
+    
+    private function getInscriptionDate($inscription): string
+    {
+        if ($inscription instanceof Inscription) {
+            return $inscription->date_inscription ?? ($inscription->created_at ? $inscription->created_at->toDateString() : '');
+        } else {
+            return $inscription['date_inscription'] ?? ($inscription['created_at'] ?? '');
+        }
+    }
+    
+    private function getStatut($inscription)
+    {
+        if ($inscription instanceof Inscription) {
+            return $inscription->statut ?? 0;
+        } else {
+            return $inscription['statut'] ?? 0;
+        }
+    }
+    
+    private function getMontant($inscription, string $field): float
+    {
+        if ($inscription instanceof Inscription) {
+            return (float)($inscription->$field ?? 0);
+        } else {
+            return (float)($inscription[$field] ?? 0);
         }
     }
 
-    public function styles(Worksheet $sheet)
+    private function calculateClassStatistics(): array
     {
-        $lastRow = count($this->inscriptions) + 5;
+        $stats = [
+            'total_eleves' => $this->inscriptions->count(),
+            'total_frais' => 0,
+            'total_paye' => 0,
+            'total_restant' => 0
+        ];
         
-        // En-tête de classe
-        $sheet->mergeCells('A1:K1');
-        $sheet->setCellValue('A1', 'Classe: ' . $this->classeName . ' (' . count($this->inscriptions) . ' élève(s))');
-        $sheet->getStyle('A1')->getFont()->setBold(true)->setSize(12);
-        $sheet->getStyle('A1')->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('2c3e50');
-        $sheet->getStyle('A1')->getFont()->getColor()->setRGB('FFFFFF');
-        $sheet->getStyle('A1')->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        foreach ($this->inscriptions as $inscription) {
+            $stats['total_frais'] += $this->getMontant($inscription, 'montant_total_frais');
+            $stats['total_paye'] += $this->getMontant($inscription, 'montant_total_verse');
+            $stats['total_restant'] += $this->getMontant($inscription, 'montant_restant');
+        }
+        
+        $stats['taux_paiement'] = $stats['total_frais'] > 0 
+            ? round(($stats['total_paye'] / $stats['total_frais']) * 100, 1)
+            : 0;
+            
+        return $stats;
+    }
+
+    private function formatDate(?string $date): string
+    {
+        if (empty($date)) return '';
+        
+        try {
+            return date('d/m/Y', strtotime($date));
+        } catch (\Exception $e) {
+            return $date;
+        }
+    }
+
+    private function getStatutText($statut): string
+    {
+        return match($statut) {
+            0 => '⏳ En attente',
+            1 => 'Payé',
+            2 => '❌ Rejeté',
+            default => '❓ Inconnu'
+        };
+    }
+
+    public function styles(Worksheet $sheet): void
+    {
+        $lastRow = $this->inscriptions->count() + 5;
+        
+        // En-tête de classe avec statistiques
+        $sheet->mergeCells('A1:L1');
+        $headerText = sprintf(
+            'Classe: %s | %d élève(s) | Total restant: %s FCFA | Taux de paiement: %.1f%%',
+            $this->classeName,
+            $this->classStats['total_eleves'],
+            number_format($this->classStats['total_restant'], 0, ',', ' '),
+            $this->classStats['taux_paiement']
+        );
+        
+        $sheet->setCellValue('A1', $headerText);
+        $sheet->getStyle('A1')->applyFromArray([
+            'font' => ['bold' => true, 'size' => 12, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2C3E50']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+        ]);
         
         // En-têtes de colonnes
-        $sheet->getStyle('A3:K3')->applyFromArray([
+        $sheet->fromArray($this->headings(), null, 'A3');
+        $sheet->getStyle('A3:L3')->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495e']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],
             'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
         ]);
         
-        // Données
-        $sheet->getStyle('A4:K' . $lastRow)->applyFromArray([
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
-        ]);
-        
-        // Style alterné pour les lignes
-        for ($i = 4; $i <= $lastRow; $i++) {
-            if ($i % 2 == 0) {
-                $sheet->getStyle('A' . $i . ':K' . $i)
-                    ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB('F8F9FA');
+        // Style des données
+        if ($lastRow > 3) {
+            $sheet->getStyle('A4:L' . $lastRow)->applyFromArray([
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
+            ]);
+            
+            // Lignes alternées
+            for ($i = 4; $i <= $lastRow; $i++) {
+                $fillColor = $i % 2 === 0 ? 'F8F9FA' : 'FFFFFF';
+                $sheet->getStyle("A{$i}:L{$i}")
+                    ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($fillColor);
             }
+            
+            // Alignement des colonnes
+            $sheet->getStyle('A4:A' . $lastRow)->getAlignment() // N°
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('I4:L' . $lastRow)->getAlignment() // Colonnes numériques
+                ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+            $sheet->getStyle('B4:H' . $lastRow)->getAlignment() // Colonnes texte
+                ->setHorizontal(Alignment::HORIZONTAL_LEFT);
+                
+            // Couleur conditionnelle pour le statut
+            $this->applyConditionalFormatting($sheet, $lastRow);
         }
         
-        // Colonnes numériques alignées à droite
-        $sheet->getStyle('I4:K' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-        
-        return [];
+        // Ajustement automatique des colonnes
+        foreach (range('A', 'L') as $column) {
+            $sheet->getColumnDimension($column)->setAutoSize(true);
+        }
+    }
+    
+    private function applyConditionalFormatting(Worksheet $sheet, int $lastRow): void
+    {
+        // Couleur pour les différents statuts (colonne H)
+        for ($i = 4; $i <= $lastRow; $i++) {
+            $statutCell = "H{$i}";
+            $statutValue = $sheet->getCell($statutCell)->getValue();
+            
+            $color = match(true) {
+                str_contains($statutValue, 'Validé') => '27ae60', // Vert
+                str_contains($statutValue, 'En attente') => 'f39c12', // Orange
+                str_contains($statutValue, 'Rejeté') => 'e74c3c', // Rouge
+                default => '000000' // Noir
+            };
+            
+            $sheet->getStyle($statutCell)->getFont()->getColor()->setRGB($color);
+        }
     }
 }
