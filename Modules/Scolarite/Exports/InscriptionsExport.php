@@ -196,12 +196,13 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
         $data = collect();
         
         // Titre principal
-        $data->push([$this->title]);
         $data->push(['']); // Ligne vide
-        
+        $data->push(['']); // Ligne vide
         // SECTION 1: RÉSUMÉ PAR CLASSE
+        $data->push([$this->title]);
+        
         $data->push(['RÉSUMÉ PAR CLASSE']);
-        $data->push(['']); // Ligne vide
+        // $data->push(['']); // Ligne vide
         
         // En-têtes du tableau des classes
         $data->push([
@@ -213,7 +214,7 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
             'Taux de Paiement'
         ]);
         
-        $data->push(['']); // Ligne vide
+        // $data->push(['']); // Ligne vide
         
         // Données par classe
         foreach ($this->classSummary as $classeName => $stats) {
@@ -231,8 +232,8 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
             ]);
         }
         
-        // Ligne de séparation
-        $data->push(['']);
+        // // Ligne de séparation
+        // $data->push(['']);
         
         // Totaux généraux pour les classes
         $totals = $this->calculateGrandTotals();
@@ -252,6 +253,8 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
         // SECTION 2: DÉTAIL PAR TYPE DE FRAIS
         $data->push(['']);
         $data->push(['']);
+        $data->push(['']); // Ligne vide
+        $data->push(['']); // Ligne vide
         $data->push(['DÉTAIL PAR TYPE DE FRAIS']);
         // $data->push(['']); // Ligne vide
         
@@ -485,7 +488,7 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
         
         // SECTION CLASSES
         // Titre section classes
-        $sheet->mergeCells('A3:F3');
+        $sheet->mergeCells('A2:F2');
         $sheet->getStyle('A3')->applyFromArray([
             'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2980B9']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_LEFT]
@@ -593,7 +596,10 @@ class InscriptionsPerClasseSheet implements FromCollection, WithHeadings, WithMa
 
     public function collection(): Collection
     {
-        return $this->inscriptions;
+        $data = collect();
+        
+        $data->push(['']); // Ligne vide
+        return $data->merge($this->inscriptions);
     }
 
     public function title(): string
@@ -719,89 +725,94 @@ class InscriptionsPerClasseSheet implements FromCollection, WithHeadings, WithMa
     private function getStatutText($statut): string
     {
         return match($statut) {
-            0 => '⏳ En attente',
+            0 => '⏳ Non payé',
             1 => 'Payé',
             2 => '❌ Rejeté',
             default => '❓ Inconnu'
         };
     }
 
-    public function styles(Worksheet $sheet): void
-    {
-        $lastRow = $this->inscriptions->count() + 5;
-        
-        // En-tête de classe avec statistiques
-        $sheet->mergeCells('A1:L1');
-        $headerText = sprintf(
-            'Classe: %s | %d élève(s) | Total restant: %s FCFA | Taux de paiement: %.1f%%',
-            $this->classeName,
-            $this->classStats['total_eleves'],
-            number_format($this->classStats['total_restant'], 0, ',', ' '),
-            $this->classStats['taux_paiement']
-        );
-        
-        $sheet->setCellValue('A1', $headerText);
-        $sheet->getStyle('A1')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 12, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2C3E50']],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+   public function styles(Worksheet $sheet): void
+{
+    // Calculer le nombre de lignes correctement
+    $dataStartRow = 4; // Les données commencent à la ligne 4
+    $lastDataRow = $this->inscriptions->count() + $dataStartRow - 1;
+    
+    // En-tête de classe avec statistiques
+    $sheet->mergeCells('A1:L1');
+    $headerText = sprintf(
+        'Classe: %s | %d élève(s) | Total restant: %s FCFA | Taux de paiement: %.1f%%',
+        $this->classeName,
+        $this->classStats['total_eleves'],
+        number_format($this->classStats['total_restant'], 0, ',', ' '),
+        $this->classStats['taux_paiement']
+    );
+    
+    $sheet->setCellValue('A1', $headerText);
+    $sheet->getStyle('A1')->applyFromArray([
+        'font' => ['bold' => true, 'size' => 12, 'color' => ['rgb' => 'FFFFFF']],
+        'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2C3E50']],
+        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+    ]);
+    
+    
+    $sheet->getRowDimension(1)->setRowHeight(30);
+
+    // En-têtes de colonnes - COMMENCER À A3
+    $sheet->fromArray($this->headings(), null, 'A2');
+    $sheet->getStyle('A2:L2')->applyFromArray([
+        'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+        'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],
+        'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
+        'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
+    ]);
+    
+    // Style des données - COMMENCER À A4 (là où vos données commencent réellement)
+    if ($lastDataRow >= $dataStartRow) {
+        $sheet->getStyle('A' . $dataStartRow . ':L' . $lastDataRow)->applyFromArray([
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
         ]);
         
-        // En-têtes de colonnes
-        $sheet->fromArray($this->headings(), null, 'A3');
-        $sheet->getStyle('A3:L3')->applyFromArray([
-            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
-        ]);
-        
-        // Style des données
-        if ($lastRow > 3) {
-            $sheet->getStyle('A4:L' . $lastRow)->applyFromArray([
-                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
-            ]);
-            
-            // Lignes alternées
-            for ($i = 4; $i <= $lastRow; $i++) {
-                $fillColor = $i % 2 === 0 ? 'F8F9FA' : 'FFFFFF';
-                $sheet->getStyle("A{$i}:L{$i}")
-                    ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($fillColor);
-            }
-            
-            // Alignement des colonnes
-            $sheet->getStyle('A4:A' . $lastRow)->getAlignment() // N°
-                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('I4:L' . $lastRow)->getAlignment() // Colonnes numériques
-                ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
-            $sheet->getStyle('B4:H' . $lastRow)->getAlignment() // Colonnes texte
-                ->setHorizontal(Alignment::HORIZONTAL_LEFT);
-                
-            // Couleur conditionnelle pour le statut
-            $this->applyConditionalFormatting($sheet, $lastRow);
+        // Lignes alternées - COMMENCER À LA LIGNE 4
+        for ($i = $dataStartRow; $i <= $lastDataRow; $i++) {
+            $fillColor = $i % 2 === 0 ? 'F8F9FA' : 'FFFFFF';
+            $sheet->getStyle("A{$i}:L{$i}")
+                ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($fillColor);
         }
         
-        // Ajustement automatique des colonnes
-        foreach (range('A', 'L') as $column) {
-            $sheet->getColumnDimension($column)->setAutoSize(true);
-        }
+        // Alignement des colonnes - CORRIGER LES RÉFÉRENCES
+        $sheet->getStyle('A' . $dataStartRow . ':A' . $lastDataRow)->getAlignment() // N°
+            ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+        $sheet->getStyle('I' . $dataStartRow . ':L' . $lastDataRow)->getAlignment() // Colonnes numériques
+            ->setHorizontal(Alignment::HORIZONTAL_RIGHT);
+        $sheet->getStyle('B' . $dataStartRow . ':H' . $lastDataRow)->getAlignment() // Colonnes texte
+            ->setHorizontal(Alignment::HORIZONTAL_LEFT);
+            
+        // Couleur conditionnelle pour le statut - CORRIGER LES RÉFÉRENCES
+        $this->applyConditionalFormatting($sheet, $dataStartRow, $lastDataRow);
     }
     
-    private function applyConditionalFormatting(Worksheet $sheet, int $lastRow): void
-    {
-        // Couleur pour les différents statuts (colonne H)
-        for ($i = 4; $i <= $lastRow; $i++) {
-            $statutCell = "H{$i}";
-            $statutValue = $sheet->getCell($statutCell)->getValue();
-            
-            $color = match(true) {
-                str_contains($statutValue, 'Validé') => '27ae60', // Vert
-                str_contains($statutValue, 'En attente') => 'f39c12', // Orange
-                str_contains($statutValue, 'Rejeté') => 'e74c3c', // Rouge
-                default => '000000' // Noir
-            };
-            
-            $sheet->getStyle($statutCell)->getFont()->getColor()->setRGB($color);
-        }
+    // Ajustement automatique des colonnes
+    foreach (range('A', 'L') as $column) {
+        $sheet->getColumnDimension($column)->setAutoSize(true);
     }
+}
+
+private function applyConditionalFormatting(Worksheet $sheet, int $startRow, int $endRow): void
+{
+    // Couleur pour les différents statuts (colonne H)
+    for ($i = $startRow; $i <= $endRow; $i++) {
+        $statutCell = "H{$i}";
+        $statutValue = $sheet->getCell($statutCell)->getValue();
+        
+        $color = match(true) {
+            str_contains($statutValue, 'Payé') => '27ae60', // Vert
+            str_contains($statutValue, '⏳ Non payé') => 'f39c12', // Orange
+            str_contains($statutValue, '❌ Rejeté') => 'e74c3c', // Rouge
+            default => '000000' // Noir
+        };
+        
+        $sheet->getStyle($statutCell)->getFont()->getColor()->setRGB($color);
+    }
+}
 }

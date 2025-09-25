@@ -45,7 +45,7 @@ if (!function_exists('calculerResultatsClasse')) {
                 'rang' => 0, // Initialiser à 0, sera calculé plus tard
             ];
         }
-        dd('resultatsClasse', $resultatsClasse);
+        //dd('resultatsClasse', $resultatsClasse);
         // Transformer le tableau associatif en tableau indexé pour trier
         $resultatsClasse = array_values($resultatsClasse);
 

@@ -5,38 +5,90 @@
         :icon="icons.mdiAccountSchool"
         :toolbarTitle="'ESPACE DE VERSEMENT ' + Title   "
       ></Toolbar>
-       <!-- Section d'exportation - AJOUTEZ ICI -->
-      <div class="export-buttons">
-        <h3>Exporter les inscriptions</h3>
-        
-        <v-btn @click="exportData('all', 'pdf')" color="error" class="mr-2 mb-2">
-          <v-icon left>mdi-file-pdf</v-icon> PDF (Tous)
-        </v-btn>
-        
-        <v-btn @click="exportData('all', 'excel')" color="success" class="mr-2 mb-2">
-          <v-icon left>mdi-file-excel</v-icon> Excel (Tous)
-        </v-btn>
-        
-        <v-btn @click="exportData('all', 'word')" color="primary" class="mr-2 mb-2">
-          <v-icon left>mdi-file-word</v-icon> Word (Tous)
-        </v-btn>
-        
-        <v-btn @click="exportData('payees', 'pdf')" color="error" class="mr-2 mb-2">
-          <v-icon left>mdi-file-pdf</v-icon> PDF (Payés)
-        </v-btn>
-        
-        <v-btn @click="exportData('payees', 'excel')" color="success" class="mr-2 mb-2">
-          <v-icon left>mdi-file-excel</v-icon> Excel (Payés)
-        </v-btn>
-        
-        <v-btn @click="exportData('non-payees', 'pdf')" color="error" class="mr-2 mb-2">
-          <v-icon left>mdi-file-pdf</v-icon> PDF (Non payés)
-        </v-btn>
-        
-        <v-btn @click="exportData('non-payees', 'excel')" color="success" class="mr-2 mb-2">
-          <v-icon left>mdi-file-excel</v-icon> Excel (Non payés)
-        </v-btn>
-      </div>
+<!-- Section d'exportation - ICÔNES AVEC BADGE NOIR -->
+<div class="export-section">
+  <h3>Exporter les inscriptions</h3>
+  
+  <div class="export-icons">
+    <!-- Icône PDF avec badge noir -->
+    <v-menu location="bottom">
+      <template v-slot:activator="{ props }">
+        <div class="icon-container pdf-container">
+          <v-btn 
+            v-bind="props" 
+            icon 
+            class="pdf-icon animated-icon"
+            size="x-large"
+            v-tooltip="'Télécharger en PDF'"
+          >
+            <v-icon size="40" color="#F44336">mdi-file-pdf-box</v-icon>
+            <div class="download-badge-black">↓</div>
+          </v-btn>
+          <span class="icon-label">PDF</span>
+        </div>
+      </template>
+      <v-list class="export-menu">
+        <v-list-subheader>📄 Exporter en PDF</v-list-subheader>
+        <v-list-item @click="exportData('all', 'pdf')">
+          <v-icon color="#F44336" left>mdi-file-multiple</v-icon>
+          <v-list-item-title>Tous les inscriptions</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="exportData('payees', 'pdf')">
+          <v-icon color="#4CAF50" left>mdi-check-circle</v-icon>
+          <v-list-item-title>Inscriptions payées</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="exportData('non-payees', 'pdf')">
+          <v-icon color="#FF9800" left>mdi-alert-circle</v-icon>
+          <v-list-item-title>Inscriptions non payées</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+
+    <!-- Icône Excel avec badge noir -->
+    <v-menu location="bottom">
+      <template v-slot:activator="{ props }">
+        <div class="icon-container excel-container">
+          <v-btn 
+            v-bind="props" 
+            icon 
+            class="excel-icon animated-icon"
+            size="x-large"
+            v-tooltip="'Télécharger en Excel'"
+          >
+            <v-icon size="40" color="#4CAF50">mdi-file-excel-box</v-icon>
+            <div class="download-badge-black">↓</div>
+          </v-btn>
+          <span class="icon-label">Excel</span>
+        </div>
+      </template>
+      <v-list class="export-menu">
+        <v-list-subheader>📊 Exporter en Excel</v-list-subheader>
+        <v-list-item @click="exportData('all', 'excel')">
+          <v-icon color="#4CAF50" left>mdi-file-multiple</v-icon>
+          <v-list-item-title>Tous les inscriptions</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="exportData('payees', 'excel')">
+          <v-icon color="#4CAF50" left>mdi-check-circle</v-icon>
+          <v-list-item-title>Inscriptions payées</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="exportData('non-payees', 'excel')">
+          <v-icon color="#FF9800" left>mdi-alert-circle</v-icon>
+          <v-list-item-title>Inscriptions non payées</v-list-item-title>
+        </v-list-item>
+        <v-list-item @click="exportData('combinees', 'excel')">
+          <v-icon color="#9C27B0" left>mdi-merge</v-icon>
+          <v-list-item-title>Inscriptions combinées</v-list-item-title>
+        </v-list-item>
+      </v-list>
+    </v-menu>
+  </div>
+
+  <!-- Indicateur visuel "Cliquez pour exporter" -->
+  <div class="export-hint">
+    <v-icon color="#FFD600" small>mdi-lightbulb-on</v-icon>
+    <span>Cliquez sur les icônes pour exporter vos données</span>
+  </div>
+</div>
       <!-- Fin de la section d'exportation -->
 
       <div style="margin: 10px; border: 2px solid #7d002c; padding: 10px; border-radius: 25px"
@@ -668,7 +720,10 @@
           routeName = 'inscriptions.export.payees';
         } else if (type === 'non-payees') {
           routeName = 'inscriptions.export.non-payees';
-        } else {
+        }else if (type === 'combinees') {
+          routeName = 'inscriptions.export.combinees';
+        } 
+        else {
           console.error('Type d\'exportation inconnu');
           return;
         }
@@ -741,25 +796,214 @@
       transform: rotate(360deg);
     }
   }
+.export-section {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #49080826;
+  border-radius: 15px;
+  background: linear-gradient(135deg, #FFFFFF0D 0%, #FFFFFF08 100%);
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
 
-  .export-buttons {
-    margin: 20px;
-    padding: 15px;
-    border: 1px solid #ddd;
-    border-radius: 10px;
-    background-color: #f9f9f9;
+.export-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, #FFFFFF10, transparent);
+  animation: shine 3s infinite;
+}
+
+@keyframes shine {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
+
+.export-section h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #1b5788;
+  font-weight: bold;
+  font-size: 1.9rem;
+  text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.export-icons {
+  display: flex;
+  justify-content: center;
+  gap: 30px;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.icon-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+}
+
+/* Effet de pulsation pour les icônes */
+.animated-icon {
+  position: relative;
+  border-radius: 50%;
+  padding: 15px;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+
+.animated-icon:hover {
+  animation: none;
+  transform: scale(1.1) rotate(5deg);
+}
+
+/* Badge de téléchargement */
+
+/* BADGE NOIR avec flèche ↓ */
+.download-badge-black {
+  position: center;
+  top: -5px;
+  right: -5px;
+  background: #f8f5f5; /* Noir pur */
+  color: #FFFFFF; /* Texte blanc pour contraste */
+  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  font-size: 14px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: bounce 0,01s infinite alternate;
+  border: 2px solid #FFFFFF; /* Bordure blanche pour mieux ressortir */
+  box-shadow: 6px 2px 8px rgba(241, 238, 238, 0.5);
+}
+
+@keyframes bounce {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-3px); }
+}
+
+/* Survol du badge */
+.download-badge-black:hover {
+  background: #333333; /* Noir légèrement plus clair au survol */
+  transform: scale(1.1);
+}
+
+/* Containers spécifiques */
+.pdf-container .animated-icon {
+  background: linear-gradient(135deg, #F4433620 0%, #F4433610 100%);
+  border: 2px solid #F4433640;
+}
+
+.pdf-container .animated-icon:hover {
+  background: linear-gradient(135deg, #F4433630 0%, #F4433620 100%);
+  border-color: #F44336;
+  box-shadow: 0 0 20px #F4433640;
+}
+
+.excel-container .animated-icon {
+  background: linear-gradient(135deg, #4CAF5020 0%, #4CAF5010 100%);
+  border: 2px solid #4CAF5040;
+}
+
+.excel-container .animated-icon:hover {
+  background: linear-gradient(135deg, #4CAF5030 0%, #4CAF5020 100%);
+  border-color: #4CAF50;
+  box-shadow: 0 0 20px #4CAF5040;
+}
+
+/* Labels des icônes */
+.icon-label {
+  color: #1d0101;
+  font-size: 14px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+}
+
+/* Menu modal amélioré */
+.export-menu {
+  background: linear-gradient(135deg, #2D3748 0%, #4A5568 100%) !important;
+  border: 1px solid #FFFFFF30;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+}
+
+.export-menu .v-list-subheader {
+  color: #d3dde2 !important;
+  font-weight: bold;
+  font-size: 1.1em;
+}
+
+.export-menu .v-list-item {
+  color: #E2E8F0 !important;
+  transition: all 0.2s ease;
+  border-bottom: 1px solid #FFFFFF10;
+}
+
+.export-menu .v-list-item:hover {
+  background: linear-gradient(135deg, #4A5568 0%, #2D3748 100%) !important;
+  transform: translateX(5px);
+}
+
+/* Indicateur d'aide */
+.export-hint {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #00040f;
+  font-size: 0.9rem;
+  font-style: italic;
+  padding: 10px;
+  background: #FFFFFF08;
+  border-radius: 8px;
+  animation: fadeIn 2s ease-in;
+}
+
+@keyframes fadeIn {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
+}
+
+/* Effet de surbrillance au survol */
+.export-section:hover {
+  border-color: #FFFFFF40;
+  box-shadow: 0 5px 20px rgba(255,255,255,0.1);
+}
+
+/* Version responsive */
+@media (max-width: 768px) {
+  .export-icons {
+    gap: 20px;
   }
-
-  .export-buttons h3 {
-    margin-top: 0;
-    margin-bottom: 15px;
-    color: #7d002c;
-    font-weight: bold;
+  
+  .animated-icon {
+    padding: 12px;
   }
-
-  .export-buttons .v-btn {
-    text-transform: none;
-    font-weight: 500;
+  
+  .v-icon {
+    size: 35px;
+  }
+  
+  .download-badge {
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+  }
 }
   </style>
   

@@ -994,6 +994,46 @@ public function exportInscriptionsNonPayees(Request $request, $format)
     }
 }
 
+/**
+ * Exporter la liste combinée des inscrits payés et non payés
+ * @param Request $request
+ * @param string $format
+ * @return mixed
+ */
+public function exportInscriptionsCombine(Request $request, $format)
+{
+    try {
+        $section = $request->section;
+        
+        // Récupérer les inscriptions payées et non payées
+        $inscriptionsPayees = $this->getInscriptionsAvecPaiement($request, 'payees');
+        $inscriptionsNonPayees = $this->getInscriptionsAvecPaiement($request, 'non_payees');
+        
+        // Calculer les montants restants
+        $inscriptionsPayees = $this->calculerMontantsRestants($inscriptionsPayees);
+        $inscriptionsNonPayees = $this->calculerMontantsRestants($inscriptionsNonPayees);
+        
+        if (count($inscriptionsPayees) === 0 && count($inscriptionsNonPayees) === 0) {
+            return response()->json(['error' => 'Aucune inscription à exporter'], 404);
+        }
+        
+        if ($format === 'excel') {
+            $fileName = 'situation_paiements_' . date('Ymd_His') . '.xlsx';
+            $export = new \Modules\Scolarite\Exports\InscriptionsPaiementCombineExport(
+                $inscriptionsPayees, 
+                $inscriptionsNonPayees, 
+                $section
+            );
+            
+            return Excel::download($export, $fileName);
+        }
+        else {
+            return response()->json(['error' => 'Format non supporté pour l\'export combiné'], 400);
+        }
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de l\'export combiné: ' . $e->getMessage()], 500);
+    }
+}
 
 // Nouvelle méthode pour calculer tous les montants
 private function calculerMontantsRestants($inscriptions)

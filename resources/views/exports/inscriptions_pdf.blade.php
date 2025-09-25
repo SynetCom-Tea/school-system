@@ -56,6 +56,8 @@
     @php 
         $totalGeneral = 0;
         $totalMontantRestant = 0;
+        $totalMontantPaye = 0;
+        $totalFraisGeneral = 0;
         
         // Grouper par classe
         $groupedInscriptions = [];
@@ -105,17 +107,26 @@
             $totalClasse = count($classeInscriptions);
             $totalGeneral += $totalClasse;
             
-            // Calculer le total des montants restants pour la classe
+            // Calculer les totaux spécifiques à la classe
             $totalRestantClasse = 0;
+            $totalPayeClasse = 0;
+            $totalFraisClasse = 0;
+            
             foreach ($classeInscriptions as $insc) {
                 $totalRestantClasse += $insc['montant_restant'] ?? 0;
+                $totalPayeClasse += $insc['montant_total_verse'] ?? 0;
+                $totalFraisClasse += $insc['montant_total_frais'] ?? 0;
             }
+            
+            // Ajouter aux totaux généraux
             $totalMontantRestant += $totalRestantClasse;
+            $totalMontantPaye += $totalPayeClasse;
+            $totalFraisGeneral += $totalFraisClasse;
         @endphp
         
         <div class="classe-header">
             Classe: {{ $classeName }} 
-            <span class="resume-classe">({{ $totalClasse }} élève(s) - Restant à payer: {{ number_format($totalRestantClasse, 0, ',', ' ') }} FCFA) et Total payé: {{ number_format($totalClasse > 0 ? ($inscriptions->sum('montant_total_frais') - $totalRestantClasse) : 0, 0, ',', ' ') }} FCFA</span>
+            <span class="resume-classe">({{ $totalClasse }} élève(s) - Restant à payer: {{ number_format($totalRestantClasse, 0, ',', ' ') }} FCFA) et Total payé: {{ number_format($totalPayeClasse, 0, ',', ' ') }} FCFA</span>
         </div>
         
         <table>
@@ -154,8 +165,8 @@
                     <td>{{ $inscription['apprenant']['sexe'] ?? '' }}</td>
                     <td>{{ $inscription['date_inscription'] ?? ($inscription['created_at'] ? date('d/m/Y', strtotime($inscription['created_at'])) : 'N/A') }}</td>
                     <td class="{{ $statutClass }}">
-                        @if(($inscription['statut'] ?? 0) == 0) En attente
-                        @elseif(($inscription['statut'] ?? 0) == 1) Validé
+                        @if(($inscription['statut'] ?? 0) == 0) Non payé
+                        @elseif(($inscription['statut'] ?? 0) == 1) Payé
                         @elseif(($inscription['statut'] ?? 0) == 2) Rejeté
                         @else Inconnu @endif
                     </td>
@@ -171,8 +182,8 @@
     <div class="footer">
         <p>Généré le {{ date('d/m/Y à H:i') }} | 
            Total: {{ $totalGeneral }} inscription(s) | 
-           Total restant à payer: {{ number_format($totalMontantRestant, 0, ',', ' ') }} FCFA
-           Total payé: {{ number_format($totalGeneral > 0 ? ($inscriptions->sum('montant_total_frais') - $totalMontantRestant) : 0, 0, ',', ' ') }} FCFA
+           Total restant à payer: {{ number_format($totalMontantRestant, 0, ',', ' ') }} FCFA |
+           Total payé: {{ number_format($totalMontantPaye, 0, ',', ' ') }} FCFA
         </p>
     </div>
 </body>

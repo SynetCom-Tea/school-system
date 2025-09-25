@@ -11,6 +11,8 @@
 |
 */
 
+use Illuminate\Support\Facades\Route;
+
     Route::prefix('scolarite')->group(function() {
 
         // les routes pour l'inscriptions
@@ -36,6 +38,9 @@
     
         Route::get('/inscriptions/export-payees/{format}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'exportInscriptionsPayees'])
         ->name('inscriptions.export.payees');
+
+        Route::get('/inscriptions/export-combinees/{format}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'exportInscriptionsCombine'])
+        ->name('inscriptions.export.combinees');
     
         Route::get('/inscriptions/export-non-payees/{format}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'exportInscriptionsNonPayees'])
         ->name('inscriptions.export.non-payees');
