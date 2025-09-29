@@ -573,6 +573,8 @@ export default {
   },
   created(){
     this.subscribers = this.customizeData(this.inscriptions)
+    console.log(this.inscriptions);
+    
   },
   methods: {
     getNiveauxPrimaire,
@@ -704,45 +706,58 @@ export default {
       return axiosResult ?? [];
     },
     customizeData(data) {
-      let flattenedData = data ? data.flat() : [];
-      let columns = [];
-      let apprenant, classe, niveau;
-      if (flattenedData || flattenedData.length > 0) {
-        flattenedData.forEach((element, index) => {
-          if (element) {
-            apprenant = element.apprenant;
-            classe = element.classe_annee?.classe;
-            if(element.cycle_filiere_id == null){
-              niveau = element.classe_annee?.classe?.niveau;
-            }else{
-              niveau = element.niveau;
-            }
-            columns.push({
-              id: element.id,
-              matricule: element.apprenant?.matricule,
-              name: element.apprenant?.nom + " " + element.apprenant?.prenom,
-              adresse: element.apprenant?.adresse,
-              date_lieu_naissance:
-                element.apprenant?.date_naissance +
-                " à " +
-                element.apprenant?.lieu_naissance,
-              lieu_naissance: element.apprenant?.lieu_naissance,
-              telephone: element.apprenant?.telephone,
-              classe_code: element.classe_annee?.classe?.code,
-              annee_scolaire: element.classe_annee?.annee?.libelle,
-              cycle_niveau: element.cycle_filiere?.cycle?.name + ' / ' + element.niveau?.libelle,
-              filiere: element.cycle_filiere?.filiere?.code,
-              annee: element.annee?.libelle,
-              more: {
-                apprenant: element.apprenant,
-                classeAnnee: element.classe_annee,
-              },
-            });
-          }
+  let flattenedData = data ? data.flat() : [];
+  let columns = [];
+  let apprenant, classe, niveau, anneeData;
+  
+  if (flattenedData || flattenedData.length > 0) {
+    flattenedData.forEach((element, index) => {
+      if (element) {
+        apprenant = element.apprenant;
+        
+        // Gestion cohérente des classes/niveaux
+        if (element.cycle_filiere_id == null) {
+          // Sections primaire/secondaire
+          classe = element.classe_annee?.classe;
+          niveau = element.classe_annee?.classe?.niveau;
+          anneeData = element.classe_annee?.annee;
+        } else {
+          // Sections supérieures
+          classe = null;
+          niveau = element.niveau;
+          anneeData = element.annee;
+        }
+        
+        // Gestion des valeurs null/undefined
+        const dateNaissance = apprenant?.date_naissance || 'Non renseigné';
+        const lieuNaissance = apprenant?.lieu_naissance || 'Non renseigné';
+        const nomComplet = (apprenant?.nom || '') + " " + (apprenant?.prenom || '');
+        const classeCode = classe?.code || niveau?.libelle || 'Non assigné';
+        const anneeScolaire = anneeData?.libelle || 'Non définie';
+        
+        columns.push({
+          id: element.id,
+          matricule: apprenant?.matricule || 'N/A',
+          name: nomComplet.trim(),
+          adresse: apprenant?.adresse || 'Non renseigné',
+          date_lieu_naissance: `${dateNaissance} à ${lieuNaissance}`,
+          lieu_naissance: lieuNaissance,
+          telephone: apprenant?.telephone || 'Non renseigné',
+          classe_code: classeCode,
+          annee_scolaire: anneeScolaire,
+          cycle_niveau: element.cycleFiliere?.cycle?.name + ' / ' + (niveau?.libelle || 'Non défini'),
+          filiere: element.cycleFiliere?.filiere?.code || 'Non définie',
+          annee: anneeScolaire,
+          more: {
+            apprenant: element.apprenant,
+            classeAnnee: element.classe_annee,
+          },
         });
       }
-      return columns ?? [];
-    },
+    });
+  }
+  return columns ?? [];
+},
     // functionOnClickAddButton() {
     //   router.get(route("inscriptions.create"));
     // },

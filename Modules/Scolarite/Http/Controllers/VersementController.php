@@ -1,21 +1,22 @@
 <?php
 namespace Modules\Scolarite\Http\Controllers;
 
-use App\Models\Etablissement;
-use Illuminate\Contracts\Support\Renderable;
-use Illuminate\Http\Request;
-use Illuminate\Routing\Controller;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use PDF;
+use App\Models\User;
 use Inertia\Inertia;
+use App\Models\Classe;
+use Illuminate\Http\Request;
+use App\Models\Etablissement;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\DB;
 
 
-use Modules\Scolarite\Entities\Inscription;
-use Modules\Scolarite\Entities\Versement;
+use Illuminate\Support\Facades\Auth;
 use Modules\Scolarite\Entities\Frais;
 use Modules\Scolarite\Entities\TypeFrais;
-use App\Models\User;
+use Modules\Scolarite\Entities\Versement;
+use Modules\Scolarite\Entities\Inscription;
+use Illuminate\Contracts\Support\Renderable;
 use Modules\Scolarite\Entities\EtablissementTypeFrais;
 
 class VersementController extends Controller
@@ -215,6 +216,10 @@ class VersementController extends Controller
         // dd($versement);
         $etb = Etablissement::find(Auth::user()->etablissement_id);
         $users = User::all();
+        $inscription = Inscription::where('id', $versement->inscription_id)->first();
+        $classe = Classe::where('niveau_id',$inscription->niveau_id)->whereHas('classe_annees',function ($value) use ($inscription){
+            $value->where('annee_id',$inscription->annee_id);
+        })->get();
 
         $data = [
             'etablissement' => $etb,
@@ -222,7 +227,8 @@ class VersementController extends Controller
             'section' => $request->section,
             'title' => 'Welcome to ItSolutionStuff.com',
             'date' => date('m/d/Y'),
-            'versement' => $versement
+            'versement' => $versement,
+            'classe' => $classe->first()
         ];
 
         $pdf = PDF::loadView('recu_versement', $data);

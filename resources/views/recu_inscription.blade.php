@@ -75,13 +75,13 @@
         <div class="dotted-line"></div>
         <h1>Reçu d'inscription</h1>
         <h1 style="font-size: 16px;">Date de l'inscription: {{$inscription->date_inscription}}</h1>
-        <p><span style="float: left;">Nom & Prénom: <strong>{{$inscription->apprenant->nom}} {{$inscription->apprenant->prenom}}</strong></span> &nbsp; <span style="float:right;">Référence de l'inscription: <strong>{{$inscription->apprenant->matricule}}</strong></span> </p>
+        <p><span style="float: left;">Nom & Prénom: <strong>{{$inscription->apprenant->nom}} {{$inscription->apprenant->prenom}}</strong></span> <br> &nbsp; <span style="float:right;">Référence de l'inscription: <strong>{{$inscription->apprenant->matricule}}</strong></span> <br> <br></p>
        
        
         <div class="info">
             <p>Année Scolaire: {{$inscription->annee->libelle}}</p>
             @if($section == '1' || $section == '2')
-            <p>Niveau: {{$inscription->niveau->code}} </p>
+            <p>Niveau: {{$classe->code}} </p>
             @else
             <p>Section: {{$inscription->niveau->code}} {{$inscription->cycleFiliere->code}} </p>
             @endif

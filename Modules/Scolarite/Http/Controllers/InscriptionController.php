@@ -126,128 +126,155 @@ class InscriptionController extends Controller
     }
 
     // Debut requete AXIOS
-    public function ajaxInscriptionListe(Request $request, $mat = null, $sec = null)
-    {
-        $nom = null;
-        $prenom = null;
-        $section = $sec ? $sec : $request->section;
-        $matricule = null;
-        
-        if ($request->matricule == null && $mat == null) {
-            $nom = $request->nom;
-            $prenom = $request->prenom;
-        } elseif ($request->matricule != null && $mat == null) {
-            $matricule = $request->matricule;
+  public function ajaxInscriptionListe(Request $request, $mat = null, $sec = null)
+{
+    $nom = null;
+    $prenom = null;
+    $section = $sec ? $sec : $request->section;
+    $matricule = null;
+    
+    if ($request->matricule == null && $mat == null) {
+        $nom = $request->nom;
+        $prenom = $request->prenom;
+    } elseif ($request->matricule != null && $mat == null) {
+        $matricule = $request->matricule;
+    }
+    
+    $authUser = Auth::user();
+    $etablissement_id = $authUser->etablissement_id;
+    
+    // Récupération de l'ID de la section d'établissement
+    $et_sec_id = getSectionEtablissement($etablissement_id, $section)->first();
+    
+    $year = getAnneeEncours()->id;
+    
+    // Construction de la requête pour les inscriptions
+    $query = Inscription::with([
+            'apprenant', 
+            'apprenant.etablissement', 
+            'cycleFiliere.cycle', 
+            'cycleFiliere.filiere', 
+            'niveau', 
+            'annee', 
+            'versements',
+            'classeAnnee.classe.niveau', // Ajout important
+            'classeAnnee.annee' // Ajout important
+        ])
+        ->whereHas('apprenant', function($query) use ($etablissement_id) {
+            $query->where('etablissement_id', $etablissement_id);
+        });
+    
+    // Filtrage par section
+    if ($section == '1' || $section == '2') {
+        $query->whereNull('cycle_filiere_id');
+    } elseif ($section == '3') {
+        $query->whereNotNull('cycle_filiere_id')
+            ->whereHas('cycleFiliere.filiere', function($query) use ($et_sec_id) {
+                $query->where('etablissement_section_id', $et_sec_id)
+                    ->whereNull('departement_id');
+            });
+    } elseif ($section == '4') {
+        $query->whereNotNull('cycle_filiere_id')
+            ->whereHas('cycleFiliere.filiere', function($query) use ($etablissement_id) {
+                $query->where('etablissement_id', $etablissement_id)
+                    ->whereNotNull('departement_id');
+            });
+    }
+    
+    // Filtrage par année (sauf si recherche spécifique)
+    if ($matricule === null && $nom === null && $prenom === null) {
+        $query->where('annee_id', $year);
+    }
+    
+    // Filtrage par matricule, nom ou prénom
+    if ($matricule !== null) {
+        $query->whereHas('apprenant', function($query) use ($matricule) {
+            $query->where('matricule', 'like', '%' . $matricule . '%');
+        });
+    } else {
+        if ($nom !== null) {
+            $query->whereHas('apprenant', function($query) use ($nom) {
+                $query->where('nom', 'like', '%' . $nom . '%');
+            });
         }
-        
-        $authUser = Auth::user();
-        $etablissement_id = $authUser->etablissement_id;
-        
-        // Récupération de l'ID de la section d'établissement
-        $et_sec_id = getSectionEtablissement($etablissement_id, $section)->first();
-        
-        $year = getAnneeEncours()->id;
-        
-        // Construction de la requête pour les inscriptions
-        $query = Inscription::with('apprenant', 'apprenant.etablissement', 'cycleFiliere.cycle', 'cycleFiliere.filiere', 'niveau', 'annee', 'versements')
+        if ($prenom !== null) {
+            $query->whereHas('apprenant', function($query) use ($prenom) {
+                $query->where('prenom', 'like', '%' . $prenom . '%');
+            });
+        }
+    }
+    
+    $list = $query->get();
+    
+    // Pour les sections 1 et 2, récupérer également les apprenants par classe
+    if ($section == '1' || $section == '2') {
+        $apprenantsCABySection = ApprenantClasseAnnee::with([
+                'apprenant', 
+                'classe_annee.annee', 
+                'classe_annee.classe', 
+                'classe_annee.classe.niveau'
+            ])
+            ->whereHas('classe_annee.classe', function($query) use ($et_sec_id) {
+                $query->where('etablissement_section_id', $et_sec_id);
+            })
             ->whereHas('apprenant', function($query) use ($etablissement_id) {
                 $query->where('etablissement_id', $etablissement_id);
+            })
+            ->whereHas('classe_annee.annee', function($query) use ($year, $matricule, $nom, $prenom) {
+                if ($matricule === null && $nom === null && $prenom === null) {
+                    $query->where('id', $year);
+                }
             });
         
-        // Filtrage par section
-        if ($section == '1' || $section == '2') {
-            $query->whereNull('cycle_filiere_id');
-        } elseif ($section == '3') {
-            $query->whereNotNull('cycle_filiere_id')
-                ->whereHas('cycleFiliere.filiere', function($query) use ($et_sec_id) {
-                    $query->where('etablissement_section_id', $et_sec_id)
-                        ->whereNull('departement_id');
-                });
-        } elseif ($section == '4') {
-            $query->whereNotNull('cycle_filiere_id')
-                ->whereHas('cycleFiliere.filiere', function($query) use ($etablissement_id) {
-                    $query->where('etablissement_id', $etablissement_id)
-                        ->whereNotNull('departement_id');
-                });
-        }
-        
-        // Filtrage par année (sauf si recherche spécifique)
-        if ($matricule === null && $nom === null && $prenom === null) {
-            $query->where('annee_id', $year);
-        }
-        
-        // Filtrage par matricule, nom ou prénom
+        // Filtrage supplémentaire par matricule, nom ou prénom
         if ($matricule !== null) {
-            $query->whereHas('apprenant', function($query) use ($matricule) {
+            $apprenantsCABySection->whereHas('apprenant', function($query) use ($matricule) {
                 $query->where('matricule', 'like', '%' . $matricule . '%');
             });
         } else {
             if ($nom !== null) {
-                $query->whereHas('apprenant', function($query) use ($nom) {
+                $apprenantsCABySection->whereHas('apprenant', function($query) use ($nom) {
                     $query->where('nom', 'like', '%' . $nom . '%');
                 });
             }
             if ($prenom !== null) {
-                $query->whereHas('apprenant', function($query) use ($prenom) {
+                $apprenantsCABySection->whereHas('apprenant', function($query) use ($prenom) {
                     $query->where('prenom', 'like', '%' . $prenom . '%');
                 });
             }
         }
         
-        $list = $query->get();
+        $apprenantsCABySection = $apprenantsCABySection->get();
         
-        // Pour les sections 1 et 2, récupérer également les apprenants par classe
-        if ($section == '1' || $section == '2') {
-            $apprenantsCABySection = ApprenantClasseAnnee::with('apprenant', 'classe_annee.annee', 'classe_annee.classe', 'classe_annee.classe.niveau')
-                ->whereHas('classe_annee.classe', function($query) use ($et_sec_id) {
-                    $query->where('etablissement_section_id', $et_sec_id);
-                })
-                ->whereHas('apprenant', function($query) use ($etablissement_id) {
-                    $query->where('etablissement_id', $etablissement_id);
-                })
-                ->whereHas('classe_annee.annee', function($query) use ($year, $matricule, $nom, $prenom) {
-                    if ($matricule === null && $nom === null && $prenom === null) {
-                        $query->where('id', $year);
-                    }
-                });
+        // Fusionner les résultats en structurant correctement les données
+        $mergedCollection = collect();
+        
+        foreach ($list as $inscription) {
+            $correspondingCA = $apprenantsCABySection->firstWhere('apprenant_id', $inscription->apprenant_id);
             
-            // Filtrage supplémentaire par matricule, nom ou prénom
-            if ($matricule !== null) {
-                $apprenantsCABySection->whereHas('apprenant', function($query) use ($matricule) {
-                    $query->where('matricule', 'like', '%' . $matricule . '%');
-                });
+            if ($correspondingCA) {
+                // Créer un objet fusionné avec les données de l'inscription et de la classe
+                $mergedData = (object) [
+                    'id' => $inscription->id,
+                    'apprenant' => $inscription->apprenant,
+                    'annee' => $correspondingCA->classe_annee->annee ?? $inscription->annee,
+                    'classe_annee' => $correspondingCA->classe_annee,
+                    'niveau' => $correspondingCA->classe_annee->classe->niveau ?? $inscription->niveau,
+                    'cycle_filiere_id' => $inscription->cycle_filiere_id,
+                    'cycleFiliere' => $inscription->cycleFiliere,
+                    'versements' => $inscription->versements,
+                ];
+                $mergedCollection->push($mergedData);
             } else {
-                if ($nom !== null) {
-                    $apprenantsCABySection->whereHas('apprenant', function($query) use ($nom) {
-                        $query->where('nom', 'like', '%' . $nom . '%');
-                    });
-                }
-                if ($prenom !== null) {
-                    $apprenantsCABySection->whereHas('apprenant', function($query) use ($prenom) {
-                        $query->where('prenom', 'like', '%' . $prenom . '%');
-                    });
-                }
+                $mergedCollection->push($inscription);
             }
-            
-            $apprenantsCABySection = $apprenantsCABySection->get();
-            
-            // Fusionner les résultats
-            $collection = collect();
-            $list->map(function($element) use ($apprenantsCABySection, $collection) {
-                $vTerre = $apprenantsCABySection->filter(function($el) use ($element) {
-                    return $el['apprenant_id'] == $element['apprenant_id'];
-                });
-                if ($vTerre->isNotEmpty()) {
-                    $collection->push($vTerre->first());
-                }
-            });
-            
-            $flattened = $collection->flatten()->unique()->filter();
-            return $flattened->values()->all() ?? [];
         }
         
-        return $list ?? [];
+        return $mergedCollection->values()->all() ?? [];
     }
+    
+    return $list ?? [];
+}
     public function getFrais($niveau, $annee)
     {
         // dd($niveau);
@@ -689,14 +716,17 @@ class InscriptionController extends Controller
         // dd($request->all());
         $etb = Etablissement::find(Auth::user()->etablissement_id);
         $ins = Inscription::where('id', $request->id)->with('annee', 'apprenant', 'niveau', 'cycleFiliere')->first();
-        
-
+        $apprenant_classe_annee = ApprenantClasseAnnee::whereHas('classe_annee',function ($query) use ($ins){
+            $query->where('annee_id',$ins->annee_id);
+        } )->where('apprenant_id',$ins->apprenant->id)->with('classe_annee')->get();
+        $classe = Classe::where('id',$apprenant_classe_annee[0]->classe_annee->id)->get();
         $data = [
             'etablissement' => $etb,
             'inscription' => $ins,
             'section' => $request->section,
             'title' => 'Welcome to ItSolutionStuff.com',
             'date' => date('m/d/Y'),
+            'classe' => $classe->first()
         ];
 
         $pdf = PDF::loadView('recu_inscription', $data);
@@ -757,6 +787,18 @@ class InscriptionController extends Controller
  * @param string $format
  * @return mixed
  */
+/**
+ * Exporter la liste des inscrits
+ * @param Request $request
+ * @param string $format
+ * @return mixed
+ */
+/**
+ * Exporter la liste des inscrits
+ * @param Request $request
+ * @param string $format
+ * @return mixed
+ */
 public function exportInscriptions(Request $request, $format)
 {
     try {
@@ -764,11 +806,23 @@ public function exportInscriptions(Request $request, $format)
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         $inscriptions = $this->calculerMontantsRestants($inscriptions);
         
+        // Ajouter les informations de classe à chaque inscription
+        $inscriptionsAvecClasses = [];
+        foreach ($inscriptions as $inscription) {
+            $inscriptionData = is_array($inscription) ? $inscription : $inscription->toArray();
+            
+            // Récupérer la classe de l'apprenant (même logique que recuInscription)
+            $classeInfo = $this->getClasseForInscription($inscriptionData);
+            
+            $inscriptionData['classe_annee'] = $classeInfo;
+            $inscriptionsAvecClasses[] = $inscriptionData;
+        }
+        
         if ($format === 'pdf') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
             $data = [
                 'etablissement' => $etb,
-                'inscriptions' => $inscriptions,
+                'inscriptions' => $inscriptionsAvecClasses,
                 'section' => $section,
                 'title' => 'Liste des inscrits',
                 'date' => date('d/m/Y'),
@@ -779,7 +833,7 @@ public function exportInscriptions(Request $request, $format)
         } 
         elseif ($format === 'excel') {
             $fileName = 'liste_inscrits_' . date('Ymd_His') . '.xlsx';
-            $export = new InscriptionsExport($inscriptions, $section, 'Liste des inscrits');
+            $export = new InscriptionsExport($inscriptionsAvecClasses, $section, 'Liste des inscrits');
             
             return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
                 'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
@@ -788,6 +842,124 @@ public function exportInscriptions(Request $request, $format)
     } catch (\Exception $e) {
         return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
     }
+}
+
+/**
+ * Récupérer les informations de classe d'une inscription (même logique que recuInscription)
+ */
+private function getClasseForInscription($inscriptionData)
+{
+    $apprenantId = $inscriptionData['apprenant_id'] ?? null;
+    $anneeId = $inscriptionData['annee_id'] ?? null;
+    
+    if (!$apprenantId || !$anneeId) {
+        return ['classe' => ['libelle' => 'Non classé', 'code' => null]];
+    }
+    
+    try {
+        // Même logique que dans recuInscription
+        $apprenant_classe_annee = ApprenantClasseAnnee::whereHas('classe_annee', function($query) use ($anneeId) {
+                $query->where('annee_id', $anneeId);
+            })
+            ->where('apprenant_id', $apprenantId)
+            ->with('classe_annee.classe')
+            ->first();
+        
+        if ($apprenant_classe_annee && $apprenant_classe_annee->classe_annee && $apprenant_classe_annee->classe_annee->classe) {
+            return [
+                'classe' => [
+                    'id' => $apprenant_classe_annee->classe_annee->classe->id,
+                    'libelle' => $apprenant_classe_annee->classe_annee->classe->libelle,
+                    'code' => $apprenant_classe_annee->classe_annee->classe->code,
+                ]
+            ];
+        }
+    } catch (\Exception $e) {
+        // En cas d'erreur, logger et retourner une valeur par défaut
+        \Log::error('Erreur récupération classe: ' . $e->getMessage());
+    }
+    
+    return ['classe' => ['libelle' => 'Non classé', 'code' => null]];
+}
+
+/**
+ * Normaliser les données pour inclure les informations de classe
+ */
+private function normaliserDonneesAvecClasses($inscriptions, $section)
+{
+    $inscriptionsNormalisees = [];
+    
+    foreach ($inscriptions as $inscription) {
+        $inscriptionData = is_array($inscription) ? $inscription : $inscription->toArray();
+        
+        // Pour les sections 1 et 2 (Primaire/Secondaire) - ApprenantClasseAnnee
+        if ($section == '1' || $section == '2') {
+            // Les données contiennent déjà classe_annee
+            if (isset($inscription->classe_annee)) {
+                $inscriptionData['classe_annee'] = $inscription->classe_annee->toArray();
+            } elseif (isset($inscriptionData['classe_annee'])) {
+                // Déjà présent dans le tableau
+            } else {
+                // Récupérer la classe depuis la relation
+                $classeAnnee = $this->getClasseAnneeForApprenant(
+                    $inscriptionData['apprenant_id'] ?? null, 
+                    getAnneeEncours()->id
+                );
+                if ($classeAnnee) {
+                    $inscriptionData['classe_annee'] = $classeAnnee->toArray();
+                } else {
+                    $inscriptionData['classe_annee'] = [
+                        'classe' => [
+                            'libelle' => $inscriptionData['niveau']['libelle'] ?? 'Non classé',
+                            'code' => $inscriptionData['niveau']['code'] ?? null,
+                        ]
+                    ];
+                }
+            }
+        }
+        // Pour les sections 3 et 4 (Supérieure) - Inscription
+        else {
+            // Récupérer la classe depuis ApprenantClasseAnnee
+            $classeAnnee = $this->getClasseAnneeForApprenant(
+                $inscriptionData['apprenant_id'] ?? null, 
+                $inscriptionData['annee_id'] ?? getAnneeEncours()->id
+            );
+            
+            if ($classeAnnee) {
+                $inscriptionData['classe_annee'] = $classeAnnee->toArray();
+            } else {
+                // Si pas de classe trouvée, utiliser le niveau comme classe par défaut
+                $inscriptionData['classe_annee'] = [
+                    'classe' => [
+                        'libelle' => $inscriptionData['niveau']['libelle'] ?? 'Non classé',
+                        'code' => $inscriptionData['niveau']['code'] ?? null,
+                    ]
+                ];
+            }
+        }
+        
+        $inscriptionsNormalisees[] = $inscriptionData;
+    }
+    
+    return $inscriptionsNormalisees;
+}
+
+/**
+ * Récupérer la classe_annee d'un apprenant pour une année donnée
+ */
+private function getClasseAnneeForApprenant($apprenantId, $anneeId)
+{
+    if (!$apprenantId) {
+        return null;
+    }
+    
+    return ApprenantClasseAnnee::with(['classe_annee.classe', 'classe_annee.annee'])
+        ->where('apprenant_id', $apprenantId)
+        ->whereHas('classe_annee', function($query) use ($anneeId) {
+            $query->where('annee_id', $anneeId);
+        })
+        ->first()
+        ?->classe_annee;
 }
 
 /**
