@@ -12,6 +12,7 @@
 */
 
 use Illuminate\Support\Facades\Route;
+use Modules\Scolarite\Http\Controllers\InscriptionController;
 
     Route::prefix('scolarite')->group(function() {
 
@@ -58,7 +59,14 @@ use Illuminate\Support\Facades\Route;
         Route::get('/generate_recu_inscription',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'recuInscription'])->name('generateRecuInscription'); 
         
         
-        
+        // Fiches de présence
+        Route::get('/scolarite/fiche-presence', [InscriptionController::class, 'genererFichePresence'])
+            ->name('scolarite.fiche.presence');
+
+        // Listes d'affichage
+        Route::get('/scolarite/liste-affichage', [InscriptionController::class, 'genererListeAffichage'])
+            ->name('scolarite.liste.affichage');
+                
         
           
     });

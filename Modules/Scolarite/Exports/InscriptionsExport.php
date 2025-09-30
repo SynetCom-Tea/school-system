@@ -2,20 +2,22 @@
 
 namespace Modules\Scolarite\Exports;
 
-use Maatwebsite\Excel\Concerns\WithMultipleSheets;
+use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
 use Maatwebsite\Excel\Concerns\WithTitle;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
+use Modules\Scolarite\Entities\TypeFrais;
 use Maatwebsite\Excel\Concerns\WithStyles;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Modules\Scolarite\Entities\Inscription;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Style\Border;
-use PhpOffice\PhpSpreadsheet\Style\Alignment;
-use PhpOffice\PhpSpreadsheet\Style\Fill;
-use Illuminate\Support\Collection;
-use Modules\Scolarite\Entities\Inscription;
-use Modules\Scolarite\Entities\TypeFrais;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
 class InscriptionsExport implements WithMultipleSheets
 {
@@ -191,6 +193,53 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
         $this->calculateFraisSummary();
     }
 
+     private function calculateFraisSummary(): void
+    {
+        $this->fraisSummary = [];
+        
+        $anneeId = getAnneeEncours()->id;
+        $etablissementId = Auth::user()->etablissement_id;
+        
+        // Requête directe pour obtenir les totaux par type de frais
+        $totauxParTypeFrais = DB::table('versements')
+            ->join('frais', 'versements.frais_id', '=', 'frais.id')
+            ->join('etablissement_type_frais', 'frais.etablissement_type_frais_id', '=', 'etablissement_type_frais.id')
+            ->join('type_frais', 'etablissement_type_frais.type_frais_id', '=', 'type_frais.id')
+            ->whereNull('versements.deleted_at')
+            ->where('frais.annee_id', $anneeId)
+            ->where('frais.etablissement_id', $etablissementId)
+            ->select(
+                'type_frais.id as type_frais_id',
+                'type_frais.libelle as type_frais_libelle',
+                DB::raw('SUM(frais.montant) as total_frais'),
+                DB::raw('SUM(versements.montant) as total_paye')
+            )
+            ->groupBy('type_frais.id', 'type_frais.libelle')
+            ->get();
+        
+        foreach ($totauxParTypeFrais as $total) {
+            $this->fraisSummary[$total->type_frais_id] = [
+                'total_frais' => $total->total_frais ?? 0,
+                'total_paye' => $total->total_paye ?? 0,
+                'total_restant' => max(0, ($total->total_frais ?? 0) - ($total->total_paye ?? 0)),
+                'libelle' => $total->type_frais_libelle
+            ];
+        }
+        
+        // Si aucun résultat, créer des données par défaut
+        if (empty($this->fraisSummary)) {
+            $typesFrais = TypeFrais::where('statut', 1)->get();
+            foreach ($typesFrais as $typeFrais) {
+                $this->fraisSummary[$typeFrais->id] = [
+                    'total_frais' => 0,
+                    'total_paye' => 0,
+                    'total_restant' => 0,
+                    'libelle' => $typeFrais->libelle
+                ];
+            }
+        }
+    }
+    
     public function collection(): Collection
     {
         $data = collect();
@@ -336,66 +385,66 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
         });
     }
     
-    private function calculateFraisSummary(): void
-    {
-        $this->fraisSummary = [];
+    // private function calculateFraisSummary(): void
+    // {
+    //     $this->fraisSummary = [];
         
-        // Pour chaque inscription, analyser les versements par type de frais
-        foreach ($this->inscriptions as $inscription) {
-            if ($inscription instanceof Inscription) {
-                // Gestion des objets Eloquent
-                if ($inscription->versements) {
-                    foreach ($inscription->versements as $versement) {
-                        if ($versement->frais && $versement->frais->etablissement_type_frais) {
-                            $typeFraisId = $versement->frais->etablissement_type_frais->type_frais_id;
+    //     // Pour chaque inscription, analyser les versements par type de frais
+    //     foreach ($this->inscriptions as $inscription) {
+    //         if ($inscription instanceof Inscription) {
+    //             // Gestion des objets Eloquent
+    //             if ($inscription->versements) {
+    //                 foreach ($inscription->versements as $versement) {
+    //                     if ($versement->frais && $versement->frais->etablissement_type_frais) {
+    //                         $typeFraisId = $versement->frais->etablissement_type_frais->type_frais_id;
                             
                            
                             
-                            if (!isset($this->fraisSummary[$typeFraisId])) {
-                                $this->fraisSummary[$typeFraisId] = [
-                                    'total_frais' => 0,
-                                    'total_paye' => 0,
-                                    'total_restant' => 0
-                                ];
-                            }
+    //                         if (!isset($this->fraisSummary[$typeFraisId])) {
+    //                             $this->fraisSummary[$typeFraisId] = [
+    //                                 'total_frais' => 0,
+    //                                 'total_paye' => 0,
+    //                                 'total_restant' => 0
+    //                             ];
+    //                         }
                             
-                            // Montant total du frais
-                            $montantFrais = $versement->frais->montant ?? 0;
-                            $montantPaye = $versement->montant ?? 0;
+    //                         // Montant total du frais
+    //                         $montantFrais = $versement->frais->montant ?? 0;
+    //                         $montantPaye = $versement->montant ?? 0;
                             
-                            $this->fraisSummary[$typeFraisId]['total_frais'] += $montantFrais;
-                            $this->fraisSummary[$typeFraisId]['total_paye'] += $montantPaye;
-                            $this->fraisSummary[$typeFraisId]['total_restant'] += ($montantFrais - $montantPaye);
-                        }
-                    }
-                }
-            } else {
-                // Gestion des tableaux
-                if (isset($inscription['versements'])) {
-                    foreach ($inscription['versements'] as $versement) {
-                        if (isset($versement['frais']['etablissement_type_frais']['type_frais_id'])) {
-                            $typeFraisId = $versement['frais']['etablissement_type_frais']['type_frais_id'];
+    //                         $this->fraisSummary[$typeFraisId]['total_frais'] += $montantFrais;
+    //                         $this->fraisSummary[$typeFraisId]['total_paye'] += $montantPaye;
+    //                         $this->fraisSummary[$typeFraisId]['total_restant'] += ($montantFrais - $montantPaye);
+    //                     }
+    //                 }
+    //             }
+    //         } else {
+    //             // Gestion des tableaux
+    //             if (isset($inscription['versements'])) {
+    //                 foreach ($inscription['versements'] as $versement) {
+    //                     if (isset($versement['frais']['etablissement_type_frais']['type_frais_id'])) {
+    //                         $typeFraisId = $versement['frais']['etablissement_type_frais']['type_frais_id'];
                             
-                            if (!isset($this->fraisSummary[$typeFraisId])) {
-                                $this->fraisSummary[$typeFraisId] = [
-                                    'total_frais' => 0,
-                                    'total_paye' => 0,
-                                    'total_restant' => 0
-                                ];
-                            }
+    //                         if (!isset($this->fraisSummary[$typeFraisId])) {
+    //                             $this->fraisSummary[$typeFraisId] = [
+    //                                 'total_frais' => 0,
+    //                                 'total_paye' => 0,
+    //                                 'total_restant' => 0
+    //                             ];
+    //                         }
                             
-                            $montantFrais = $versement['frais']['montant'] ?? 0;
-                            $montantPaye = $versement['montant'] ?? 0;
+    //                         $montantFrais = $versement['frais']['montant'] ?? 0;
+    //                         $montantPaye = $versement['montant'] ?? 0;
                             
-                            $this->fraisSummary[$typeFraisId]['total_frais'] += $montantFrais;
-                            $this->fraisSummary[$typeFraisId]['total_paye'] += $montantPaye;
-                            $this->fraisSummary[$typeFraisId]['total_restant'] += ($montantFrais - $montantPaye);
-                        }
-                    }
-                }
-            }
-        }
-    }
+    //                         $this->fraisSummary[$typeFraisId]['total_frais'] += $montantFrais;
+    //                         $this->fraisSummary[$typeFraisId]['total_paye'] += $montantPaye;
+    //                         $this->fraisSummary[$typeFraisId]['total_restant'] += ($montantFrais - $montantPaye);
+    //                     }
+    //                 }
+    //             }
+    //         }
+    //     }
+    // }
     
     private function getClasseName($inscription): string
     {

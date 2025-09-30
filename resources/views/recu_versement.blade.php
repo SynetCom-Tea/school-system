@@ -92,7 +92,7 @@
             <div class="info">
                 <p>Année Scolaire: {{$versement->inscription->annee->libelle}}</p>
                 @if($section == '1' || $section == '2')
-                <p>Niveau: {{$classe->code}} </p>
+                <p>Classe: {{$classe->libelle ?? 'Non classé'}} </p>
                 @else
                 <p>Section: {{$versement->inscription->niveau->code}} {{$versement->inscription->cycleFiliere->code}} </p>
                 @endif
@@ -131,7 +131,7 @@
             <div class="info">
                 <p>Année Scolaire: {{$versement->inscription->annee->libelle}}</p>
                 @if($section == '1' || $section == '2')
-                <p>Niveau: {{$classe->code}} </p>
+                <p>Classe: {{$classe->libelle ?? 'Non classé'}} </p>
                 @else
                 <p>Section: {{$versement->inscription->niveau->code}} {{$versement->inscription->cycleFiliere->code}} </p>
                 @endif

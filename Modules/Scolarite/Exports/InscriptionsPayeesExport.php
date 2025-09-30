@@ -18,6 +18,7 @@ class InscriptionsPayeesExport implements WithMultipleSheets
 {
     protected $inscriptions;
     protected $section;
+    protected $totauxParFrais;
 
     public function __construct($inscriptions, $section = null)
     {

@@ -34,7 +34,10 @@ use Maatwebsite\Excel\Facades\Excel;
 use Modules\Scolarite\Exports\InscriptionsExport;
 use Modules\Scolarite\Exports\InscriptionsPayeesExport;
 use Modules\Scolarite\Exports\InscriptionsNonPayeesExport;
+use Modules\Scolarite\Exports\FichePresenceExport;
+use Modules\Scolarite\Exports\ListeClasseAffichageExport;
 use Illuminate\Contracts\Support\Renderable;
+
 
 
 class InscriptionController extends Controller
@@ -806,12 +809,25 @@ public function exportInscriptions(Request $request, $format)
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         $inscriptions = $this->calculerMontantsRestants($inscriptions);
         
+        // CHARGER LES RELATIONS NÉCESSAIRES POUR LES TYPES DE FRAIS
+        $inscriptionsAvecRelations = [];
+        foreach ($inscriptions as $inscription) {
+            // Charger les relations nécessaires pour les types de frais
+            if (is_object($inscription) && method_exists($inscription, 'load')) {
+                $inscription->load([
+                    'versements.frais.etablissement_type_frais.type_frais',
+                    'versements.frais.niveau'
+                ]);
+            }
+            $inscriptionsAvecRelations[] = $inscription;
+        }
+        
         // Ajouter les informations de classe à chaque inscription
         $inscriptionsAvecClasses = [];
-        foreach ($inscriptions as $inscription) {
+        foreach ($inscriptionsAvecRelations as $inscription) {
             $inscriptionData = is_array($inscription) ? $inscription : $inscription->toArray();
             
-            // Récupérer la classe de l'apprenant (même logique que recuInscription)
+            // Récupérer la classe de l'apprenant
             $classeInfo = $this->getClasseForInscription($inscriptionData);
             
             $inscriptionData['classe_annee'] = $classeInfo;
@@ -1039,17 +1055,20 @@ public function exportInscriptionsPayees(Request $request, $format)
     try {
         $section = $request->section;
         $inscriptions = $this->getInscriptionsAvecPaiement($request, 'payees');
-         $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        $inscriptions = $this->calculerMontantsRestants($inscriptions);
         
         if (count($inscriptions) === 0) {
             return response()->json(['error' => 'Aucune inscription avec paiement complet à exporter'], 404);
         }
         
+        // UTILISER VOTRE METHODE EXISTANTE
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
         if ($format === 'pdf') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
             $data = [
                 'etablissement' => $etb,
-                'inscriptions' => $inscriptions,
+                'inscriptions' => $inscriptionsAvecClasses, // Données avec classes
                 'section' => $section,
                 'title' => 'Liste des inscrits ayant fini leur paiement',
                 'date' => date('d/m/Y'),
@@ -1058,24 +1077,16 @@ public function exportInscriptionsPayees(Request $request, $format)
             $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
             return $pdf->download('liste_inscrits_payes_' . date('Ymd_His') . '.pdf');
         } 
-         elseif ($format === 'excel') {
-            // CORRECTION: Utiliser la réponse BinaryFileResponse
-            // $fileName = 'liste_inscrits_payes_' . date('Ymd_His') . '.xlsx';
-            // $export = new InscriptionsPayeesExport($inscriptions, $section);
-              $fileName = 'liste_inscrits_payes_' . date('Ymd_His') . '.xlsx';
-            $export = new \Modules\Scolarite\Exports\InscriptionsPayeesExport($inscriptions, $section);
-
-            // return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
-            //     'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            // ]);
-            
+        elseif ($format === 'excel') {
+            $fileName = 'liste_inscrits_payes_' . date('Ymd_His') . '.xlsx';
+            $export = new \Modules\Scolarite\Exports\InscriptionsPayeesExport($inscriptionsAvecClasses, $section);
             return Excel::download($export, $fileName); 
         }
         elseif ($format === 'word') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
             $data = [
                 'etablissement' => $etb,
-                'inscriptions' => $inscriptions,
+                'inscriptions' => $inscriptionsAvecClasses, // Données avec classes
                 'section' => $section,
                 'title' => 'Liste des inscrits ayant fini leur paiement',
                 'date' => date('d/m/Y'),
@@ -1093,7 +1104,6 @@ public function exportInscriptionsPayees(Request $request, $format)
         return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
     }
 }
-
 /**
  * Exporter la liste des inscrits n'ayant pas fini leur paiement
  * @param Request $request
@@ -1105,24 +1115,20 @@ public function exportInscriptionsNonPayees(Request $request, $format)
     try {
         $section = $request->section;
         $inscriptions = $this->getInscriptionsAvecPaiement($request, 'non_payees');
-         $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        $inscriptions = $this->calculerMontantsRestants($inscriptions);
 
-        // Calculer les montants restants pour chaque inscription
-        $inscriptionsAvecMontants = [];
-        foreach ($inscriptions as $inscription) {
-            $montantRestant = $this->calculerMontantRestant($inscription);
-            $inscription['montant_restant'] = $montantRestant;
-            $inscriptionsAvecMontants[] = $inscription;
-        }
         if (count($inscriptions) === 0) {
             return response()->json(['error' => 'Aucune inscription avec paiement incomplet à exporter'], 404);
         }
+        
+        // UTILISER VOTRE METHODE EXISTANTE
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
         
         if ($format === 'pdf') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
             $data = [
                 'etablissement' => $etb,
-                'inscriptions' => $inscriptions,
+                'inscriptions' => $inscriptionsAvecClasses, // Données avec classes
                 'section' => $section,
                 'title' => 'Liste des inscrits n\'ayant pas fini leur paiement',
                 'date' => date('d/m/Y'),
@@ -1131,23 +1137,16 @@ public function exportInscriptionsNonPayees(Request $request, $format)
             $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
             return $pdf->download('liste_inscrits_non_payes_' . date('Ymd_His') . '.pdf');
         } 
-         elseif ($format === 'excel') {
-            // CORRECTION: Utiliser la réponse BinaryFileResponse
-            // $fileName = 'liste_inscrits_non_payes_' . date('Ymd_His') . '.xlsx';
-            // $export = new InscriptionsNonPayeesExport($inscriptions, $section);
-            
-            // return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
-            //     'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-            // ]);
-             $fileName = 'liste_inscrits_non_payes_' . date('Ymd_His') . '.xlsx';
-            $export = new \Modules\Scolarite\Exports\InscriptionsNonPayeesExport($inscriptions, $section);
+        elseif ($format === 'excel') {
+            $fileName = 'liste_inscrits_non_payes_' . date('Ymd_His') . '.xlsx';
+            $export = new \Modules\Scolarite\Exports\InscriptionsNonPayeesExport($inscriptionsAvecClasses, $section);
             return Excel::download($export, $fileName);
         }
         elseif ($format === 'word') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
             $data = [
                 'etablissement' => $etb,
-                'inscriptions' => $inscriptions,
+                'inscriptions' => $inscriptionsAvecClasses, // Données avec classes
                 'section' => $section,
                 'title' => 'Liste des inscrits n\'ayant pas fini leur paiement',
                 'date' => date('d/m/Y'),
@@ -1165,7 +1164,6 @@ public function exportInscriptionsNonPayees(Request $request, $format)
         return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
     }
 }
-
 /**
  * Exporter la liste combinée des inscrits payés et non payés
  * @param Request $request
@@ -1207,7 +1205,183 @@ public function exportInscriptionsCombine(Request $request, $format)
     }
 }
 
+
+
+/**
+ * Générer la fiche de présence (pour impression/contrôle)
+ */
+/**
+ * Générer la fiche de présence (pour impression/contrôle)
+ */
+/**
+ * Générer la fiche de présence (pour impression/contrôle)
+ */
+public function genererFichePresence(Request $request)
+{
+    try {
+        // Récupérer la section depuis la requête ou utiliser une valeur par défaut
+        $section = $request->get('section', $request->input('section', 1));
+        
+        if (!$section) {
+            return response()->json(['error' => 'Section non spécifiée. Ajoutez ?section=1 à l\'URL'], 400);
+        }
+
+        // Récupérer les inscriptions
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        
+        if (empty($inscriptions)) {
+            return response()->json(['error' => 'Aucune inscription trouvée pour la section ' . $section], 404);
+        }
+
+        // Utiliser la méthode corrigée
+        $inscriptions = $this->ajouterInfosClasseCorrige($inscriptions);
+        
+        // Distribuer dans les classes selon la logique existante
+        $inscriptions = $this->distribuerParClasses($inscriptions);
+        
+        $typePeriode = $request->get('type_periode', 'jour');
+        $periode = $request->get('periode', '');
+        $dateDebut = $request->get('date_debut', date('Y-m-d'));
+        $dateFin = $request->get('date_fin', date('Y-m-d', strtotime('+6 days')));
+
+        $fileName = 'fiche_presence_' . date('Ymd_His') . '.xlsx';
+        
+        $export = new \Modules\Scolarite\Exports\FichePresenceExport(
+            $inscriptions, 
+            $section, 
+            $typePeriode, 
+            $periode, 
+            $dateDebut, 
+            $dateFin
+        );
+        
+        return Excel::download($export, $fileName);
+        
+    } catch (\Exception $e) {
+        \Log::error('Erreur génération fiche présence: ' . $e->getMessage());
+        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Générer la liste pour affichage en classe
+ */
+/**
+ * Générer la liste pour affichage en classe
+ */
+public function genererListeAffichage(Request $request)
+{
+    try {
+        // Récupérer la section depuis la requête ou utiliser une valeur par défaut
+        $section = $request->get('section', $request->input('section', 1));
+        
+        if (!$section) {
+            return response()->json(['error' => 'Section non spécifiée. Ajoutez ?section=1 à l\'URL'], 400);
+        }
+
+        // Récupérer les inscriptions
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        
+        if (empty($inscriptions)) {
+            return response()->json(['error' => 'Aucune inscription trouvée pour la section ' . $section], 404);
+        }
+
+        // CORRECTION : Utiliser la méthode corrigée
+        $inscriptions = $this->ajouterInfosClasseCorrige($inscriptions);
+        
+        // Distribuer dans les classes A, B, C si nécessaire
+        $inscriptions = $this->distribuerParClasses($inscriptions);
+
+        $fileName = 'liste_affichage_' . date('Ymd_His') . '.xlsx';
+        
+        // CORRECTION : Passer la section comme string simple
+        $export = new ListeClasseAffichageExport($inscriptions, $section);
+        
+        return Excel::download($export, $fileName);
+        
+    } catch (\Exception $e) {
+        \Log::error('Erreur génération liste affichage: ' . $e->getMessage());
+        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * CORRECTION : Méthode corrigée pour ajouter les infos de classe
+ */
+private function ajouterInfosClasseCorrige($inscriptions)
+{
+    $result = [];
+    
+    foreach ($inscriptions as $inscription) {
+        // Convertir en tableau si c'est un objet
+        $inscriptionData = json_decode(json_encode($inscription), true);
+        
+        // Récupérer la classe de l'apprenant
+        $classeInfo = $this->getClasseForInscription($inscriptionData);
+        
+        // Ajouter les informations de classe
+        $inscriptionData['classe_annee'] = $classeInfo;
+        $inscriptionData['niveau_code'] = $classeInfo['niveau_code'] ?? null;
+        $inscriptionData['classe_code'] = $classeInfo['classe_code'] ?? null;
+        $inscriptionData['classe_libelle'] = $classeInfo['classe_libelle'] ?? null;
+        
+        $result[] = $inscriptionData;
+    }
+    
+    return $result;
+}
+
+/**
+ * Récupérer les informations de classe pour une inscription
+ */
+
+/**
+ * Distribuer les élèves dans des classes selon la logique existante
+ * Version optimisée avec répartition équilibrée
+ */
+private function distribuerParClasses($inscriptions)
+{
+    $groupedByNiveau = [];
+    
+    // Grouper d'abord par niveau
+    foreach ($inscriptions as $inscription) {
+        $niveauCode = $inscription['niveau_code'] ?? 'Non classé';
+        
+        if (!isset($groupedByNiveau[$niveauCode])) {
+            $groupedByNiveau[$niveauCode] = [];
+        }
+        
+        $groupedByNiveau[$niveauCode][] = $inscription;
+    }
+    
+    $result = [];
+    $lettres = ['A', 'B', 'C', 'D'];
+    
+    // Distribuer chaque niveau dans des classes A, B, C, D
+    foreach ($groupedByNiveau as $niveauCode => $elevesNiveau) {
+        $nombreEleves = count($elevesNiveau);
+        $nombreClasses = min(ceil($nombreEleves / 25), 4); // Max 4 classes, ~25 élèves par classe
+        
+        // Répartir équitablement
+        $elevesParClasse = ceil($nombreEleves / $nombreClasses);
+        
+        for ($i = 0; $i < $nombreEleves; $i++) {
+            $classeIndex = floor($i / $elevesParClasse);
+            $lettreClasse = $lettres[$classeIndex] ?? 'A';
+            
+            $elevesNiveau[$i]['classe_code'] = $niveauCode . $lettreClasse;
+            $elevesNiveau[$i]['classe_libelle'] = $niveauCode . ' ' . $lettreClasse;
+            
+            $result[] = $elevesNiveau[$i];
+        }
+    }
+    
+    return $result;
+}
 // Nouvelle méthode pour calculer tous les montants
+/**
+ * Calculer les montants restants en excluant les versements supprimés
+ */
 private function calculerMontantsRestants($inscriptions)
 {
     $anneeId = getAnneeEncours()->id;
@@ -1217,8 +1391,8 @@ private function calculerMontantsRestants($inscriptions)
     $niveauIds = [];
     
     foreach ($inscriptions as $inscription) {
-        $inscriptionIds[] = $inscription['id'] ?? null;
-        $niveauIds[] = $inscription['niveau_id'] ?? null;
+        $inscriptionIds[] = $inscription['id'] ?? $inscription->id ?? null;
+        $niveauIds[] = $inscription['niveau_id'] ?? $inscription->niveau_id ?? null;
     }
     
     // Calculer les frais totaux par niveau (une seule requête)
@@ -1231,9 +1405,10 @@ private function calculerMontantsRestants($inscriptions)
         ->pluck('total_frais', 'niveau_id')
         ->toArray();
     
-    // Calculer les versements totaux par inscription (une seule requête)
+    // CORRECTION: Exclure les versements supprimés avec whereNull('deleted_at')
     $versementsParInscription = DB::table('versements')
         ->whereIn('inscription_id', array_filter(array_unique($inscriptionIds)))
+        ->whereNull('deleted_at') // EXCLURE LES VERSEMENTS SUPPRIMÉS
         ->select('inscription_id', DB::raw('SUM(montant) as total_verse'))
         ->groupBy('inscription_id')
         ->pluck('total_verse', 'inscription_id')
@@ -1241,19 +1416,30 @@ private function calculerMontantsRestants($inscriptions)
     
     // Ajouter les montants restants à chaque inscription
     foreach ($inscriptions as &$inscription) {
-        $niveauId = $inscription['niveau_id'] ?? null;
-        $inscriptionId = $inscription['id'] ?? null;
+        $niveauId = $inscription['niveau_id'] ?? $inscription->niveau_id ?? null;
+        $inscriptionId = $inscription['id'] ?? $inscription->id ?? null;
         
         $totalFrais = $fraisParNiveau[$niveauId] ?? 0;
         $totalVerse = $versementsParInscription[$inscriptionId] ?? 0;
         
-        $inscription['montant_restant'] = max(0, $totalFrais - $totalVerse);
-        $inscription['montant_total_frais'] = $totalFrais;
-        $inscription['montant_total_verse'] = $totalVerse;
+        // CORRECTION: Éviter les montants négatifs
+        $montantRestant = max(0, $totalFrais - $totalVerse);
+        
+        if (is_array($inscription)) {
+            $inscription['montant_restant'] = $montantRestant;
+            $inscription['montant_total_frais'] = $totalFrais;
+            $inscription['montant_total_verse'] = $totalVerse;
+        } else {
+            $inscription->montant_restant = $montantRestant;
+            $inscription->montant_total_frais = $totalFrais;
+            $inscription->montant_total_verse = $totalVerse;
+        }
     }
     
     return $inscriptions;
 }
+
+
 
     /**
      * Calculer le montant restant à payer pour une inscription

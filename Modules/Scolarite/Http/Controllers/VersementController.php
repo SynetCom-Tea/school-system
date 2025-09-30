@@ -11,6 +11,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 
 
+use App\Models\ApprenantClasseAnnee;
 use Illuminate\Support\Facades\Auth;
 use Modules\Scolarite\Entities\Frais;
 use Modules\Scolarite\Entities\TypeFrais;
@@ -209,32 +210,53 @@ class VersementController extends Controller
         }
     }
 
-    public function recuVersement(Request $request){
-        // dd($request->all());
-        $versement = Versement::where('id',$request->id)->with('inscription.annee','inscription.apprenant','inscription.niveau','inscription.cycleFiliere','frais')->first();
-        $somme_verse = Versement::where('inscription_id',$versement->inscription_id)->where('frais_id',$versement->frais_id)->sum('montant');
-        // dd($versement);
-        $etb = Etablissement::find(Auth::user()->etablissement_id);
-        $users = User::all();
-        $inscription = Inscription::where('id', $versement->inscription_id)->first();
-        $classe = Classe::where('niveau_id',$inscription->niveau_id)->whereHas('classe_annees',function ($value) use ($inscription){
-            $value->where('annee_id',$inscription->annee_id);
-        })->get();
-
-        $data = [
-            'etablissement' => $etb,
-            'somme_verse' => $somme_verse,
-            'section' => $request->section,
-            'title' => 'Welcome to ItSolutionStuff.com',
-            'date' => date('m/d/Y'),
-            'versement' => $versement,
-            'classe' => $classe->first()
-        ];
-
-        $pdf = PDF::loadView('recu_versement', $data);
-
-        return $pdf->stream('itsolutionstuff.pdf');
+public function recuVersement(Request $request){
+    $versement = Versement::where('id',$request->id)
+        ->with([
+            'inscription.annee',
+            'inscription.apprenant', 
+            'inscription.niveau',
+            'inscription.cycleFiliere',
+            'inscription.classeAnnee.classe', // ESSAYE DE CHARGER LA CLASSE
+            'frais'
+        ])
+        ->first();
+    
+    $somme_verse = Versement::where('inscription_id',$versement->inscription_id)
+        ->where('frais_id',$versement->frais_id)
+        ->sum('montant');
+    
+    $etb = Etablissement::find(Auth::user()->etablissement_id);
+    
+    // METHODE DE SECOURS : Si classeAnnee n'est pas chargée, on la cherche
+    $classe = null;
+    if ($versement->inscription->classeAnnee && $versement->inscription->classeAnnee->classe) {
+        $classe = $versement->inscription->classeAnnee->classe;
+    } else {
+        // Recherche alternative via ApprenantClasseAnnee
+        $apprenantClasseAnnee = ApprenantClasseAnnee::whereHas('classe_annee', function($query) use ($versement) {
+                $query->where('annee_id', $versement->inscription->annee_id);
+            })
+            ->where('apprenant_id', $versement->inscription->apprenant_id)
+            ->with('classe_annee.classe')
+            ->first();
+        
+        $classe = $apprenantClasseAnnee->classe_annee->classe ?? null;
     }
+    
+    $data = [
+        'etablissement' => $etb,
+        'somme_verse' => $somme_verse,
+        'section' => $request->section,
+        'title' => 'Welcome to ItSolutionStuff.com',
+        'date' => date('m/d/Y'),
+        'versement' => $versement,
+        'classe' => $classe // ON PASSE LA CLASSE EXPLICITEMENT
+    ];
+
+    $pdf = PDF::loadView('recu_versement', $data);
+    return $pdf->stream('itsolutionstuff.pdf');
+}
 
     public function supVersement(Request $request)
     {
