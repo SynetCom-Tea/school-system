@@ -2,7 +2,7 @@
   <AuthenticatedLayout>
     <!-- En-tête amélioré -->
     <Toolbar
-      styleToolbar="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white;"
+      
       :icon="icons.mdiAccountSchool"
       :toolbarTitle="'ESPACE DE VERSEMENT - ' + Title"
     ></Toolbar>
@@ -142,125 +142,303 @@
         </div>
       </div>
 
-<!-- Section Génération de Documents - Design moderne -->
-        <div class="generation-section-modern">
-          <div class="section-header">
-            <div class="header-content">
-              <v-icon color="#9C27B0" size="28" class="me-3">mdi-file-cog</v-icon>
-              <div>
-                <h2 class="section-title">Génération de Documents</h2>
-                <p class="section-subtitle">Créez des listes et fiches personnalisées</p>
-              </div>
+      <!-- Section Génération de Documents - Design moderne amélioré -->
+      <div class="generation-section-modern">
+        <div class="section-header">
+          <div class="header-content">
+            <v-icon color="#9C27B0" size="28" class="me-3">mdi-file-cog</v-icon>
+            <div>
+              <h2 class="section-title">Génération de Documents</h2>
+              <p class="section-subtitle">Créez des listes et fiches personnalisées pour votre établissement</p>
             </div>
-          </div>
-
-          <div class="generation-cards">
-            <!-- Fiche de Présence -->
-            <div class="generation-card">
-              <div class="card-icon-wrapper presence">
-                <v-icon color="#4CAF50" size="28">mdi-clipboard-check</v-icon>
-              </div>
-              <div class="card-content">
-                <h3>Fiche de Présence</h3>
-                <p class="text-muted">Génère une fiche avec cases à cocher pour le contrôle quotidien</p>
-                <div class="card-features">
-                  <v-chip size="small" color="green-lighten-5" text-color="green">
-                    <v-icon size="small" class="me-1">mdi-checkbox-marked</v-icon>
-                    Cases à cocher
-                  </v-chip>
-                  <v-chip size="small" color="blue-lighten-5" text-color="blue">
-                    <v-icon size="small" class="me-1">mdi-calendar</v-icon>
-                    Quotidien
-                  </v-chip>
-                </div>
-              </div>
-                <v-btn 
-                    color="success" 
-                    :href="route('scolarite.fiche.presence', { section: vSectionID })"
-                    target="_blank"
-                    prepend-icon="mdi-file-document-outline"
-                  >
-                Générer
-              </v-btn>
-            </div>
-
-            <!-- Liste d'Affichage -->
-            <div class="generation-card">
-              <div class="card-icon-wrapper display">
-                <v-icon color="#2196F3" size="28">mdi-view-list</v-icon>
-              </div>
-              <div class="card-content">
-                <h3>Liste d'Affichage</h3>
-                <p class="text-muted">Liste simplifiée pour affichage en classe</p>
-                <div class="card-features">
-                  <v-chip size="small" color="blue-lighten-5" text-color="blue">
-                    <v-icon size="small" class="me-1">mdi-format-list-bulleted</v-icon>
-                    Format simplifié
-                  </v-chip>
-                  <v-chip size="small" color="purple-lighten-5" text-color="purple">
-                    <v-icon size="small" class="me-1">mdi-wall</v-icon>
-                    Affichage
-                  </v-chip>
-                </div>
-              </div>
-               <v-btn 
-                    color="primary" 
-                    :href="route('scolarite.liste.affichage', { section: vSectionID })"
-                    target="_blank"
-                    prepend-icon="mdi-view-list"
-                  >
-                Générer
-              </v-btn>
-            </div>
-          </div>
-
-          <!-- Options avancées améliorées -->
-          <div class="advanced-options">
-            <v-expansion-panels variant="accordion">
-              <v-expansion-panel class="advanced-panel">
-                <v-expansion-panel-title expand-icon="mdi-chevron-down" collapse-icon="mdi-chevron-up">
-                  <div class="panel-header">
-                    <v-icon color="#FF9800" class="me-2">mdi-cog</v-icon>
-                    <span>Options avancées de génération</span>
-                  </div>
-                </v-expansion-panel-title>
-                <v-expansion-panel-text>
-                  <div class="advanced-form">
-                    <h4 class="form-title">Paramètres personnalisés</h4>
-                     <form :action="route('scolarite.fiche.presence')" method="GET" class="row g-3">
-                      <input type="hidden" name="section" :value="section">
-                      
-                      <div class="form-field">
-                        <v-select
-                          label="Type de période"
-                          name="type_periode"
-                          :items="periodTypes"
-                          variant="outlined"
-                          prepend-icon="mdi-calendar"
-                        ></v-select>
-                      </div>
-                      
-                      <div class="form-field">
-                        <v-text-field
-                          label="Période/Matière"
-                          name="periode"
-                          variant="outlined"
-                          prepend-icon="mdi-text-box"
-                        ></v-text-field>
-                      </div>
-                      <div class="col-md-4">
-                            <v-btn type="submit" color="success" block>
-                              Générer avec paramètres
-                            </v-btn>
-                          </div>
-                    </form>
-                  </div>
-                </v-expansion-panel-text>
-              </v-expansion-panel>
-            </v-expansion-panels>
           </div>
         </div>
 
+        <div class="generation-cards">
+          <!-- Fiche de Présence Améliorée -->
+          <div class="generation-card featured">
+            <div class="card-badge">Recommandé</div>
+            <div class="card-icon-wrapper presence">
+              <v-icon color="#4CAF50" size="28">mdi-clipboard-check-multiple</v-icon>
+            </div>
+            <div class="card-content">
+              <h3>Fiche de Présence Intelligente</h3>
+              <p class="text-muted">Fiche avancée avec périodes personnalisables et cases à cocher</p>
+              <div class="card-features">
+                <v-chip size="small" color="green-lighten-5" text-color="green">
+                  <v-icon size="small" class="me-1">mdi-calendar-range</v-icon>
+                  Périodes flexibles
+                </v-chip>
+                <v-chip size="small" color="blue-lighten-5" text-color="blue">
+                  <v-icon size="small" class="me-1">mdi-checkbox-multiple-marked</v-icon>
+                  Cases à cocher
+                </v-chip>
+                <v-chip size="small" color="orange-lighten-5" text-color="orange">
+                  <v-icon size="small" class="me-1">mdi-file-pdf-box</v-icon>
+                  Export PDF
+                </v-chip>
+              </div>
+            </div>
+            <div class="card-actions">
+              <v-btn 
+                color="success" 
+                @click="openPresenceDialog"
+                prepend-icon="mdi-cog-outline"
+                class="me-2"
+              >
+                Configurer
+              </v-btn>
+            </div>
+          </div>
+
+          <!-- Liste d'Affichage -->
+          <div class="generation-card">
+            <div class="card-icon-wrapper display">
+              <v-icon color="#2196F3" size="28">mdi-view-list</v-icon>
+            </div>
+            <div class="card-content">
+              <h3>Liste d'Affichage</h3>
+              <p class="text-muted">Liste simplifiée pour affichage en classe</p>
+              <div class="card-features">
+                <v-chip size="small" color="blue-lighten-5" text-color="blue">
+                  <v-icon size="small" class="me-1">mdi-format-list-bulleted</v-icon>
+                  Format simplifié
+                </v-chip>
+                <v-chip size="small" color="purple-lighten-5" text-color="purple">
+                  <v-icon size="small" class="me-1">mdi-wall</v-icon>
+                  Affichage
+                </v-chip>
+              </div>
+            </div>
+            <v-btn 
+              color="primary" 
+              :href="route('scolarite.liste.affichage', { section: vSectionID })"
+              target="_blank"
+              prepend-icon="mdi-view-list"
+            >
+              Générer
+            </v-btn>
+          </div>
+          
+          <!-- Fiche PDF par Classe -->
+          <div class="generation-card">
+            <div class="card-icon-wrapper pdf">
+              <v-icon color="#F44336" size="28">mdi-file-pdf-box</v-icon>
+            </div>
+            <div class="card-content">
+              <h3>Fiches PDF par Classe</h3>
+              <p class="text-muted">Fiches format PDF avec logo et en-tête de l'école</p>
+              <div class="card-features">
+                <v-chip size="small" color="red-lighten-5" text-color="red">
+                  <v-icon size="small" class="me-1">mdi-school</v-icon>
+                  Logo École
+                </v-chip>
+                <v-chip size="small" color="deep-purple-lighten-5" text-color="deep-purple">
+                  <v-icon size="small" class="me-1">mdi-printer</v-icon>
+                  Impression
+                </v-chip>
+              </div>
+            </div>
+            <v-btn 
+              color="error" 
+              @click="openPdfDialog"
+              prepend-icon="mdi-file-pdf"
+            >
+              Générer PDF
+            </v-btn>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dialog Configuration Fiche de Présence -->
+      <v-dialog v-model="presenceDialog" max-width="800px">
+        <v-card class="configuration-dialog">
+          <v-card-title class="dialog-header">
+            <v-icon color="success" class="me-2">mdi-clipboard-check-multiple</v-icon>
+            Configuration Fiche de Présence
+          </v-card-title>
+          
+          <v-card-text>
+            <v-form ref="presenceForm" @submit.prevent="generatePresenceSheet">
+              <div class="form-sections">
+                <!-- Section Période -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="primary" size="20" class="me-2">mdi-calendar</v-icon>
+                    Période de Présence
+                  </h4>
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-select
+                        v-model="presenceConfig.periodeType"
+                        label="Type de période"
+                        :items="periodTypes"
+                        variant="outlined"
+                        prepend-icon="mdi-calendar-range"
+                        required
+                      ></v-select>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-text-field
+                        v-model="presenceConfig.periodeLabel"
+                        label="Libellé de la période"
+                        variant="outlined"
+                        prepend-icon="mdi-text-box"
+                        placeholder="Ex: Septembre 2024, Trimestre 1..."
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </div>
+
+                <!-- Section Matières -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="orange" size="20" class="me-2">mdi-book-education</v-icon>
+                    Matières à inclure
+                  </h4>
+                  <v-combobox
+                    v-model="presenceConfig.matieres"
+                    label="Matières"
+                    multiple
+                    chips
+                    variant="outlined"
+                    :items="defaultMatieres"
+                    prepend-icon="mdi-book-multiple"
+                  ></v-combobox>
+                </div>
+
+                <!-- Section Options -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="green" size="20" class="me-2">mdi-cog</v-icon>
+                    Options d'affichage
+                  </h4>
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-checkbox
+                        v-model="presenceConfig.includeSignature"
+                        label="Colonne signature"
+                        color="primary"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="presenceConfig.includeTotal"
+                        label="Calcul automatique des totaux"
+                        color="primary"
+                      ></v-checkbox>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-checkbox
+                        v-model="presenceConfig.includeLogo"
+                        label="Inclure le logo de l'école"
+                        color="primary"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="presenceConfig.alternateRows"
+                        label="Lignes alternées (zebrage)"
+                        color="primary"
+                      ></v-checkbox>
+                    </v-col>
+                  </v-row>
+                </div>
+
+                <!-- Section Format de sortie -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="red" size="20" class="me-2">mdi-download</v-icon>
+                    Format de sortie
+                  </h4>
+                  <v-radio-group v-model="presenceConfig.outputFormat" inline>
+                    <v-radio value="excel" color="success">
+                      <template v-slot:label>
+                        <div class="format-option">
+                          <v-icon color="success" class="me-2">mdi-microsoft-excel</v-icon>
+                          Excel (Modifiable)
+                        </div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="pdf" color="red">
+                      <template v-slot:label>
+                        <div class="format-option">
+                          <v-icon color="red" class="me-2">mdi-file-pdf-box</v-icon>
+                          PDF (Impression)
+                        </div>
+                      </template>
+                    </v-radio>
+                  </v-radio-group>
+                </div>
+              </div>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions class="dialog-actions">
+            <v-spacer></v-spacer>
+            <v-btn @click="presenceDialog = false" variant="text">
+              Annuler
+            </v-btn>
+            <v-btn 
+              color="success" 
+              @click="generatePresenceSheet"
+              :loading="generating"
+              prepend-icon="mdi-file-document-outline"
+            >
+              Générer la fiche
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Dialog Génération PDF -->
+      <v-dialog v-model="pdfDialog" max-width="600px">
+        <v-card class="configuration-dialog">
+          <v-card-title class="dialog-header">
+            <v-icon color="error" class="me-2">mdi-file-pdf-box</v-icon>
+            Génération Fiches PDF par Classe
+          </v-card-title>
+          
+          <v-card-text>
+            <v-form ref="pdfForm">
+              <div class="form-sections">
+                <div class="form-section">
+                  <v-select
+                    v-model="pdfConfig.typeFiche"
+                    label="Type de fiche"
+                    :items="pdfTypes"
+                    variant="outlined"
+                    prepend-icon="mdi-format-list-bulleted-type"
+                  ></v-select>
+                  
+                  <v-checkbox
+                    v-model="pdfConfig.includeLogo"
+                    label="Inclure le logo de l'établissement"
+                    color="primary"
+                  ></v-checkbox>
+                  
+                  <v-checkbox
+                    v-model="pdfConfig.includeHeader"
+                    label="En-tête avec informations de l'école"
+                    color="primary"
+                  ></v-checkbox>
+                </div>
+              </div>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions class="dialog-actions">
+            <v-spacer></v-spacer>
+            <v-btn @click="pdfDialog = false" variant="text">
+              Annuler
+            </v-btn>
+            <v-btn 
+              color="error" 
+              @click="generatePdfSheets"
+              :loading="generatingPdf"
+              prepend-icon="mdi-file-pdf-box"
+            >
+              Générer PDF
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
 
       <!-- Section Recherche - Design moderne -->
       <div class="search-section-modern">
@@ -638,6 +816,26 @@ export default {
         montant: 0,
         type_frais: null,
       }),
+      // Nouveaux états pour les fonctionnalités avancées
+      presenceDialog: false,
+      pdfDialog: false,
+      generating: false,
+      generatingPdf: false,
+      presenceConfig: {
+        periodeType: 'mois',
+        periodeLabel: '',
+        matieres: ['Mathématiques', 'Français', 'Anglais'],
+        includeSignature: true,
+        includeTotal: true,
+        includeLogo: true,
+        alternateRows: true,
+        outputFormat: 'excel'
+      },
+      pdfConfig: {
+        typeFiche: 'presence',
+        includeLogo: true,
+        includeHeader: true
+      },
       pdfOptions: [
         {
           value: 'all',
@@ -695,7 +893,24 @@ export default {
         { title: 'Journalier', value: 'jour' },
         { title: 'Hebdomadaire', value: 'semaine' },
         { title: 'Mensuel', value: 'mois' },
-        { title: 'Par matière', value: 'matiere' }
+        { title: 'Trimestriel', value: 'trimestre' },
+        { title: 'Annuel', value: 'annuel' }
+      ],
+      pdfTypes: [
+        { title: 'Fiche de présence', value: 'presence' },
+        { title: 'Liste alphabétique', value: 'alphabetique' },
+        { title: 'Liste avec matricules', value: 'matricules' }
+      ],
+      defaultMatieres: [
+        'Mathématiques',
+        'Français',
+        'Anglais',
+        'SVT',
+        'Physique-Chimie',
+        'Histoire-Géo',
+        'Philosophie',
+        'EPS',
+        'Arts Plastiques'
       ]
     };
   },
@@ -883,6 +1098,92 @@ export default {
               this.showWarning('Vous avez déjà versé les frais d\'inscriptions');
             }
           });
+      }
+    },
+
+    // Nouvelles méthodes pour les fonctionnalités avancées
+    openPresenceDialog() {
+      this.presenceDialog = true;
+    },
+
+    openPdfDialog() {
+      this.pdfDialog = true;
+    },
+
+    async generatePresenceSheet() {
+    this.generating = true;
+    
+    try {
+        const params = new URLSearchParams({
+            section: this.vSectionID,
+            periode_type: this.presenceConfig.periodeType,
+            periode_label: this.presenceConfig.periodeLabel,
+            matieres: this.presenceConfig.matieres.join(','),
+            include_signature: this.presenceConfig.includeSignature,
+            include_total: this.presenceConfig.includeTotal,
+            include_logo: this.presenceConfig.includeLogo,
+            alternate_rows: this.presenceConfig.alternateRows,
+            output_format: this.presenceConfig.outputFormat
+        });
+        
+        let url;
+        if (this.presenceConfig.outputFormat === 'pdf') {
+            url = route('scolarite.fiche.presence.pdf') + '?' + params;
+        } else {
+            url = route('scolarite.fiche.presence.avancee') + '?' + params;
+        }
+        
+        window.open(url, '_blank');
+        this.presenceDialog = false;
+        
+    } catch (error) {
+        console.error('Erreur génération:', error);
+        this.showError('Erreur lors de la génération de la fiche');
+    } finally {
+        this.generating = false;
+    }
+    },
+
+  async generatePdfSheets() {
+      this.generatingPdf = true;
+      
+      try {
+          const params = new URLSearchParams({
+              section: this.vSectionID,
+              type_fiche: this.pdfConfig.typeFiche,
+              include_logo: this.pdfConfig.includeLogo,
+              include_header: this.pdfConfig.includeHeader
+          });
+          
+          window.open(route('scolarite.fiches.pdf.classe') + '?' + params, '_blank');
+          this.pdfDialog = false;
+          
+      } catch (error) {
+          console.error('Erreur génération PDF:', error);
+          this.showError('Erreur lors de la génération des PDF');
+      } finally {
+          this.generatingPdf = false;
+      }
+  },
+
+    async generatePdfSheets() {
+      this.generatingPdf = true;
+      
+      try {
+        const params = new URLSearchParams({
+          section: this.vSectionID,
+          type_fiche: this.pdfConfig.typeFiche,
+          include_logo: this.pdfConfig.includeLogo,
+          include_header: this.pdfConfig.includeHeader
+        });
+        
+        window.open(`/scolarite/fiches-pdf?${params}`, '_blank');
+        this.pdfDialog = false;
+      } catch (error) {
+        console.error('Erreur génération PDF:', error);
+        this.showError('Erreur lors de la génération des PDF');
+      } finally {
+        this.generatingPdf = false;
       }
     },
 
@@ -1074,7 +1375,7 @@ export default {
   font-weight: 600;
 }
 
-/* Section Génération */
+/* Section Génération améliorée */
 .generation-section-modern {
   background: white;
   border-radius: 16px;
@@ -1092,93 +1393,111 @@ export default {
 }
 
 .generation-card {
-  display: flex;
-  align-items: center;
   background: #f8f9fa;
   border-radius: 12px;
-  padding: 20px;
+  padding: 24px;
   border: 1px solid #e9ecef;
   transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
 }
 
-.generation-card:hover {
-  background: white;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
-  transform: translateY(-2px);
+.generation-card.featured {
+  border: 2px solid #4CAF50;
+  transform: scale(1.02);
+  background: linear-gradient(135deg, #f8fff8 0%, #ffffff 100%);
+}
+
+.card-badge {
+  position: absolute;
+  top: -8px;
+  right: 20px;
+  background: #4CAF50;
+  color: white;
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
 }
 
 .card-icon-wrapper {
-  width: 50px;
-  height: 50px;
-  border-radius: 10px;
+  width: 60px;
+  height: 60px;
+  border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-right: 16px;
-  flex-shrink: 0;
+  margin-bottom: 1rem;
 }
 
-.card-icon-wrapper.presence { background: rgba(76, 175, 80, 0.1); }
-.card-icon-wrapper.display { background: rgba(33, 150, 243, 0.1); }
-
-.card-content {
-  flex: 1;
-}
+.card-icon-wrapper.presence { background: #E8F5E8; }
+.card-icon-wrapper.display { background: #E3F2FD; }
+.card-icon-wrapper.pdf { background: #FFEBEE; }
 
 .card-content h3 {
-  margin: 0 0 8px 0;
-  font-size: 1.1rem;
+  font-size: 1.3rem;
   font-weight: 600;
+  margin-bottom: 0.5rem;
   color: #2c3e50;
 }
 
 .card-features {
   display: flex;
-  gap: 8px;
-  margin-top: 12px;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 1rem 0;
 }
 
-.generate-btn {
-  margin-left: 16px;
-  flex-shrink: 0;
+.card-actions {
+  margin-top: 1rem;
 }
 
-/* Options avancées */
-.advanced-options {
-  margin-top: 24px;
+/* Dialogs améliorés */
+.configuration-dialog {
+  border-radius: 12px;
 }
 
-.advanced-panel {
-  border-radius: 12px !important;
-  overflow: hidden;
+.dialog-header {
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  padding: 1.5rem;
 }
 
-.panel-header {
+.form-sections {
+  max-height: 60vh;
+  overflow-y: auto;
+  padding: 1rem 0;
+}
+
+.form-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.form-section:last-child {
+  border-bottom: none;
+}
+
+.section-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #2c3e50;
+  margin-bottom: 1rem;
   display: flex;
   align-items: center;
-  font-weight: 600;
-  color: #2c3e50;
 }
 
-.advanced-form {
-  padding: 8px 0;
+.format-option {
+  display: flex;
+  align-items: center;
 }
 
-.form-title {
-  margin-bottom: 16px;
-  color: #2c3e50;
-  font-weight: 600;
-}
-
-.form-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr auto;
-  gap: 16px;
-  align-items: end;
-}
-
-.generate-advanced-btn {
-  height: 56px;
+.dialog-actions {
+  padding: 1rem 1.5rem;
+  border-top: 1px solid #e0e0e0;
 }
 
 /* Section Recherche */
@@ -1476,20 +1795,8 @@ export default {
     flex-wrap: wrap;
   }
   
-  .form-grid {
-    grid-template-columns: 1fr;
-    gap: 16px;
-  }
-  
   .generation-card {
-    flex-direction: column;
     text-align: center;
-  }
-  
-  .generate-btn {
-    margin-left: 0;
-    margin-top: 16px;
-    width: 100%;
   }
 }
 

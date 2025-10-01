@@ -2,6 +2,7 @@
 
 namespace Modules\Scolarite\Exports;
 
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
@@ -14,55 +15,104 @@ use PhpOffice\PhpSpreadsheet\Style\Alignment;
 use PhpOffice\PhpSpreadsheet\Style\Border;
 use PhpOffice\PhpSpreadsheet\Style\Fill;
 
+
 class ListeClasseAffichageExport implements WithMultipleSheets
 {
-    protected $inscriptions;
-    protected $section;
+    protected Collection $inscriptions;
+    protected string $title;
 
-    public function __construct($inscriptions, $section = null)
+    public function __construct($inscriptions, string $title = 'Liste d\'affichage')
     {
         $this->inscriptions = collect($inscriptions);
-        $this->section = $section;
+        $this->title = $title;
     }
 
     public function sheets(): array
     {
         $sheets = [];
         
-        $groupedInscriptions = $this->groupInscriptionsByClass();
-        
-        foreach ($groupedInscriptions as $classeName => $inscriptionsClasse) {
-            if ($inscriptionsClasse->isNotEmpty()) {
-                $sheets[] = new ListeAffichagePerClasseSheet(
-                    $inscriptionsClasse, 
-                    $classeName, 
-                    $this->section
-                );
-            }
+        // Créer une feuille par classe
+        foreach ($this->getInscriptionsGroupedByClass() as $classeName => $inscriptionsClasse) {
+            $sheets[] = new ListeAffichagePerClasseSheet(
+                collect($inscriptionsClasse), 
+                $classeName
+            );
         }
         
         return $sheets;
     }
     
-    private function groupInscriptionsByClass(): array
+    private function getInscriptionsGroupedByClass(): array
     {
         $grouped = [];
         
         foreach ($this->inscriptions as $inscription) {
-            $classeName = $inscription['classe_code'] ?? $inscription['niveau_code'] ?? 'Non classé';
+            $classeName = $this->getClasseName($inscription);
             
             if (!isset($grouped[$classeName])) {
-                $grouped[$classeName] = collect();
+                $grouped[$classeName] = [];
             }
             
-            $grouped[$classeName]->push($inscription);
+            $grouped[$classeName][] = $inscription;
         }
         
-        uksort($grouped, function($a, $b) {
-            return $this->extractClassNumber($b) <=> $this->extractClassNumber($a);
+        return $this->sortClassesAndStudents($grouped);
+    }
+    
+    private function getClasseName($inscription): string
+    {
+        if ($inscription instanceof \Modules\Scolarite\Entities\Inscription) {
+            if ($inscription->classeAnnee && $inscription->classeAnnee->classe) {
+                return $inscription->classeAnnee->classe->libelle;
+            }
+            if ($inscription->niveau) {
+                return $inscription->niveau->libelle;
+            }
+        } else {
+            return $inscription['classe_annee']['classe']['libelle'] ?? 
+                   $inscription['niveau']['libelle'] ?? 
+                   'Non classé';
+        }
+        
+        return 'Non classé';
+    }
+    
+    private function sortClassesAndStudents(array $groupedInscriptions): array
+    {
+        // Trier les classes par ordre numérique décroissant
+        uksort($groupedInscriptions, function($a, $b) {
+            $numA = $this->extractClassNumber($a);
+            $numB = $this->extractClassNumber($b);
+            
+            return $numB <=> $numA ?: strcmp($a, $b);
         });
         
-        return $grouped;
+        // Trier les élèves par nom puis prénom dans chaque classe
+        foreach ($groupedInscriptions as $classeName => &$inscriptions) {
+            usort($inscriptions, function($a, $b) {
+                $nomA = $this->getStudentName($a, 'nom');
+                $nomB = $this->getStudentName($b, 'nom');
+                
+                if ($nomA === $nomB) {
+                    $prenomA = $this->getStudentName($a, 'prenom');
+                    $prenomB = $this->getStudentName($b, 'prenom');
+                    return strcmp($prenomA, $prenomB);
+                }
+                
+                return strcmp($nomA, $nomB);
+            });
+        }
+        
+        return $groupedInscriptions;
+    }
+    
+    private function getStudentName($inscription, string $field): string
+    {
+        if ($inscription instanceof \Modules\Scolarite\Entities\Inscription) {
+            return $inscription->apprenant ? $inscription->apprenant->$field : '';
+        } else {
+            return $inscription['apprenant'][$field] ?? '';
+        }
     }
     
     private function extractClassNumber(string $className): int
@@ -72,20 +122,18 @@ class ListeClasseAffichageExport implements WithMultipleSheets
     }
 }
 
-class ListeAffichagePerClasseSheet implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithStyles, WithTitle
+class ListeAffichagePerClasseSheet implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithTitle, WithStyles
 {
-    protected $inscriptions;
-    protected $classeName;
-    protected $section;
+    protected Collection $inscriptions;
+    protected string $classeName;
 
-    public function __construct($inscriptions, $classeName, $section = null)
+    public function __construct(Collection $inscriptions, string $classeName)
     {
-        $this->inscriptions = collect($inscriptions);
+        $this->inscriptions = $inscriptions;
         $this->classeName = $classeName;
-        $this->section = $section;
     }
 
-    public function collection()
+    public function collection(): Collection
     {
         return $this->inscriptions;
     }
@@ -93,148 +141,85 @@ class ListeAffichagePerClasseSheet implements FromCollection, WithHeadings, With
     public function title(): string
     {
         $cleanName = str_replace(['/', '\\', '?', '*', '[', ']', ':'], ' ', $this->classeName);
-        return substr('Affichage - ' . trim($cleanName), 0, 31) ?: 'Affichage';
+        return substr(trim($cleanName), 0, 31) ?: 'Classe';
     }
 
     public function headings(): array
     {
-        // CORRECTION : Gérer correctement la section (string ou array)
-        $sectionInfo = $this->getSectionInfo();
-        
         return [
-            ["LISTE DE LA CLASSE - {$this->classeName}" . $sectionInfo],
-            ["Année Scolaire " . date('Y') . "/" . (date('Y') + 1)],
-            ["Effectif: " . $this->inscriptions->count() . " élèves"],
-            [""], // Ligne vide
-            [
-                'N°',
-                'Matricule',
-                'Nom et Prénom',
-                'Sexe'
-            ]
+            'N°',
+            'Nom et Prénom'
         ];
-    }
-
-    /**
-     * CORRECTION : Méthode pour obtenir les informations de section
-     */
-    private function getSectionInfo(): string
-    {
-        if (!$this->section) {
-            return "";
-        }
-
-        // Si c'est un tableau avec une clé 'libelle'
-        if (is_array($this->section) && isset($this->section['libelle'])) {
-            return " - Section: {$this->section['libelle']}";
-        }
-        
-        // Si c'est une chaîne simple (ID de section)
-        if (is_string($this->section)) {
-            $sectionName = $this->getSectionName($this->section);
-            return " - Section: " . $sectionName;
-        }
-        
-        return "";
-    }
-
-    /**
-     * CORRECTION : Méthode pour obtenir le nom de la section à partir de l'ID
-     */
-    private function getSectionName(string $sectionId): string
-    {
-        $sections = [
-            '1' => 'Primaire',
-            '2' => 'Secondaire', 
-            '3' => 'Supérieure',
-            '4' => 'Universitaire'
-        ];
-        
-        return $sections[$sectionId] ?? 'Section ' . $sectionId;
     }
 
     public function map($inscription): array
     {
         static $numero = 1;
         
-        // Concaténation Nom + Prénom
-        $nomComplet = trim(($inscription['apprenant']['nom'] ?? '') . ' ' . ($inscription['apprenant']['prenom'] ?? ''));
+        $nomComplet = $this->getStudentName($inscription, 'nom') . ' ' . $this->getStudentName($inscription, 'prenom');
         
         return [
             $numero++,
-            $inscription['apprenant']['matricule'] ?? 'N/A',
-            $nomComplet,
-            $inscription['apprenant']['sexe'] ?? ''
+            trim($nomComplet)
         ];
     }
 
-    public function styles(Worksheet $sheet)
+    private function getStudentName($inscription, string $field): string
     {
-        $lastRow = $this->inscriptions->count() + 5;
+        if ($inscription instanceof \Modules\Scolarite\Entities\Inscription) {
+            return $inscription->apprenant ? $inscription->apprenant->$field : '';
+        } else {
+            return $inscription['apprenant'][$field] ?? '';
+        }
+    }
+
+    public function styles(Worksheet $sheet): void
+    {
+        $dataStartRow = 3;
+        $lastDataRow = $this->inscriptions->count() + $dataStartRow - 1;
         
-        // Titre principal - Grand et visible
-        $sheet->mergeCells('A1:D1');
+        // En-tête de classe
+        $sheet->mergeCells('A1:B1');
+        $headerText = 'Liste d\'affichage - Classe: ' . $this->classeName . ' (' . $this->inscriptions->count() . ' élèves)';
+        $sheet->setCellValue('A1', $headerText);
         $sheet->getStyle('A1')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 20, 'color' => ['rgb' => 'FFFFFF']],
-            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2980B9']],
+            'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2C3E50']],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
         ]);
+        
+        $sheet->getRowDimension(1)->setRowHeight(25);
 
-        // Sous-titre année scolaire
-        $sheet->mergeCells('A2:D2');
-        $sheet->getStyle('A2')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 14, 'color' => ['rgb' => '2C3E50']],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
-        ]);
-
-        // Effectif
-        $sheet->mergeCells('A3:D3');
-        $sheet->getStyle('A3')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 12, 'color' => ['rgb' => '27AE60']],
-            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
-        ]);
-
-        // En-têtes du tableau - Très visibles
-        $sheet->getStyle('A5:D5')->applyFromArray([
-            'font' => ['bold' => true, 'size' => 12, 'color' => ['rgb' => 'FFFFFF']],
+        // En-têtes de colonnes
+        $sheet->getStyle('A2:B2')->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],
-            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_MEDIUM]],
+            'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER]
         ]);
-
-        // Données du tableau - Grande police pour lisibilité à distance
-        if ($lastRow > 5) {
-            $sheet->getStyle('A6:D' . $lastRow)->applyFromArray([
-                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]],
-                'font' => ['size' => 11] // Police plus grande
+        
+        // Style des données
+        if ($lastDataRow >= $dataStartRow) {
+            $sheet->getStyle('A' . $dataStartRow . ':B' . $lastDataRow)->applyFromArray([
+                'borders' => ['allBorders' => ['borderStyle' => Border::BORDER_THIN]]
             ]);
-
-            // Alternance de couleurs pour meilleure lisibilité
-            for ($i = 6; $i <= $lastRow; $i++) {
-                $fillColor = $i % 2 === 0 ? 'ECF0F1' : 'FFFFFF';
-                $sheet->getStyle("A{$i}:D{$i}")
+            
+            // Lignes alternées
+            for ($i = $dataStartRow; $i <= $lastDataRow; $i++) {
+                $fillColor = $i % 2 === 0 ? 'F8F9FA' : 'FFFFFF';
+                $sheet->getStyle("A{$i}:B{$i}")
                     ->getFill()->setFillType(Fill::FILL_SOLID)->getStartColor()->setRGB($fillColor);
             }
-
-            // Alignement
-            $sheet->getStyle('A6:A' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('B6:B' . $lastRow)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            
+            // Alignement des colonnes
+            $sheet->getStyle('A' . $dataStartRow . ':A' . $lastDataRow)->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('B' . $dataStartRow . ':B' . $lastDataRow)->getAlignment()
+                ->setHorizontal(Alignment::HORIZONTAL_LEFT);
         }
-
-        // Largeur des colonnes adaptée à l'affichage
-        $sheet->getColumnDimension('A')->setWidth(8);  // N°
-        $sheet->getColumnDimension('B')->setWidth(15); // Matricule
-        $sheet->getColumnDimension('C')->setWidth(35); // Nom et Prénom (large)
-        $sheet->getColumnDimension('D')->setWidth(10); // Sexe
-
-        // Hauteur des lignes augmentée
-        $sheet->getRowDimension(1)->setRowHeight(30);
-        $sheet->getRowDimension(5)->setRowHeight(25);
         
-        for ($i = 6; $i <= $lastRow; $i++) {
-            $sheet->getRowDimension($i)->setRowHeight(20);
-        }
-
-        return [];
+        // Ajustement automatique des colonnes
+        $sheet->getColumnDimension('A')->setWidth(8);
+        $sheet->getColumnDimension('B')->setAutoSize(true);
     }
 }

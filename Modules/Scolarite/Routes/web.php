@@ -66,7 +66,17 @@ use Modules\Scolarite\Http\Controllers\InscriptionController;
         // Listes d'affichage
         Route::get('/scolarite/liste-affichage', [InscriptionController::class, 'genererListeAffichage'])
             ->name('scolarite.liste.affichage');
-                
+
+
+        Route::get('/scolarite/fiche-presence-avancee', [InscriptionController::class, 'genererFichePresenceAvancee'])
+            ->name('scolarite.fiche.presence.avancee');
+
+        Route::get('/scolarite/fiche-presence-pdf', [InscriptionController::class, 'genererFichePresencePdf'])
+            ->name('scolarite.fiche.presence.pdf');
+
+        Route::get('/scolarite/fiches-pdf-par-classe', [InscriptionController::class, 'genererFichesPdfParClasse'])
+            ->name('scolarite.fiches.pdf.classe');
+            
         
           
     });

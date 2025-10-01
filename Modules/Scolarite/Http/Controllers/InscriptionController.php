@@ -21,6 +21,7 @@ use Illuminate\Routing\Controller;
 use Illuminate\Support\Facades\DB;
 use App\Models\ApprenantClasseAnnee;
 use Illuminate\Support\Facades\Auth;
+use Maatwebsite\Excel\Facades\Excel;
 use Modules\Scolarite\Entities\Frais;
 use Modules\Scolarite\Entities\Tuteur;
 use Illuminate\Support\Facades\Redirect;
@@ -28,15 +29,15 @@ use Modules\Enseignement\Entities\Niveau;
 use Modules\Scolarite\Entities\TypeFrais;
 use Modules\Scolarite\Entities\Versement;
 use Modules\Scolarite\Entities\Inscription;
-use Modules\Enseignement\Entities\CycleFiliere;
-use Modules\Scolarite\Entities\EtablissementTypeDocument;
-use Maatwebsite\Excel\Facades\Excel;
-use Modules\Scolarite\Exports\InscriptionsExport;
-use Modules\Scolarite\Exports\InscriptionsPayeesExport;
-use Modules\Scolarite\Exports\InscriptionsNonPayeesExport;
-use Modules\Scolarite\Exports\FichePresenceExport;
-use Modules\Scolarite\Exports\ListeClasseAffichageExport;
 use Illuminate\Contracts\Support\Renderable;
+use Modules\Enseignement\Entities\CycleFiliere;
+use Modules\Scolarite\Exports\InscriptionsExport;
+use Modules\Scolarite\Exports\FichePresenceExport;
+use Modules\Scolarite\Exports\InscriptionsPayeesExport;
+use Modules\Scolarite\Entities\EtablissementTypeDocument;
+use Modules\Scolarite\Exports\FichePresenceAvanceeExport;
+use Modules\Scolarite\Exports\ListeClasseAffichageExport;
+use Modules\Scolarite\Exports\InscriptionsNonPayeesExport;
 
 
 
@@ -901,24 +902,46 @@ private function getClasseForInscription($inscriptionData)
 /**
  * Normaliser les données pour inclure les informations de classe
  */
+/**
+ * Normaliser les données pour inclure les informations de classe
+ */
 private function normaliserDonneesAvecClasses($inscriptions, $section)
 {
     $inscriptionsNormalisees = [];
-    
+
     foreach ($inscriptions as $inscription) {
-        $inscriptionData = is_array($inscription) ? $inscription : $inscription->toArray();
-        
+        // Gérer à la fois les tableaux, les objets Eloquent et les stdClass
+        if (is_array($inscription)) {
+            $inscriptionData = $inscription;
+        } elseif (method_exists($inscription, 'toArray')) {
+            // C'est un modèle Eloquent
+            $inscriptionData = $inscription->toArray();
+        } else {
+            // C'est un stdClass ou autre objet, convertir en tableau
+            $inscriptionData = (array) $inscription;
+        }
+
         // Pour les sections 1 et 2 (Primaire/Secondaire) - ApprenantClasseAnnee
         if ($section == '1' || $section == '2') {
             // Les données contiennent déjà classe_annee
             if (isset($inscription->classe_annee)) {
-                $inscriptionData['classe_annee'] = $inscription->classe_annee->toArray();
+                // Gérer la conversion de l'objet classe_annee
+                if (is_object($inscription->classe_annee) && method_exists($inscription->classe_annee, 'toArray')) {
+                    $inscriptionData['classe_annee'] = $inscription->classe_annee->toArray();
+                } else {
+                    $inscriptionData['classe_annee'] = (array) $inscription->classe_annee;
+                }
             } elseif (isset($inscriptionData['classe_annee'])) {
-                // Déjà présent dans le tableau
+                // Déjà présent dans le tableau, s'assurer que c'est un tableau
+                if (is_object($inscriptionData['classe_annee'])) {
+                    $inscriptionData['classe_annee'] = method_exists($inscriptionData['classe_annee'], 'toArray') 
+                        ? $inscriptionData['classe_annee']->toArray() 
+                        : (array) $inscriptionData['classe_annee'];
+                }
             } else {
                 // Récupérer la classe depuis la relation
                 $classeAnnee = $this->getClasseAnneeForApprenant(
-                    $inscriptionData['apprenant_id'] ?? null, 
+                    $inscriptionData['apprenant_id'] ?? null,
                     getAnneeEncours()->id
                 );
                 if ($classeAnnee) {
@@ -937,10 +960,10 @@ private function normaliserDonneesAvecClasses($inscriptions, $section)
         else {
             // Récupérer la classe depuis ApprenantClasseAnnee
             $classeAnnee = $this->getClasseAnneeForApprenant(
-                $inscriptionData['apprenant_id'] ?? null, 
+                $inscriptionData['apprenant_id'] ?? null,
                 $inscriptionData['annee_id'] ?? getAnneeEncours()->id
             );
-            
+
             if ($classeAnnee) {
                 $inscriptionData['classe_annee'] = $classeAnnee->toArray();
             } else {
@@ -953,10 +976,10 @@ private function normaliserDonneesAvecClasses($inscriptions, $section)
                 ];
             }
         }
-        
+
         $inscriptionsNormalisees[] = $inscriptionData;
     }
-    
+
     return $inscriptionsNormalisees;
 }
 
@@ -1206,178 +1229,390 @@ public function exportInscriptionsCombine(Request $request, $format)
 }
 
 
-
 /**
- * Générer la fiche de présence (pour impression/contrôle)
+ * Export de la liste de présence
  */
+// public function exportListePresence(Request $request, $format)
+// a revoir
+// public function genererFichePresence(Request $request)
+// {
+//     try {
+//         $section = $request->section;
+//         $periode = $request->periode ?? 'mois'; // jour, semaine, mois
+//         $matieres = $request->matieres ?? [];
+        
+//         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        
+//         // Normaliser les données avec les classes
+//         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+//                    $fileName = 'Fiche_presence_' . date('Ymd_His') . '.xlsx';
+//             $export = new FichePresenceExport($inscriptionsAvecClasses, 'Liste de présence');
+            
+//             return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
+        
+//     } catch (\Exception $e) {
+//         return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
+//     }
+// }
 /**
- * Générer la fiche de présence (pour impression/contrôle)
+ * NOUVELLE MÉTHODE - Génération de fiche de présence avancée
  */
-/**
- * Générer la fiche de présence (pour impression/contrôle)
- */
-public function genererFichePresence(Request $request)
+public function genererFichePresenceAvancee(Request $request)
 {
     try {
-        // Récupérer la section depuis la requête ou utiliser une valeur par défaut
-        $section = $request->get('section', $request->input('section', 1));
+        $section = $request->section;
+        $periode = $request->periode_type ?? 'mois';
+        $periodeLabel = $request->periode_label ?? '';
+        $matieres = $request->matieres ? explode(',', $request->matieres) : [];
+        $includeSignature = filter_var($request->input('include_signature', true), FILTER_VALIDATE_BOOLEAN);
+        $includeTotal = filter_var($request->input('include_total', true), FILTER_VALIDATE_BOOLEAN);
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        $alternateRows = filter_var($request->input('alternate_rows', true), FILTER_VALIDATE_BOOLEAN);
+        $outputFormat = $request->output_format ?? 'excel';
         
-        if (!$section) {
-            return response()->json(['error' => 'Section non spécifiée. Ajoutez ?section=1 à l\'URL'], 400);
-        }
-
-        // Récupérer les inscriptions
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
         
-        if (empty($inscriptions)) {
-            return response()->json(['error' => 'Aucune inscription trouvée pour la section ' . $section], 404);
+        if ($outputFormat === 'pdf') {
+            // Logique pour générer en PDF
+            return $this->genererFichePresencePdf($request);
         }
-
-        // Utiliser la méthode corrigée
-        $inscriptions = $this->ajouterInfosClasseCorrige($inscriptions);
         
-        // Distribuer dans les classes selon la logique existante
-        $inscriptions = $this->distribuerParClasses($inscriptions);
-        
-        $typePeriode = $request->get('type_periode', 'jour');
-        $periode = $request->get('periode', '');
-        $dateDebut = $request->get('date_debut', date('Y-m-d'));
-        $dateFin = $request->get('date_fin', date('Y-m-d', strtotime('+6 days')));
-
-        $fileName = 'fiche_presence_' . date('Ymd_His') . '.xlsx';
-        
-        $export = new \Modules\Scolarite\Exports\FichePresenceExport(
-            $inscriptions, 
-            $section, 
-            $typePeriode, 
-            $periode, 
-            $dateDebut, 
-            $dateFin
+        $fileName = 'Fiche_presence_avancee_' . $periode . '_' . date('Ymd_His') . '.xlsx';
+        $export = new FichePresenceAvanceeExport(
+            $inscriptionsAvecClasses, 
+            'Fiche de Présence Avancée',
+            $periode,
+            $matieres,
+            $periodeLabel, // Correct - c'est une string
+            $includeSignature, // Correct - c'est un bool
+            $includeTotal,    // Correct - c'est un bool
+            $includeLogo,     // Correct - c'est un bool
+            $alternateRows    // Correct - c'est un bool
         );
         
-        return Excel::download($export, $fileName);
+        return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
         
     } catch (\Exception $e) {
-        \Log::error('Erreur génération fiche présence: ' . $e->getMessage());
-        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
     }
 }
 
 /**
- * Générer la liste pour affichage en classe
+ * NOUVELLE MÉTHODE - Génération PDF de fiche de présence
  */
+public function genererFichePresencePdf(Request $request)
+{
+    try {
+        $section = $request->section;
+        $periode = $request->periode_type ?? 'mois';
+        $matieres = $request->matieres ? explode(',', $request->matieres) : [];
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        // Récupérer les infos de l'établissement
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        // Grouper les inscriptions par classe
+        $classes = [];
+        foreach ($inscriptionsAvecClasses as $inscription) {
+            $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé';
+            if (!isset($classes[$classeName])) {
+                $classes[$classeName] = [];
+            }
+            $classes[$classeName][] = $inscription;
+        }
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'classes' => $classes, // Envoyer les classes groupées
+            'periode' => $periode,
+            'matieres' => $matieres,
+            'includeLogo' => $includeLogo,
+            'title' => 'Fiche de Présence - ' . ucfirst($periode),
+            'date' => date('d/m/Y'),
+        ];
+        
+        $pdf = PDF::loadView('exports.fiche_presence_pdf', $data);
+        
+        $fileName = 'Fiche_presence_' . $periode . '_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération PDF: ' . $e->getMessage()], 500);
+    }
+}
+
 /**
- * Générer la liste pour affichage en classe
+ * NOUVELLE MÉTHODE - Génération PDF par classe
  */
+public function genererFichesPdfParClasse(Request $request)
+{
+    try {
+        $section = $request->section;
+        $typeFiche = $request->type_fiche ?? 'presence';
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        $includeHeader = filter_var($request->input('include_header', true), FILTER_VALIDATE_BOOLEAN);
+        
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        // Grouper par classe
+        $classes = [];
+        foreach ($inscriptionsAvecClasses as $inscription) {
+            $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé';
+            if (!isset($classes[$classeName])) {
+                $classes[$classeName] = [];
+            }
+            $classes[$classeName][] = $inscription;
+        }
+        
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'classes' => $classes,
+            'typeFiche' => $typeFiche,
+            'includeLogo' => $includeLogo,
+            'includeHeader' => $includeHeader,
+            'title' => 'Fiches par Classe - ' . ucfirst($typeFiche),
+            'date' => date('d/m/Y'),
+        ];
+        
+        $pdf = PDF::loadView('exports.fiches_par_classe_pdf', $data);
+        
+        $fileName = 'Fiches_par_classe_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération PDF: ' . $e->getMessage()], 500);
+    }
+}/**
+ * Export de la liste d'affichage
+ */
+// public function exportListeAffichage(Request $request, $format)
 public function genererListeAffichage(Request $request)
 {
     try {
-        // Récupérer la section depuis la requête ou utiliser une valeur par défaut
-        $section = $request->get('section', $request->input('section', 1));
-        
-        if (!$section) {
-            return response()->json(['error' => 'Section non spécifiée. Ajoutez ?section=1 à l\'URL'], 400);
-        }
-
-        // Récupérer les inscriptions
+        $section = $request->section;
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         
-        if (empty($inscriptions)) {
-            return response()->json(['error' => 'Aucune inscription trouvée pour la section ' . $section], 404);
-        }
-
-        // CORRECTION : Utiliser la méthode corrigée
-        $inscriptions = $this->ajouterInfosClasseCorrige($inscriptions);
+        // Normaliser les données avec les classes
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
         
-        // Distribuer dans les classes A, B, C si nécessaire
-        $inscriptions = $this->distribuerParClasses($inscriptions);
-
-        $fileName = 'liste_affichage_' . date('Ymd_His') . '.xlsx';
         
-        // CORRECTION : Passer la section comme string simple
-        $export = new ListeClasseAffichageExport($inscriptions, $section);
-        
-        return Excel::download($export, $fileName);
+            $fileName = 'liste_affichage_' . date('Ymd_His') . '.xlsx';
+            $export = new ListeClasseAffichageExport($inscriptionsAvecClasses, 'Liste d\'affichage');
+            
+            return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
         
     } catch (\Exception $e) {
-        \Log::error('Erreur génération liste affichage: ' . $e->getMessage());
-        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
     }
 }
 
-/**
- * CORRECTION : Méthode corrigée pour ajouter les infos de classe
- */
-private function ajouterInfosClasseCorrige($inscriptions)
-{
-    $result = [];
+// /**
+//  * Générer la fiche de présence (pour impression/contrôle)
+//  */
+// /**
+//  * Générer la fiche de présence (pour impression/contrôle)
+//  */
+// /**
+//  * Générer la fiche de présence (pour impression/contrôle)
+//  */
+// public function genererFichePresence(Request $request)
+// {
+//     $section = $request->section;
     
-    foreach ($inscriptions as $inscription) {
-        // Convertir en tableau si c'est un objet
-        $inscriptionData = json_decode(json_encode($inscription), true);
-        
-        // Récupérer la classe de l'apprenant
-        $classeInfo = $this->getClasseForInscription($inscriptionData);
-        
-        // Ajouter les informations de classe
-        $inscriptionData['classe_annee'] = $classeInfo;
-        $inscriptionData['niveau_code'] = $classeInfo['niveau_code'] ?? null;
-        $inscriptionData['classe_code'] = $classeInfo['classe_code'] ?? null;
-        $inscriptionData['classe_libelle'] = $classeInfo['classe_libelle'] ?? null;
-        
-        $result[] = $inscriptionData;
-    }
+//     // S'assurer que $section est un tableau si elle existe
+//     if ($section && !is_array($section)) {
+//         // Si c'est une chaîne JSON, la décoder
+//         if (is_string($section) && json_decode($section)) {
+//             $section = json_decode($section, true);
+//         } else {
+//             // Sinon, créer un tableau basique
+//             $section = ['id' => $section];
+//         }
+//     }
     
-    return $result;
-}
+//     $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+    
+//     // Ajouter les informations de classe à chaque inscription
+//     $inscriptionsAvecClasses = [];
+    
+//     // Si $inscriptions est une collection, convertir en tableau
+//     $inscriptionsArray = is_array($inscriptions) ? $inscriptions : $inscriptions->toArray();
+    
+//     foreach ($inscriptionsArray as $inscriptionData) {
+//         // Récupérer la classe de l'apprenant
+//         $classeInfo = $this->getClasseForInscription($inscriptionData);
+//         $inscriptionData['classe_annee'] = $classeInfo;
+//         $inscriptionsAvecClasses[] = $inscriptionData;
+//     }
+    
+//     $fileName = 'fiche_presence_' . date('Ymd_His') . '.xlsx';
+//     $export = new InscriptionsExport($inscriptionsAvecClasses, $section, 'fiches');
+    
+//     return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX, [
+//         'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+//     ]);
+// }
 
-/**
- * Récupérer les informations de classe pour une inscription
- */
+// /**
+//  * Générer la liste pour affichage en classe
+//  */
+// /**
+//  * Générer la liste pour affichage en classe
+//  */
+// public function genererListeAffichage(Request $request)
+// {
+//     try {
+//         // Récupérer la section depuis la requête ou utiliser une valeur par défaut
+//         $section = $request->get('section', $request->input('section', 1));
+        
+//         if (!$section) {
+//             return response()->json(['error' => 'Section non spécifiée. Ajoutez ?section=1 à l\'URL'], 400);
+//         }
 
-/**
- * Distribuer les élèves dans des classes selon la logique existante
- * Version optimisée avec répartition équilibrée
- */
-private function distribuerParClasses($inscriptions)
-{
-    $groupedByNiveau = [];
+//         // Récupérer les inscriptions
+//         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        
+//         if (empty($inscriptions)) {
+//             return response()->json(['error' => 'Aucune inscription trouvée pour la section ' . $section], 404);
+//         }
+
+//         // CORRECTION : Utiliser la méthode corrigée
+//         $inscriptions = $this->ajouterInfosClasseCorrige($inscriptions);
+        
+//         // Distribuer dans les classes A, B, C si nécessaire
+//         $inscriptions = $this->distribuerParClasses($inscriptions);
+
+//         $fileName = 'liste_affichage_' . date('Ymd_His') . '.xlsx';
+        
+//         // CORRECTION : Passer la section comme string simple
+//         $export = new ListeClasseAffichageExport($inscriptions, $section);
+        
+//         return Excel::download($export, $fileName);
+        
+//     } catch (\Exception $e) {
+//         \Log::error('Erreur génération liste affichage: ' . $e->getMessage());
+//         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+//     }
+// }
+
+// /**
+//  * CORRECTION : Méthode corrigée pour ajouter les infos de classe (même logique que exports)
+//  */
+//     /**
+//  * CORRECTION : Méthode corrigée pour ajouter les infos de classe (même logique que exports)
+//  */
+// private function ajouterInfosClasseCorrige($inscriptions)
+// {
+//     $result = [];
     
-    // Grouper d'abord par niveau
-    foreach ($inscriptions as $inscription) {
-        $niveauCode = $inscription['niveau_code'] ?? 'Non classé';
+//     foreach ($inscriptions as $inscription) {
+//         // CORRECTION : Gérer tous les types d'objets
+//         if (is_array($inscription)) {
+//             $inscriptionData = $inscription;
+//         } elseif (is_object($inscription) && method_exists($inscription, 'toArray')) {
+//             // Modèle Eloquent
+//             $inscriptionData = $inscription->toArray();
+//         } elseif (is_object($inscription)) {
+//             // stdClass ou autre objet simple
+//             $inscriptionData = json_decode(json_encode($inscription), true);
+//         } else {
+//             // Type inconnu, passer tel quel
+//             $inscriptionData = $inscription;
+//         }
         
-        if (!isset($groupedByNiveau[$niveauCode])) {
-            $groupedByNiveau[$niveauCode] = [];
-        }
+//         // Récupérer la classe de l'apprenant (MÊME LOGIQUE QUE EXPORTS)
+//         $classeInfo = $this->getClasseForInscription($inscriptionData);
         
-        $groupedByNiveau[$niveauCode][] = $inscription;
-    }
+//         // Ajouter les informations de classe (STRUCTURE UNIFORMISÉE)
+//         $inscriptionData['classe_annee'] = $classeInfo;
+//         $inscriptionData['niveau_code'] = $classeInfo['classe']['code'] ?? $inscriptionData['niveau']['code'] ?? 'NC';
+//         $inscriptionData['classe_code'] = $classeInfo['classe']['code'] ?? 'Non classé';
+//         $inscriptionData['classe_libelle'] = $classeInfo['classe']['libelle'] ?? 'Non classé';
+        
+//         $result[] = $inscriptionData;
+//     }
     
-    $result = [];
-    $lettres = ['A', 'B', 'C', 'D'];
+//     return $result;
+// }
+
+// /**
+//  * Récupérer les informations de classe pour une inscription
+//  */
+
+// /**
+//  * Distribuer les élèves dans des classes selon la logique existante
+//  * Version optimisée avec répartition équilibrée
+//  */
+//         /**
+//  * Distribuer les élèves dans des classes selon la MÊME LOGIQUE que les exports
+//  */
+// private function distribuerParClasses($inscriptions)
+// {
+//     $groupedByClasse = [];
     
-    // Distribuer chaque niveau dans des classes A, B, C, D
-    foreach ($groupedByNiveau as $niveauCode => $elevesNiveau) {
-        $nombreEleves = count($elevesNiveau);
-        $nombreClasses = min(ceil($nombreEleves / 25), 4); // Max 4 classes, ~25 élèves par classe
+//     // Grouper par classe réelle (comme dans les exports)
+//     foreach ($inscriptions as $inscription) {
+//         $classeLibelle = $inscription['classe_libelle'] ?? 'Non classé';
         
-        // Répartir équitablement
-        $elevesParClasse = ceil($nombreEleves / $nombreClasses);
+//         if (!isset($groupedByClasse[$classeLibelle])) {
+//             $groupedByClasse[$classeLibelle] = [];
+//         }
         
-        for ($i = 0; $i < $nombreEleves; $i++) {
-            $classeIndex = floor($i / $elevesParClasse);
-            $lettreClasse = $lettres[$classeIndex] ?? 'A';
+//         $groupedByClasse[$classeLibelle][] = $inscription;
+//     }
+    
+//     // Trier les classes dans le MÊME ORDRE que les exports
+//     uksort($groupedByClasse, function($a, $b) {
+//         $numA = $this->extractClassNumber($a);
+//         $numB = $this->extractClassNumber($b);
+        
+//         // Ordre décroissant : 6ème avant 5ème (comme exports)
+//         if ($numA !== $numB) {
+//             return $numB <=> $numA;
+//         }
+        
+//         // Si même niveau, tri alphabétique
+//         return strcmp($a, $b);
+//     });
+    
+//     // Trier les élèves par nom puis prénom dans chaque classe (COMME EXPORTS)
+//     $result = [];
+//     foreach ($groupedByClasse as $classeName => $elevesClasse) {
+//         usort($elevesClasse, function($a, $b) {
+//             $nomA = $a['apprenant']['nom'] ?? '';
+//             $nomB = $b['apprenant']['nom'] ?? '';
+//             $prenomA = $a['apprenant']['prenom'] ?? '';
+//             $prenomB = $b['apprenant']['prenom'] ?? '';
             
-            $elevesNiveau[$i]['classe_code'] = $niveauCode . $lettreClasse;
-            $elevesNiveau[$i]['classe_libelle'] = $niveauCode . ' ' . $lettreClasse;
-            
-            $result[] = $elevesNiveau[$i];
-        }
-    }
+//             if ($nomA === $nomB) {
+//                 return strcmp($prenomA, $prenomB);
+//             }
+//             return strcmp($nomA, $nomB);
+//         });
+        
+//         $result = array_merge($result, $elevesClasse);
+//     }
     
-    return $result;
-}
+//     return $result;
+// }
+
+// /**
+//  * Extraire le numéro de classe (même méthode que exports)
+//  */
+// private function extractClassNumber(string $className): int
+// {
+//     preg_match('/\d+/', $className, $matches);
+//     return isset($matches[0]) ? (int)$matches[0] : 99;
+// }
+
 // Nouvelle méthode pour calculer tous les montants
 /**
  * Calculer les montants restants en excluant les versements supprimés
