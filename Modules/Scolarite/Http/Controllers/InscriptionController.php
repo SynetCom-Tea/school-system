@@ -1258,7 +1258,7 @@ public function exportInscriptionsCombine(Request $request, $format)
 /**
  * NOUVELLE MÉTHODE - Génération de fiche de présence avancée
  */
-public function genererFichePresenceAvancee(Request $request)
+public function genererFichePresencePdf(Request $request)
 {
     try {
         $section = $request->section;
@@ -1269,46 +1269,10 @@ public function genererFichePresenceAvancee(Request $request)
         $includeTotal = filter_var($request->input('include_total', true), FILTER_VALIDATE_BOOLEAN);
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         $alternateRows = filter_var($request->input('alternate_rows', true), FILTER_VALIDATE_BOOLEAN);
-        $outputFormat = $request->output_format ?? 'excel';
         
-        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
-        
-        if ($outputFormat === 'pdf') {
-            // Logique pour générer en PDF
-            return $this->genererFichePresencePdf($request);
-        }
-        
-        $fileName = 'Fiche_presence_avancee_' . $periode . '_' . date('Ymd_His') . '.xlsx';
-        $export = new FichePresenceAvanceeExport(
-            $inscriptionsAvecClasses, 
-            'Fiche de Présence Avancée',
-            $periode,
-            $matieres,
-            $periodeLabel, // Correct - c'est une string
-            $includeSignature, // Correct - c'est un bool
-            $includeTotal,    // Correct - c'est un bool
-            $includeLogo,     // Correct - c'est un bool
-            $alternateRows    // Correct - c'est un bool
-        );
-        
-        return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
-        
-    } catch (\Exception $e) {
-        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
-    }
-}
-
-/**
- * NOUVELLE MÉTHODE - Génération PDF de fiche de présence
- */
-public function genererFichePresencePdf(Request $request)
-{
-    try {
-        $section = $request->section;
-        $periode = $request->periode_type ?? 'mois';
-        $matieres = $request->matieres ? explode(',', $request->matieres) : [];
-        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        // Déterminer le nombre de jours en fonction de la période
+        $joursParPeriode = $this->getJoursParPeriode($periode);
+        $libellesJours = $this->getLibellesJours($periode);
         
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
@@ -1328,12 +1292,18 @@ public function genererFichePresencePdf(Request $request)
         
         $data = [
             'etablissement' => $etablissement,
-            'classes' => $classes, // Envoyer les classes groupées
+            'classes' => $classes,
             'periode' => $periode,
+            'periodeLabel' => $periodeLabel,
             'matieres' => $matieres,
+            'joursParPeriode' => $joursParPeriode,
+            'libellesJours' => $libellesJours,
             'includeLogo' => $includeLogo,
+            'includeSignature' => $includeSignature,
+            'includeTotal' => $includeTotal,
+            'alternateRows' => $alternateRows,
             'title' => 'Fiche de Présence - ' . ucfirst($periode),
-            'date' => date('d/m/Y'),
+            'date' => date('d/m/Y à H:i'),
         ];
         
         $pdf = PDF::loadView('exports.fiche_presence_pdf', $data);
@@ -1347,50 +1317,155 @@ public function genererFichePresencePdf(Request $request)
 }
 
 /**
- * NOUVELLE MÉTHODE - Génération PDF par classe
+ * Détermine le nombre de jours en fonction de la période
  */
-public function genererFichesPdfParClasse(Request $request)
+private function getJoursParPeriode($periode)
+{
+    switch ($periode) {
+        case 'jour':
+            return 1;
+        case 'semaine':
+            return 7;
+        case 'mois':
+            return 31; // Maximum pour un mois
+        case 'trimestre':
+            return 90; // Environ 3 mois
+        case 'annuel':
+            return 365; // Maximum pour une année
+        default:
+            return 31;
+    }
+}
+
+/**
+ * Génère les libellés des jours en fonction de la période
+ */
+private function getLibellesJours($periode)
+{
+    switch ($periode) {
+        case 'jour':
+            return ['Jour'];
+            
+        case 'semaine':
+            return ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
+            
+        case 'mois':
+            $jours = [];
+            for ($i = 1; $i <= 31; $i++) {
+                $jours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
+            }
+            return $jours;
+            
+        case 'trimestre':
+            $jours = [];
+            for ($i = 1; $i <= 90; $i++) {
+                $jours[] = 'J' . $i;
+            }
+            return $jours;
+            
+        case 'annuel':
+            $jours = [];
+            for ($i = 1; $i <= 12; $i++) {
+                $jours[] = date('M', mktime(0, 0, 0, $i, 1));
+            }
+            return $jours;
+            
+        default:
+            $jours = [];
+            for ($i = 1; $i <= 31; $i++) {
+                $jours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
+            }
+            return $jours;
+    }
+}
+
+
+public function genererFichePresenceAvancee(Request $request)
 {
     try {
         $section = $request->section;
-        $typeFiche = $request->type_fiche ?? 'presence';
+        $periode = $request->periode_type ?? 'mois';
+        $periodeLabel = $request->periode_label ?? '';
+        $matieres = $request->matieres ? explode(',', $request->matieres) : [];
+        $includeSignature = filter_var($request->input('include_signature', true), FILTER_VALIDATE_BOOLEAN);
+        $includeTotal = filter_var($request->input('include_total', true), FILTER_VALIDATE_BOOLEAN);
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
-        $includeHeader = filter_var($request->input('include_header', true), FILTER_VALIDATE_BOOLEAN);
+        $alternateRows = filter_var($request->input('alternate_rows', true), FILTER_VALIDATE_BOOLEAN);
+        $outputFormat = $request->output_format ?? 'excel';
         
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
         
-        // Grouper par classe
-        $classes = [];
-        foreach ($inscriptionsAvecClasses as $inscription) {
-            $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé';
-            if (!isset($classes[$classeName])) {
-                $classes[$classeName] = [];
-            }
-            $classes[$classeName][] = $inscription;
+        if ($outputFormat === 'pdf') {
+            // Utiliser la même méthode avec tous les paramètres
+            return $this->genererFichePresencePdf($request);
         }
         
-        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        $fileName = 'Fiche_presence_avancee_' . $periode . '_' . date('Ymd_His') . '.xlsx';
+        $export = new FichePresenceAvanceeExport(
+            $inscriptionsAvecClasses, 
+            'Fiche de Présence Avancée',
+            $periode,
+            $matieres,
+            $periodeLabel,
+            $includeSignature,
+            $includeTotal,
+            $includeLogo,
+            $alternateRows
+        );
         
-        $data = [
-            'etablissement' => $etablissement,
-            'classes' => $classes,
-            'typeFiche' => $typeFiche,
-            'includeLogo' => $includeLogo,
-            'includeHeader' => $includeHeader,
-            'title' => 'Fiches par Classe - ' . ucfirst($typeFiche),
-            'date' => date('d/m/Y'),
-        ];
-        
-        $pdf = PDF::loadView('exports.fiches_par_classe_pdf', $data);
-        
-        $fileName = 'Fiches_par_classe_' . date('Ymd_His') . '.pdf';
-        return $pdf->download($fileName);
+        return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
         
     } catch (\Exception $e) {
-        return response()->json(['error' => 'Erreur lors de la génération PDF: ' . $e->getMessage()], 500);
+        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
     }
-}/**
+}
+/**
+ * NOUVELLE MÉTHODE - Génération PDF par classe
+ */
+// public function genererFichesPdfParClasse(Request $request)
+// {
+//     try {
+//         $section = $request->section;
+//         $typeFiche = $request->type_fiche ?? 'presence';
+//         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+//         $includeHeader = filter_var($request->input('include_header', true), FILTER_VALIDATE_BOOLEAN);
+        
+//         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+//         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+//         // Grouper par classe
+//         $classes = [];
+//         foreach ($inscriptionsAvecClasses as $inscription) {
+//             $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé';
+//             if (!isset($classes[$classeName])) {
+//                 $classes[$classeName] = [];
+//             }
+//             $classes[$classeName][] = $inscription;
+//         }
+        
+//         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+//         $data = [
+//             'etablissement' => $etablissement,
+//             'classes' => $classes,
+//             'typeFiche' => $typeFiche,
+//             'includeLogo' => $includeLogo,
+//             'includeHeader' => $includeHeader,
+//             'title' => 'Fiches par Classe - ' . ucfirst($typeFiche),
+//             'date' => date('d/m/Y'),
+//         ];
+        
+//         $pdf = PDF::loadView('exports.fiches_par_classe_pdf', $data);
+        
+//         $fileName = 'Fiches_par_classe_' . date('Ymd_His') . '.pdf';
+//         return $pdf->download($fileName);
+        
+//     } catch (\Exception $e) {
+//         return response()->json(['error' => 'Erreur lors de la génération PDF: ' . $e->getMessage()], 500);
+//     }
+// }
+/**
  * Export de la liste d'affichage
  */
 // public function exportListeAffichage(Request $request, $format)
@@ -1411,6 +1486,66 @@ public function genererListeAffichage(Request $request)
         
     } catch (\Exception $e) {
         return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Génération PDF par classe - Version améliorée
+ */
+public function genererFichesPdfParClasse(Request $request)
+{
+    try {
+        $section = $request->section;
+        $typeFiche = $request->type_fiche ?? 'affichage';
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        $includeHeader = filter_var($request->input('include_header', true), FILTER_VALIDATE_BOOLEAN);
+        
+        // Récupérer les inscriptions
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        // Grouper par classe
+        $classes = [];
+        foreach ($inscriptionsAvecClasses as $inscription) {
+            $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé';
+            if (!isset($classes[$classeName])) {
+                $classes[$classeName] = [];
+            }
+            $classes[$classeName][] = $inscription;
+        }
+        
+        // Récupérer les infos de l'établissement
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'classes' => $classes,
+            'typeFiche' => $typeFiche,
+            'includeLogo' => $includeLogo,
+            'includeHeader' => $includeHeader,
+            'title' => 'Listes d\'Affichage par Classe',
+            'date' => date('d/m/Y'),
+            'anneeScolaire' => '2024/2025' // À adapter selon votre logique
+        ];
+        
+        // Configuration PDF
+        $pdf = PDF::loadView('exports.listes_affichage_pdf', $data);
+        $pdf->setPaper('A4', 'portrait');
+        $pdf->setOptions([
+            'dpi' => 150,
+            'defaultFont' => 'sans-serif',
+            'isHtml5ParserEnabled' => true,
+            'isRemoteEnabled' => true
+        ]);
+        
+        $fileName = 'Listes_Affichage_Classes_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        \Log::error('Erreur génération PDF: ' . $e->getMessage());
+        return response()->json([
+            'error' => 'Erreur lors de la génération PDF: ' . $e->getMessage()
+        ], 500);
     }
 }
 

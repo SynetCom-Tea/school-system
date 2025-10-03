@@ -345,7 +345,7 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
     public function styles(Worksheet $sheet): void
     {
         $dataStartRow = 4; // Commencer à la ligne 4 pour laisser l'espace pour l'en-tête
-        $lastDataRow = $this->inscriptions->count() + $dataStartRow - 1;
+        $lastDataRow = $this->inscriptions->count() + $dataStartRow ;
         
         // Calculer le nombre de colonnes
         $colCount = count($this->headings());
@@ -384,7 +384,7 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         $sheet->getRowDimension(3)->setRowHeight(18);
 
         // En-têtes de colonnes (ligne 4)
-        $headerRange = 'A4:' . $this->getColonneLettre($colCount) . '4';
+        $headerRange = 'A6:' . $this->getColonneLettre($colCount) . '6';
         $sheet->getStyle($headerRange)->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],

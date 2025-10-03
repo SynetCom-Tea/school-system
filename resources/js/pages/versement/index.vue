@@ -220,11 +220,11 @@
             </v-btn>
           </div>
           
-          <!-- Fiche PDF par Classe -->
-          <div class="generation-card">
-            <div class="card-icon-wrapper pdf">
-              <v-icon color="#F44336" size="28">mdi-file-pdf-box</v-icon>
-            </div>
+    <!-- Fiche PDF par Classe -->
+    <div class="generation-card">
+      <div class="card-icon-wrapper pdf">
+          <v-icon color="#F44336" size="28">mdi-file-pdf-box</v-icon>
+        </div>
             <div class="card-content">
               <h3>Fiches PDF par Classe</h3>
               <p class="text-muted">Fiches format PDF avec logo et en-tête de l'école</p>
@@ -241,7 +241,7 @@
             </div>
             <v-btn 
               color="error" 
-              @click="openPdfDialog"
+              :href="route('scolarite.fiches.pdf.classe', { section: vSectionID })"
               prepend-icon="mdi-file-pdf"
             >
               Générer PDF

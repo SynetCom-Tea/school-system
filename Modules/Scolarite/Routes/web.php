@@ -77,7 +77,12 @@ use Modules\Scolarite\Http\Controllers\InscriptionController;
         Route::get('/scolarite/fiches-pdf-par-classe', [InscriptionController::class, 'genererFichesPdfParClasse'])
             ->name('scolarite.fiches.pdf.classe');
             
-        
+         
+
+        // OU si vous voulez garder les deux, assurez-vous qu'elles pointent vers la même méthode
+        Route::get('/scolarite/fiches-pdf', [InscriptionController::class, 'genererFichesPdfParClasse'])
+            ->name('scolarite.fiches.pdf');
+                
           
     });
 
