@@ -11,10 +11,23 @@
 |
 */
 
+use Inertia\Inertia;
 use Illuminate\Support\Facades\Route;
 use Modules\Scolarite\Http\Controllers\InscriptionController;
 
     Route::prefix('scolarite')->group(function() {
+        Route::get('/modifier-inscription/{id}', function($id) {
+        // Récupérer simplement l'inscription
+        $inscription = \Modules\Scolarite\Entities\Inscription::with('apprenant')->find($id);
+        
+        if (!$inscription) {
+            return "Inscription non trouvée";
+        }
+
+        return Inertia::render('EditInscription', [
+            'inscription' => $inscription
+        ]);
+    });
 
         // les routes pour l'inscriptions
         Route::resource('inscriptions', \Modules\Scolarite\Http\Controllers\InscriptionController::class);
@@ -83,6 +96,10 @@ use Modules\Scolarite\Http\Controllers\InscriptionController;
         Route::get('/scolarite/fiches-pdf', [InscriptionController::class, 'genererFichesPdfParClasse'])
             ->name('scolarite.fiches.pdf');
                 
+            // TEST ULTRA-RAPIDE
+Route::get('/test-modification/{id}', function($id) {
+    return "🟢 ÇA FONCTIONNE ! ID: " . $id;
+});
           
     });
 

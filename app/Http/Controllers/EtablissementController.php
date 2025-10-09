@@ -6,7 +6,9 @@ use App\Models\TypeEtablissement;
 use App\Models\Etablissement;
 use App\Models\Section;
 use App\Models\EtablissementSection;
+use App\Models\Permission;
 use App\Models\User;
+use FontLib\Table\Type\name;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Hash;
@@ -83,8 +85,9 @@ class EtablissementController extends Controller
             'password' => $request->password ?? Hash::make('password'), 
             'etablissement_id' => $ets->id
         ];
+        $permissions= Permission::whereNotIn('name',['espace_comptable', 'espace_enseignant','espace_etudiant', 'espace_tuteur'])->get();
         $admin = User::create($user);
-        $admin->givePermissionTo('manage_school');
+        $admin->givePermissionTo($permissions);
         return redirect()->route('etablissements.index');
     }
 

@@ -178,6 +178,9 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
     protected array $jours;
     protected array $semaines;
     protected array $datesMois;
+    
+    // AJOUT: Propriété pour gérer l'index
+    private int $currentMapIndex = 0;
 
     public function __construct(
         Collection $inscriptions, 
@@ -204,6 +207,9 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         $this->jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
         $this->semaines = ['1', '2', '3', '4'];
         $this->datesMois = $this->genererDatesMois();
+        
+        // Réinitialiser l'index
+        $this->currentMapIndex = 0;
     }
 
     public function collection(): Collection
@@ -254,61 +260,67 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         return $headings;
     }
 
-    public function map($inscription): array
-    {
-        static $numero = 1;
-        $currentNumero = $numero++;
-        
-        $nomComplet = $this->getStudentName($inscription, 'nom') . ' ' . $this->getStudentName($inscription, 'prenom');
-        $matricule = $this->getStudentField($inscription, 'matricule');
-        
-        $row = [
-            $currentNumero,
-            $matricule,
-            trim($nomComplet)
-        ];
-        
-        // Ajouter les cases à cocher selon la période
-        switch ($this->periode) {
-            case 'jour':
-                // Cases pour chaque matière
+   public function map($inscription): array
+{
+    // CORRECTION: Calcul correct de l'index et de la ligne Excel
+    $currentNumero = $this->currentMapIndex + 1;
+    $excelRow = $this->currentMapIndex + 5; // Ligne Excel = index + 5 (4 en-têtes + 1)
+
+    $nomComplet = $this->getStudentName($inscription, 'nom') . ' ' . $this->getStudentName($inscription, 'prenom');
+    $matricule = $this->getStudentField($inscription, 'matricule');
+    
+    $row = [
+        $currentNumero,
+        $matricule,
+        trim($nomComplet)
+    ];
+    
+    // Ajouter les cases à cocher selon la période
+    switch ($this->periode) {
+        case 'jour':
+            // Cases pour chaque matière
+            foreach ($this->matieres as $matiere) {
+                $row[] = ''; // Case vide pour cocher
+            }
+            break;
+            
+        case 'semaine':
+            // Cases pour chaque semaine et chaque matière
+            foreach ($this->semaines as $semaine) {
+                $row[] = "Sem. {$semaine}";
                 foreach ($this->matieres as $matiere) {
-                    $row[] = ''; // Case vide pour cocher
+                    $row[] = ''; // Case vide
                 }
-                break;
+            }
+            break;
+            
+        case 'mois':
+        default:
+            // Cases pour chaque jour du mois (31 jours max)
+            for ($i = 1; $i <= 31; $i++) {
+                $row[] = ''; // Case vide pour cocher
+            }
+            if ($this->includeTotal) {
+                // CORRECTION: Calcul correct des colonnes pour la formule
+                $firstCheckCol = 'D'; // Première colonne de cases (après N°, Matricule, Nom)
+                $lastCheckCol = 'AH'; // Dernière colonne de cases (31 jours après D = AH)
                 
-            case 'semaine':
-                // Cases pour chaque semaine et chaque matière
-                foreach ($this->semaines as $semaine) {
-                    $row[] = "Sem. {$semaine}";
-                    foreach ($this->matieres as $matiere) {
-                        $row[] = ''; // Case vide
-                    }
-                }
-                break;
-                
-            case 'mois':
-            default:
-                // Cases pour chaque jour du mois (31 jours max)
-                for ($i = 1; $i <= 31; $i++) {
-                    $row[] = ''; // Case vide pour cocher
-                }
-                if ($this->includeTotal) {
-                    // Formule Excel pour calculer le total des présences
-                    $firstCheckCol = 'D';
-                    $lastCheckCol = $this->getColonneLettre(34); // 3 colonnes fixes + 31 jours = 34
-                    $row[] = "=COUNTIF({$firstCheckCol}{$currentNumero}:{$lastCheckCol}{$currentNumero},\"✓\")";
-                }
-                break;
-        }
-        
-        // Ajouter la colonne signature si demandée
-        if ($this->includeSignature) {
-            $row[] = ''; // Signature vide
-        }
-        
-        return $row;
+                // CORRECTION: Utiliser $excelRow pour la ligne correcte
+                $row[] = "=COUNTIF({$firstCheckCol}{$excelRow}:{$lastCheckCol}{$excelRow},\"✓\")";
+            }
+            break;
     }
+    
+    // Ajouter la colonne signature si demandée
+    if ($this->includeSignature) {
+        $row[] = ''; // Signature vide
+    }
+    
+    // CORRECTION: Incrémenter APRÈS avoir utilisé l'index
+    $this->currentMapIndex++;
+    
+    return $row;
+}
 
     private function getStudentField($inscription, string $field): string
     {
@@ -345,7 +357,7 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
     public function styles(Worksheet $sheet): void
     {
         $dataStartRow = 4; // Commencer à la ligne 4 pour laisser l'espace pour l'en-tête
-        $lastDataRow = $this->inscriptions->count() + $dataStartRow ;
+        $lastDataRow = $this->inscriptions->count() + $dataStartRow;
         
         // Calculer le nombre de colonnes
         $colCount = count($this->headings());
@@ -384,7 +396,7 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         $sheet->getRowDimension(3)->setRowHeight(18);
 
         // En-têtes de colonnes (ligne 4)
-        $headerRange = 'A6:' . $this->getColonneLettre($colCount) . '6';
+        $headerRange = 'A4:' . $this->getColonneLettre($colCount) . '4';
         $sheet->getStyle($headerRange)->applyFromArray([
             'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '34495E']],
@@ -470,6 +482,9 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         for ($i = $dataStartRow; $i <= $lastDataRow; $i++) {
             $sheet->getRowDimension($i)->setRowHeight(25);
         }
+        
+        // CORRECTION: Réinitialiser l'index pour les prochains exports
+        $this->currentMapIndex = 0;
     }
 
     /**

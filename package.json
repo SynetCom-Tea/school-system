@@ -44,7 +44,7 @@
         "bootstrap": "^5.3.1",
         "bootstrap-vue": "^2.23.1",
         "chartkick": "^5.0.1",
-        "core-js": "^3.32.1",
+        "core-js": "^3.45.1",
         "echarts": "^5.4.3",
         "epic-spinners": "^2.0.0",
         "form-wizard-vue3": "^1.1.0",

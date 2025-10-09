@@ -753,10 +753,75 @@ class InscriptionController extends Controller
      * @param int $id
      * @return Renderable
      */
-    public function edit($id)
-    {
-        return view('scolarite::edit');
+public function edit($id)
+{
+    try {
+        \Log::info('🔍 DEBUT méthode edit - ID: ' . $id);
+
+        // Chargez TOUTES les relations nécessaires
+        $inscription = Inscription::with([
+            'apprenant', 
+            'apprenant.apprenantTuteurs.tuteur',
+            'apprenant.apprenant_classe_annees.classe_annee.classe', // Classe de l'apprenant
+            'apprenant.apprenant_classe_annees.classe_annee.annee',  // Année de la classe
+            'niveau'
+        ])->find($id);
+
+        if (!$inscription) {
+            \Log::error('❌ Inscription non trouvée - ID: ' . $id);
+            return redirect()->route('inscriptions.index')->with('error', 'Inscription non trouvée');
+        }
+
+        \Log::info('✅ Inscription trouvée: ' . $inscription->id);
+
+        $section = $inscription->niveau->section_id ?? null;
+        \Log::info('📋 Section: ' . $section);
+
+        // Récupérez les tuteurs
+        $tuteurs = [];
+        if ($inscription->apprenant && $inscription->apprenant->apprenantTuteurs) {
+            $tuteurs = $inscription->apprenant->apprenantTuteurs->map(function ($apprenantTuteur) {
+                return $apprenantTuteur->tuteur;
+            })->filter();
+        }
+
+        // Récupérez la classe actuelle de l'apprenant
+        $classeActuelle = null;
+        $anneeClasseActuelle = null;
+        
+        if ($inscription->apprenant && $inscription->apprenant->apprenant_classe_annees) {
+            // Prendre la dernière classe (la plus récente)
+            $apprenantClasseAnnee = $inscription->apprenant->apprenant_classe_annees->sortByDesc('id')->first();
+            
+            if ($apprenantClasseAnnee && $apprenantClasseAnnee->classe_annee) {
+                $classeActuelle = $apprenantClasseAnnee->classe_annee->classe;
+                $anneeClasseActuelle = $apprenantClasseAnnee->classe_annee->annee;
+            }
+        }
+
+        $data = [
+            'inscription' => $inscription,
+            'type' => $section,
+            'niveaux' => Niveau::where('section_id', $section)->get(),
+            'annees' => \App\Models\Annee::all(),
+            'tuteurs' => $tuteurs,
+            'classe_actuelle' => $classeActuelle, // Classe actuelle
+            'annee_classe_actuelle' => $anneeClasseActuelle // Année de la classe
+        ];
+
+        \Log::info('🚀 Rendu de la vue avec ' . $tuteurs->count() . ' tuteurs');
+        \Log::info('🏫 Classe actuelle: ' . ($classeActuelle ? $classeActuelle->libelle : 'Aucune'));
+
+        return Inertia::render('Inscription/Edit', $data);
+
+    } catch (\Exception $e) {
+        \Log::error('❌ ERREUR CRITIQUE dans edit: ' . $e->getMessage());
+        \Log::error('❌ Stack trace: ' . $e->getTraceAsString());
+        
+        return redirect()->route('inscriptions.index')
+            ->with('error', 'Erreur technique: ' . $e->getMessage());
     }
+}
 
     /**
      * Update the specified resource in storage.
@@ -766,8 +831,133 @@ class InscriptionController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        try {
+            DB::beginTransaction();
+
+            $inscription = Inscription::findOrFail($id);
+            $apprenant = $inscription->apprenant;
+
+            // Mettre à jour l'apprenant
+            if ($request->apprenants) {
+                $apprenant->update([
+                    'nom' => $request->apprenants['nom'] ?? $apprenant->nom,
+                    'prenom' => $request->apprenants['prenom'] ?? $apprenant->prenom,
+                    'sexe' => $request->apprenants['sexe'] ?? $apprenant->sexe,
+                    'date_naissance' => $request->apprenants['date_naissance'] ?? $apprenant->date_naissance,
+                    'lieu_naissance' => $request->apprenants['lieu_naissance'] ?? $apprenant->lieu_naissance,
+                    'telephone' => $request->apprenants['telephone'] ?? $apprenant->telephone,
+                ]);
+            }
+
+            // Mettre à jour l'inscription
+            if ($request->annees) {
+                $inscription->update([
+                    'annee_id' => $request->annees['annee'] ?? $inscription->annee_id,
+                    'niveau_id' => $request->annees['niveau'] ?? $inscription->niveau_id,
+                ]);
+
+                // Gérer le changement de classe - AVEC LA MÊME LOGIQUE QUE STORE
+                if ($request->annees['classe']) {
+                    $this->changerClasseApprenant($apprenant->id, $request->annees['classe'], $request->annees['annee']);
+                } else {
+                    // Si aucune classe n'est sélectionnée, créer une classe automatiquement comme dans store()
+                    $classeId = $this->creerClasseAutomatique($request->annees['niveau'], $request->section);
+                    if ($classeId) {
+                        $this->changerClasseApprenant($apprenant->id, $classeId, $request->annees['annee']);
+                    }
+                }
+            }
+
+            // ... le reste de la méthode update (tuteurs, documents) ...
+
+            DB::commit();
+
+            return redirect()->route('inscriptions.index', ['section_id' => $request->section])
+                ->with('message', [
+                    'type' => 'success',
+                    'text' => 'Inscription modifiée avec succès',
+                ]);
+
+        } catch (\Exception $e) {
+            DB::rollback();
+            return redirect()->back()->with('message', [
+                'type' => 'error',
+                'text' => 'Erreur lors de la modification: ' . $e->getMessage(),
+            ]);
+        }
     }
+
+/**
+ * Créer une classe automatiquement (même logique que dans store)
+ */
+private function creerClasseAutomatique($niveauId, $section)
+{
+    try {
+        $niveau = Niveau::find($niveauId);
+        if (!$niveau) return null;
+
+        $etablissement_id = Auth::user()->etablissement_id;
+        
+        // Récupérer l'établissement section ID
+        $etablissement_section = DB::table('etablissement_section')
+            ->where('etablissement_id', $etablissement_id)
+            ->where('section_id', $section)
+            ->first();
+        
+        if (!$etablissement_section) return null;
+
+        // MÊME LOGIQUE QUE DANS STORE
+        if ($niveau->code != '6e' && $niveau->code != '5e' && $niveau->code != '4e' && $niveau->code != '3e') {
+            $cod = '1';
+        } else {
+            $cod = 'A';
+        }
+
+        $classe = Classe::create([
+            'code' => $niveau->code . ' ' . $cod,
+            'libelle' => $niveau->libelle . ' ' . $cod,
+            'niveau_id' => $niveauId,
+            'etablissement_section_id' => $etablissement_section->id
+        ]);
+
+        return $classe->id;
+
+    } catch (\Exception $e) {
+        \Log::error('Erreur création classe automatique: ' . $e->getMessage());
+        return null;
+    }
+}
+
+/**
+ * Changer la classe d'un apprenant
+ */
+private function changerClasseApprenant($apprenantId, $classeId, $anneeId)
+{
+    // Trouver ou créer la classe_annee
+    $classeAnnee = ClasseAnnee::where('classe_id', $classeId)
+        ->where('annee_id', $anneeId)
+        ->first();
+
+    if (!$classeAnnee) {
+        $classeAnnee = ClasseAnnee::create([
+            'classe_id' => $classeId,
+            'annee_id' => $anneeId,
+        ]);
+    }
+
+    // Supprimer l'ancienne classe_annee de l'apprenant pour cette année
+    ApprenantClasseAnnee::where('apprenant_id', $apprenantId)
+        ->whereHas('classe_annee', function($query) use ($anneeId) {
+            $query->where('annee_id', $anneeId);
+        })
+        ->delete();
+
+    // Ajouter la nouvelle classe
+    ApprenantClasseAnnee::create([
+        'apprenant_id' => $apprenantId,
+        'classe_annee_id' => $classeAnnee->id,
+    ]);
+}
 
     /**
      * Remove the specified resource from storage.

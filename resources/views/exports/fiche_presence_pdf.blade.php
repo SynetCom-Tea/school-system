@@ -72,7 +72,7 @@
         }
         .info-grid {
             display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
+            grid-template-columns: 1fr 1fr;
             gap: 10px;
             margin-bottom: 8px;
         }
@@ -161,7 +161,7 @@
         }
         .signature-cell {
             width: 80px;
-            background: #fff9e6;
+            background: #9eb2dbff;
             font-size: 11px;
         }
         .instructions {
@@ -173,10 +173,8 @@
             font-size: 12px;
         }
         .signature-section {
-            display: flex;
-            justify-content: space-between;
+            text-align: center;
             margin-top: 30px;
-            padding: 0 25px;
         }
         .signature-box {
             width: 45%;
@@ -186,13 +184,7 @@
             height: 1px;
             background: #333;
             margin: 35px 0 8px 0;
-        }
-        .signature-left .signature-line {
-            margin-left: 0;
-        }
-        .signature-right .signature-line {
-            margin-right: 0;
-            margin-left: auto;
+            text-align: center;
         }
         .signature-label {
             font-size: 12px;
@@ -205,6 +197,15 @@
             color: #666;
             border-top: 1px solid #ddd;
             padding-top: 8px;
+        }
+        .footer-instructions {
+            margin-top: 15px;
+            padding: 10px;
+            background: #fff9e6;
+            border-radius: 4px;
+            border-left: 4px solid #f39c12;
+            font-size: 12px;
+            text-align: left;
         }
         .page-break {
             page-break-after: always;
@@ -272,15 +273,21 @@
         <div class="class-info">
             <div class="info-grid">
                 <div class="info-item">
-                    <span>Classe: {{ $classeName }}</span>
-                </div>
-                <div class="info-item">
-                    <span>Période: {{ ucfirst($periode) }}</span>
-                </div>
-                <div class="info-item">
+                    <span>Classe: {{ $classeName }}</span> 
+                    <span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
+                    <span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
+                    <span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
                     <span>Effectif: {{ count($inscriptions) }} élèves</span>
-                </div>
-                <div class="matieres-item">
+                    
+                    <span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
+                   </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
+                    
+                    <span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
+                    <span>Période:</span>
+                    <span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
+                    <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
+                    
+                    <span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span><span> </span> <span> </span> <span> </span><span> </span>
                     <span>Année Scolaire: {{ date('Y') . '/' . (date('Y') + 1) }}</span>
                 </div>
                 @if(!empty($matieres))
@@ -321,7 +328,7 @@
                     <!-- Cases à cocher VIDES -->
                     @foreach($libellesJours as $jour)
                         <td class="day-cell">
-                            <div ></div>
+                            <div></div>
                         </td>
                     @endforeach
                     @if($includeTotal)
@@ -335,27 +342,35 @@
             </tbody>
         </table>
 
-        <!-- Instructions et légende -->
-        <div class="instructions">
+        <!-- Section des signatures -->
+        @if($includeSignature)
+        <div class="signature-section">
+            <br>
+            <br>
+            <div class="signature-box signature-left">
+                <div class="signature-label">
+                    Le Responsable de la Classe
+                    <span> </span> <span> </span> <span> </span><span> </span>
+                    <span> </span> <span> </span> <span> </span><span> </span>
+                    <span> </span> <span> </span> <span> </span><span> </span>
+                    Le Chef d'Établissement
+                </div>
+            </div>
+            <br>
+            <br>
+            <br>
+            <div class="signature-line"></div>
+        </div>
+        @endif
+
+        <!-- Instructions dans le footer -->
+        <div class="footer-instructions">
             <div><strong>Instructions:</strong> Cochez (✓) les cases correspondantes aux jours de présence</div>
             <div><strong>Légende:</strong> □ = Absent | ✓ = Présent</div>
             @if($periode === 'mois')
             <div><em>Note: Les colonnes 01 à 31 représentent les jours du mois</em></div>
             @endif
         </div>
-
-        <!-- Section des signatures -->
-        @if($includeSignature)
-        <div class="signature-section">
-            <div class="signature-box signature-left">
-                <div class="signature-label">Le Responsable de la Classe</div>
-                <div class="signature-line"></div>
-          
-                <div class="signature-label">Le Chef d'Établissement</div>
-                <div class="signature-line"></div>
-            </div>
-        </div>
-        @endif
 
         <!-- Saut de page sauf pour la dernière classe -->
         @if(!$loop->last)

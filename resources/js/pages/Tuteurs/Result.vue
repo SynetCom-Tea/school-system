@@ -108,7 +108,7 @@ export default {
         }
   },
   mounted(){
-    this.filtrer = this.typeEvaluations.filter(el => el.libelle == "Composition" || el.libelle == "Contrôle")
+    this.filtrer = this.typeEvaluations.filter(el => el.libelle == "Composition" || el.libelle == "Contrôle" || el.libelle == "Devoir / Devoir Surveillé" || el.libelle == "Devoir" || el.libelle == "Interrogation" || el.libelle == "TP" || el.libelle == "Examen")
   }
 };
 </script>

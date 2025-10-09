@@ -24,6 +24,7 @@ class RoleSeeder extends Seeder
                         'nom' => 'Tondi',
                         'prenom' => 'Bouli',
                         'email' => 'super-admin@univers-school.com',
+                        'username'=>'super_administrateur',
                         'password' => Hash::make('password'),
                         'nom' => 'super',
                         'prenom' => 'Administrateur',

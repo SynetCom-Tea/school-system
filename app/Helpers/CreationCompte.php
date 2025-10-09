@@ -37,6 +37,7 @@ if (!function_exists('CreationCompte')) {
             $data[strtolower($request->type_user) . '_id'] = $request->{strtolower($request->type_user) . '_id'};
         }
         $userCreate = User::create($data);
+        // Gestion des rôles et permissions
         if ($role != null) {
             $permis = Role::find($role);
             $userCreate->syncRoles($role);
@@ -45,6 +46,7 @@ if (!function_exists('CreationCompte')) {
             $permission = Permission::where('name', 'espace_etudiant')->get()[0]->id;
             $userCreate->syncPermissions($permission);
         }
+        // Gestion des sections
         if ($request != null) {
             if ($request->checkbox != null) {
                 foreach ($request->section as $sec) {

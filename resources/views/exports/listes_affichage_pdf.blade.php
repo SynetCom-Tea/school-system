@@ -33,14 +33,14 @@
             max-height: 80px;
         }
         .school-name {
-            font-size: 60px;
+            font-size: 50px;
             font-weight: bold;
             color: #2C3E50;
             margin-bottom: 5px;
             text-transform: uppercase;
         }
         .school-details {
-            font-size: 35px;
+            font-size: 30px;
             color: #666;
             margin-bottom: 5px;
         }
@@ -77,6 +77,7 @@
             border-collapse: collapse;
             margin-bottom: 20px;
             page-break-inside: auto;
+            font-size: 30px; /* Taille réduite pour le tableau */
         }
         tr {
             page-break-inside: avoid;
@@ -91,14 +92,14 @@
             padding: 8px 5px;
             text-align: center;
             border: 1px solid #ddd;
-            font-size: 25px;
+            font-size: 30px; /* Taille réduite pour les en-têtes */
             font-weight: bold;
         }
         td {
             padding: 6px 5px;
             border: 1px solid #ddd;
             text-align: center;
-            font-size: 25px;
+            font-size: 25px; /* Taille réduite pour les cellules */
         }
         .student-number {
             width: 40px;
@@ -132,6 +133,7 @@
         }
         .striped tr:nth-child(even) {
             background-color: #f8f9fa;
+            font-family: 30px;
         }
         .signature-area {
             margin-top: 30px;
@@ -150,13 +152,13 @@
     <!-- En-tête avec logo et informations de l'école -->
     <div class="header">
         <!-- Logo à droite -->
-        <div class="logo-right">
+        <!-- <div class="logo-right">
             @if($includeLogo && isset($etablissement->logo) && !empty($etablissement->logo))
                 <img class="logo" src="{{ public_path('logos/' . $etablissement->logo) }}" alt="Logo établissement">
             @elseif($includeLogo)
                 <img class="logo" src="{{ public_path('logos/iat-logo.png') }}" alt="Logo par défaut">
             @endif
-        </div>
+        </div> -->
         
         <!-- Informations de l'école -->
         <div class="school-info">

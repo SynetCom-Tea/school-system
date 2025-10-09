@@ -206,7 +206,7 @@ export default {
     <Toolbar :icon="icon.mdiAccountPlusOutline" toolbarTitle="Gestion des notes"></Toolbar>
     <br>
     <div style="margin: 20px">
-        <Button variant="flat" style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button-style"  nameButton="Ajouter" title="Attribution des notes" small color="primary"  :prependIcon="icon.mdiPlus" @click="create">
+        <Button variant="flat" style="height: 30px; text-transform: none; box-shadow: 10px 5px 5px #7d002c" class="add-button-style"  nameButton="Ajouter" title="Attribution des notes" small color="primary"  :prependIcon="icon.mdiPlus" @click="create"  v-permission:any="'note.create'">
         </Button>
     </div>
     <v-card variant="outlined" style="border: 2px solid rgb(0, 73, 128);margin: 20px">

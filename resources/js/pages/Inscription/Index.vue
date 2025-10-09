@@ -220,85 +220,74 @@
         </template>
 
         <template v-slot:default="props">
-          <v-row>
-            <v-col
-              v-for="item in props.items"
-              :key="item?.matricule"
-              cols="12"
-              sm="6"
-              md="4"
-              lg="3"
-            >
-              <v-card>
-                <v-card-title class="subheading font-weight-bold">
-                  Matricule : {{ item.raw?.matricule }}
-                </v-card-title>
+  <v-row>
+    <v-col
+      v-for="item in props.items"
+      :key="item?.matricule"
+      cols="12"
+      sm="6"
+      md="4"
+      lg="3"
+    >
+      <v-card>
+        <v-card-title class="subheading font-weight-bold">
+          Matricule : {{ item.raw?.matricule }}
+        </v-card-title>
 
-                <v-divider></v-divider>
+        <v-divider></v-divider>
 
-                <v-list density="compact">
-                  <v-list-item 
-                    v-for="(key, index) in filteredKeys"
-                    :key="index"
-                    :title="key.title"
-                    :class="{ 'text-blue': sortKey === key.title.toLowerCase() }"
-                  >
-                    <v-list-item-subtitle
-                      ><span v-if="key.title != 'Détails'">{{
-                        String(item.raw[key.key]) ?? "Non renseigné"
-                      }}</span>
+        <v-list density="compact">
+          <v-list-item 
+            v-for="(key, index) in filteredKeys"
+            :key="index"
+            :title="key.title"
+            :class="{ 'text-blue': sortKey === key.title.toLowerCase() }"
+          >
+            <v-list-item-subtitle>
+              <span v-if="key.title != 'Détails'">
+                {{ String(item.raw[key.key]) ?? "Non renseigné" }}
+              </span>
 
-                      <div class="text-center" :key="index" v-else>
-                        <v-row>
-                          <v-col cols="20">
-                            <a
-                              style="cursor: pointer"
-                              class="text-caption text-decoration-none text-primary"
-                              :href="route('generateRecuInscription', { id: item.raw.id, section: vSectionID })"
-                              target="_blank"
-                            >
-                              Réçu</a
-                            ></v-col
-                          >
-                          <!-- <v-col cols="3" @click="onclickFrais(item.raw)">
-                            <a
-                              style="cursor: pointer"
-                              class="text-caption text-decoration-none text-secondary"
-                              target="_blank"
-                            >
-                              Frais</a
-                            ></v-col
-                          >
-                          <v-col cols="3" @click="onclickTuteurs(item.raw)">
-                            <a
-                              style="cursor: pointer"
-                              class="text-caption text-decoration-none text-primary"
-                              target="_blank"
-                            >
-                              Tuteurs</a
-                            ></v-col
-                          > -->
-                        </v-row>
-                        <v-row>
-                          <v-col cols="4"></v-col>
-                          <v-col cols="4" @click="addNewInscription(item.raw)">
-                            <a
-                              style="cursor: pointer"
-                              class="text-caption text-decoration-none text-warning"
-                              target="_blank"
-                            >
-                              Réinscription</a
-                            ></v-col
-                          >
-                        </v-row>
-                      </div>
-                    </v-list-item-subtitle>
-                  </v-list-item>
-                </v-list>
-              </v-card>
-            </v-col>
-          </v-row>
-        </template>
+              <div class="text-center" :key="index" v-else>
+                <v-row>
+                  <v-col cols="6">
+                    <a
+                      style="cursor: pointer"
+                      class="text-caption text-decoration-none text-primary"
+                      :href="route('generateRecuInscription', { id: item.raw.id, section: vSectionID })"
+                      target="_blank"
+                    >
+                      Réçu
+                    </a>
+                  </v-col>
+                  <v-col cols="6" @click="editInscription(item.raw)">
+                    <a
+                      style="cursor: pointer"
+                      class="text-caption text-decoration-none text-success"
+                    >
+                      Modifier
+                    </a>
+                  </v-col>
+                </v-row>
+                <v-row>
+                  <v-col cols="6" @click="addNewInscription(item.raw)">
+                    <a
+                      style="cursor: pointer"
+                      class="text-caption text-decoration-none text-warning"
+                    >
+                      Réinscription
+                    </a>
+                  </v-col>
+                  
+                </v-row>
+              </div>
+            </v-list-item-subtitle>
+          </v-list-item>
+        </v-list>
+      </v-card>
+    </v-col>
+  </v-row>
+</template>
 
         <template v-slot:footer>
           <div class="d-flex align-center justify-space-around pa-4">
@@ -582,6 +571,12 @@ export default {
     getNiveauxSuperieur,
     getAcademicYears,
     generateColorsForGraph,
+   editInscription(item) {
+    console.log('🎯 Modification ID:', item.id);
+    
+    // Utilisez la route EXISTANTE
+    window.location.href = `/scolarite/inscriptions/${item.id}/edit`;
+  },
 
     startRechercheInscription(){
         axios

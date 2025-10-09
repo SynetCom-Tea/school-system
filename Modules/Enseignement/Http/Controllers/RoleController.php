@@ -63,7 +63,7 @@ class RoleController extends Controller
         ]);
         $role_id = Role::all()->last();
         $data['etablissement_section_id'] = $etablissement_section[0];
-        $data['guard_name'] = 'web' . $role_id->id;
+        $data['guard_name'] = 'web';
         $permissions = $this->validate($request, [
             'permissions' => 'required'
         ]);
@@ -117,11 +117,11 @@ class RoleController extends Controller
         $role->syncPermissions($request->permissions);
         $roles = Role::with('users')->where('id',$request->id)->get()[0];
         // dd($roles->users);
-        if ($roles->users != []){
-            foreach ($roles->users as $key => $user) {
-                $user->syncPermissions($request->permissions);
-            }
+        
+        foreach ($roles->users as $key => $user) {
+            $user->syncPermissions($request->permissions);
         }
+        
         return redirect()->back()->with('message', [
             'type' => 'success',
             'text' => 'Rôle modifié avec succès!',
