@@ -764,7 +764,8 @@ public function edit($id)
             'apprenant.apprenantTuteurs.tuteur',
             'apprenant.apprenant_classe_annees.classe_annee.classe', // Classe de l'apprenant
             'apprenant.apprenant_classe_annees.classe_annee.annee',  // Année de la classe
-            'niveau'
+            'niveau',
+            'apprenant.documents.type_document',
         ])->find($id);
 
         if (!$inscription) {
@@ -776,6 +777,37 @@ public function edit($id)
 
         $section = $inscription->niveau->section_id ?? null;
         \Log::info('📋 Section: ' . $section);
+
+        // Récupérer l'établissement section ID pour les typeDocuments
+        $etablissement_id = Auth::user()->etablissement_id;
+        $etablissement_section = DB::table('etablissement_section')
+            ->where('etablissement_id', $etablissement_id)
+            ->where('section_id', $section)
+            ->first();
+
+            // Récupérer les documents existants de l'apprenant
+        $documentsExistants = [];
+        if ($inscription->apprenant && $inscription->apprenant->documents) {
+            $documentsExistants = $inscription->apprenant->documents->map(function ($document) {
+                 // Les fichiers sont dans public/test/ donc on utilise asset()
+            $filePath = 'test/' . $document->file;
+            $fileExists = file_exists(public_path($filePath));
+                return [
+                    'id' => $document->id,
+                    'type_document_id' => $document->type_document_id,
+                    'type' => $document->type_document_id, // Pour compatibilité avec votre code
+                    'file' => $document->file,
+                    'file_name' => $document->file,
+                    // 'file_url' => $document->file ? asset('storage/documents/' . $document->file) : null,
+                    'file_url' => $fileExists ? asset($filePath) : null,
+                    'file_exists' => $fileExists,
+                    'created_at' => $document->created_at,
+                    'type_document' => $document->type_document // Relation chargée
+                ];
+            })->toArray();
+        }
+
+        \Log::info('📄 Documents existants: ' . count($documentsExistants));
 
         // Récupérez les tuteurs
         $tuteurs = [];
@@ -806,7 +838,13 @@ public function edit($id)
             'annees' => \App\Models\Annee::all(),
             'tuteurs' => $tuteurs,
             'classe_actuelle' => $classeActuelle, // Classe actuelle
-            'annee_classe_actuelle' => $anneeClasseActuelle // Année de la classe
+            'annee_classe_actuelle' => $anneeClasseActuelle, // Année de la classe 'typeDocuments' => $etablissement_section ?
+            'typeDocuments' => $etablissement_section ? 
+                EtablissementTypeDocument::where('etablissement_section_id', $etablissement_section->id)
+                    ->where('statut', '1')
+                    ->with('type_document')
+                    ->get() : [],
+            'documentsExistants' => $documentsExistants // AJOUT CRITIQUE
         ];
 
         \Log::info('🚀 Rendu de la vue avec ' . $tuteurs->count() . ' tuteurs');
@@ -829,63 +867,162 @@ public function edit($id)
      * @param int $id
      * @return Renderable
      */
-    public function update(Request $request, $id)
-    {
-        try {
-            DB::beginTransaction();
+   public function update(Request $request, $id)
+{
+    try {
+        \Log::info('🔄 DEBUT méthode update - ID: ' . $id);
+        \Log::info('📦 Données reçues:', $request->all());
 
-            $inscription = Inscription::findOrFail($id);
-            $apprenant = $inscription->apprenant;
+        DB::beginTransaction();
 
-            // Mettre à jour l'apprenant
-            if ($request->apprenants) {
-                $apprenant->update([
-                    'nom' => $request->apprenants['nom'] ?? $apprenant->nom,
-                    'prenom' => $request->apprenants['prenom'] ?? $apprenant->prenom,
-                    'sexe' => $request->apprenants['sexe'] ?? $apprenant->sexe,
-                    'date_naissance' => $request->apprenants['date_naissance'] ?? $apprenant->date_naissance,
-                    'lieu_naissance' => $request->apprenants['lieu_naissance'] ?? $apprenant->lieu_naissance,
-                    'telephone' => $request->apprenants['telephone'] ?? $apprenant->telephone,
-                ]);
+        $inscription = Inscription::findOrFail($id);
+        $apprenant = $inscription->apprenant;
+
+        // DEBUG: Vérifier ce qui est reçu
+        \Log::info('📝 Données apprenant reçues:', $request->apprenants ?? []);
+        \Log::info('📝 Données année reçues:', $request->annees ?? []);
+        \Log::info('📝 Données tuteurs reçues:', $request->tuteurs ?? []);
+        \Log::info('📝 Données documents reçues:', $request->documents ?? []);
+
+        // 1. Mettre à jour l'apprenant - CORRECTION
+        if ($request->has('apprenants')) {
+            $apprenantData = [
+                'nom' => $request->input('apprenants.nom', $apprenant->nom),
+                'prenom' => $request->input('apprenants.prenom', $apprenant->prenom),
+                'sexe' => $request->input('apprenants.sexe', $apprenant->sexe),
+                'date_naissance' => $request->input('apprenants.date_naissance', $apprenant->date_naissance),
+                'lieu_naissance' => $request->input('apprenants.lieu_naissance', $apprenant->lieu_naissance),
+                'telephone' => $request->input('apprenants.telephone', $apprenant->telephone),
+            ];
+            
+            \Log::info('💾 Mise à jour apprenant:', $apprenantData);
+            $apprenant->update($apprenantData);
+        }
+
+        // 2. Mettre à jour l'inscription - CORRECTION
+        if ($request->has('annees')) {
+            $inscriptionData = [
+                'annee_id' => $request->input('annees.annee', $inscription->annee_id),
+                'niveau_id' => $request->input('annees.niveau', $inscription->niveau_id),
+            ];
+            
+            \Log::info('💾 Mise à jour inscription:', $inscriptionData);
+            $inscription->update($inscriptionData);
+
+            // Gérer le changement de classe
+            if ($request->has('annees.classe') && $request->input('annees.classe')) {
+                $this->changerClasseApprenant($apprenant->id, $request->input('annees.classe'), $request->input('annees.annee'));
             }
+        }
 
-            // Mettre à jour l'inscription
-            if ($request->annees) {
-                $inscription->update([
-                    'annee_id' => $request->annees['annee'] ?? $inscription->annee_id,
-                    'niveau_id' => $request->annees['niveau'] ?? $inscription->niveau_id,
-                ]);
+        // 3. Gérer les tuteurs - CORRECTION
+        if ($request->has('tuteurs')) {
+            // Supprimer les anciennes relations
+            ApprenantTuteur::where('apprenant_id', $apprenant->id)->delete();
 
-                // Gérer le changement de classe - AVEC LA MÊME LOGIQUE QUE STORE
-                if ($request->annees['classe']) {
-                    $this->changerClasseApprenant($apprenant->id, $request->annees['classe'], $request->annees['annee']);
-                } else {
-                    // Si aucune classe n'est sélectionnée, créer une classe automatiquement comme dans store()
-                    $classeId = $this->creerClasseAutomatique($request->annees['niveau'], $request->section);
-                    if ($classeId) {
-                        $this->changerClasseApprenant($apprenant->id, $classeId, $request->annees['annee']);
+            if (isset($request->tuteurs['tuteurs'])) {
+                foreach ($request->tuteurs['tuteurs'] as $tuteur) {
+                    // Vérifier que le tuteur a au moins un champ rempli
+                    if (!empty($tuteur['nom']) || !empty($tuteur['prenom']) || !empty($tuteur['tel'])) {
+                        $tuteurModel = Tuteur::create([
+                            'nom' => $tuteur['nom'] ?? '',
+                            'prenom' => $tuteur['prenom'] ?? '',
+                            'telephone' => $tuteur['tel'] ?? '',
+                            'email' => $tuteur['email'] ?? '',
+                            'sexe' => $tuteur['sexe'] ?? '',
+                        ]);
+                        
+                        ApprenantTuteur::create([
+                            'apprenant_id' => $apprenant->id,
+                            'tuteur_id' => $tuteurModel->id,
+                        ]);
+                        
+                        \Log::info('👨‍👩‍👧‍👦 Tuteur créé:', $tuteurModel->toArray());
+                    }
+                }
+            }
+        }
+
+        // 4. GÉRER LES DOCUMENTS - CORRECTION COMPLÈTE
+        if ($request->has('documents')) {
+            \Log::info('📁 Traitement des documents...');
+            
+            // Documents à supprimer
+            if (isset($request->documents['documents_supprimes']) && is_array($request->documents['documents_supprimes'])) {
+                foreach ($request->documents['documents_supprimes'] as $docId) {
+                    $document = Document::find($docId);
+                    if ($document && $document->apprenant_id == $apprenant->id) {
+                        // Supprimer le fichier physique
+                        $filePath = public_path('test/' . $document->file);
+                        if (file_exists($filePath)) {
+                            unlink($filePath);
+                        }
+                        $document->delete();
+                        \Log::info('🗑️ Document supprimé:', ['id' => $docId]);
                     }
                 }
             }
 
-            // ... le reste de la méthode update (tuteurs, documents) ...
-
-            DB::commit();
-
-            return redirect()->route('inscriptions.index', ['section_id' => $request->section])
-                ->with('message', [
-                    'type' => 'success',
-                    'text' => 'Inscription modifiée avec succès',
-                ]);
-
-        } catch (\Exception $e) {
-            DB::rollback();
-            return redirect()->back()->with('message', [
-                'type' => 'error',
-                'text' => 'Erreur lors de la modification: ' . $e->getMessage(),
-            ]);
+            // Nouveaux documents
+            if (isset($request->documents['documents']) && is_array($request->documents['documents'])) {
+                foreach ($request->documents['documents'] as $documentData) {
+                    if (isset($documentData['type']) && !empty($documentData['type'])) {
+                        // Vérifier si un fichier est uploadé
+                        if (isset($documentData['file']) && $documentData['file'] instanceof \Illuminate\Http\UploadedFile) {
+                            $file = $documentData['file'];
+                            $fileName = time() . '_' . $file->getClientOriginalName();
+                            
+                            // Déplacer le fichier
+                            $file->move('test/', $fileName);
+                            
+                            // Vérifier si un document de ce type existe déjà
+                            $existingDocument = Document::where('apprenant_id', $apprenant->id)
+                                ->where('type_document_id', $documentData['type'])
+                                ->first();
+                            
+                            if ($existingDocument) {
+                                // Supprimer l'ancien fichier
+                                $oldFilePath = public_path('test/' . $existingDocument->file);
+                                if (file_exists($oldFilePath)) {
+                                    unlink($oldFilePath);
+                                }
+                                // Mettre à jour le document
+                                $existingDocument->update(['file' => $fileName]);
+                                \Log::info('📄 Document mis à jour:', ['type' => $documentData['type'], 'file' => $fileName]);
+                            } else {
+                                // Créer un nouveau document
+                                Document::create([
+                                    'type_document_id' => $documentData['type'],
+                                    'apprenant_id' => $apprenant->id,
+                                    'file' => $fileName,
+                                ]);
+                                \Log::info('📄 Nouveau document créé:', ['type' => $documentData['type'], 'file' => $fileName]);
+                            }
+                        } else {
+                            \Log::info('⚠️ Type document sans fichier:', ['type' => $documentData['type']]);
+                        }
+                    }
+                }
+            }
         }
+
+        DB::commit();
+        
+        \Log::info('✅ MODIFICATION RÉUSSIE - Inscription ID: ' . $inscription->id);
+        \Log::info('🔍 Données finales apprenant:', $apprenant->fresh()->toArray());
+        \Log::info('🔍 Données finales inscription:', $inscription->fresh()->toArray());
+
+        return redirect()->route('inscriptions.index', ['section_id' => $request->section])
+            ->with('success', 'Inscription modifiée avec succès');
+
+    } catch (\Exception $e) {
+        DB::rollback();
+        \Log::error('❌ ERREUR CRITIQUE dans update: ' . $e->getMessage());
+        \Log::error('📋 Stack trace: ' . $e->getTraceAsString());
+        
+        return redirect()->back()->with('error', 'Erreur lors de la modification: ' . $e->getMessage());
     }
+}
 
 /**
  * Créer une classe automatiquement (même logique que dans store)

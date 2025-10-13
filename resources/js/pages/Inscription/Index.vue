@@ -278,7 +278,14 @@
                       Réinscription
                     </a>
                   </v-col>
-                  
+                  <v-col cols="6" @click="deleteInscription(item.raw)">
+                    <a
+                      style="cursor: pointer"
+                      class="text-caption text-decoration-none text-error"
+                    >
+                      Supprimer
+                    </a>
+                  </v-col>
                 </v-row>
               </div>
             </v-list-item-subtitle>
