@@ -9,437 +9,7 @@
 
     <!-- Conteneur principal -->
     <div class="main-container">
-      <!-- Section Exportation - Design moderne -->
-      <div class="export-section-modern">
-        <div class="section-header">
-          <div class="header-content">
-            <v-icon color="#2196F3" size="28" class="me-3">mdi-database-export</v-icon>
-            <div>
-              <h2 class="section-title">Exportation des Données</h2>
-              <p class="section-subtitle">Exportez les inscriptions dans différents formats</p>
-            </div>
-          </div>
-          <v-chip color="primary" variant="flat" prepend-icon="mdi-shield-check">
-            Sécurisé
-          </v-chip>
-        </div>
-
-        <!-- Cartes d'exportation -->
-        <div class="export-cards">
-          <!-- Carte PDF -->
-          <div class="export-card pdf-card">
-            <div class="card-header">
-              <div class="card-icon pdf">
-                <v-icon color="#F44336" size="32">mdi-file-pdf-box</v-icon>
-              </div>
-              <div class="card-title">
-                <h3>Format PDF</h3>
-                <span class="file-format">.pdf</span>
-              </div>
-            </div>
-            
-            <p class="card-description">
-              Export haute qualité pour impression et archivage
-            </p>
-
-            <v-menu location="bottom" offset="10">
-              <template v-slot:activator="{ props }">
-                <v-btn 
-                  v-bind="props"
-                  color="#F44336"
-                  variant="flat"
-                  size="large"
-                  class="export-btn"
-                  prepend-icon="mdi-download"
-                >
-                  Exporter en PDF
-                </v-btn>
-              </template>
-              <v-list class="export-menu-modern">
-                <v-list-subheader class="menu-header">
-                  <v-icon color="#F44336">mdi-file-pdf-box</v-icon>
-                  Options PDF
-                </v-list-subheader>
-                <v-list-item 
-                  v-for="item in pdfOptions"
-                  :key="item.value"
-                  @click="exportData(item.value, 'pdf')"
-                  class="menu-item"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :color="item.color">{{ item.icon }}</v-icon>
-                  </template>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-
-          <!-- Carte Excel -->
-          <div class="export-card excel-card">
-            <div class="card-header">
-              <div class="card-icon excel">
-                <v-icon color="#4CAF50" size="32">mdi-file-excel-box</v-icon>
-              </div>
-              <div class="card-title">
-                <h3>Format Excel</h3>
-                <span class="file-format">.xlsx</span>
-              </div>
-            </div>
-            
-            <p class="card-description">
-              Données structurées pour analyse et traitement
-            </p>
-
-            <v-menu location="bottom" offset="10">
-              <template v-slot:activator="{ props }">
-                <v-btn 
-                  v-bind="props"
-                  color="#4CAF50"
-                  variant="flat"
-                  size="large"
-                  class="export-btn"
-                  prepend-icon="mdi-download"
-                >
-                  Exporter en Excel
-                </v-btn>
-              </template>
-              <v-list class="export-menu-modern">
-                <v-list-subheader class="menu-header">
-                  <v-icon color="#4CAF50">mdi-file-excel-box</v-icon>
-                  Options Excel
-                </v-list-subheader>
-                <v-list-item 
-                  v-for="item in excelOptions"
-                  :key="item.value"
-                  @click="exportData(item.value, 'excel')"
-                  class="menu-item"
-                >
-                  <template v-slot:prepend>
-                    <v-icon :color="item.color">{{ item.icon }}</v-icon>
-                  </template>
-                  <v-list-item-title>{{ item.title }}</v-list-item-title>
-                  <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
-                </v-list-item>
-              </v-list>
-            </v-menu>
-          </div>
-        </div>
-
-        <!-- Indicateur amélioré -->
-        <div class="export-hint-modern">
-          <div class="hint-content">
-            <v-icon color="#FFD600" class="hint-icon">mdi-lightbulb-on-outline</v-icon>
-            <div>
-              <strong>Conseil :</strong> Choisissez le format adapté à vos besoins
-            </div>
-          </div>
-          <div class="hint-tips">
-            <v-chip size="small" variant="outlined" color="primary">PDF pour impression</v-chip>
-            <v-chip size="small" variant="outlined" color="success">Excel pour analyse</v-chip>
-          </div>
-        </div>
-      </div>
-
-      <!-- Section Génération de Documents - Design moderne amélioré -->
-      <div class="generation-section-modern">
-        <div class="section-header">
-          <div class="header-content">
-            <v-icon color="#9C27B0" size="28" class="me-3">mdi-file-cog</v-icon>
-            <div>
-              <h2 class="section-title">Génération de Documents</h2>
-              <p class="section-subtitle">Créez des listes et fiches personnalisées pour votre établissement</p>
-            </div>
-          </div>
-        </div>
-
-        <div class="generation-cards">
-          <!-- Fiche de Présence Améliorée -->
-          <div class="generation-card featured">
-            <div class="card-badge">Recommandé</div>
-            <div class="card-icon-wrapper presence">
-              <v-icon color="#4CAF50" size="28">mdi-clipboard-check-multiple</v-icon>
-            </div>
-            <div class="card-content">
-              <h3>Fiche de Présence Intelligente</h3>
-              <p class="text-muted">Fiche avancée avec périodes personnalisables et cases à cocher</p>
-              <div class="card-features">
-                <v-chip size="small" color="green-lighten-5" text-color="green">
-                  <v-icon size="small" class="me-1">mdi-calendar-range</v-icon>
-                  Périodes flexibles
-                </v-chip>
-                <v-chip size="small" color="blue-lighten-5" text-color="blue">
-                  <v-icon size="small" class="me-1">mdi-checkbox-multiple-marked</v-icon>
-                  Cases à cocher
-                </v-chip>
-                <v-chip size="small" color="orange-lighten-5" text-color="orange">
-                  <v-icon size="small" class="me-1">mdi-file-pdf-box</v-icon>
-                  Export PDF
-                </v-chip>
-              </div>
-            </div>
-            <div class="card-actions">
-              <v-btn 
-                color="success" 
-                @click="openPresenceDialog"
-                prepend-icon="mdi-cog-outline"
-                class="me-2"
-              >
-                Configurer
-              </v-btn>
-            </div>
-          </div>
-
-          <!-- Liste d'Affichage -->
-          <div class="generation-card">
-            <div class="card-icon-wrapper display">
-              <v-icon color="#2196F3" size="28">mdi-view-list</v-icon>
-            </div>
-            <div class="card-content">
-              <h3>Liste d'Affichage</h3>
-              <p class="text-muted">Liste simplifiée pour affichage en classe</p>
-              <div class="card-features">
-                <v-chip size="small" color="blue-lighten-5" text-color="blue">
-                  <v-icon size="small" class="me-1">mdi-format-list-bulleted</v-icon>
-                  Format simplifié
-                </v-chip>
-                <v-chip size="small" color="purple-lighten-5" text-color="purple">
-                  <v-icon size="small" class="me-1">mdi-wall</v-icon>
-                  Affichage
-                </v-chip>
-              </div>
-            </div>
-            <v-btn 
-              color="primary" 
-              :href="route('scolarite.liste.affichage', { section: vSectionID })"
-              target="_blank"
-              prepend-icon="mdi-view-list"
-            >
-              Générer
-            </v-btn>
-          </div>
-          
-    <!-- Fiche PDF par Classe -->
-    <div class="generation-card">
-      <div class="card-icon-wrapper pdf">
-          <v-icon color="#F44336" size="28">mdi-file-pdf-box</v-icon>
-        </div>
-            <div class="card-content">
-              <h3>Fiches PDF par Classe</h3>
-              <p class="text-muted">Fiches format PDF avec logo et en-tête de l'école</p>
-              <div class="card-features">
-                <v-chip size="small" color="red-lighten-5" text-color="red">
-                  <v-icon size="small" class="me-1">mdi-school</v-icon>
-                  Logo École
-                </v-chip>
-                <v-chip size="small" color="deep-purple-lighten-5" text-color="deep-purple">
-                  <v-icon size="small" class="me-1">mdi-printer</v-icon>
-                  Impression
-                </v-chip>
-              </div>
-            </div>
-            <v-btn 
-              color="error" 
-              :href="route('scolarite.fiches.pdf.classe', { section: vSectionID })"
-              prepend-icon="mdi-file-pdf"
-            >
-              Générer PDF
-            </v-btn>
-          </div>
-        </div>
-      </div>
-
-      <!-- Dialog Configuration Fiche de Présence -->
-      <v-dialog v-model="presenceDialog" max-width="800px">
-        <v-card class="configuration-dialog">
-          <v-card-title class="dialog-header">
-            <v-icon color="success" class="me-2">mdi-clipboard-check-multiple</v-icon>
-            Configuration Fiche de Présence
-          </v-card-title>
-          
-          <v-card-text>
-            <v-form ref="presenceForm" @submit.prevent="generatePresenceSheet">
-              <div class="form-sections">
-                <!-- Section Période -->
-                <div class="form-section">
-                  <h4 class="section-title">
-                    <v-icon color="primary" size="20" class="me-2">mdi-calendar</v-icon>
-                    Période de Présence
-                  </h4>
-                  <v-row>
-                    <v-col cols="12" md="6">
-                      <v-select
-                        v-model="presenceConfig.periodeType"
-                        label="Type de période"
-                        :items="periodTypes"
-                        variant="outlined"
-                        prepend-icon="mdi-calendar-range"
-                        required
-                      ></v-select>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-text-field
-                        v-model="presenceConfig.periodeLabel"
-                        label="Libellé de la période"
-                        variant="outlined"
-                        prepend-icon="mdi-text-box"
-                        placeholder="Ex: Septembre 2024, Trimestre 1..."
-                      ></v-text-field>
-                    </v-col>
-                  </v-row>
-                </div>
-
-                <!-- Section Matières -->
-                <div class="form-section">
-                  <h4 class="section-title">
-                    <v-icon color="orange" size="20" class="me-2">mdi-book-education</v-icon>
-                    Matières à inclure
-                  </h4>
-                  <v-combobox
-                    v-model="presenceConfig.matieres"
-                    label="Matières"
-                    multiple
-                    chips
-                    variant="outlined"
-                    :items="defaultMatieres"
-                    prepend-icon="mdi-book-multiple"
-                  ></v-combobox>
-                </div>
-
-                <!-- Section Options -->
-                <div class="form-section">
-                  <h4 class="section-title">
-                    <v-icon color="green" size="20" class="me-2">mdi-cog</v-icon>
-                    Options d'affichage
-                  </h4>
-                  <v-row>
-                    <v-col cols="12" md="6">
-                      <v-checkbox
-                        v-model="presenceConfig.includeSignature"
-                        label="Colonne signature"
-                        color="primary"
-                      ></v-checkbox>
-                      <v-checkbox
-                        v-model="presenceConfig.includeTotal"
-                        label="Calcul automatique des totaux"
-                        color="primary"
-                      ></v-checkbox>
-                    </v-col>
-                    <v-col cols="12" md="6">
-                      <v-checkbox
-                        v-model="presenceConfig.includeLogo"
-                        label="Inclure le logo de l'école"
-                        color="primary"
-                      ></v-checkbox>
-                      <v-checkbox
-                        v-model="presenceConfig.alternateRows"
-                        label="Lignes alternées (zebrage)"
-                        color="primary"
-                      ></v-checkbox>
-                    </v-col>
-                  </v-row>
-                </div>
-
-                <!-- Section Format de sortie -->
-                <div class="form-section">
-                  <h4 class="section-title">
-                    <v-icon color="red" size="20" class="me-2">mdi-download</v-icon>
-                    Format de sortie
-                  </h4>
-                  <v-radio-group v-model="presenceConfig.outputFormat" inline>
-                    <v-radio value="excel" color="success">
-                      <template v-slot:label>
-                        <div class="format-option">
-                          <v-icon color="success" class="me-2">mdi-microsoft-excel</v-icon>
-                          Excel (Modifiable)
-                        </div>
-                      </template>
-                    </v-radio>
-                    <v-radio value="pdf" color="red">
-                      <template v-slot:label>
-                        <div class="format-option">
-                          <v-icon color="red" class="me-2">mdi-file-pdf-box</v-icon>
-                          PDF (Impression)
-                        </div>
-                      </template>
-                    </v-radio>
-                  </v-radio-group>
-                </div>
-              </div>
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions class="dialog-actions">
-            <v-spacer></v-spacer>
-            <v-btn @click="presenceDialog = false" variant="text">
-              Annuler
-            </v-btn>
-            <v-btn 
-              color="success" 
-              @click="generatePresenceSheet"
-              :loading="generating"
-              prepend-icon="mdi-file-document-outline"
-            >
-              Générer la fiche
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
-      <!-- Dialog Génération PDF -->
-      <v-dialog v-model="pdfDialog" max-width="600px">
-        <v-card class="configuration-dialog">
-          <v-card-title class="dialog-header">
-            <v-icon color="error" class="me-2">mdi-file-pdf-box</v-icon>
-            Génération Fiches PDF par Classe
-          </v-card-title>
-          
-          <v-card-text>
-            <v-form ref="pdfForm">
-              <div class="form-sections">
-                <div class="form-section">
-                  <v-select
-                    v-model="pdfConfig.typeFiche"
-                    label="Type de fiche"
-                    :items="pdfTypes"
-                    variant="outlined"
-                    prepend-icon="mdi-format-list-bulleted-type"
-                  ></v-select>
-                  
-                  <v-checkbox
-                    v-model="pdfConfig.includeLogo"
-                    label="Inclure le logo de l'établissement"
-                    color="primary"
-                  ></v-checkbox>
-                  
-                  <v-checkbox
-                    v-model="pdfConfig.includeHeader"
-                    label="En-tête avec informations de l'école"
-                    color="primary"
-                  ></v-checkbox>
-                </div>
-              </div>
-            </v-form>
-          </v-card-text>
-
-          <v-card-actions class="dialog-actions">
-            <v-spacer></v-spacer>
-            <v-btn @click="pdfDialog = false" variant="text">
-              Annuler
-            </v-btn>
-            <v-btn 
-              color="error" 
-              @click="generatePdfSheets"
-              :loading="generatingPdf"
-              prepend-icon="mdi-file-pdf-box"
-            >
-              Générer PDF
-            </v-btn>
-          </v-card-actions>
-        </v-card>
-      </v-dialog>
-
+      
       <!-- Section Recherche - Design moderne -->
       <div class="search-section-modern">
         <div class="search-card">
@@ -725,6 +295,462 @@
 
       <!-- Loader -->
       <div class="loader" v-if="loading"></div>
+      <!-- Section Exportation - Design moderne -->
+      <div class="export-section-modern">
+        <div class="section-header">
+          <div class="header-content">
+            <v-icon color="#2196F3" size="28" class="me-3">mdi-database-export</v-icon>
+            <div>
+              <h2 class="section-title">Exportation des Données</h2>
+              <p class="section-subtitle">Exportez les inscriptions dans différents formats</p>
+            </div>
+          </div>
+          <v-chip color="primary" variant="flat" prepend-icon="mdi-shield-check">
+           
+          </v-chip>
+        </div>
+
+        <!-- Cartes d'exportation -->
+        <div class="export-cards">
+          <!-- Carte PDF -->
+          <div class="export-card pdf-card">
+            <div class="card-header">
+              <div class="card-icon pdf">
+                <v-icon color="#F44336" size="32">mdi-file-pdf-box</v-icon>
+              </div>
+              <div class="card-title">
+                <h3>Format PDF</h3>
+                <span class="file-format">.pdf</span>
+              </div>
+            </div>
+            
+            <p class="card-description">
+              Export haute qualité pour impression et archivage
+            </p>
+
+            <v-menu location="bottom" offset="10">
+              <template v-slot:activator="{ props }">
+                <v-btn 
+                  v-bind="props"
+                  color="#F44336"
+                  variant="flat"
+                  size="large"
+                  class="export-btn"
+                  prepend-icon="mdi-download"
+                >
+                  Exporter en PDF
+                </v-btn>
+              </template>
+              <v-list class="export-menu-modern">
+                <v-list-subheader class="menu-header">
+                  <v-icon color="#F44336">mdi-file-pdf-box</v-icon>
+                  Options PDF
+                </v-list-subheader>
+                <v-list-item 
+                  v-for="item in pdfOptions"
+                  :key="item.value"
+                  @click="exportData(item.value, 'pdf')"
+                  class="menu-item"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                  </template>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
+
+          <!-- Carte Excel -->
+          <div class="export-card excel-card">
+            <div class="card-header">
+              <div class="card-icon excel">
+                <v-icon color="#4CAF50" size="32">mdi-file-excel-box</v-icon>
+              </div>
+              <div class="card-title">
+                <h3>Format Excel</h3>
+                <span class="file-format">.xlsx</span>
+              </div>
+            </div>
+            
+            <p class="card-description">
+              Données structurées pour analyse et traitement
+            </p>
+
+            <v-menu location="bottom" offset="10">
+              <template v-slot:activator="{ props }">
+                <v-btn 
+                  v-bind="props"
+                  color="#4CAF50"
+                  variant="flat"
+                  size="large"
+                  class="export-btn"
+                  prepend-icon="mdi-download"
+                >
+                  Exporter en Excel
+                </v-btn>
+              </template>
+              <v-list class="export-menu-modern">
+                <v-list-subheader class="menu-header">
+                  <v-icon color="#4CAF50">mdi-file-excel-box</v-icon>
+                  Options Excel
+                </v-list-subheader>
+                <v-list-item 
+                  v-for="item in excelOptions"
+                  :key="item.value"
+                  @click="exportData(item.value, 'excel')"
+                  class="menu-item"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :color="item.color">{{ item.icon }}</v-icon>
+                  </template>
+                  <v-list-item-title>{{ item.title }}</v-list-item-title>
+                  <v-list-item-subtitle>{{ item.subtitle }}</v-list-item-subtitle>
+                </v-list-item>
+              </v-list>
+            </v-menu>
+          </div>
+        </div>
+
+        <!-- Indicateur amélioré -->
+        <div class="export-hint-modern">
+          <div class="hint-content">
+            <v-icon color="#FFD600" class="hint-icon">mdi-lightbulb-on-outline</v-icon>
+            <div>
+              <strong>Conseil :</strong> Choisissez le format adapté à vos besoins
+            </div>
+          </div>
+          <div class="hint-tips">
+            <v-chip size="small" variant="outlined" color="primary">PDF pour impression</v-chip>
+            <v-chip size="small" variant="outlined" color="success">Excel pour analyse</v-chip>
+          </div>
+        </div>
+      </div>
+
+      <!-- Section Génération de Documents - Design moderne amélioré -->
+      <div class="generation-section-modern">
+        <div class="section-header">
+          <div class="header-content">
+            <v-icon color="#9C27B0" size="28" class="me-3">mdi-file-cog</v-icon>
+            <div>
+              <h2 class="section-title">Génération de Documents</h2>
+              <p class="section-subtitle">Créez des listes et fiches personnalisées pour votre établissement</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="generation-cards">
+          <!-- Fiche de Présence Améliorée -->
+          <div class="generation-card featured">
+            <div class="card-badge">Recommandé</div>
+            <div class="card-icon-wrapper presence">
+              <v-icon color="#4CAF50" size="28">mdi-clipboard-check-multiple</v-icon>
+            </div>
+            <div class="card-content">
+              <h3>Fiche de Présence Intelligente</h3>
+              <p class="text-muted">Fiche avancée avec périodes personnalisables et cases à cocher</p>
+              <div class="card-features">
+                <v-chip size="small" color="green-lighten-5" text-color="green">
+                  <v-icon size="small" class="me-1">mdi-calendar-range</v-icon>
+                  Périodes flexibles
+                </v-chip>
+                <v-chip size="small" color="blue-lighten-5" text-color="blue">
+                  <v-icon size="small" class="me-1">mdi-checkbox-multiple-marked</v-icon>
+                  Cases à cocher
+                </v-chip>
+                <v-chip size="small" color="orange-lighten-5" text-color="orange">
+                  <v-icon size="small" class="me-1">mdi-file-pdf-box</v-icon>
+                  Export PDF
+                </v-chip>
+              </div>
+            </div>
+            <div class="card-actions">
+              <v-btn 
+                color="success" 
+                @click="openPresenceDialog"
+                prepend-icon="mdi-cog-outline"
+                class="me-2"
+              >
+                Configurer
+              </v-btn>
+            </div>
+          </div>
+
+          <!-- Liste d'Affichage -->
+          <div class="generation-card">
+            <div class="card-icon-wrapper display">
+              <v-icon color="#2196F3" size="28">mdi-view-list</v-icon>
+            </div>
+            <div class="card-content">
+              <h3>Liste d'Affichage</h3>
+              <p class="text-muted">Liste simplifiée pour affichage en classe</p>
+              <div class="card-features">
+                <v-chip size="small" color="blue-lighten-5" text-color="blue">
+                  <v-icon size="small" class="me-1">mdi-format-list-bulleted</v-icon>
+                  Format simplifié
+                </v-chip>
+                <v-chip size="small" color="purple-lighten-5" text-color="purple">
+                  <v-icon size="small" class="me-1">mdi-wall</v-icon>
+                  Affichage
+                </v-chip>
+              </div>
+            </div>
+            <v-btn 
+              color="primary" 
+              :href="route('scolarite.liste.affichage', { section: vSectionID })"
+              target="_blank"
+              prepend-icon="mdi-view-list"
+            >
+              Générer
+            </v-btn>
+          </div>
+          
+    <!-- Fiche PDF par Classe -->
+    <div class="generation-card">
+      <div class="card-icon-wrapper pdf">
+          <v-icon color="#F44336" size="28">mdi-file-pdf-box</v-icon>
+        </div>
+            <div class="card-content">
+              <h3>Fiches PDF par Classe</h3>
+              <p class="text-muted">Fiches format PDF avec logo et en-tête de l'école</p>
+              <div class="card-features">
+                <v-chip size="small" color="red-lighten-5" text-color="red">
+                  <v-icon size="small" class="me-1">mdi-school</v-icon>
+                  Logo École
+                </v-chip>
+                <v-chip size="small" color="deep-purple-lighten-5" text-color="deep-purple">
+                  <v-icon size="small" class="me-1">mdi-printer</v-icon>
+                  Impression
+                </v-chip>
+              </div>
+            </div>
+            <v-btn 
+              color="error" 
+              :href="route('scolarite.fiches.pdf.classe', { section: vSectionID })"
+              prepend-icon="mdi-file-pdf"
+            >
+              Générer PDF
+            </v-btn>
+          </div>
+        </div>
+      </div>
+
+      <!-- Dialog Configuration Fiche de Présence -->
+      <v-dialog v-model="presenceDialog" max-width="800px">
+        <v-card class="configuration-dialog">
+          <v-card-title class="dialog-header">
+            <v-icon color="success" class="me-2">mdi-clipboard-check-multiple</v-icon>
+            Configuration Fiche de Présence
+          </v-card-title>
+          
+          <v-card-text>
+            <v-form ref="presenceForm" @submit.prevent="generatePresenceSheet">
+              <div class="form-sections">
+               <!-- Dans le dialog Configuration Fiche de Présence -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="primary" size="20" class="me-2">mdi-calendar</v-icon>
+                    Période de Présence
+                  </h4>
+                  <v-row>
+                    <v-col cols="12" md="4">
+                      <v-select
+                        v-model="presenceConfig.periodeType"
+                        label="Type de période"
+                        :items="periodTypes"
+                        variant="outlined"
+                        prepend-icon="mdi-calendar-range"
+                        required
+                        @update:modelValue="onPeriodeTypeChange"
+                      ></v-select>
+                    </v-col>
+                    
+                    <!-- Sélecteurs Mois/Année - affichage conditionnel -->
+                    <v-col v-if="presenceConfig.periodeType === 'mois'" cols="12" md="4">
+                      <v-select
+                        v-model="presenceConfig.mois"
+                        label="Mois"
+                        :items="monthOptions"
+                        variant="outlined"
+                        prepend-icon="mdi-calendar-month"
+                        item-title="text"
+                        item-value="value"
+                      ></v-select>
+                    </v-col>
+                    
+                    <v-col v-if="presenceConfig.periodeType === 'mois'" cols="12" md="4">
+                      <v-select
+                        v-model="presenceConfig.annee"
+                        label="Année"
+                        :items="yearOptions"
+                        variant="outlined"
+                        prepend-icon="mdi-calendar-year"
+                      ></v-select>
+                    </v-col>
+                    
+                    <v-col v-if="presenceConfig.periodeType !== 'mois'" cols="12" md="8">
+                      <v-text-field
+                        v-model="presenceConfig.periodeLabel"
+                        label="Libellé de la période"
+                        variant="outlined"
+                        prepend-icon="mdi-text-box"
+                        placeholder="Ex: Trimestre 1, Semaine du 01/09..."
+                      ></v-text-field>
+                    </v-col>
+                  </v-row>
+                </div>
+
+                <!-- Section Matières -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="orange" size="20" class="me-2">mdi-book-education</v-icon>
+                    Matières à inclure
+                  </h4>
+                  <v-combobox
+                    v-model="presenceConfig.matieres"
+                    label="Matières"
+                    multiple
+                    chips
+                    variant="outlined"
+                    :items="defaultMatieres"
+                    prepend-icon="mdi-book-multiple"
+                  ></v-combobox>
+                </div>
+
+                <!-- Section Options -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="green" size="20" class="me-2">mdi-cog</v-icon>
+                    Options d'affichage
+                  </h4>
+                  <v-row>
+                    <v-col cols="12" md="6">
+                      <v-checkbox
+                        v-model="presenceConfig.includeSignature"
+                        label="Colonne signature"
+                        color="primary"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="presenceConfig.includeTotal"
+                        label="Calcul automatique des totaux"
+                        color="primary"
+                      ></v-checkbox>
+                    </v-col>
+                    <v-col cols="12" md="6">
+                      <v-checkbox
+                        v-model="presenceConfig.includeLogo"
+                        label="Inclure le logo de l'école"
+                        color="primary"
+                      ></v-checkbox>
+                      <v-checkbox
+                        v-model="presenceConfig.alternateRows"
+                        label="Lignes alternées (zebrage)"
+                        color="primary"
+                      ></v-checkbox>
+                    </v-col>
+                  </v-row>
+                </div>
+
+                <!-- Section Format de sortie -->
+                <div class="form-section">
+                  <h4 class="section-title">
+                    <v-icon color="red" size="20" class="me-2">mdi-download</v-icon>
+                    Format de sortie
+                  </h4>
+                  <v-radio-group v-model="presenceConfig.outputFormat" inline>
+                    <v-radio value="excel" color="success">
+                      <template v-slot:label>
+                        <div class="format-option">
+                          <v-icon color="success" class="me-2">mdi-microsoft-excel</v-icon>
+                          Excel (Modifiable)
+                        </div>
+                      </template>
+                    </v-radio>
+                    <v-radio value="pdf" color="red">
+                      <template v-slot:label>
+                        <div class="format-option">
+                          <v-icon color="red" class="me-2">mdi-file-pdf-box</v-icon>
+                          PDF (Impression)
+                        </div>
+                      </template>
+                    </v-radio>
+                  </v-radio-group>
+                </div>
+              </div>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions class="dialog-actions">
+            <v-spacer></v-spacer>
+            <v-btn @click="presenceDialog = false" variant="text">
+              Annuler
+            </v-btn>
+            <v-btn 
+              color="success" 
+              @click="generatePresenceSheet"
+              :loading="generating"
+              prepend-icon="mdi-file-document-outline"
+            >
+              Générer la fiche
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
+      <!-- Dialog Génération PDF -->
+      <v-dialog v-model="pdfDialog" max-width="600px">
+        <v-card class="configuration-dialog">
+          <v-card-title class="dialog-header">
+            <v-icon color="error" class="me-2">mdi-file-pdf-box</v-icon>
+            Génération Fiches PDF par Classe
+          </v-card-title>
+          
+          <v-card-text>
+            <v-form ref="pdfForm">
+              <div class="form-sections">
+                <div class="form-section">
+                  <v-select
+                    v-model="pdfConfig.typeFiche"
+                    label="Type de fiche"
+                    :items="pdfTypes"
+                    variant="outlined"
+                    prepend-icon="mdi-format-list-bulleted-type"
+                  ></v-select>
+                  
+                  <v-checkbox
+                    v-model="pdfConfig.includeLogo"
+                    label="Inclure le logo de l'établissement"
+                    color="primary"
+                  ></v-checkbox>
+                  
+                  <v-checkbox
+                    v-model="pdfConfig.includeHeader"
+                    label="En-tête avec informations de l'école"
+                    color="primary"
+                  ></v-checkbox>
+                </div>
+              </div>
+            </v-form>
+          </v-card-text>
+
+          <v-card-actions class="dialog-actions">
+            <v-spacer></v-spacer>
+            <v-btn @click="pdfDialog = false" variant="text">
+              Annuler
+            </v-btn>
+            <v-btn 
+              color="error" 
+              @click="generatePdfSheets"
+              :loading="generatingPdf"
+              prepend-icon="mdi-file-pdf-box"
+            >
+              Générer PDF
+            </v-btn>
+          </v-card-actions>
+        </v-card>
+      </v-dialog>
+
     </div>
   </AuthenticatedLayout>
 </template>
@@ -822,15 +848,38 @@ export default {
       generating: false,
       generatingPdf: false,
       presenceConfig: {
-        periodeType: 'mois',
-        periodeLabel: '',
-        matieres: ['Mathématiques', 'Français', 'Anglais'],
-        includeSignature: true,
-        includeTotal: true,
-        includeLogo: true,
-        alternateRows: true,
-        outputFormat: 'excel'
-      },
+      periodeType: 'mois',
+      mois: new Date().getMonth() + 1, // Mois actuel
+      annee: new Date().getFullYear(), // Année actuelle
+      periodeLabel: '',
+      matieres: ['Mathématiques', 'Français', 'Anglais'],
+      includeSignature: true,
+      includeTotal: true,
+      includeLogo: true,
+      alternateRows: true,
+      outputFormat: 'excel'
+    },
+     // Options pour les sélecteurs
+    monthOptions: [
+      { value: 1, text: 'Janvier' },
+      { value: 2, text: 'Février' },
+      { value: 3, text: 'Mars' },
+      { value: 4, text: 'Avril' },
+      { value: 5, text: 'Mai' },
+      { value: 6, text: 'Juin' },
+      { value: 7, text: 'Juillet' },
+      { value: 8, text: 'Août' },
+      { value: 9, text: 'Septembre' },
+      { value: 10, text: 'Octobre' },
+      { value: 11, text: 'Novembre' },
+      { value: 12, text: 'Décembre' }
+    ],
+    yearOptions: [
+      new Date().getFullYear() - 1,
+      new Date().getFullYear(),
+      new Date().getFullYear() + 1
+    ],
+    
       pdfConfig: {
         typeFiche: 'presence',
         includeLogo: true,
@@ -893,8 +942,8 @@ export default {
         { title: 'Journalier', value: 'jour' },
         { title: 'Hebdomadaire', value: 'semaine' },
         { title: 'Mensuel', value: 'mois' },
-        { title: 'Trimestriel', value: 'trimestre' },
-        { title: 'Annuel', value: 'annuel' }
+        // { title: 'Trimestriel', value: 'trimestre' },
+        // { title: 'Annuel', value: 'annuel' }
       ],
       pdfTypes: [
         { title: 'Fiche de présence', value: 'presence' },
@@ -1102,7 +1151,11 @@ export default {
     },
 
     // Nouvelles méthodes pour les fonctionnalités avancées
-    openPresenceDialog() {
+      openPresenceDialog() {
+      // Initialiser avec le mois et l'année actuels
+      this.presenceConfig.mois = new Date().getMonth() + 1;
+      this.presenceConfig.annee = new Date().getFullYear();
+      this.updateMoisLabel();
       this.presenceDialog = true;
     },
 
@@ -1110,40 +1163,83 @@ export default {
       this.pdfDialog = true;
     },
 
-    async generatePresenceSheet() {
+    onPeriodeTypeChange() {
+    // Réinitialiser le libellé quand le type change
+    if (this.presenceConfig.periodeType === 'mois') {
+      this.updateMoisLabel();
+    } else {
+      this.presenceConfig.periodeLabel = '';
+    }
+  },
+  
+  updateMoisLabel() {
+    // Mettre à jour le libellé automatiquement pour le mois
+    const mois = this.monthOptions.find(m => m.value === this.presenceConfig.mois);
+    if (mois) {
+      this.presenceConfig.periodeLabel = `${mois.text} ${this.presenceConfig.annee}`;
+    }
+  },
+  
+  async generatePresenceSheet() {
     this.generating = true;
     
     try {
-        const params = new URLSearchParams({
-            section: this.vSectionID,
-            periode_type: this.presenceConfig.periodeType,
-            periode_label: this.presenceConfig.periodeLabel,
-            matieres: this.presenceConfig.matieres.join(','),
-            include_signature: this.presenceConfig.includeSignature,
-            include_total: this.presenceConfig.includeTotal,
-            include_logo: this.presenceConfig.includeLogo,
-            alternate_rows: this.presenceConfig.alternateRows,
-            output_format: this.presenceConfig.outputFormat
-        });
-        
-        let url;
-        if (this.presenceConfig.outputFormat === 'pdf') {
-            url = route('scolarite.fiche.presence.pdf') + '?' + params;
-        } else {
-            url = route('scolarite.fiche.presence.avancee') + '?' + params;
-        }
-        
-        window.open(url, '_blank');
-        this.presenceDialog = false;
-        
+      // Pour le type mois, mettre à jour le libellé automatiquement
+      if (this.presenceConfig.periodeType === 'mois') {
+        this.updateMoisLabel();
+      }
+      
+      const params = new URLSearchParams({
+        section: this.vSectionID,
+        periode_type: this.presenceConfig.periodeType,
+        periode_label: this.presenceConfig.periodeLabel,
+        mois: this.presenceConfig.mois,
+        annee: this.presenceConfig.annee,
+        matieres: this.presenceConfig.matieres.join(','),
+        include_signature: this.presenceConfig.includeSignature,
+        include_total: this.presenceConfig.includeTotal,
+        include_logo: this.presenceConfig.includeLogo,
+        alternate_rows: this.presenceConfig.alternateRows,
+        output_format: this.presenceConfig.outputFormat
+      });
+      
+      let url;
+      if (this.presenceConfig.outputFormat === 'pdf') {
+        url = route('scolarite.fiche.presence.pdf') + '?' + params;
+      } else {
+        url = route('scolarite.fiche.presence.avancee') + '?' + params;
+      }
+      
+      window.open(url, '_blank');
+      this.presenceDialog = false;
+      this.showSuccess('Génération de la fiche de présence lancée');
+      
     } catch (error) {
-        console.error('Erreur génération:', error);
-        this.showError('Erreur lors de la génération de la fiche');
+      console.error('Erreur génération:', error);
+      this.showError('Erreur lors de la génération de la fiche');
     } finally {
-        this.generating = false;
+      this.generating = false;
     }
-    },
+  },
 
+  watch: {
+  'presenceConfig.mois': {
+    handler(newVal) {
+      if (this.presenceConfig.periodeType === 'mois') {
+        this.updateMoisLabel();
+      }
+    },
+    immediate: true
+  },
+  'presenceConfig.annee': {
+    handler(newVal) {
+      if (this.presenceConfig.periodeType === 'mois') {
+        this.updateMoisLabel();
+      }
+    },
+    immediate: true
+  }
+},
   async generatePdfSheets() {
       this.generatingPdf = true;
       
@@ -1814,5 +1910,28 @@ export default {
     flex-direction: column;
     align-items: center;
   }
+
+  /* Ajoutez ces styles dans votre section CSS */
+.month-year-selectors {
+  background: #f8f9fa;
+  border-radius: 8px;
+  padding: 16px;
+  margin-bottom: 16px;
+  border: 1px solid #e9ecef;
+}
+
+.auto-label-info {
+  background: #e3f2fd;
+  border: 1px solid #bbdefb;
+  border-radius: 6px;
+  padding: 8px 12px;
+  font-size: 0.875rem;
+  color: #1565c0;
+  margin-top: 8px;
+}
+
+.period-configuration {
+  transition: all 0.3s ease;
+}
 }
 </style>

@@ -1591,15 +1591,18 @@ public function genererFichePresencePdf(Request $request)
         $section = $request->section;
         $periode = $request->periode_type ?? 'mois';
         $periodeLabel = $request->periode_label ?? '';
+        $mois = $request->mois ?? date('n');
+        $annee = $request->annee ?? date('Y');
         $matieres = $request->matieres ? explode(',', $request->matieres) : [];
         $includeSignature = filter_var($request->input('include_signature', true), FILTER_VALIDATE_BOOLEAN);
         $includeTotal = filter_var($request->input('include_total', true), FILTER_VALIDATE_BOOLEAN);
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         $alternateRows = filter_var($request->input('alternate_rows', true), FILTER_VALIDATE_BOOLEAN);
         
-        // Déterminer le nombre de jours en fonction de la période
-        $joursParPeriode = $this->getJoursParPeriode($periode);
-        $libellesJours = $this->getLibellesJours($periode);
+        // Déterminer le nombre de jours en fonction du mois/année
+        $joursParPeriode = $this->getJoursParPeriode($periode, $mois, $annee);
+        $libellesJours = $this->getLibellesJours($periode, $mois, $annee);
+        
         
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
@@ -1622,6 +1625,8 @@ public function genererFichePresencePdf(Request $request)
             'classes' => $classes,
             'periode' => $periode,
             'periodeLabel' => $periodeLabel,
+            'mois' => $mois,
+            'annee' => $annee,
             'matieres' => $matieres,
             'joursParPeriode' => $joursParPeriode,
             'libellesJours' => $libellesJours,
@@ -1631,7 +1636,7 @@ public function genererFichePresencePdf(Request $request)
             'alternateRows' => $alternateRows,
             'title' => 'Fiche de Présence - ' . ucfirst($periode),
             'date' => date('d/m/Y à H:i'),
-        ];
+        ];  
         
         $pdf = PDF::loadView('exports.fiche_presence_pdf', $data);
         
@@ -1646,7 +1651,10 @@ public function genererFichePresencePdf(Request $request)
 /**
  * Détermine le nombre de jours en fonction de la période
  */
-private function getJoursParPeriode($periode)
+/**
+ * Détermine le nombre de jours en fonction de la période
+ */
+private function getJoursParPeriode($periode, $mois = null, $annee = null)
 {
     switch ($periode) {
         case 'jour':
@@ -1654,7 +1662,11 @@ private function getJoursParPeriode($periode)
         case 'semaine':
             return 7;
         case 'mois':
-            return 31; // Maximum pour un mois
+            // CALCUL DYNAMIQUE selon le mois et l'année
+            if ($mois && $annee) {
+                return cal_days_in_month(CAL_GREGORIAN, $mois, $annee);
+            }
+            return 31; // Fallback
         case 'trimestre':
             return 90; // Environ 3 mois
         case 'annuel':
@@ -1667,7 +1679,10 @@ private function getJoursParPeriode($periode)
 /**
  * Génère les libellés des jours en fonction de la période
  */
-private function getLibellesJours($periode)
+/**
+ * Génère les libellés des jours en fonction de la période
+ */
+private function getLibellesJours($periode, $mois = null, $annee = null)
 {
     switch ($periode) {
         case 'jour':
@@ -1677,8 +1692,10 @@ private function getLibellesJours($periode)
             return ['Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim'];
             
         case 'mois':
+            // CALCUL DYNAMIQUE selon le mois et l'année
+            $nombreJours = $this->getJoursParPeriode($periode, $mois, $annee);
             $jours = [];
-            for ($i = 1; $i <= 31; $i++) {
+            for ($i = 1; $i <= $nombreJours; $i++) {
                 $jours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
             }
             return $jours;
@@ -1713,12 +1730,18 @@ public function genererFichePresenceAvancee(Request $request)
         $section = $request->section;
         $periode = $request->periode_type ?? 'mois';
         $periodeLabel = $request->periode_label ?? '';
+        $mois = $request->mois ?? date('n');
+        $annee = $request->annee ?? date('Y');
         $matieres = $request->matieres ? explode(',', $request->matieres) : [];
         $includeSignature = filter_var($request->input('include_signature', true), FILTER_VALIDATE_BOOLEAN);
         $includeTotal = filter_var($request->input('include_total', true), FILTER_VALIDATE_BOOLEAN);
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         $alternateRows = filter_var($request->input('alternate_rows', true), FILTER_VALIDATE_BOOLEAN);
         $outputFormat = $request->output_format ?? 'excel';
+        
+        // Déterminer le nombre de jours en fonction du mois/année
+        $joursParPeriode = $this->getJoursParPeriode($periode, $mois, $annee);
+        $libellesJours = $this->getLibellesJours($periode, $mois, $annee);
         
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
@@ -1729,6 +1752,8 @@ public function genererFichePresenceAvancee(Request $request)
         }
         
         $fileName = 'Fiche_presence_avancee_' . $periode . '_' . date('Ymd_His') . '.xlsx';
+        
+        // Passez les nouveaux paramètres à l'export
         $export = new FichePresenceAvanceeExport(
             $inscriptionsAvecClasses, 
             'Fiche de Présence Avancée',
@@ -1738,7 +1763,11 @@ public function genererFichePresenceAvancee(Request $request)
             $includeSignature,
             $includeTotal,
             $includeLogo,
-            $alternateRows
+            $alternateRows,
+            $joursParPeriode, // NOUVEAU PARAMÈTRE
+            $libellesJours,   // NOUVEAU PARAMÈTRE
+            $mois,            // NOUVEAU PARAMÈTRE
+            $annee            // NOUVEAU PARAMÈTRE
         );
         
         return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);

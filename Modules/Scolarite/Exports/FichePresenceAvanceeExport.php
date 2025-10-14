@@ -27,6 +27,10 @@ class FichePresenceAvanceeExport implements WithMultipleSheets
     protected bool $includeTotal;
     protected bool $includeLogo;
     protected bool $alternateRows;
+    protected int $joursParPeriode;
+    protected array $libellesJours;
+    protected ?int $mois;
+    protected ?int $annee;
 
     public function __construct(
         $inscriptions, 
@@ -37,7 +41,11 @@ class FichePresenceAvanceeExport implements WithMultipleSheets
         bool $includeSignature = true,
         bool $includeTotal = true,
         bool $includeLogo = true,
-        bool $alternateRows = true
+        bool $alternateRows = true,
+        int $joursParPeriode = 31,
+        array $libellesJours = [],
+        ?int $mois = null,
+        ?int $annee = null
     ) {
         $this->inscriptions = collect($inscriptions);
         $this->title = $title;
@@ -48,6 +56,10 @@ class FichePresenceAvanceeExport implements WithMultipleSheets
         $this->includeTotal = $includeTotal;
         $this->includeLogo = $includeLogo;
         $this->alternateRows = $alternateRows;
+        $this->joursParPeriode = $joursParPeriode;
+        $this->libellesJours = empty($libellesJours) ? $this->getLibellesJoursParDefaut() : $libellesJours;
+        $this->mois = $mois;
+        $this->annee = $annee;
     }
 
     public function sheets(): array
@@ -64,7 +76,11 @@ class FichePresenceAvanceeExport implements WithMultipleSheets
                 $this->includeSignature,
                 $this->includeTotal,
                 $this->includeLogo,
-                $this->alternateRows
+                $this->alternateRows,
+                $this->joursParPeriode,
+                $this->libellesJours,
+                $this->mois,
+                $this->annee
             );
         }
         
@@ -82,6 +98,18 @@ class FichePresenceAvanceeExport implements WithMultipleSheets
             'Histoire-Géo',
             'Philosophie'
         ];
+    }
+    
+    /**
+     * Retourne les libellés de jours par défaut
+     */
+    private function getLibellesJoursParDefaut(): array
+    {
+        $jours = [];
+        for ($i = 1; $i <= 31; $i++) {
+            $jours[] = str_pad($i, 2, '0', STR_PAD_LEFT);
+        }
+        return $jours;
     }
     
     private function getInscriptionsGroupedByClass(): array
@@ -163,7 +191,6 @@ class FichePresenceAvanceeExport implements WithMultipleSheets
         return isset($matches[0]) ? (int)$matches[0] : 99;
     }
 }
-
 class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings, WithMapping, ShouldAutoSize, WithTitle, WithStyles
 {
     protected Collection $inscriptions;
@@ -175,9 +202,12 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
     protected bool $includeTotal;
     protected bool $includeLogo;
     protected bool $alternateRows;
+    protected int $joursParPeriode;
+    protected array $libellesJours;
+    protected ?int $mois;
+    protected ?int $annee;
     protected array $jours;
     protected array $semaines;
-    protected array $datesMois;
     
     // AJOUT: Propriété pour gérer l'index
     private int $currentMapIndex = 0;
@@ -191,7 +221,11 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         bool $includeSignature = true,
         bool $includeTotal = true,
         bool $includeLogo = true,
-        bool $alternateRows = true
+        bool $alternateRows = true,
+        int $joursParPeriode = 31,
+        array $libellesJours = [],
+        ?int $mois = null,
+        ?int $annee = null
     ) {
         $this->inscriptions = $inscriptions;
         $this->classeName = $classeName;
@@ -202,11 +236,14 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         $this->includeTotal = $includeTotal;
         $this->includeLogo = $includeLogo;
         $this->alternateRows = $alternateRows;
+        $this->joursParPeriode = $joursParPeriode;
+        $this->libellesJours = $libellesJours;
+        $this->mois = $mois;
+        $this->annee = $annee;
         
         // Initialiser les données de période
         $this->jours = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
         $this->semaines = ['1', '2', '3', '4'];
-        $this->datesMois = $this->genererDatesMois();
         
         // Réinitialiser l'index
         $this->currentMapIndex = 0;
@@ -242,9 +279,9 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
                 
             case 'mois':
             default:
-                // En-têtes des jours avec format "01", "02", etc.
-                for ($i = 1; $i <= 31; $i++) {
-                    $headings[] = str_pad($i, 2, '0', STR_PAD_LEFT);
+                // CORRECTION: Utiliser les libellés dynamiques au lieu de 31 jours fixes
+                foreach ($this->libellesJours as $jour) {
+                    $headings[] = $jour;
                 }
                 if ($this->includeTotal) {
                     $headings[] = 'Total Présences';
@@ -260,67 +297,67 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         return $headings;
     }
 
-   public function map($inscription): array
-{
-    // CORRECTION: Calcul correct de l'index et de la ligne Excel
-    $currentNumero = $this->currentMapIndex + 1;
-    $excelRow = $this->currentMapIndex + 5; // Ligne Excel = index + 5 (4 en-têtes + 1)
+    public function map($inscription): array
+    {
+        // CORRECTION: Calcul correct de l'index et de la ligne Excel
+        $currentNumero = $this->currentMapIndex + 1;
+        $excelRow = $this->currentMapIndex + 5; // Ligne Excel = index + 5 (4 en-têtes + 1)
 
-    $nomComplet = $this->getStudentName($inscription, 'nom') . ' ' . $this->getStudentName($inscription, 'prenom');
-    $matricule = $this->getStudentField($inscription, 'matricule');
-    
-    $row = [
-        $currentNumero,
-        $matricule,
-        trim($nomComplet)
-    ];
-    
-    // Ajouter les cases à cocher selon la période
-    switch ($this->periode) {
-        case 'jour':
-            // Cases pour chaque matière
-            foreach ($this->matieres as $matiere) {
-                $row[] = ''; // Case vide pour cocher
-            }
-            break;
-            
-        case 'semaine':
-            // Cases pour chaque semaine et chaque matière
-            foreach ($this->semaines as $semaine) {
-                $row[] = "Sem. {$semaine}";
+        $nomComplet = $this->getStudentName($inscription, 'nom') . ' ' . $this->getStudentName($inscription, 'prenom');
+        $matricule = $this->getStudentField($inscription, 'matricule');
+        
+        $row = [
+            $currentNumero,
+            $matricule,
+            trim($nomComplet)
+        ];
+        
+        // Ajouter les cases à cocher selon la période
+        switch ($this->periode) {
+            case 'jour':
+                // Cases pour chaque matière
                 foreach ($this->matieres as $matiere) {
-                    $row[] = ''; // Case vide
+                    $row[] = ''; // Case vide pour cocher
                 }
-            }
-            break;
-            
-        case 'mois':
-        default:
-            // Cases pour chaque jour du mois (31 jours max)
-            for ($i = 1; $i <= 31; $i++) {
-                $row[] = ''; // Case vide pour cocher
-            }
-            if ($this->includeTotal) {
-                // CORRECTION: Calcul correct des colonnes pour la formule
-                $firstCheckCol = 'D'; // Première colonne de cases (après N°, Matricule, Nom)
-                $lastCheckCol = 'AH'; // Dernière colonne de cases (31 jours après D = AH)
+                break;
                 
-                // CORRECTION: Utiliser $excelRow pour la ligne correcte
-                $row[] = "=COUNTIF({$firstCheckCol}{$excelRow}:{$lastCheckCol}{$excelRow},\"✓\")";
-            }
-            break;
+            case 'semaine':
+                // Cases pour chaque semaine et chaque matière
+                foreach ($this->semaines as $semaine) {
+                    $row[] = "Sem. {$semaine}";
+                    foreach ($this->matieres as $matiere) {
+                        $row[] = ''; // Case vide
+                    }
+                }
+                break;
+                
+            case 'mois':
+            default:
+                // CORRECTION: Utiliser le nombre dynamique de jours au lieu de 31
+                foreach ($this->libellesJours as $jour) {
+                    $row[] = ''; // Case vide pour cocher
+                }
+                if ($this->includeTotal) {
+                    // CORRECTION: Calcul dynamique des colonnes pour la formule
+                    $firstCheckCol = 'D'; // Première colonne de cases (après N°, Matricule, Nom)
+                    $lastCheckCol = $this->getColonneLettre(3 + count($this->libellesJours) - 1);
+                    
+                    // CORRECTION: Utiliser $excelRow pour la ligne correcte
+                    $row[] = "=COUNTIF({$firstCheckCol}{$excelRow}:{$lastCheckCol}{$excelRow},\"✓\")";
+                }
+                break;
+        }
+        
+        // Ajouter la colonne signature si demandée
+        if ($this->includeSignature) {
+            $row[] = ''; // Signature vide
+        }
+        
+        // CORRECTION: Incrémenter APRÈS avoir utilisé l'index
+        $this->currentMapIndex++;
+        
+        return $row;
     }
-    
-    // Ajouter la colonne signature si demandée
-    if ($this->includeSignature) {
-        $row[] = ''; // Signature vide
-    }
-    
-    // CORRECTION: Incrémenter APRÈS avoir utilisé l'index
-    $this->currentMapIndex++;
-    
-    return $row;
-}
 
     private function getStudentField($inscription, string $field): string
     {
@@ -337,21 +374,6 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
     private function getStudentName($inscription, string $field): string
     {
         return $this->getStudentField($inscription, $field);
-    }
-
-    /**
-     * Génère les dates du mois actuel
-     */
-    private function genererDatesMois(): array
-    {
-        $dates = [];
-        $joursDansMois = cal_days_in_month(CAL_GREGORIAN, date('m'), date('Y'));
-        
-        for ($i = 1; $i <= $joursDansMois; $i++) {
-            $dates[] = str_pad($i, 2, '0', STR_PAD_LEFT);
-        }
-        
-        return $dates;
     }
 
     public function styles(Worksheet $sheet): void
@@ -375,6 +397,13 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
         $periodeAffichage = $this->periodeLabel ?: ucfirst($this->periode);
         $sheet->mergeCells('A2:' . $this->getColonneLettre($colCount) . '2');
         $sheet->setCellValue('A2', "Classe: {$this->classeName} | Période: {$periodeAffichage} | Effectif: {$this->inscriptions->count()} élèves | Généré le: " . date('d/m/Y'));
+        
+        // AJOUT: Information sur le mois/année si période mensuelle
+        if ($this->periode === 'mois' && $this->mois && $this->annee) {
+            $nomMois = $this->getNomMois($this->mois);
+            $sheet->setCellValue('A2', "Classe: {$this->classeName} | Période: {$nomMois} {$this->annee} | Effectif: {$this->inscriptions->count()} élèves | Généré le: " . date('d/m/Y'));
+        }
+        
         $sheet->getStyle('A2')->applyFromArray([
             'font' => ['bold' => true, 'size' => 12, 'color' => ['rgb' => '2C3E50']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'ECF0F1']],
@@ -383,7 +412,14 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
 
         // Ligne d'instructions
         $sheet->mergeCells('A3:' . $this->getColonneLettre($colCount) . '3');
-        $sheet->setCellValue('A3', 'INSTRUCTIONS: Cliquez sur les cases et sélectionnez "✓" pour marquer la présence | Les totaux se calculent automatiquement');
+        $instructionText = 'INSTRUCTIONS: Cliquez sur les cases et sélectionnez "✓" pour marquer la présence | Les totaux se calculent automatiquement';
+        
+        // AJOUT: Information sur le nombre de jours pour les mois
+        if ($this->periode === 'mois') {
+            $instructionText .= " | Mois de {$this->joursParPeriode} jours";
+        }
+        
+        $sheet->setCellValue('A3', $instructionText);
         $sheet->getStyle('A3')->applyFromArray([
             'font' => ['bold' => false, 'size' => 10, 'color' => ['rgb' => 'D35400']],
             'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => 'FFF9E6']],
@@ -521,5 +557,19 @@ class FichePresenceAvanceePerClasseSheet implements FromCollection, WithHeadings
             $colIndex = intval($colIndex / 26);
         }
         return $letters;
+    }
+
+    /**
+     * Retourne le nom du mois en français
+     */
+    private function getNomMois(int $mois): string
+    {
+        $nomsMois = [
+            1 => 'Janvier', 2 => 'Février', 3 => 'Mars', 4 => 'Avril',
+            5 => 'Mai', 6 => 'Juin', 7 => 'Juillet', 8 => 'Août',
+            9 => 'Septembre', 10 => 'Octobre', 11 => 'Novembre', 12 => 'Décembre'
+        ];
+        
+        return $nomsMois[$mois] ?? 'Mois inconnu';
     }
 }

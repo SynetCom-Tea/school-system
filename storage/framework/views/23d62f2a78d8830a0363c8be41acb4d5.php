@@ -2,20 +2,20 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Fiche de Présence - {{ $etablissement->nom ?? 'Établissement' }}</title>
+    <title>Fiche de Présence - <?php echo e($etablissement->nom ?? 'Établissement'); ?></title>
     <style>
         @page {
             margin: 15px;
-            @if($periode === 'mois')
+            <?php if($periode === 'mois'): ?>
                 /* Adapter l'orientation en fonction du nombre de jours */
-                @if($joursParPeriode <= 20)
+                <?php if($joursParPeriode <= 20): ?>
                     size: A4 portrait;
-                @else
+                <?php else: ?>
                     size: A4 landscape;
-                @endif
-            @else
+                <?php endif; ?>
+            <?php else: ?>
                 size: A4 portrait;
-            @endif
+            <?php endif; ?>
         }
         body {
             font-family: 'Times New Roman', Times, serif;
@@ -220,7 +220,7 @@
         }
         
         /* Optimisations pour le format paysage (mois avec beaucoup de jours) */
-        @if($periode === 'mois' && $joursParPeriode > 20)
+        <?php if($periode === 'mois' && $joursParPeriode > 20): ?>
         .student-name {
             min-width: 160px;
             max-width: 160px;
@@ -237,10 +237,10 @@
             font-size: 11px;
             padding: 4px 1px;
         }
-        @endif
+        <?php endif; ?>
 
         /* Optimisations pour les mois avec peu de jours */
-        @if($periode === 'mois' && $joursParPeriode <= 20)
+        <?php if($periode === 'mois' && $joursParPeriode <= 20): ?>
         .student-name {
             min-width: 200px;
         }
@@ -249,31 +249,33 @@
             min-width: 22px;
             max-width: 22px;
         }
-        @endif
+        <?php endif; ?>
     </style>
 </head>
 <body>
     <!-- Boucle sur chaque classe -->
-    @foreach($classes as $classeName => $inscriptions)
+    <?php $__currentLoopData = $classes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $classeName => $inscriptions): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
         <!-- En-tête avec logo et informations de l'école -->
         <div class="header">
             <div class="logo-container">
-                @if($includeLogo && isset($etablissement->logo) && !empty($etablissement->logo))
-                    <img class="logo" src="{{ public_path('logos/' . $etablissement->logo) }}" alt="Logo établissement">
-                @elseif($includeLogo)
-                    <img class="logo" src="{{ public_path('logos/iat-logo.png') }}" alt="Logo par défaut">
-                @endif
+                <?php if($includeLogo && isset($etablissement->logo) && !empty($etablissement->logo)): ?>
+                    <img class="logo" src="<?php echo e(public_path('logos/' . $etablissement->logo)); ?>" alt="Logo établissement">
+                <?php elseif($includeLogo): ?>
+                    <img class="logo" src="<?php echo e(public_path('logos/iat-logo.png')); ?>" alt="Logo par défaut">
+                <?php endif; ?>
             </div>
             <div class="school-info">
-                <div class="school-name">{{ $etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE' }}</div>
+                <div class="school-name"><?php echo e($etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE'); ?></div>
                 <div class="school-details">
-                    {{ $etablissement->adresse ?? '' }} 
-                    @if(isset($etablissement->telephone) && $etablissement->telephone)
-                        • Tél: {{ $etablissement->telephone }}
-                    @endif
-                    @if(isset($etablissement->email) && $etablissement->email)
-                        • Email: {{ $etablissement->email }}
-                    @endif
+                    <?php echo e($etablissement->adresse ?? ''); ?> 
+                    <?php if(isset($etablissement->telephone) && $etablissement->telephone): ?>
+                        • Tél: <?php echo e($etablissement->telephone); ?>
+
+                    <?php endif; ?>
+                    <?php if(isset($etablissement->email) && $etablissement->email): ?>
+                        • Email: <?php echo e($etablissement->email); ?>
+
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="logo-container">
@@ -283,32 +285,36 @@
 
         <!-- Titre du document -->
         <div class="document-title">
-            FICHE DE PRÉSENCE - {{ strtoupper($periode) }}
-            @if($periode === 'mois')
-                - {{ DateTime::createFromFormat('!m', $mois)->format('F') }} {{ $annee }}
-            @endif
+            FICHE DE PRÉSENCE - <?php echo e(strtoupper($periode)); ?>
+
+            <?php if($periode === 'mois'): ?>
+                - <?php echo e(DateTime::createFromFormat('!m', $mois)->format('F')); ?> <?php echo e($annee); ?>
+
+            <?php endif; ?>
         </div>
 
         <!-- Informations de la classe -->
         <div class="class-info">
             <div class="info-grid">
                 <div class="info-item">
-                    <span>Classe: {{ $classeName }}</span>
-                    <span style="margin-left: 30px;">Effectif: {{ count($inscriptions) }} élèves</span>
+                    <span>Classe: <?php echo e($classeName); ?></span>
+                    <span style="margin-left: 30px;">Effectif: <?php echo e(count($inscriptions)); ?> élèves</span>
                     <span style="margin-left: 30px;">
-                        @if($periode === 'mois')
-                            Période: {{ DateTime::createFromFormat('!m', $mois)->format('F') }} {{ $annee }}
-                        @else
-                            Période: {{ $periodeLabel }}
-                        @endif
+                        <?php if($periode === 'mois'): ?>
+                            Période: <?php echo e(DateTime::createFromFormat('!m', $mois)->format('F')); ?> <?php echo e($annee); ?>
+
+                        <?php else: ?>
+                            Période: <?php echo e($periodeLabel); ?>
+
+                        <?php endif; ?>
                     </span>
-                    <span style="margin-left: 30px;">Année Scolaire: {{ date('Y') . '/' . (date('Y') + 1) }}</span>
+                    <span style="margin-left: 30px;">Année Scolaire: <?php echo e(date('Y') . '/' . (date('Y') + 1)); ?></span>
                 </div>
-                @if(!empty($matieres))
+                <?php if(!empty($matieres)): ?>
                 <div class="matieres-item">
-                    <span>Matières: {{ implode(', ', $matieres) }}</span>
+                    <span>Matières: <?php echo e(implode(', ', $matieres)); ?></span>
                 </div>
-                @endif
+                <?php endif; ?>
             </div>
         </div>
 
@@ -320,44 +326,45 @@
                     <th class="student-matricule">Matricule</th>
                     <th class="student-name">Nom et Prénom</th>
                     <!-- Colonnes dynamiques selon la période -->
-                    @foreach($libellesJours as $jour)
-                        <th class="day-cell">{{ $jour }}</th>
-                    @endforeach
-                    @if($includeTotal)
+                    <?php $__currentLoopData = $libellesJours; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $jour): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                        <th class="day-cell"><?php echo e($jour); ?></th>
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php if($includeTotal): ?>
                     <th class="total-cell">Total</th>
-                    @endif
-                    @if($includeSignature)
+                    <?php endif; ?>
+                    <?php if($includeSignature): ?>
                     <th class="signature-cell">Signature</th>
-                    @endif
+                    <?php endif; ?>
                 </tr>
             </thead>
             <tbody>
-                @foreach($inscriptions as $index => $inscription)
+                <?php $__currentLoopData = $inscriptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $inscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                 <tr>
-                    <td class="student-number">{{ $index + 1 }}</td>
-                    <td class="student-matricule">{{ $inscription['apprenant']['matricule'] ?? 'N/A' }}</td>
+                    <td class="student-number"><?php echo e($index + 1); ?></td>
+                    <td class="student-matricule"><?php echo e($inscription['apprenant']['matricule'] ?? 'N/A'); ?></td>
                     <td class="student-name">
-                        {{ $inscription['apprenant']['nom'] ?? '' }} {{ $inscription['apprenant']['prenom'] ?? '' }}
+                        <?php echo e($inscription['apprenant']['nom'] ?? ''); ?> <?php echo e($inscription['apprenant']['prenom'] ?? ''); ?>
+
                     </td>
                     <!-- Cases à cocher VIDES -->
-                    @foreach($libellesJours as $jour)
+                    <?php $__currentLoopData = $libellesJours; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $jour): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
                         <td class="day-cell">
                             <div></div>
                         </td>
-                    @endforeach
-                    @if($includeTotal)
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+                    <?php if($includeTotal): ?>
                     <td class="total-cell">0</td>
-                    @endif
-                    @if($includeSignature)
+                    <?php endif; ?>
+                    <?php if($includeSignature): ?>
                     <td class="signature-cell"></td>
-                    @endif
+                    <?php endif; ?>
                 </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
             </tbody>
         </table>
 
         <!-- Section des signatures -->
-        @if($includeSignature)
+        <?php if($includeSignature): ?>
         <div class="signature-section">
             <br>
             <br>
@@ -373,29 +380,31 @@
             <br>
             <div class="signature-line"></div>
         </div>
-        @endif
+        <?php endif; ?>
 
         <!-- Instructions dans le footer -->
         <div class="footer-instructions">
             <div><strong>Instructions:</strong> Cochez (✓) les cases correspondantes aux jours de présence</div>
             <div><strong>Légende:</strong> □ = Absent | ✓ = Présent</div>
-            @if($periode === 'mois')
-            <div><em>Note: Les colonnes représentent les jours du mois de {{ DateTime::createFromFormat('!m', $mois)->format('F') }} ({{ $joursParPeriode }} jours)</em></div>
-            @endif
+            <?php if($periode === 'mois'): ?>
+            <div><em>Note: Les colonnes représentent les jours du mois de <?php echo e(DateTime::createFromFormat('!m', $mois)->format('F')); ?> (<?php echo e($joursParPeriode); ?> jours)</em></div>
+            <?php endif; ?>
         </div>
 
         <!-- Saut de page sauf pour la dernière classe -->
-        @if(!$loop->last)
+        <?php if(!$loop->last): ?>
             <div class="page-break"></div>
-        @endif
-    @endforeach
+        <?php endif; ?>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     <!-- Pied de page -->
     <div class="footer">
-        Document généré le {{ $date }} | {{ $etablissement->nom ?? 'Établissement scolaire' }}
-        @if(isset($etablissement->slogan) && $etablissement->slogan)
-            <br>{{ $etablissement->slogan }}
-        @endif
+        Document généré le <?php echo e($date); ?> | <?php echo e($etablissement->nom ?? 'Établissement scolaire'); ?>
+
+        <?php if(isset($etablissement->slogan) && $etablissement->slogan): ?>
+            <br><?php echo e($etablissement->slogan); ?>
+
+        <?php endif; ?>
     </div>
 </body>
-</html>
+</html><?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views\exports\fiche_presence_pdf.blade.php ENDPATH**/ ?>

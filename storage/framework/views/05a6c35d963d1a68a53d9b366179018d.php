@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>Liste d'Affichage - {{ $etablissement->nom ?? 'Établissement' }}</title>
+    <title>Liste d'Affichage - <?php echo e($etablissement->nom ?? 'Établissement'); ?></title>
     <style>
         @page {
             margin: 20px;
@@ -152,8 +152,8 @@
 </head>
 <body>
     <!-- Boucle sur chaque classe -->
-    @foreach($classes as $classeName => $inscriptions)
-        @php
+    <?php $__currentLoopData = $classes; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $classeName => $inscriptions): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+        <?php
             // Calculer les statistiques de genre pour cette classe
             $nombreFilles = 0;
             $nombreGarcons = 0;
@@ -169,34 +169,37 @@
                     $nombreGarcons++;
                 }
             }
-        @endphp
+        ?>
 
         <!-- En-tête de l'établissement POUR CHAQUE CLASSE -->
         <div class="page-header">
-            <div class="school-name">{{ $etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE' }}</div>
+            <div class="school-name"><?php echo e($etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE'); ?></div>
             <div class="school-details">
-                {{ $etablissement->adresse ?? '' }} 
-                @if(isset($etablissement->telephone) && $etablissement->telephone)
-                    • Tél: {{ $etablissement->telephone }}
-                @endif
-                @if(isset($etablissement->email) && $etablissement->email)
-                    • Email: {{ $etablissement->email }}
-                @endif
+                <?php echo e($etablissement->adresse ?? ''); ?> 
+                <?php if(isset($etablissement->telephone) && $etablissement->telephone): ?>
+                    • Tél: <?php echo e($etablissement->telephone); ?>
+
+                <?php endif; ?>
+                <?php if(isset($etablissement->email) && $etablissement->email): ?>
+                    • Email: <?php echo e($etablissement->email); ?>
+
+                <?php endif; ?>
             </div>
         </div>
 
         <!-- Titre du document -->
         <div class="document-title">
-            LISTE D'AFFICHAGE - {{ $classeName }}
+            LISTE D'AFFICHAGE - <?php echo e($classeName); ?>
+
         </div>
 
         <!-- Informations de la classe -->
         <div class="class-info">
             <div class="info-line">
-                <span class="info-block"><strong>Effectif Total:</strong> {{ count($inscriptions) }} élèves</span>
-                <span class="info-block"><strong>Filles:</strong> {{ $nombreFilles }}</span>
-                <span class="info-block"><strong>Garçons:</strong> {{ $nombreGarcons }}</span>
-                <span class="info-block"><strong>Année Scolaire:</strong> {{ date('Y') . '/' . (date('Y') + 1) }}</span>
+                <span class="info-block"><strong>Effectif Total:</strong> <?php echo e(count($inscriptions)); ?> élèves</span>
+                <span class="info-block"><strong>Filles:</strong> <?php echo e($nombreFilles); ?></span>
+                <span class="info-block"><strong>Garçons:</strong> <?php echo e($nombreGarcons); ?></span>
+                <span class="info-block"><strong>Année Scolaire:</strong> <?php echo e(date('Y') . '/' . (date('Y') + 1)); ?></span>
             </div>
         </div>
 
@@ -211,26 +214,28 @@
                 </tr>
             </thead>
             <tbody>
-                @forelse($inscriptions as $index => $inscription)
+                <?php $__empty_1 = true; $__currentLoopData = $inscriptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $inscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                 <tr class="student-item">
-                    <td class="student-number">{{ $index + 1 }}</td>
+                    <td class="student-number"><?php echo e($index + 1); ?></td>
                     <!-- <td class="student-matricule">
-                        {{ $inscription['apprenant']['matricule'] ?? 'N/A' }}
+                        <?php echo e($inscription['apprenant']['matricule'] ?? 'N/A'); ?>
+
                     </td> -->
                     <td class="student-name">
-                        <strong>{{ $inscription['apprenant']['nom'] ?? '' }} {{ $inscription['apprenant']['prenom'] ?? '' }}</strong>
+                        <strong><?php echo e($inscription['apprenant']['nom'] ?? ''); ?> <?php echo e($inscription['apprenant']['prenom'] ?? ''); ?></strong>
                     </td>
                     <td>
-                        {{ $inscription['apprenant']['sexe'] ?? 'N/A' }}
+                        <?php echo e($inscription['apprenant']['sexe'] ?? 'N/A'); ?>
+
                     </td>
                 </tr>
-                @empty
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                 <tr>
                     <td colspan="4" class="no-data">
                         Aucun élève trouvé dans cette classe
                     </td>
                 </tr>
-                @endforelse
+                <?php endif; ?>
             </tbody>
         </table>
 
@@ -259,17 +264,18 @@
 
 
         <!-- Saut de page sauf pour la dernière classe -->
-        @if(!$loop->last)
+        <?php if(!$loop->last): ?>
             <div class="page-break"></div>
-        @endif
-    @endforeach
+        <?php endif; ?>
+    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
     <!-- Pied de page -->
     <div class="footer">
-        <!-- Document généré le {{ date('d/m/Y à H:i') }} | {{ $etablissement->nom ?? 'Établissement scolaire' }} -->
-        @if(isset($etablissement->slogan) && $etablissement->slogan)
-            <br>{{ $etablissement->slogan }}
-        @endif
+        <!-- Document généré le <?php echo e(date('d/m/Y à H:i')); ?> | <?php echo e($etablissement->nom ?? 'Établissement scolaire'); ?> -->
+        <?php if(isset($etablissement->slogan) && $etablissement->slogan): ?>
+            <br><?php echo e($etablissement->slogan); ?>
+
+        <?php endif; ?>
     </div>
 </body>
-</html>
+</html><?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views\exports\listes_affichage_pdf.blade.php ENDPATH**/ ?>
