@@ -187,4 +187,4 @@
         </p>
     </div>
 </body>
-</html><?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views\exports\inscriptions_pdf.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views/exports/inscriptions_pdf.blade.php ENDPATH**/ ?>

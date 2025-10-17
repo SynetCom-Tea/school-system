@@ -91,6 +91,7 @@ class EtablissementController extends Controller
         return redirect()->route('etablissements.index');
     }
 
+    
     /**
      * Display the specified resource.
      */

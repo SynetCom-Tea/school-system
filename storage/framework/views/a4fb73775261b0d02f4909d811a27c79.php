@@ -278,4 +278,4 @@
         <?php endif; ?>
     </div>
 </body>
-</html><?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views\exports\listes_affichage_pdf.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views/exports/listes_affichage_pdf.blade.php ENDPATH**/ ?>

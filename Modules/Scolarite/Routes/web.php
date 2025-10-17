@@ -96,10 +96,23 @@ use Modules\Scolarite\Http\Controllers\InscriptionController;
         Route::get('/scolarite/fiches-pdf', [InscriptionController::class, 'genererFichesPdfParClasse'])
             ->name('scolarite.fiches.pdf');
                 
-            // TEST ULTRA-RAPIDE
-Route::get('/test-modification/{id}', function($id) {
-    return "🟢 ÇA FONCTIONNE ! ID: " . $id;
-});
+            
+            // Routes pour les nouveaux documents
+        Route::get('/scolarite/registre-bibliotheque', [InscriptionController::class, 'genererRegistreBibliotheque'])
+            ->name('scolarite.registre.bibliotheque');
+
+        Route::get('/scolarite/fiche-dossier-candidat', [InscriptionController::class, 'genererFicheDossierCandidat'])
+            ->name('scolarite.fiche.dossier.candidat');
+
+        Route::get('/scolarite/certificat-scolarite', [InscriptionController::class, 'genererCertificatScolarite'])
+            ->name('scolarite.certificat.scolarite');
+
+        Route::get('/scolarite/releve-notes', [InscriptionController::class, 'genererReleveNotes'])
+            ->name('scolarite.releve.notes');
+
+        Route::get('/scolarite/releve-notes-vide', [InscriptionController::class, 'genererReleveNotesVide'])
+            ->name('scolarite.releve.notes.vide');
+
           
     });
 

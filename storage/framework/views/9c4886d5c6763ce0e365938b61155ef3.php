@@ -294,4 +294,4 @@
     
 </body>
 </html>
-<?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views\secondaire\bulletin.blade.php ENDPATH**/ ?>
+<?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views/secondaire/bulletin.blade.php ENDPATH**/ ?>

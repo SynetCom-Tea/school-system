@@ -268,53 +268,100 @@ class EmploiController extends Controller
         //
     }
 
-    public function calendar(Request $request)
-    {
-        $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $annee = Annee::where('actif',1)->first();
-        $classes = getClasses($annee->id, $etablissement_section);
-        $niveaux = Niveau::where('section_id', $request->section_id)->get();
-        $resultats = [];
-        $emplois = [];
-        $events = [];
-        $emploiUnique = null;
-        if ($request->classe != null) {
+   public function calendar(Request $request)
+{
+    $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
+    $annee = Annee::where('actif',1)->first();
+    $classes = getClasses($annee->id, $etablissement_section);
+    $niveaux = Niveau::where('section_id', $request->section_id)->get();
+    $resultats = [];
+    $emplois = [];
+    $events = [];
+    $emploiUnique = null;
+    
+    if ($request->classe != null) {
+        try {
             $emplois = Emploi::getEmploisBySectionAndEtablissement($request->section_id, Auth::user()->etablissement_id, $request->classe);
-            $seances = $request->emploi ? Emploi::getEmploiwhitClasse($request->section_id, $request->classe, $request->emploi) : Emploi::getEmploiwhitClasse($request->section_id, $request->classe);
+            
+            // VÉRIFICATION RENFORCÉE
+            if (empty($emplois) || (is_countable($emplois) && count($emplois) === 0)) {
+                return Inertia::render('Emplois/Calendar', [
+                    'emplois' => [],
+                    'AllClasses' => $classes,
+                    'niveaux' => $niveaux,
+                    'events' => [],
+                    'sectionID' => $request->section_id,
+                    'error' => 'Aucun emploi du temps disponible pour cette classe.'
+                ]);
+            }
+            
+            $seances = $request->emploi ? 
+                Emploi::getEmploiwhitClasse($request->section_id, $request->classe, $request->emploi) : 
+                Emploi::getEmploiwhitClasse($request->section_id, $request->classe);
+            
+            // Vérifier que $seances n'est pas vide
+            if (empty($seances)) {
+                return Inertia::render('Emplois/Calendar', [
+                    'emplois' => $emplois,
+                    'AllClasses' => $classes,
+                    'niveaux' => $niveaux,
+                    'events' => [],
+                    'sectionID' => $request->section_id,
+                    'error' => 'Aucune séance trouvée pour cet emploi du temps.'
+                ]);
+            }
+            
             if($request->emploi != null){
                 $emploiUnique = Emploi::find($request->emploi);
-            }else{
-                // CORRECTION : Vérifier si le tableau n'est pas vide avant d'accéder à l'index 0
-                $emploiUnique = !empty($emplois) ? $emplois[0] : null;
+            } else {
+                // CORRECTION ULTRA-SÉCURISÉE
+                if (is_array($emplois) && count($emplois) > 0) {
+                    $emploiUnique = $emplois[0];
+                } elseif (is_object($emplois) && method_exists($emplois, 'count') && $emplois->count() > 0) {
+                    $emploiUnique = $emplois->first();
+                } else {
+                    $emploiUnique = null;
+                }
             }
-            // Add additional validation before using $emploiUnique
+
             if (!$emploiUnique) {
-                // Handle the case where no emploi is found
-                return back()->with('error', 'Aucun emploi du temps trouvé pour cette classe');
+                return Inertia::render('Emplois/Calendar', [
+                    'emplois' => $emplois,
+                    'AllClasses' => $classes,
+                    'niveaux' => $niveaux,
+                    'events' => [],
+                    'sectionID' => $request->section_id,
+                    'error' => 'Aucun emploi du temps trouvé pour cette classe'
+                ]);
             }
+
             $dateDebut = Carbon::parse($emploiUnique->date_debut);
             $dateFin = Carbon::parse($emploiUnique->date_fin);
+            
             $resultats = generationCalendar($dateDebut, $dateFin, $seances);
-            // Vérification de la clé 'events' dans $resultats
-            if (isset($resultats['events'])) {
+
+            // VÉRIFICATION FINALE
+            if (isset($resultats['events']) && is_array($resultats['events'])) {
                 $events = $resultats['events'];
             } else {
                 $events = [];
             }
-            // dd($events);
-            // dd($events[1],$events[567],$events[500],$events[2],$events[4],$events[300],$events[200],$events[124]);
+            
+        } catch (\Exception $e) {
+            logger('Erreur dans calendar: ' . $e->getMessage());
+            $events = [];
         }
-        // if($request->emploi != null){
-        //     dd(Emploi::getEmploiwhitClasse($request->classe, $request->emploi));
-        // }
-        return Inertia::render('Emplois/Calendar', [
-            'emplois' => $emplois,
-            'AllClasses' => $classes,
-            'niveaux' => $niveaux,
-            'events' => $events,
-            'sectionID' => $request->section_id
-        ]);
     }
+    
+    return Inertia::render('Emplois/Calendar', [
+        'emplois' => $emplois,
+        'AllClasses' => $classes,
+        'niveaux' => $niveaux,
+        'events' => $events,
+        'sectionID' => $request->section_id
+    ]);
+}
+
     public function MonEmploi(Request $request){
         $user = Auth::user();
         $events = [];

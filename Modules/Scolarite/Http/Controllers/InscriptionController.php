@@ -1905,6 +1905,279 @@ public function genererFichesPdfParClasse(Request $request)
     }
 }
 
+
+
+//debut des documents administratifs
+/**
+ * Générer le registre de bibliothèque
+ */
+public function genererRegistreBibliotheque(Request $request)
+{
+    try {
+        $section = $request->section;
+        $dateDebut = $request->date_debut ?? date('Y-m-01');
+        $dateFin = $request->date_fin ?? date('Y-m-t');
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        $includeSignature = filter_var($request->input('include_signature', true), FILTER_VALIDATE_BOOLEAN);
+        
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        // Récupérer les infos de l'établissement
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        // Simuler des données de bibliothèque (à adapter avec votre modèle)
+        $donneesBibliotheque = [];
+        foreach ($inscriptionsAvecClasses as $inscription) {
+            $donneesBibliotheque[] = [
+                'apprenant' => $inscription['apprenant'],
+                'classe' => $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé',
+                'documents' => [
+                    [
+                        'nom_document' => 'Mathématiques Terminale',
+                        'date_prise' => date('d/m/Y', strtotime('-10 days')),
+                        'date_retour' => date('d/m/Y', strtotime('+20 days')),
+                        'signature' => ''
+                    ],
+                    [
+                        'nom_document' => 'Histoire-Géographie',
+                        'date_prise' => date('d/m/Y', strtotime('-5 days')),
+                        'date_retour' => date('d/m/Y', strtotime('+15 days')),
+                        'signature' => ''
+                    ]
+                ]
+            ];
+        }
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'donneesBibliotheque' => $donneesBibliotheque,
+            'dateDebut' => $dateDebut,
+            'dateFin' => $dateFin,
+            'includeLogo' => $includeLogo,
+            'includeSignature' => $includeSignature,
+            'title' => 'Registre de Bibliothèque',
+            'dateGeneration' => date('d/m/Y à H:i'),
+        ];
+        
+        $pdf = PDF::loadView('exports.registre_bibliotheque_pdf', $data);
+        $pdf->setPaper('A4', 'landscape');
+        
+        $fileName = 'registre_bibliotheque_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Générer la fiche pour le dossier des candidats
+ */
+public function genererFicheDossierCandidat(Request $request)
+{
+    try {
+        $section = $request->section;
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'inscriptions' => $inscriptionsAvecClasses,
+            'includeLogo' => $includeLogo,
+            'title' => 'Fiche Dossier Candidat',
+            'dateGeneration' => date('d/m/Y'),
+        ];
+        
+        $pdf = PDF::loadView('exports.fiche_dossier_candidat_pdf', $data);
+        
+        $fileName = 'fiche_dossier_candidat_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Générer le certificat de scolarité
+ */
+/**
+ * Générer le certificat de scolarité
+ */
+public function genererCertificatScolarite(Request $request)
+{
+    try {
+        $section = $request->section;
+        $apprenantId = $request->apprenant_id;
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+        // Récupérer l'apprenant spécifique ou tous
+        if ($apprenantId) {
+            $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
+                ->where('apprenant_id', $apprenantId)
+                ->get();
+        } else {
+            $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        }
+        
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'inscriptions' => $inscriptionsAvecClasses,
+            'includeLogo' => $includeLogo, // Ajout de ce paramètre
+            'title' => 'Certificat de Scolarité',
+            'dateGeneration' => date('d/m/Y'),
+        ];
+        
+        $pdf = PDF::loadView('exports.certificat_scolarite_pdf', $data);
+        
+        $fileName = 'certificat_scolarite_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Générer le relevé de notes (avec données)
+ */
+public function genererReleveNotes(Request $request)
+{
+    try {
+        $section = $request->section;
+        $apprenantId = $request->apprenant_id;
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+        // Récupérer les inscriptions
+        if ($apprenantId) {
+            $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
+                ->where('apprenant_id', $apprenantId)
+                ->get();
+        } else {
+            $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        }
+        
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        // Récupérer les notes depuis la base de données
+        $donneesAvecNotes = [];
+        foreach ($inscriptionsAvecClasses as $inscription) {
+            $notes = $this->getNotesApprenant($inscription['apprenant_id'] ?? $inscription->apprenant_id);
+            
+            $donneesAvecNotes[] = [
+                'inscription' => $inscription,
+                'notes' => $notes,
+                'moyenne_generale' => $this->calculerMoyenneGenerale($notes)
+            ];
+        }
+        
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'donneesAvecNotes' => $donneesAvecNotes,
+            'includeLogo' => $includeLogo,
+            'title' => 'Relevé de Notes',
+            'dateGeneration' => date('d/m/Y'),
+        ];
+        
+        $pdf = PDF::loadView('exports.releve_notes_pdf', $data);
+        $pdf->setPaper('A4', 'portrait');
+        
+        $fileName = 'releve_notes_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Générer le relevé de notes vide (pour enseignants)
+ */
+public function genererReleveNotesVide(Request $request)
+{
+    try {
+        $section = $request->section;
+        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        // Définir les matières par défaut selon la section
+        $matieres = $this->getMatieresParSection($section);
+        
+        $data = [
+            'etablissement' => $etablissement,
+            'inscriptions' => $inscriptionsAvecClasses,
+            'matieres' => $matieres,
+            'includeLogo' => $includeLogo,
+            'title' => 'Relevé de Notes (Modèle Vide)',
+            'dateGeneration' => date('d/m/Y'),
+        ];
+        
+        $pdf = PDF::loadView('exports.releve_notes_vide_pdf', $data);
+        $pdf->setPaper('A4', 'portrait');
+        
+        $fileName = 'releve_notes_vide_' . date('Ymd_His') . '.pdf';
+        return $pdf->download($fileName);
+        
+    } catch (\Exception $e) {
+        return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+    }
+}
+
+// Méthodes helper pour les notes
+private function getNotesApprenant($apprenantId)
+{
+    // À adapter selon votre structure de base de données pour les notes
+    return DB::table('notes')
+        ->join('matieres', 'notes.matiere_id', '=', 'matieres.id')
+        ->where('notes.apprenant_id', $apprenantId)
+        ->select('matieres.libelle as matiere', 'notes.valeur as note', 'notes.coefficient')
+        ->get()
+        ->toArray();
+}
+
+private function calculerMoyenneGenerale($notes)
+{
+    if (empty($notes)) return 0;
+    
+    $totalPoints = 0;
+    $totalCoefficients = 0;
+    
+    foreach ($notes as $note) {
+        $totalPoints += $note->note * $note->coefficient;
+        $totalCoefficients += $note->coefficient;
+    }
+    
+    return $totalCoefficients > 0 ? round($totalPoints / $totalCoefficients, 2) : 0;
+}
+
+private function getMatieresParSection($section)
+{
+    $matieres = [
+        '1' => ['Mathématiques', 'Français', 'Éveil', 'EPS', 'Arts'],
+        '2' => ['Mathématiques', 'Français', 'Anglais', 'SVT', 'Physique-Chimie', 'Histoire-Géo', 'EPS'],
+        '3' => ['Mathématiques', 'Informatique', 'Économie', 'Droit', 'Gestion', 'Communication'],
+        '4' => ['Spécialité 1', 'Spécialité 2', 'Méthodologie', 'Recherche', 'Langues']
+    ];
+    
+    return $matieres[$section] ?? ['Mathématiques', 'Français', 'Anglais'];
+}
+//fin ajout
+
 // /**
 //  * Générer la fiche de présence (pour impression/contrôle)
 //  */

@@ -22,11 +22,15 @@ if (!function_exists('generationCalendar')) {
         $events = [];
         
         try {
+            // Vérifier que $seances n'est pas vide
+            if (empty($seances)) {
+                return ['occurrences' => $occurrences, 'events' => $events];
+            }
+            
             $startDateTime = new DateTime($startDate);
             $endDateTime = new DateTime($endDate);
             $currentDate = clone $startDateTime;
 
-            // Premièrement, créer un mapping des jours de la semaine
             $daysMapping = [
                 'Lundi' => 'Monday',
                 'Mardi' => 'Tuesday', 
@@ -38,26 +42,29 @@ if (!function_exists('generationCalendar')) {
             ];
 
             while ($currentDate <= $endDateTime) {
-                $dayOfWeek = $currentDate->format('l'); // Jour en anglais
+                $dayOfWeek = $currentDate->format('l');
                 $dayOfWeekFrench = translateDayToFrench($dayOfWeek);
 
                 if (isset($occurrences[$dayOfWeekFrench])) {
                     $occurrences[$dayOfWeekFrench]['occurrences']++;
 
                     foreach ($seances as $seance) {
-                        // Convertir l'objet en tableau si nécessaire
+                        // CORRECTION : Vérification robuste des données
                         $seanceArray = is_object($seance) ? $seance->toArray() : $seance;
                         
+                        // Vérifier que la séance a les clés nécessaires
+                        if (!isset($seanceArray['jour']) || !isset($seanceArray['heure_debut']) || !isset($seanceArray['heure_fin'])) {
+                            continue; // Passer à la séance suivante
+                        }
+                        
                         if ($seanceArray['jour'] === $dayOfWeekFrench) {
-                            // Utiliser la date courante plutôt qu'un calcul basé sur $key
                             $dateSeance = clone $currentDate;
                             
-                            // Générer l'événement
-                            $heureDebut = substr($seanceArray['heure_debut'], 0, 5);
-                            $heureFin = substr($seanceArray['heure_fin'], 0, 5);
+                            $heureDebut = substr($seanceArray['heure_debut'] ?? '', 0, 5);
+                            $heureFin = substr($seanceArray['heure_fin'] ?? '', 0, 5);
                             
                             $event = [
-                                'title' => $seanceArray['nom_matiere'] . ', Salle de classe',
+                                'title' => ($seanceArray['nom_matiere'] ?? 'Matière') . ', Salle de classe',
                                 'with' => ($seanceArray['enseignant_nom'] ?? '') . ' ' . ($seanceArray['enseignant_prenom'] ?? ''),
                                 'time' => [
                                     'start' => $dateSeance->format('Y-m-d') . ' ' . $heureDebut,
@@ -71,7 +78,6 @@ if (!function_exists('generationCalendar')) {
                             
                             $events[] = $event;
                             
-                            // Ajouter à occurrences
                             $seanceWithDate = $seanceArray;
                             $seanceWithDate['date_seance'] = $dateSeance->format('Y-m-d');
                             $occurrences[$dayOfWeekFrench]['seances'][] = $seanceWithDate;

@@ -57,6 +57,8 @@ class RoleController extends Controller
        $etablissement_section = DB::table('etablissement_section')
                     ->where('etablissement_id', Auth::user()->etablissement_id)
                     ->pluck('id');
+
+                    
         // dd($request->all(), $request->section_id);
         $data = $this->validate($request, [
             'name' => 'required|string',

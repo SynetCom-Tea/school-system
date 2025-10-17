@@ -440,10 +440,128 @@
           </div>
         </div>
 
-        <div class="generation-cards">
-          <!-- Fiche de Présence Améliorée -->
-          <div class="generation-card featured">
-            <div class="card-badge">Recommandé</div>
+         <!-- Registre Bibliothèque -->
+    <div class="generation-card">
+        <div class="card-icon-wrapper library">
+            <v-icon color="#FF9800" size="28">mdi-book-account</v-icon>
+        </div>
+        <div class="card-content">
+            <h3>Registre Bibliothèque</h3>
+            <p class="text-muted">Suivi des prêts de documents</p>
+            <div class="card-features">
+                <v-chip size="small" color="orange-lighten-5" text-color="orange">
+                    <v-icon size="small" class="me-1">mdi-calendar</v-icon>
+                    Dates prêt/retour
+                </v-chip>
+                <v-chip size="small" color="brown-lighten-5" text-color="brown">
+                    <v-icon size="small" class="me-1">mdi-signature</v-icon>
+                    Signature
+                </v-chip>
+            </div>
+        </div>
+        <v-btn 
+            color="orange" 
+            :href="route('scolarite.registre.bibliotheque', { section: vSectionID })"
+            prepend-icon="mdi-book-account"
+        >
+            Générer
+        </v-btn>
+    </div>
+
+    <!-- Fiche Dossier Candidat -->
+    <div class="generation-card">
+        <div class="card-icon-wrapper candidate">
+            <v-icon color="#9C27B0" size="28">mdi-folder-account</v-icon>
+        </div>
+        <div class="card-content">
+            <h3>Dossier Candidat</h3>
+            <p class="text-muted">Checklist documents requis</p>
+            <div class="card-features">
+                <v-chip size="small" color="purple-lighten-5" text-color="purple">
+                    <v-icon size="small" class="me-1">mdi-checkbox-marked</v-icon>
+                    Cases à cocher
+                </v-chip>
+                <v-chip size="small" color="deep-purple-lighten-5" text-color="deep-purple">
+                    <v-icon size="small" class="me-1">mdi-file-document</v-icon>
+                    Documents
+                </v-chip>
+            </div>
+        </div>
+        <v-btn 
+            color="purple" 
+            :href="route('scolarite.fiche.dossier.candidat', { section: vSectionID })"
+            prepend-icon="mdi-folder-account"
+        >
+            Générer
+        </v-btn>
+    </div>
+
+    <!-- Certificat de Scolarité -->
+    <div class="generation-card">
+        <div class="card-icon-wrapper certificate">
+            <v-icon color="#2196F3" size="28">mdi-certificate</v-icon>
+        </div>
+        <div class="card-content">
+            <h3>Certificat Scolarité</h3>
+            <p class="text-muted">Attestation de scolarité officielle</p>
+            <div class="card-features">
+                <v-chip size="small" color="blue-lighten-5" text-color="blue">
+                    <v-icon size="small" class="me-1">mdi-school</v-icon>
+                    Officiel
+                </v-chip>
+            </div>
+        </div>
+        <v-btn 
+            color="blue" 
+            :href="route('scolarite.certificat.scolarite', { section: vSectionID })"
+            prepend-icon="mdi-certificate"
+        >
+            Générer
+        </v-btn>
+    </div>
+
+    <!-- Relevé de Notes -->
+    <div class="generation-card">
+        <div class="card-icon-wrapper grades">
+            <v-icon color="#4CAF50" size="28">mdi-chart-line</v-icon>
+        </div>
+        <div class="card-content">
+            <h3>Relevé de Notes</h3>
+            <p class="text-muted">Bulletin avec ou sans notes</p>
+            <div class="card-features">
+                <v-chip size="small" color="green-lighten-5" text-color="green">
+                    <v-icon size="small" class="me-1">mdi-database</v-icon>
+                    Avec données
+                </v-chip>
+                <v-chip size="small" color="teal-lighten-5" text-color="teal">
+                    <v-icon size="small" class="me-1">mdi-pencil</v-icon>
+                    Modèle vide
+                </v-chip>
+            </div>
+        </div>
+        <div class="card-actions">
+            <v-btn 
+                color="green" 
+                :href="route('scolarite.releve.notes', { section: vSectionID })"
+                prepend-icon="mdi-database"
+                class="me-2"
+            >
+                Avec notes
+            </v-btn>
+            <v-btn 
+                color="teal" 
+                :href="route('scolarite.releve.notes.vide', { section: vSectionID })"
+                prepend-icon="mdi-pencil"
+            >
+                Modèle vide
+            </v-btn>
+        </div>
+    </div>
+
+    <div class="generation-cards">
+      <!-- Fiche de Présence Améliorée -->
+      <div class="generation-card featured">
+        <div class="card-badge">Recommandé</div>
             <div class="card-icon-wrapper presence">
               <v-icon color="#4CAF50" size="28">mdi-clipboard-check-multiple</v-icon>
             </div>
