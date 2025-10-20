@@ -1905,59 +1905,31 @@ public function genererFichesPdfParClasse(Request $request)
     }
 }
 
+//debut export registre bibliotheque, fiche dossier candidat, certificat scolarite, releve notes
 
-
-//debut des documents administratifs
 /**
- * Générer le registre de bibliothèque
+ * Générer le registre de bibliothèque (VIDE)
  */
 public function genererRegistreBibliotheque(Request $request)
 {
     try {
         $section = $request->section;
-        $dateDebut = $request->date_debut ?? date('Y-m-01');
-        $dateFin = $request->date_fin ?? date('Y-m-t');
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         $includeSignature = filter_var($request->input('include_signature', true), FILTER_VALIDATE_BOOLEAN);
         
+        // Limiter le nombre d'inscriptions pour éviter le timeout
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        $inscriptionsAvecClasses = array_slice($this->normaliserDonneesAvecClasses($inscriptions, $section), 0, 10); // Limiter à 10
         
-        // Récupérer les infos de l'établissement
         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
-        
-        // Simuler des données de bibliothèque (à adapter avec votre modèle)
-        $donneesBibliotheque = [];
-        foreach ($inscriptionsAvecClasses as $inscription) {
-            $donneesBibliotheque[] = [
-                'apprenant' => $inscription['apprenant'],
-                'classe' => $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé',
-                'documents' => [
-                    [
-                        'nom_document' => 'Mathématiques Terminale',
-                        'date_prise' => date('d/m/Y', strtotime('-10 days')),
-                        'date_retour' => date('d/m/Y', strtotime('+20 days')),
-                        'signature' => ''
-                    ],
-                    [
-                        'nom_document' => 'Histoire-Géographie',
-                        'date_prise' => date('d/m/Y', strtotime('-5 days')),
-                        'date_retour' => date('d/m/Y', strtotime('+15 days')),
-                        'signature' => ''
-                    ]
-                ]
-            ];
-        }
         
         $data = [
             'etablissement' => $etablissement,
-            'donneesBibliotheque' => $donneesBibliotheque,
-            'dateDebut' => $dateDebut,
-            'dateFin' => $dateFin,
+            'inscriptions' => $inscriptionsAvecClasses,
             'includeLogo' => $includeLogo,
             'includeSignature' => $includeSignature,
             'title' => 'Registre de Bibliothèque',
-            'dateGeneration' => date('d/m/Y à H:i'),
+            'dateGeneration' => date('d/m/Y'),
         ];
         
         $pdf = PDF::loadView('exports.registre_bibliotheque_pdf', $data);
@@ -1972,7 +1944,10 @@ public function genererRegistreBibliotheque(Request $request)
 }
 
 /**
- * Générer la fiche pour le dossier des candidats
+ * Générer la fiche pour le dossier des candidats (VIDE)
+ */
+/**
+ * Générer la fiche pour le dossier des candidats (TERMINALE et 3EME uniquement)
  */
 public function genererFicheDossierCandidat(Request $request)
 {
@@ -1980,22 +1955,23 @@ public function genererFicheDossierCandidat(Request $request)
         $section = $request->section;
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         
-        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        // Récupérer uniquement les élèves de Terminale et 3ème
+        $inscriptions = $this->getInscriptionsTerminaleEtTroisieme($request, $section);
         
         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
         
         $data = [
             'etablissement' => $etablissement,
-            'inscriptions' => $inscriptionsAvecClasses,
+            'inscriptions' => $inscriptions,
             'includeLogo' => $includeLogo,
-            'title' => 'Fiche Dossier Candidat',
+            'title' => 'Fiche Dossier Candidat - Terminale/3ème',
             'dateGeneration' => date('d/m/Y'),
         ];
         
         $pdf = PDF::loadView('exports.fiche_dossier_candidat_pdf', $data);
+        $pdf->setPaper('A4', 'portrait');
         
-        $fileName = 'fiche_dossier_candidat_' . date('Ymd_His') . '.pdf';
+        $fileName = 'fiche_dossier_candidat_terminale_3eme_' . date('Ymd_His') . '.pdf';
         return $pdf->download($fileName);
         
     } catch (\Exception $e) {
@@ -2004,25 +1980,81 @@ public function genererFicheDossierCandidat(Request $request)
 }
 
 /**
- * Générer le certificat de scolarité
+ * Récupérer uniquement les inscriptions de Terminale et 3ème (TRI: Terminale d'abord)
  */
+private function getInscriptionsTerminaleEtTroisieme(Request $request, $section)
+{
+    $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    
+    $terminales = [];
+    $troisiemes = [];
+    
+    foreach ($inscriptionsAvecClasses as $inscription) {
+        $classeLibelle = $inscription['classe_annee']['classe']['libelle'] ?? '';
+        $niveauLibelle = $inscription['niveau']['libelle'] ?? '';
+        $niveauCode = $inscription['niveau']['code'] ?? '';
+        
+        // Convertir en minuscules pour la comparaison
+        $classeLower = strtolower($classeLibelle);
+        $niveauLower = strtolower($niveauLibelle);
+        
+        // Critères pour Terminale
+        $isTerminale = 
+            str_contains($classeLower, 'terminale') || 
+            str_contains($niveauLower, 'terminale') ||
+            str_contains($classeLower, 'tle') ||
+            $niveauCode === 'Tle' ||
+            $niveauCode === 'Term' ||
+            str_contains($classeLower, 'terminal');
+        
+        // Critères pour 3ème
+        $isTroisieme = 
+            str_contains($classeLower, '3ème') || 
+            str_contains($classeLower, '3eme') ||
+            str_contains($niveauLower, '3ème') ||
+            str_contains($niveauLower, '3eme') ||
+            $niveauCode === '3ème' ||
+            $niveauCode === '3eme' ||
+            $niveauCode === '3e' ||
+            str_contains($classeLower, 'troisième');
+        
+        if ($isTerminale) {
+            $inscription['is_terminale'] = true;
+            $terminales[] = $inscription;
+        } elseif ($isTroisieme) {
+            $inscription['is_terminale'] = false;
+            $troisiemes[] = $inscription;
+        }
+    }
+    
+    // Combiner avec Terminale en premier
+    $allInscriptions = array_merge($terminales, $troisiemes);
+    
+    return $allInscriptions;
+}
+
 /**
- * Générer le certificat de scolarité
+ * Générer le certificat de scolarité (OPTIMISÉ)
  */
 public function genererCertificatScolarite(Request $request)
 {
     try {
+        set_time_limit(120); // Augmenter le timeout à 2 minutes
+        
         $section = $request->section;
         $apprenantId = $request->apprenant_id;
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         
-        // Récupérer l'apprenant spécifique ou tous
+        // Si un apprenant spécifique est demandé
         if ($apprenantId) {
             $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
                 ->where('apprenant_id', $apprenantId)
                 ->get();
         } else {
+            // Limiter à 5 inscriptions maximum pour éviter le timeout
             $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+            $inscriptions = array_slice($inscriptions, 0, 5);
         }
         
         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
@@ -2032,7 +2064,7 @@ public function genererCertificatScolarite(Request $request)
         $data = [
             'etablissement' => $etablissement,
             'inscriptions' => $inscriptionsAvecClasses,
-            'includeLogo' => $includeLogo, // Ajout de ce paramètre
+            'includeLogo' => $includeLogo,
             'title' => 'Certificat de Scolarité',
             'dateGeneration' => date('d/m/Y'),
         ];
@@ -2048,22 +2080,24 @@ public function genererCertificatScolarite(Request $request)
 }
 
 /**
- * Générer le relevé de notes (avec données)
+ * Générer le relevé de notes (OPTIMISÉ)
  */
 public function genererReleveNotes(Request $request)
 {
     try {
+        set_time_limit(120);
+        
         $section = $request->section;
         $apprenantId = $request->apprenant_id;
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         
-        // Récupérer les inscriptions
         if ($apprenantId) {
             $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
                 ->where('apprenant_id', $apprenantId)
                 ->get();
         } else {
             $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+            $inscriptions = array_slice($inscriptions, 0, 3); // Limiter à 3
         }
         
         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
@@ -2102,15 +2136,19 @@ public function genererReleveNotes(Request $request)
 }
 
 /**
- * Générer le relevé de notes vide (pour enseignants)
+ * Générer le relevé de notes vide (OPTIMISÉ)
  */
 public function genererReleveNotesVide(Request $request)
 {
     try {
+        set_time_limit(120);
+        
         $section = $request->section;
         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+        $inscriptions = array_slice($inscriptions, 0, 4); // Limiter à 4
+        
         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
         
         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
@@ -2137,34 +2175,6 @@ public function genererReleveNotesVide(Request $request)
         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
     }
 }
-
-// Méthodes helper pour les notes
-private function getNotesApprenant($apprenantId)
-{
-    // À adapter selon votre structure de base de données pour les notes
-    return DB::table('notes')
-        ->join('matieres', 'notes.matiere_id', '=', 'matieres.id')
-        ->where('notes.apprenant_id', $apprenantId)
-        ->select('matieres.libelle as matiere', 'notes.valeur as note', 'notes.coefficient')
-        ->get()
-        ->toArray();
-}
-
-private function calculerMoyenneGenerale($notes)
-{
-    if (empty($notes)) return 0;
-    
-    $totalPoints = 0;
-    $totalCoefficients = 0;
-    
-    foreach ($notes as $note) {
-        $totalPoints += $note->note * $note->coefficient;
-        $totalCoefficients += $note->coefficient;
-    }
-    
-    return $totalCoefficients > 0 ? round($totalPoints / $totalCoefficients, 2) : 0;
-}
-
 private function getMatieresParSection($section)
 {
     $matieres = [

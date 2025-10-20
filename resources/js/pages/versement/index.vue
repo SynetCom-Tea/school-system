@@ -521,7 +521,7 @@
     </div>
 
     <!-- Relevé de Notes -->
-    <div class="generation-card">
+    <!-- <div class="generation-card">
         <div class="card-icon-wrapper grades">
             <v-icon color="#4CAF50" size="28">mdi-chart-line</v-icon>
         </div>
@@ -556,7 +556,7 @@
                 Modèle vide
             </v-btn>
         </div>
-    </div>
+    </div> -->
 
     <div class="generation-cards">
       <!-- Fiche de Présence Améliorée -->

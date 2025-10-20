@@ -340,7 +340,7 @@ export default {
         </v-card-actions>
     </v-card>
 </v-dialog>
-<Datatable v-if="types == 1" titleDatatable="Listes des evaluations (section primaire)" :headers="getHeaders" :items="evaluation_primaires" :functionOnClickAddButton="create">
+<Datatable v-if="types == 1" titleDatatable="Listes des evaluations (section primaire)" :headers="getHeaders" :items="evaluation_primaires" :functionOnClickAddButton="create" >
     <template v-slot:[`item.actions`]="{ item }">
         <v-icon size="small" color="warning" title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
         </v-icon>

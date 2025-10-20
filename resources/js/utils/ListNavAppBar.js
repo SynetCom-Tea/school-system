@@ -568,7 +568,7 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder aux évaluations  section",
       expand:false,
       image: "/assets/menusImage/note4.png",
-      permissions: ["manage_school", "note.read", "note.create", "note.update", "note.delete"]
+      permissions: ["manage_school", "note.read.admin", "note.update", "note.delete"]
     },
     {
       title: "Bulletins",

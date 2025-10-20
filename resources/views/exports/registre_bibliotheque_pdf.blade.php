@@ -4,14 +4,69 @@
     <meta charset="utf-8">
     <title>Registre de Bibliothèque</title>
     <style>
-        body { font-family: DejaVu Sans, sans-serif; font-size: 12px; }
-        .header { text-align: center; margin-bottom: 20px; border-bottom: 2px solid #333; padding-bottom: 10px; }
-        .logo { max-width: 100px; max-height: 100px; }
-        .table { width: 100%; border-collapse: collapse; margin: 10px 0; }
-        .table th, .table td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .table th { background-color: #f5f5f5; font-weight: bold; }
-        .signature-cell { height: 50px; }
-        .page-break { page-break-after: always; }
+        body { 
+            font-family: DejaVu Sans, sans-serif; 
+            font-size: 12px; 
+            margin: 0;
+            padding: 15px;
+        }
+        .header { 
+            text-align: center; 
+            margin-bottom: 20px; 
+            border-bottom: 2px solid #333; 
+            padding-bottom: 15px;
+        }
+        .logo { 
+            max-width: 80px; 
+            max-height: 80px;
+        }
+        .instructions {
+            background-color: #fff8e1;
+            border: 1px solid #ffd54f;
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+        .empty-section {
+            margin: 20px 0;
+            page-break-inside: avoid;
+        }
+        .empty-table { 
+            width: 100%; 
+            border-collapse: collapse; 
+            margin: 10px 0;
+            font-size: 11px;
+        }
+        .empty-table th, .empty-table td { 
+            border: 1px solid #ddd; 
+            padding: 8px; 
+            text-align: left;
+            height: 35px;
+        }
+        .empty-table th { 
+            background-color: #f5f5f5; 
+            font-weight: bold;
+            text-align: center;
+        }
+        .student-info {
+            background-color: #e8f4ff;
+            padding: 8px 12px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            font-weight: bold;
+        }
+        .page-break { 
+            page-break-after: always;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 10px;
+            color: #666;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+        }
     </style>
 </head>
 <body>
@@ -19,48 +74,68 @@
         @if($includeLogo && $etablissement->logo)
             <img src="{{ public_path('storage/' . $etablissement->logo) }}" class="logo">
         @endif
-        <h2>{{ $etablissement->name }}</h2>
-        <h3>REGISTRE DE BIBLIOTHÈQUE</h3>
-        <p>Période du {{ date('d/m/Y', strtotime($dateDebut)) }} au {{ date('d/m/Y', strtotime($dateFin)) }}</p>
+        <h2 style="margin: 5px 0;">{{ $etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE' }}</h2>
+        <h3 style="margin: 5px 0; color: #3c80e7;">REGISTRE DE BIBLIOTHÈQUE</h3>
+        <p style="margin: 5px 0;">Année Scolaire {{ date('Y') }}-{{ date('Y')+1 }}</p>
     </div>
 
-    @foreach($donneesBibliotheque as $index => $donnee)
-        <div class="section">
-            <h4>Élève: {{ $donnee['apprenant']['nom'] }} {{ $donnee['apprenant']['prenom'] }} - Classe: {{ $donnee['classe'] }}</h4>
+    <div class="instructions">
+        <strong>Instructions :</strong> Ce registre est à remplir manuellement pour le suivi des prêts de documents. 
+        Inscrire le nom du document, les dates de prêt et de retour prévue, et faire signer l'emprunteur.
+    </div>
+
+    @foreach($inscriptions as $index => $inscription)
+        <div class="empty-section">
+            <div class="student-info">
+                Élève: <strong>{{ $inscription['apprenant']['nom'] }} {{ $inscription['apprenant']['prenom'] }}</strong> 
+                | Classe: {{ $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé' }} 
+                | Matricule: {{ $inscription['apprenant']['matricule'] ?? 'N/A' }}
+            </div>
             
-            <table class="table">
+            <table class="empty-table">
                 <thead>
                     <tr>
-                        <th>Nom du Document</th>
-                        <th>Date de Prise</th>
-                        <th>Date de Retour Prévue</th>
+                        <th style="width: 5%;">N°</th>
+                        <th style="width: 30%;">Nom du Document</th>
+                        <th style="width: 15%;">Date de Prise</th>
+                        <th style="width: 15%;">Date de Retour Prévue</th>
+                        <th style="width: 10%;">Date de Retour Effective</th>
+                        <th style="width: 10%;">État</th>
                         @if($includeSignature)
-                        <th>Signature</th>
+                        <th style="width: 15%;">Signature Emprunteur</th>
                         @endif
                     </tr>
                 </thead>
                 <tbody>
-                    @foreach($donnee['documents'] as $document)
+                    @for($i = 1; $i <= 8; $i++)
                     <tr>
-                        <td>{{ $document['nom_document'] }}</td>
-                        <td>{{ $document['date_prise'] }}</td>
-                        <td>{{ $document['date_retour'] }}</td>
+                        <td style="text-align: center;">{{ $i }}</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align: center;"></td>
                         @if($includeSignature)
-                        <td class="signature-cell">{{ $document['signature'] }}</td>
+                        <td></td>
                         @endif
                     </tr>
-                    @endforeach
+                    @endfor
                 </tbody>
             </table>
+            
+            <div style="margin-top: 10px; font-size: 10px; text-align: right;">
+                <em>Lignes 1 à 8 - Page {{ ceil(($index + 1) / 2) }}</em>
+            </div>
         </div>
         
-        @if(($index + 1) % 3 == 0)
+        @if(($index + 1) % 2 == 0 && ($index + 1) < count($inscriptions))
             <div class="page-break"></div>
         @endif
     @endforeach
 
     <div class="footer">
-        <p>Généré le {{ $dateGeneration }}</p>
+        <p>Registre généré le {{ $dateGeneration }} | {{ $etablissement->name ?? 'Établissement Scolaire' }}</p>
+        <p>Service Bibliothèque</p>
     </div>
 </body>
 </html>
