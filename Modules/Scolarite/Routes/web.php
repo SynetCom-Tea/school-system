@@ -113,6 +113,31 @@ use Modules\Scolarite\Http\Controllers\InscriptionController;
         Route::get('/scolarite/releve-notes-vide', [InscriptionController::class, 'genererReleveNotesVide'])
             ->name('scolarite.releve.notes.vide');
 
-          
+        // Routes pour les relevés de notes paramétrables - SANS préfixe en double
+        Route::get('/releve-notes-vide-parametres', [InscriptionController::class, 'showParametresReleveNotes'])
+            ->name('scolarite.releve.notes.vide.parametres');
+
+        Route::get('/releve-notes-vide-generer', [InscriptionController::class, 'genererReleveNotesParametrable'])
+            ->name('scolarite.releve.notes.vide.generer');
+
+        Route::get('/releve-notes-matiere/{classeId}/{matiere}', [InscriptionController::class, 'genererReleveNotesParMatiere'])
+            ->name('scolarite.releve.notes.matiere');
+
+            // Routes pour le paramétrage unifié
+        Route::get('/generer-documents', [InscriptionController::class, 'showGenererDocuments'])
+            ->name('scolarite.generer.documents');
+
+        Route::get('/generer-document-pdf', [InscriptionController::class, 'genererDocumentParametrable'])
+            ->name('scolarite.generer.document.pdf');
+
+           
+    // Route pour générer le document (POST) - AJOUTEZ CETTE LIGNE
+    Route::post('/generer-document-parametrable', [InscriptionController::class, 'genererDocumentParametrable'])
+        ->name('scolarite.generer.document.parametrable');
+
+//             // routes/api.php ou routes/web.php
+// Route::get('/api/eleves/classe/{classeId}', [InscriptionController::class, 'getElevesParClasse']);
+    Route::get('/eleves/classe/{classeId}', [InscriptionController::class, 'getElevesParClasse']);
+
     });
 

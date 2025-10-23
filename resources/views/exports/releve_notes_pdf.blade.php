@@ -17,18 +17,20 @@
 </head>
 <body>
     <div class="header">
-        @if($includeLogo && $etablissement->logo)
-            <img src="{{ public_path('storage/' . $etablissement->logo) }}" class="logo">
-        @endif
+          @if($includeLogo && isset($etablissement->logo) && !empty($etablissement->logo))
+                    <img class="logo" src="{{ public_path('logos/' . $etablissement->logo) }}" alt="Logo établissement">
+                @elseif($includeLogo)
+                    <img class="logo" src="{{ public_path('logos/iat-logo.png') }}" alt="Logo par défaut">
+                @endif
         <h2>{{ $etablissement->name }}</h2>
         <h3>RELEVÉ DE NOTES</h3>
     </div>
 
     @foreach($donneesAvecNotes as $index => $donnee)
         <div class="student-info">
-            <h4>Élève: {{ $donnee['inscription']['apprenant']['nom'] }} {{ $donnee['inscription']['apprenant']['prenom'] }}</h4>
-            <p>Classe: {{ $donnee['inscription']['classe_annee']['classe']['libelle'] ?? 'Non classé' }}</p>
-            <p>Année Scolaire: {{ $donnee['inscription']['annee']['libelle'] ?? '2024/2025' }}</p>
+            <h4>Élève: {{ $inscription['apprenant']['nom'] }} {{ $inscription['apprenant']['prenom'] }}</h4>
+            <p>Classe: {{ $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé' }}</p>
+            <p>Année Scolaire: {{ $inscription['annee']['libelle'] ?? '2024/2025' }}</p>
         </div>
 
         <table class="table">

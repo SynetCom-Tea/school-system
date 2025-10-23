@@ -4,21 +4,30 @@
     <meta charset="utf-8">
     <title>Fiche Dossier Candidat - Terminale/3ème</title>
     <style>
-        body { 
-            font-family: DejaVu Sans, sans-serif; 
-            font-size: 13px; 
+        body {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 13px;
             margin: 0;
             padding: 20px;
         }
-        .header { 
-            text-align: center; 
-            margin-bottom: 25px; 
-            border-bottom: 3px solid #3c80e7; 
+        .header {
+            text-align: center;
+            margin-bottom: 25px;
+            border-bottom: 3px solid #3c80e7;
             padding-bottom: 20px;
         }
-        .logo { 
-            max-width: 90px; 
+        .logo {
+            max-width: 90px;
             max-height: 90px;
+        }
+        .instructions {
+            background-color: #e8f4ff;
+            border: 2px solid #3c80e7;
+            padding: 12px;
+            margin: 15px 0;
+            border-radius: 6px;
+            font-size: 12px;
+            text-align: center;
         }
         .candidate-card {
             border: 2px solid #3c80e7;
@@ -36,36 +45,13 @@
             text-align: center;
             border-radius: 6px 6px 0 0;
         }
-        .instructions {
-            background-color: #e8f4ff;
-            border: 2px solid #3c80e7;
-            padding: 12px;
-            margin: 15px 0;
-            border-radius: 6px;
-            font-size: 12px;
+        .section-title {
+            background-color: #3c80e7;
+            color: white;
+            padding: 8px 12px;
+            margin: 20px -25px 15px -25px;
             text-align: center;
-        }
-        .checkbox-section {
-            margin: 20px 0;
-        }
-        .checkbox-grid { 
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 8px;
-            margin: 15px 0;
-        }
-        .checkbox-item { 
-            display: flex;
-            align-items: center;
-            padding: 5px 0;
-        }
-        .checkbox { 
-            width: 20px; 
-            height: 20px; 
-            border: 2px solid #333; 
-            margin-right: 10px;
-            background: white;
-            flex-shrink: 0;
+            font-weight: bold;
         }
         .info-grid {
             display: grid;
@@ -83,6 +69,26 @@
             min-width: 140px;
             display: inline-block;
         }
+        .checkbox-section {
+            margin: 20px 0;
+        }
+        .checkbox-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #333;
+            background: white;
+            flex-shrink: 0;
+        }
         .signature-area {
             margin-top: 25px;
         }
@@ -99,7 +105,7 @@
             padding-top: 5px;
             text-align: center;
         }
-        .page-break { 
+        .page-break {
             page-break-after: always;
         }
         .footer {
@@ -110,14 +116,6 @@
             border-top: 1px solid #ddd;
             padding-top: 15px;
         }
-        .section-title {
-            background-color: #3c80e7;
-            color: white;
-            padding: 8px 12px;
-            margin: 20px -25px 15px -25px;
-            text-align: center;
-            font-weight: bold;
-        }
         .candidate-number {
             font-size: 18px;
             font-weight: bold;
@@ -126,18 +124,21 @@
     </style>
 </head>
 <body>
+    <!-- En-tête général -->
     <div class="header">
-        @if($includeLogo && $etablissement->logo)
-            <img src="{{ public_path('storage/' . $etablissement->logo) }}" class="logo">
+        @if($includeLogo && isset($etablissement->logo) && !empty($etablissement->logo))
+            <img class="logo" src="{{ public_path('logos/' . $etablissement->logo) }}" alt="Logo établissement">
+        @elseif($includeLogo)
+            <img class="logo" src="{{ public_path('logos/iat-logo.png') }}" alt="Logo par défaut">
         @endif
-        <h2 style="margin: 8px 0; color: #2c3e50;">{{ $etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE' }}</h2>
-        <h3 style="margin: 5px 0; color: #3c80e7;">FICHE DE SUIVI DU DOSSIER CANDIDAT</h3>
-        <h4 style="margin: 5px 0; color: #666;">CLASSE DE TERMINALE / 3ÈME</h4>
-        <p style="margin: 5px 0; font-weight: bold;">Année Scolaire {{ date('Y') }}-{{ date('Y')+1 }}</p>
+        <h2 style="color: #2c3e50;">{{ $etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE' }}</h2>
+        <h3 style="color: #3c80e7;">FICHE DE SUIVI DU DOSSIER CANDIDAT</h3>
+        <h4 style="color: #666;">CLASSE DE TERMINALE / 3ÈME</h4>
+        <p style="font-weight: bold;">Année Scolaire {{ date('Y') }}-{{ date('Y')+1 }}</p>
     </div>
 
     <div class="instructions">
-        <strong>📝 INSTRUCTIONS :</strong> Cochez les cases lorsque les documents sont fournis par le candidat. 
+        <strong>📝 INSTRUCTIONS :</strong> Cochez les cases lorsque les documents sont fournis par le candidat.
         Cette fiche doit être remplie manuellement par le service de scolarité.
     </div>
 
@@ -156,99 +157,53 @@
                     </h3>
                 </div>
 
-                <!-- Informations de l'élève -->
-                <div class="section-title">
-                    INFORMATIONS DU CANDIDAT
-                </div>
-
+                <div class="section-title">INFORMATIONS DU CANDIDAT</div>
                 <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Nom et Prénom :</span> 
-                        <strong>{{ $inscription['apprenant']['nom'] }} {{ $inscription['apprenant']['prenom'] }}</strong>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Matricule :</span> 
-                        {{ $inscription['apprenant']['matricule'] ?? 'Non attribué' }}
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Classe :</span> 
-                        <strong>{{ $inscription['classe_annee']['classe']['libelle'] ?? $inscription['niveau']['libelle'] ?? 'Non spécifié' }}</strong>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Date de dépôt :</span> 
-                        _________________________
-                    </div>
+                    <div class="info-item"><span class="info-label">Nom et Prénom :</span> <strong>{{ $inscription['apprenant']['nom'] }} {{ $inscription['apprenant']['prenom'] }}</strong></div>
+                    <div class="info-item"><span class="info-label">Matricule :</span> {{ $inscription['apprenant']['matricule'] ?? 'Non attribué' }}</div>
+                    <div class="info-item"><span class="info-label">Classe :</span> <strong>{{ $inscription['classe_annee']['classe']['libelle'] ?? $inscription['niveau']['libelle'] ?? 'Non spécifié' }}</strong></div>
+                    <div class="info-item"><span class="info-label">Date de dépôt :</span> _________________________</div>
                 </div>
 
-                <!-- Documents à cocher -->
-                <div class="section-title">
-                    DOCUMENTS À FOURNIR
-                </div>
-
+                <div class="section-title">DOCUMENTS À FOURNIR</div>
                 <div class="checkbox-section">
                     <div class="checkbox-grid">
-                        <!-- Documents communs à tous -->
-                        <div class="checkbox-item">
-                            <div class="checkbox"></div>
-                            <span><strong>Acte de Naissance (Original)</strong></span>
-                        </div>
-                        <div class="checkbox-item">
-                            <div class="checkbox"></div>
-                            <span><strong>Certificat de Nationalité</strong></span>
-                        </div>
-                        <div class="checkbox-item">
-                            <div class="checkbox"></div>
-                            <span><strong>Photos 4x4 (4 exemplaires)</strong></span>
-                        </div>
-                        <div class="checkbox-item">
-                            <div class="checkbox"></div>
-                            <span><strong>Quittance frais de dépôt</strong></span>
-                        </div>
-                        
-                        <!-- Document conditionnel pour la 3ème -->
+                        <div class="checkbox-item"><div class="checkbox"></div><span><strong>Acte de Naissance (Original)</strong></span></div>
+                        <div class="checkbox-item"><div class="checkbox"></div><span><strong>Certificat de Nationalité</strong></span></div>
+                        <div class="checkbox-item"><div class="checkbox"></div><span><strong>Photos 4x4 (4 exemplaires)</strong></span></div>
+                        <div class="checkbox-item"><div class="checkbox"></div><span><strong>Quittance frais de dépôt</strong></span></div>
+
                         @php
                             $classeLibelle = strtolower($inscription['classe_annee']['classe']['libelle'] ?? '');
                             $isTroisieme = str_contains($classeLibelle, '3ème') || str_contains($classeLibelle, '3eme');
                         @endphp
                         @if($isTroisieme)
-                        <div class="checkbox-item">
-                            <div class="checkbox"></div>
-                            <span><strong>Attestation du BEPC</strong></span>
-                        </div>
+                            <div class="checkbox-item"><div class="checkbox"></div><span><strong>Attestation du BEPC</strong></span></div>
                         @endif
                     </div>
                 </div>
 
-                <!-- Signatures -->
                 <div class="signature-area">
                     <div class="signature-grid">
                         <div>
-                            <div class="signature-line">
-                                Signature du Candidat
-                            </div>
-                            <div style="margin-top: 5px; font-size: 11px; text-align: center;">
-                                Fait à ____________________, le ____________________
-                            </div>
+                            <div class="signature-line">Signature du Candidat</div>
+                            <div style="font-size: 11px; text-align: center;">Fait à ____________________, le ____________________</div>
                         </div>
                         <div>
-                            <div class="signature-line">
-                                Signature du Responsable
-                            </div>
-                            <div style="margin-top: 5px; font-size: 11px; text-align: center;">
-                                Vu et vérifié le ____________________
-                            </div>
+                            <div class="signature-line">Signature du Responsable</div>
+                            <div style="font-size: 11px; text-align: center;">Vu et vérifié le ____________________</div>
                         </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Saut de page après chaque candidat pour une meilleure lisibilité -->
             @if(($index + 1) < count($inscriptions))
                 <div class="page-break"></div>
             @endif
         @endforeach
-    @endif
+       @endif
 
+    <!-- Pied de page -->
     <div class="footer">
         <p><strong>{{ $etablissement->name ?? 'Établissement Scolaire' }}</strong> | Service de Scolarité</p>
         <p>Fiche générée le {{ $dateGeneration }} | Document officiel</p>

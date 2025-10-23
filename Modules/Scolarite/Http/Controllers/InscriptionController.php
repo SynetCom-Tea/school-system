@@ -2034,147 +2034,727 @@ private function getInscriptionsTerminaleEtTroisieme(Request $request, $section)
     return $allInscriptions;
 }
 
+// /**
+//  * Générer le certificat de scolarité (OPTIMISÉ)
+//  */
+// public function genererCertificatScolarite(Request $request)
+// {
+//     try {
+//         ini_set('max_execution_time', 300);
+//         set_time_limit(300);
+//         //set_time_limit(120); // Augmenter le timeout à 2 minutes
+        
+//         $section = $request->section;
+//         $apprenantId = $request->apprenant_id;
+//         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+//         // Si un apprenant spécifique est demandé
+//         if ($apprenantId) {
+//             $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
+//                 ->where('apprenant_id', $apprenantId)
+//                 ->get();
+//         } else {
+//             // Limiter à 5 inscriptions maximum pour éviter le timeout
+//             $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+//             $inscriptions = array_slice($inscriptions, 0, 5);
+//         }
+        
+//         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+//         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+//         $data = [
+//             'etablissement' => $etablissement,
+//             'inscriptions' => $inscriptionsAvecClasses,
+//             'includeLogo' => $includeLogo,
+//             'title' => 'Certificat de Scolarité',
+//             'dateGeneration' => date('d/m/Y'),
+//         ];
+        
+//         $pdf = PDF::loadView('exports.certificat_scolarite_pdf', $data);
+        
+//         $fileName = 'certificat_scolarite_' . date('Ymd_His') . '.pdf';
+        
+//         return $pdf->download($fileName);
+        
+//     } catch (\Exception $e) {
+//         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+//     }
+// }
+
+// /**
+//  * Générer le relevé de notes (OPTIMISÉ)
+//  */
+// public function genererReleveNotes(Request $request)
+// {
+//     try {
+//         set_time_limit(120);
+        
+//         $section = $request->section;
+//         $apprenantId = $request->apprenant_id;
+//         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+//         if ($apprenantId) {
+//             $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
+//                 ->where('apprenant_id', $apprenantId)
+//                 ->get();
+//         } else {
+//             $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+//             $inscriptions = array_slice($inscriptions, 0, 3); // Limiter à 3
+//         }
+        
+//         $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+//         // Récupérer les notes depuis la base de données
+//         $donneesAvecNotes = [];
+//         foreach ($inscriptionsAvecClasses as $inscription) {
+//             $notes = $this->getNotesApprenant($inscription['apprenant_id'] ?? $inscription->apprenant_id);
+            
+//             $donneesAvecNotes[] = [
+//                 'inscription' => $inscription,
+//                 'notes' => $notes,
+//                 'moyenne_generale' => $this->calculerMoyenneGenerale($notes)
+//             ];
+//         }
+        
+//         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+//         $data = [
+//             'etablissement' => $etablissement,
+//             'donneesAvecNotes' => $donneesAvecNotes,
+//             'includeLogo' => $includeLogo,
+//             'title' => 'Relevé de Notes',
+//             'dateGeneration' => date('d/m/Y'),
+//         ];
+        
+//         $pdf = PDF::loadView('exports.releve_notes_pdf', $data);
+//         $pdf->setPaper('A4', 'portrait');
+        
+//         $fileName = 'releve_notes_' . date('Ymd_His') . '.pdf';
+//         return $pdf->download($fileName);
+        
+//     } catch (\Exception $e) {
+//         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+//     }
+// }
+
+// /**
+//  * Générer le relevé de notes vide (OPTIMISÉ)
+//  */
+// /**
+//  * Générer le relevé de notes vide PAR CLASSE et PAR MATIÈRE
+//  */
+// public function genererReleveNotesVide(Request $request)
+// {
+//     try {
+//         // Vérifier que l'utilisateur est authentifié
+//         if (!Auth::check()) {
+//             return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+//         }
+
+//         set_time_limit(120);
+        
+//         $section = $request->section;
+//         $classeId = $request->classe_id; // Nouveau paramètre pour sélectionner une classe spécifique
+//         $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        
+//         // Récupérer l'établissement
+//         $user = Auth::user();
+//         $etablissement = Etablissement::find($user->etablissement_id);
+        
+//         if (!$etablissement) {
+//             return response()->json(['error' => 'Établissement non trouvé'], 404);
+//         }
+        
+//         // Récupérer les inscriptions groupées par classe
+//         $classesAvecEleves = $this->getInscriptionsParClasse($request, $section, $classeId);
+        
+//         // Définir les matières par défaut selon la section
+//         $matieres = $this->getMatieresParSection($section);
+        
+//         $data = [
+//             'etablissement' => $etablissement,
+//             'classesAvecEleves' => $classesAvecEleves,
+//             'matieres' => $matieres,
+//             'includeLogo' => $includeLogo,
+//             'title' => 'Relevé de Notes - Modèle par Classe',
+//             'dateGeneration' => date('d/m/Y'),
+//         ];
+        
+//         $pdf = PDF::loadView('exports.releve_notes_vide_pdf', $data);
+//         $pdf->setPaper('A4', 'portrait');
+        
+//         $fileName = 'releve_notes_par_classe_' . date('Ymd_His') . '.pdf';
+//         return $pdf->download($fileName);
+        
+//     } catch (\Exception $e) {
+//         \Log::error('Erreur génération relevé notes par classe: ' . $e->getMessage());
+//         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
+//     }
+// }
+
+//debut
 /**
- * Générer le certificat de scolarité (OPTIMISÉ)
+ * Afficher la page de génération de documents paramétrable
  */
-public function genererCertificatScolarite(Request $request)
+public function showGenererDocuments(Request $request)
 {
     try {
-        set_time_limit(120); // Augmenter le timeout à 2 minutes
-        
         $section = $request->section;
-        $apprenantId = $request->apprenant_id;
-        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
         
-        // Si un apprenant spécifique est demandé
-        if ($apprenantId) {
-            $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
-                ->where('apprenant_id', $apprenantId)
-                ->get();
-        } else {
-            // Limiter à 5 inscriptions maximum pour éviter le timeout
-            $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-            $inscriptions = array_slice($inscriptions, 0, 5);
+        // Récupérer toutes les classes disponibles
+        $classes = $this->getClassesDisponibles($section);
+        
+        // Récupérer les matières par section
+        $matieres = $this->getMatieresParSection($section);
+        
+        // Types de documents disponibles
+        $typesDocuments = [
+            [
+                'value' => 'releve_notes',
+                'label' => '📊 Relevé de Notes',
+                'description' => 'Fiche de notes par matière et par classe',
+                'icon' => 'mdi-clipboard-list',
+                'color' => '#3c80e7'
+            ],
+            [
+                'value' => 'registre_bibliotheque',
+                'label' => '📚 Registre Bibliothèque',
+                'description' => 'Suivi des prêts de documents',
+                'icon' => 'mdi-book-account',
+                'color' => '#FF9800'
+            ],
+            [
+                'value' => 'dossier_candidat',
+                'label' => '📁 Dossier Candidat',
+                'description' => 'Checklist documents pour examen',
+                'icon' => 'mdi-folder-account',
+                'color' => '#9C27B0'
+            ],
+            [
+                'value' => 'certificat_scolarite',
+                'label' => '🎓 Certificat de Scolarité',
+                'description' => 'Attestation officielle de scolarité',
+                'icon' => 'mdi-certificate',
+                'color' => '#4CAF50'
+            ]
+        ];
+
+        return Inertia::render('GenererDocuments/Index', [
+            'section' => $section,
+            'classes' => $classes,
+            'matieres' => $matieres,
+            'typesDocuments' => $typesDocuments,
+            'vSectionID' => $section
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Erreur page génération documents: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Erreur: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Générer un document selon les paramètres
+ */
+/**
+ * Générer un document selon les paramètres
+ */
+/**
+ * Générer un document selon les paramètres
+ */
+public function genererDocumentParametrable(Request $request)
+{
+    try {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Utilisateur non authentifié'], 401);
         }
+
+        $section = $request->get('section');
+        $typeDocument = $request->get('type_document');
+        $classeId = $request->get('classe_id');
+        $eleveId = $request->get('eleve_id'); // ← NOUVEAU PARAMÈTRE
+        $matieresSelectionnees = $request->get('matieres', []);
+        $options = $request->get('options', []);
+
+        // Récupérer l'établissement
+        $user = Auth::user();
+        $etablissement = Etablissement::find($user->etablissement_id);
         
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
-        
-        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
-        
+        if (!$etablissement) {
+            return response()->json(['error' => 'Établissement non trouvé'], 404);
+        }
+
+        // Convertir la chaîne matières en tableau si nécessaire
+        if (is_string($matieresSelectionnees)) {
+            $matieresSelectionnees = [$matieresSelectionnees];
+        }
+
+        // S'assurer que $options est toujours un tableau
+        if (is_string($options)) {
+            $options = [$options];
+        } elseif (!is_array($options)) {
+            $options = [];
+        }
+
+        // Récupérer les données selon les paramètres
+        $classesAvecEleves = $this->getInscriptionsParClasse($request, $section, $classeId);
+
+        // Filtrer les matières si sélectionnées
+        $toutesMatieres = $this->getMatieresParSection($section);
+        $matieres = empty($matieresSelectionnees) ? $toutesMatieres : $matieresSelectionnees;
+
+        // PRÉPARER LES DONNÉES DE BASE
         $data = [
             'etablissement' => $etablissement,
-            'inscriptions' => $inscriptionsAvecClasses,
-            'includeLogo' => $includeLogo,
-            'title' => 'Certificat de Scolarité',
+            'classesAvecEleves' => $classesAvecEleves,
+            'matieres' => $matieres,
+            'includeLogo' => in_array('include_logo', $options),
+            'includeSignature' => in_array('include_signature', $options),
+            'title' => $this->getTitreDocument($typeDocument),
             'dateGeneration' => date('d/m/Y'),
+            'options' => $options
         ];
+
+        // AJOUTER LES VARIABLES SPÉCIFIQUES POUR CHAQUE TYPE DE DOCUMENT
+        $inscriptions = [];
+        foreach ($classesAvecEleves as $classe) {
+            if (isset($classe['eleves']) && is_array($classe['eleves'])) {
+                $inscriptions = array_merge($inscriptions, $classe['eleves']);
+            }
+        }
         
-        $pdf = PDF::loadView('exports.certificat_scolarite_pdf', $data);
+        // FILTRER PAR ÉLÈVE SPÉCIFIQUE SI DEMANDÉ
+        if ($eleveId) {
+            $inscriptions = array_filter($inscriptions, function($inscription) use ($eleveId) {
+                return ($inscription['apprenant']['id'] ?? null) == $eleveId;
+            });
+            
+            // Si un élève spécifique est sélectionné, ajouter ses infos détaillées
+            if (count($inscriptions) > 0) {
+                $data['eleve_selectionne'] = $inscriptions[0]['apprenant'] ?? null;
+            }
+        }
         
-        $fileName = 'certificat_scolarite_' . date('Ymd_His') . '.pdf';
+        // Ajouter $inscriptions pour tous les documents
+        $data['inscriptions'] = $inscriptions;
+
+        // Charger la vue appropriée selon le type de document
+        $viewName = $this->getViewDocument($typeDocument);
+
+        if (!view()->exists($viewName)) {
+            return response()->json(['error' => 'Type de document non supporté: ' . $typeDocument], 400);
+        }
+
+        $pdf = PDF::loadView($viewName, $data);
+        
+        // Configuration du papier selon le document
+        if ($typeDocument === 'registre_bibliotheque') {
+            $pdf->setPaper('A4', 'landscape');
+        } else {
+            $pdf->setPaper('A4', 'portrait');
+        }
+
+        $fileName = $this->getNomFichierPersonnalise($typeDocument, $eleveId, $inscriptions);
         return $pdf->download($fileName);
         
     } catch (\Exception $e) {
+        \Log::error('Erreur génération document paramétrable: ' . $e->getMessage());
         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
     }
 }
 
 /**
- * Générer le relevé de notes (OPTIMISÉ)
+ * Récupérer les inscriptions avec filtres avancés
  */
-public function genererReleveNotes(Request $request)
+private function getInscriptionsParClasseFiltree(Request $request, $section, $classeId = null, $niveauId = null, $eleveId = null)
 {
-    try {
-        set_time_limit(120);
+    $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    
+    // Grouper par classe
+    $classes = [];
+    
+    foreach ($inscriptionsAvecClasses as $inscription) {
+        $classeLibelle = $inscription['classe_annee']['classe']['libelle'] ?? 'Classe non définie';
+        $currentClasseId = $inscription['classe_annee']['classe']['id'] ?? null;
+        $currentNiveauId = $inscription['niveau']['id'] ?? null;
+        $currentEleveId = $inscription['apprenant']['id'] ?? null;
         
-        $section = $request->section;
-        $apprenantId = $request->apprenant_id;
-        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
-        
-        if ($apprenantId) {
-            $inscriptions = Inscription::with(['apprenant', 'niveau', 'annee', 'cycleFiliere.filiere'])
-                ->where('apprenant_id', $apprenantId)
-                ->get();
-        } else {
-            $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-            $inscriptions = array_slice($inscriptions, 0, 3); // Limiter à 3
+        // Appliquer les filtres
+        if ($classeId && $currentClasseId != $classeId) {
+            continue;
         }
         
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        if ($niveauId && $currentNiveauId != $niveauId) {
+            continue;
+        }
         
-        // Récupérer les notes depuis la base de données
-        $donneesAvecNotes = [];
-        foreach ($inscriptionsAvecClasses as $inscription) {
-            $notes = $this->getNotesApprenant($inscription['apprenant_id'] ?? $inscription->apprenant_id);
-            
-            $donneesAvecNotes[] = [
-                'inscription' => $inscription,
-                'notes' => $notes,
-                'moyenne_generale' => $this->calculerMoyenneGenerale($notes)
+        if ($eleveId && $currentEleveId != $eleveId) {
+            continue;
+        }
+        
+        if (!isset($classes[$classeLibelle])) {
+            $classes[$classeLibelle] = [
+                'libelle' => $classeLibelle,
+                'id' => $currentClasseId,
+                'niveau' => $inscription['niveau']['libelle'] ?? '',
+                'eleves' => []
             ];
         }
         
-        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        $classes[$classeLibelle]['eleves'][] = $inscription;
+    }
+    
+    return array_values($classes);
+}
+
+/**
+ * Récupérer un élève par son ID
+ */
+private function getEleveById($eleveId)
+{
+    // Implémentez cette méthode selon votre modèle
+    // Exemple :
+    // return Apprenant::with(['inscriptions.classeAnnee.classe', 'inscriptions.niveau'])
+    //     ->find($eleveId);
+    
+    // Pour l'instant, retournez null ou implémentez selon vos besoins
+    return null;
+}
+/**
+ * Générer un nom de fichier personnalisé avec le nom de l'élève
+ */
+private function getNomFichierPersonnalise($typeDocument, $eleveId, $inscriptions)
+{
+    $baseName = $this->getNomFichier($typeDocument);
+    
+    if ($eleveId && count($inscriptions) > 0) {
+        $eleve = $inscriptions[0]['apprenant'] ?? null;
+        if ($eleve) {
+            $nomEleve = Str::slug($eleve['nom'] . '_' . $eleve['prenom']);
+            return $baseName . '_' . $nomEleve . '_' . date('Ymd_His') . '.pdf';
+        }
+    }
+    
+    return $baseName . '_' . date('Ymd_His') . '.pdf';
+}
+
+/**
+ * Récupérer les élèves d'une classe spécifique
+ */
+/**
+ * Récupérer les élèves d'une classe spécifique - VERSION CORRIGÉE
+ */
+/**
+ * Récupérer les élèves d'une classe spécifique
+ */
+public function getElevesParClasse(Request $request, $classeId)
+{
+    try {
+        \Log::info("🔍 Récupération élèves pour classe ID: " . $classeId);
+
+        // Vérifier d'abord si la classe existe
+        $classe = \App\Models\Classe::find($classeId);
+        if (!$classe) {
+            return response()->json(['error' => 'Classe non trouvée'], 404);
+        }
+
+        // Récupérer les élèves via ApprenantClasseAnnee
+        $apprenantsClasse = \App\Models\ApprenantClasseAnnee::with([
+            'apprenant:id,nom,prenom,matricule',
+            'classe_annee.classe:id,libelle'
+        ])
+        ->whereHas('classe_annee', function($query) use ($classeId) {
+            $query->where('classe_id', $classeId);
+        })
+        ->whereHas('apprenant')
+        ->get();
+
+        $eleves = [];
+
+        foreach ($apprenantsClasse as $apprenantClasse) {
+            if ($apprenantClasse->apprenant) {
+                $eleves[] = [
+                    'id' => $apprenantClasse->apprenant->id,
+                    'nom_complet' => $apprenantClasse->apprenant->nom . ' ' . $apprenantClasse->apprenant->prenom,
+                    'matricule' => $apprenantClasse->apprenant->matricule ?? 'N/A',
+                    'classe' => $apprenantClasse->classe_annee->classe->libelle ?? 'Classe inconnue'
+                ];
+            }
+        }
+
+        \Log::info("🎯 " . count($eleves) . " élève(s) trouvé(s) pour la classe " . $classe->libelle);
+
+        return response()->json($eleves);
+
+    } catch (\Exception $e) {
+        \Log::error('❌ ERREUR getElevesParClasse: ' . $e->getMessage());
+        return response()->json(['error' => 'Erreur serveur: ' . $e->getMessage()], 500);
+    }
+}
+
+/**
+ * Obtenir le nom de la vue selon le type de document
+ */
+private function getViewDocument($typeDocument)
+{
+    $views = [
+        'releve_notes' => 'exports.releve_notes_par_matiere_pdf',
+        'registre_bibliotheque' => 'exports.registre_bibliotheque_pdf',
+        'dossier_candidat' => 'exports.fiche_dossier_candidat_pdf',
+        'certificat_scolarite' => 'exports.certificat_scolarite_pdf'
+    ];
+
+    return $views[$typeDocument] ?? 'exports.releve_notes_par_matiere_pdf';
+}
+
+/**
+ * Obtenir le titre du document
+ */
+private function getTitreDocument($typeDocument)
+{
+    $titres = [
+        'releve_notes' => 'Relevé de Notes',
+        'registre_bibliotheque' => 'Registre de Bibliothèque',
+        'dossier_candidat' => 'Fiche Dossier Candidat',
+        'certificat_scolarite' => 'Certificat de Scolarité'
+    ];
+
+    return $titres[$typeDocument] ?? 'Document';
+}
+
+/**
+ * Obtenir le nom du fichier
+ */
+private function getNomFichier($typeDocument)
+{
+    $noms = [
+        'releve_notes' => 'releve_notes',
+        'registre_bibliotheque' => 'registre_bibliotheque',
+        'dossier_candidat' => 'dossier_candidat',
+        'certificat_scolarite' => 'certificat_scolarite'
+    ];
+
+    return $noms[$typeDocument] ?? 'document';
+}
+//fin
+
+/**
+ * Afficher la page de paramétrage
+ */
+public function showParametresReleveNotes(Request $request)
+{
+    try {
+        $section = $request->section;
+        
+        // Récupérer toutes les classes disponibles
+        $classes = $this->getClassesDisponibles($section);
+        
+        // Récupérer les matières par section
+        $matieres = $this->getMatieresParSection($section);
+        
+        // Si pas de classes, créer des données de démo
+        if (empty($classes)) {
+            $classes = [
+                ['id' => 1, 'libelle' => 'Terminale A', 'niveau' => 'Terminale'],
+                ['id' => 2, 'libelle' => 'Terminale B', 'niveau' => 'Terminale'],
+                ['id' => 3, 'libelle' => '3ème A', 'niveau' => '3ème'],
+                ['id' => 4, 'libelle' => '3ème B', 'niveau' => '3ème'],
+            ];
+        }
+        
+        return Inertia::render('ReleveNotes/Parametres', [
+            'section' => $section,
+            'classes' => $classes,
+            'matieres' => $matieres,
+            'vSectionID' => $section
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Erreur page paramètres relevé notes: ' . $e->getMessage());
+        return redirect()->back()->with('error', 'Erreur: ' . $e->getMessage());
+    }
+}
+
+/**
+ * Générer le relevé de notes selon les paramètres
+ */
+/**
+ * Générer le relevé de notes selon les paramètres (GET)
+ */
+public function genererReleveNotesParametrable(Request $request)
+{
+    try {
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+        }
+
+        $section = $request->get('section');
+        $classeId = $request->get('classe_id');
+        $matieresSelectionnees = $request->get('matieres');
+        $format = $request->get('format', 'par_matiere');
+        
+        // Convertir la chaîne matières en tableau si nécessaire
+        if (is_string($matieresSelectionnees)) {
+            $matieresSelectionnees = [$matieresSelectionnees];
+        }
+
+        // Récupérer l'établissement
+        $user = Auth::user();
+        $etablissement = Etablissement::find($user->etablissement_id);
+        
+        if (!$etablissement) {
+            return response()->json(['error' => 'Établissement non trouvé'], 404);
+        }
+        
+        // Récupérer les données selon les paramètres
+        $classesAvecEleves = $this->getInscriptionsParClasse($request, $section, $classeId);
+        
+        // Filtrer les matières si sélectionnées
+        $toutesMatieres = $this->getMatieresParSection($section);
+        $matieres = empty($matieresSelectionnees) ? $toutesMatieres : $matieresSelectionnees;
         
         $data = [
             'etablissement' => $etablissement,
-            'donneesAvecNotes' => $donneesAvecNotes,
-            'includeLogo' => $includeLogo,
-            'title' => 'Relevé de Notes',
+            'classesAvecEleves' => $classesAvecEleves,
+            'matieres' => $matieres,
+            'includeLogo' => true,
+            'title' => 'Relevé de Notes - Sélection Personnalisée',
             'dateGeneration' => date('d/m/Y'),
+            'format' => $format
         ];
         
-        $pdf = PDF::loadView('exports.releve_notes_pdf', $data);
+        // Charger la vue appropriée selon le format
+        $viewName = $format === 'par_matiere' ? 'exports.releve_notes_par_matiere_pdf' : 'exports.releve_notes_parametrable_pdf';
+        
+        $pdf = PDF::loadView($viewName, $data);
         $pdf->setPaper('A4', 'portrait');
         
-        $fileName = 'releve_notes_' . date('Ymd_His') . '.pdf';
+        $fileName = 'releve_notes_personnalise_' . date('Ymd_His') . '.pdf';
         return $pdf->download($fileName);
         
     } catch (\Exception $e) {
+        \Log::error('Erreur génération relevé notes paramétrable: ' . $e->getMessage());
         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
     }
 }
 
 /**
- * Générer le relevé de notes vide (OPTIMISÉ)
+ * Générer le relevé pour une matière spécifique
  */
-public function genererReleveNotesVide(Request $request)
+public function genererReleveNotesParMatiere($classeId, $matiere)
 {
     try {
-        set_time_limit(120);
+        if (!Auth::check()) {
+            return response()->json(['error' => 'Utilisateur non authentifié'], 401);
+        }
+
+        // Récupérer l'établissement
+        $user = Auth::user();
+        $etablissement = Etablissement::find($user->etablissement_id);
         
-        $section = $request->section;
-        $includeLogo = filter_var($request->input('include_logo', true), FILTER_VALIDATE_BOOLEAN);
+        if (!$etablissement) {
+            return response()->json(['error' => 'Établissement non trouvé'], 404);
+        }
         
-        $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptions = array_slice($inscriptions, 0, 4); // Limiter à 4
+        // Récupérer la classe spécifique
+        $request = new Request();
+        $classesAvecEleves = $this->getInscriptionsParClasse($request, null, $classeId);
         
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
-        
-        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
-        
-        // Définir les matières par défaut selon la section
-        $matieres = $this->getMatieresParSection($section);
+        if (empty($classesAvecEleves)) {
+            return response()->json(['error' => 'Classe non trouvée'], 404);
+        }
         
         $data = [
             'etablissement' => $etablissement,
-            'inscriptions' => $inscriptionsAvecClasses,
-            'matieres' => $matieres,
-            'includeLogo' => $includeLogo,
-            'title' => 'Relevé de Notes (Modèle Vide)',
+            'classesAvecEleves' => $classesAvecEleves,
+            'matieres' => [$matiere],
+            'includeLogo' => true,
+            'title' => 'Relevé de Notes - ' . $matiere,
             'dateGeneration' => date('d/m/Y'),
+            'format' => 'fiche_unique'
         ];
         
-        $pdf = PDF::loadView('exports.releve_notes_vide_pdf', $data);
+        $pdf = PDF::loadView('exports.releve_notes_par_matiere_pdf', $data);
         $pdf->setPaper('A4', 'portrait');
         
-        $fileName = 'releve_notes_vide_' . date('Ymd_His') . '.pdf';
+        $fileName = 'releve_' . Str::slug($matiere) . '_' . date('Ymd_His') . '.pdf';
         return $pdf->download($fileName);
         
     } catch (\Exception $e) {
+        \Log::error('Erreur génération relevé par matière: ' . $e->getMessage());
         return response()->json(['error' => 'Erreur lors de la génération: ' . $e->getMessage()], 500);
     }
 }
+
+/**
+ * Récupérer les classes disponibles
+ */
+private function getClassesDisponibles($section)
+{
+    $inscriptions = $this->ajaxInscriptionListe(new Request(), null, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    
+    $classes = [];
+    
+    foreach ($inscriptionsAvecClasses as $inscription) {
+        $classeLibelle = $inscription['classe_annee']['classe']['libelle'] ?? 'Classe non définie';
+        $classeId = $inscription['classe_annee']['classe']['id'] ?? null;
+        
+        if ($classeId && !isset($classes[$classeId])) {
+            $classes[$classeId] = [
+                'id' => $classeId,
+                'libelle' => $classeLibelle,
+                'niveau' => $inscription['niveau']['libelle'] ?? ''
+            ];
+        }
+    }
+    
+    return array_values($classes);
+}
+/**
+ * Récupérer les inscriptions groupées par classe
+ */
+/**
+ * Récupérer les inscriptions groupées par classe avec filtrage correct
+ */
+/**
+ * Récupérer les inscriptions groupées par classe avec filtrage correct
+ */
+private function getInscriptionsParClasse(Request $request, $section, $classeId = null)
+{
+    $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    
+    // Grouper par classe
+    $classes = [];
+    
+    foreach ($inscriptionsAvecClasses as $inscription) {
+        $classeLibelle = $inscription['classe_annee']['classe']['libelle'] ?? 'Classe non définie';
+        $currentClasseId = $inscription['classe_annee']['classe']['id'] ?? null; // ← CHANGER LE NOM ICI
+        
+        // Si une classe spécifique est demandée, filtrer
+        if ($classeId && $currentClasseId != $classeId) {
+            continue;
+        }
+        
+        if (!isset($classes[$classeLibelle])) {
+            $classes[$classeLibelle] = [
+                'libelle' => $classeLibelle,
+                'id' => $currentClasseId, // ← UTILISER LE NOUVEAU NOM
+                'eleves' => []
+            ];
+        }
+        
+        $classes[$classeLibelle]['eleves'][] = $inscription;
+    }
+    
+    return array_values($classes);
+}
+/**
+ * Définir les matières par section
+ */
 private function getMatieresParSection($section)
 {
     $matieres = [

@@ -113,20 +113,22 @@
     <div class="certificate-container">
         <div class="watermark">CERTIFICAT</div>
         
-        <div class="header">
-            @if($etablissement->logo)
-                <img src="{{ public_path('storage/' . $etablissement->logo) }}" class="logo">
-            @endif
-            <h1>{{ $etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE' }}</h1>
-            <h2>CERTIFICAT DE SCOLARITÉ</h2>
-            <p style="font-style: italic;">Année Scolaire {{ date('Y') }}-{{ date('Y')+1 }}</p>
-        </div>
+       
 
         @foreach($inscriptions as $index => $inscription)
             @if($index > 0)
                 <div style="page-break-before: always;"></div>
             @endif
-
+            <div class="header">
+                @if($includeLogo && isset($etablissement->logo) && !empty($etablissement->logo))
+                        <img class="logo" src="{{ public_path('logos/' . $etablissement->logo) }}" alt="Logo établissement">
+                    @elseif($includeLogo)
+                        <img class="logo" src="{{ public_path('logos/iat-logo.png') }}" alt="Logo par défaut">
+                    @endif
+                <h1>{{ $etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE' }}</h1>
+                <h2>CERTIFICAT DE SCOLARITÉ</h2>
+                <p style="font-style: italic;">Année Scolaire {{ date('Y') }}-{{ date('Y')+1 }}</p>
+            </div>
             <div class="certificate-content">
                 <div class="student-info">
                     <h3>INFORMATIONS DE L'ÉLÈVE</h3>
@@ -188,10 +190,10 @@
                     </div>
                 </div>
 
-                <div class="stamp">
+                <!-- <div class="stamp">
                     VU ET CERTIFIÉ<br>
                     {{ date('d/m/Y') }}
-                </div>
+                </div> -->
             </div>
 
             <div class="footer">

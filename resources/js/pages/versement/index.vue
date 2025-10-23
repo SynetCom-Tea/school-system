@@ -496,7 +496,7 @@
         </v-btn>
     </div>
 
-    <!-- Certificat de Scolarité -->
+    <!-- Certificat de Scolarité
     <div class="generation-card">
         <div class="card-icon-wrapper certificate">
             <v-icon color="#2196F3" size="28">mdi-certificate</v-icon>
@@ -518,10 +518,41 @@
         >
             Générer
         </v-btn>
-    </div>
+    </div> -->
 
-    <!-- Relevé de Notes -->
-    <!-- <div class="generation-card">
+    <!-- //debut -->
+     <!-- Dans la section Generation de Documents -->
+<div class="generation-card featured">
+    <div class="card-badge">Nouveau</div>
+    <div class="card-icon-wrapper unified">
+        <v-icon color="#3c80e7" size="28">mdi-cogs</v-icon>
+    </div>
+    <div class="card-content">
+        <h3>Génération Unifiée</h3>
+        <p class="text-muted">Tous les documents en un seul endroit</p>
+        <div class="card-features">
+            <v-chip size="small" color="blue-lighten-5" text-color="blue">
+                <v-icon size="small" class="me-1">mdi-file-multiple</v-icon>
+                4 types de documents
+            </v-chip>
+            <v-chip size="small" color="green-lighten-5" text-color="green">
+                <v-icon size="small" class="me-1">mdi-cog</v-icon>
+                Paramétrage complet
+            </v-chip>
+        </div>
+    </div>
+    <v-btn 
+        color="primary" 
+        :href="route('scolarite.generer.documents', { section: vSectionID })"
+        prepend-icon="mdi-cogs"
+    >
+        Ouvrir
+    </v-btn>
+</div>
+    <!-- fin -->
+
+    <!-- Relevé de Notes
+    <div class="generation-card">
         <div class="card-icon-wrapper grades">
             <v-icon color="#4CAF50" size="28">mdi-chart-line</v-icon>
         </div>
@@ -557,6 +588,34 @@
             </v-btn>
         </div>
     </div> -->
+    <!-- Dans votre composant Vue.js principal -->
+<!-- Dans la section Generation de Documents -->
+<div class="generation-card">
+    <div class="card-icon-wrapper parametres">
+        <v-icon color="#9C27B0" size="28">mdi-cog</v-icon>
+    </div>
+    <div class="card-content">
+        <h3>Relevé Notes Paramétrable</h3>
+        <p class="text-muted">Choisissez classe, matières et format</p>
+        <div class="card-features">
+            <v-chip size="small" color="purple-lighten-5" text-color="purple">
+                <v-icon size="small" class="me-1">mdi-selection</v-icon>
+                Sélection multiple
+            </v-chip>
+            <v-chip size="small" color="deep-purple-lighten-5" text-color="deep-purple">
+                <v-icon size="small" class="me-1">mdi-file-multiple</v-icon>
+                Fiches individuelles
+            </v-chip>
+        </div>
+    </div>
+    <v-btn 
+        color="purple" 
+        :href="route('scolarite.releve.notes.vide.parametres', { section: vSectionID })"
+        prepend-icon="mdi-cog"
+    >
+        Paramétrer
+    </v-btn>
+</div>
 
     <div class="generation-cards">
       <!-- Fiche de Présence Améliorée -->
@@ -2050,6 +2109,9 @@ export default {
 
 .period-configuration {
   transition: all 0.3s ease;
+}
+.card-icon-wrapper.parametres { 
+    background: #F3E5F5; 
 }
 }
 </style>

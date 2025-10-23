@@ -71,8 +71,10 @@
 </head>
 <body>
     <div class="header">
-        <?php if($includeLogo && $etablissement->logo): ?>
-            <img src="<?php echo e(public_path('storage/' . $etablissement->logo)); ?>" class="logo">
+        <?php if($includeLogo && isset($etablissement->logo) && !empty($etablissement->logo)): ?>
+            <img class="logo" src="<?php echo e(public_path('logos/' . $etablissement->logo)); ?>" alt="Logo établissement">
+        <?php elseif($includeLogo): ?>
+            <img class="logo" src="<?php echo e(public_path('logos/iat-logo.png')); ?>" alt="Logo par défaut">
         <?php endif; ?>
         <h2 style="margin: 5px 0;"><?php echo e($etablissement->name ?? 'ÉTABLISSEMENT SCOLAIRE'); ?></h2>
         <h3 style="margin: 5px 0; color: #3c80e7;">REGISTRE DE BIBLIOTHÈQUE</h3>
@@ -84,55 +86,61 @@
         Inscrire le nom du document, les dates de prêt et de retour prévue, et faire signer l'emprunteur.
     </div>
 
-    <?php $__currentLoopData = $inscriptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $inscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
-        <div class="empty-section">
-            <div class="student-info">
-                Élève: <strong><?php echo e($inscription['apprenant']['nom']); ?> <?php echo e($inscription['apprenant']['prenom']); ?></strong> 
-                | Classe: <?php echo e($inscription['classe_annee']['classe']['libelle'] ?? 'Non classé'); ?> 
-                | Matricule: <?php echo e($inscription['apprenant']['matricule'] ?? 'N/A'); ?>
+    <?php if(isset($inscriptions) && count($inscriptions) > 0): ?>
+        <?php $__currentLoopData = $inscriptions; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $index => $inscription): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+            <div class="empty-section">
+                <div class="student-info">
+                    Élève: <strong><?php echo e($inscription['apprenant']['nom']); ?> <?php echo e($inscription['apprenant']['prenom']); ?></strong> 
+                    | Classe: <?php echo e($inscription['classe_annee']['classe']['libelle'] ?? 'Non classé'); ?> 
+                    | Matricule: <?php echo e($inscription['apprenant']['matricule'] ?? 'N/A'); ?>
 
+                </div>
+                
+                <table class="empty-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 5%;">N°</th>
+                            <th style="width: 30%;">Nom du Document</th>
+                            <th style="width: 15%;">Date de Prise</th>
+                            <th style="width: 15%;">Date de Retour Prévue</th>
+                            <th style="width: 10%;">Date de Retour Effective</th>
+                            <th style="width: 10%;">État</th>
+                            <?php if($includeSignature): ?>
+                            <th style="width: 15%;">Signature Emprunteur</th>
+                            <?php endif; ?>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <?php for($i = 1; $i <= 8; $i++): ?>
+                        <tr>
+                            <td style="text-align: center;"><?php echo e($i); ?></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td></td>
+                            <td style="text-align: center;"></td>
+                            <?php if($includeSignature): ?>
+                            <td></td>
+                            <?php endif; ?>
+                        </tr>
+                        <?php endfor; ?>
+                    </tbody>
+                </table>
+                
+                <div style="margin-top: 10px; font-size: 10px; text-align: right;">
+                    <em>Lignes 1 à 8 - Page <?php echo e(ceil(($index + 1) / 2)); ?></em>
+                </div>
             </div>
             
-            <table class="empty-table">
-                <thead>
-                    <tr>
-                        <th style="width: 5%;">N°</th>
-                        <th style="width: 30%;">Nom du Document</th>
-                        <th style="width: 15%;">Date de Prise</th>
-                        <th style="width: 15%;">Date de Retour Prévue</th>
-                        <th style="width: 10%;">Date de Retour Effective</th>
-                        <th style="width: 10%;">État</th>
-                        <?php if($includeSignature): ?>
-                        <th style="width: 15%;">Signature Emprunteur</th>
-                        <?php endif; ?>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php for($i = 1; $i <= 8; $i++): ?>
-                    <tr>
-                        <td style="text-align: center;"><?php echo e($i); ?></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td></td>
-                        <td style="text-align: center;"></td>
-                        <?php if($includeSignature): ?>
-                        <td></td>
-                        <?php endif; ?>
-                    </tr>
-                    <?php endfor; ?>
-                </tbody>
-            </table>
-            
-            <div style="margin-top: 10px; font-size: 10px; text-align: right;">
-                <em>Lignes 1 à 8 - Page <?php echo e(ceil(($index + 1) / 2)); ?></em>
-            </div>
+            <?php if(($index + 1) % 2 == 0 && ($index + 1) < count($inscriptions)): ?>
+                <div class="page-break"></div>
+            <?php endif; ?>
+        <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php else: ?>
+        <div style="text-align: center; padding: 20px; color: #666;">
+            <p>Aucune inscription trouvée pour la génération du registre de bibliothèque.</p>
         </div>
-        
-        <?php if(($index + 1) % 2 == 0 && ($index + 1) < count($inscriptions)): ?>
-            <div class="page-break"></div>
-        <?php endif; ?>
-    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
+    <?php endif; ?>
 
     <div class="footer">
         <p>Registre généré le <?php echo e($dateGeneration); ?> | <?php echo e($etablissement->name ?? 'Établissement Scolaire'); ?></p>
