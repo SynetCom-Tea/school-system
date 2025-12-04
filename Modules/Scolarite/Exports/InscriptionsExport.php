@@ -299,52 +299,52 @@ class ResumeGeneralSheet implements FromCollection, WithHeadings, WithStyles, Wi
             $tauxPaiementGeneral . '%'
         ]);
         
-        // SECTION 2: DÉTAIL PAR TYPE DE FRAIS
-        $data->push(['']);
-        $data->push(['']);
-        $data->push(['']); // Ligne vide
-        $data->push(['']); // Ligne vide
-        $data->push(['DÉTAIL PAR TYPE DE FRAIS']);
+        // // SECTION 2: DÉTAIL PAR TYPE DE FRAIS
+        // $data->push(['']);
+        // $data->push(['']);
         // $data->push(['']); // Ligne vide
-        
-        // En-têtes du tableau des frais
-        $fraisHeaders = ['Type de Frais', 'Total Frais (FCFA)', 'Total Payé (FCFA)', 'Total Restant (FCFA)', 'Taux de Paiement'];
-        $data->push($fraisHeaders);
         // $data->push(['']); // Ligne vide
+        // $data->push(['DÉTAIL PAR TYPE DE FRAIS']);
+        // // $data->push(['']); // Ligne vide
         
-        // Données par type de frais
-        foreach ($this->fraisSummary as $typeFraisId => $stats) {
-            $typeFrais = $this->typesFrais->firstWhere('id', $typeFraisId);
-            $libelle = $typeFrais ? $typeFrais->libelle : 'Type Inconnu';
+        // // En-têtes du tableau des frais
+        // $fraisHeaders = ['Type de Frais', 'Total Frais (FCFA)', 'Total Payé (FCFA)', 'Total Restant (FCFA)', 'Taux de Paiement'];
+        // $data->push($fraisHeaders);
+        // // $data->push(['']); // Ligne vide
+        
+        // // Données par type de frais
+        // foreach ($this->fraisSummary as $typeFraisId => $stats) {
+        //     $typeFrais = $this->typesFrais->firstWhere('id', $typeFraisId);
+        //     $libelle = $typeFrais ? $typeFrais->libelle : 'Type Inconnu';
             
-            $tauxPaiement = $stats['total_frais'] > 0 
-                ? round(($stats['total_paye'] / $stats['total_frais']) * 100, 1)
-                : 0;
+        //     $tauxPaiement = $stats['total_frais'] > 0 
+        //         ? round(($stats['total_paye'] / $stats['total_frais']) * 100, 1)
+        //         : 0;
                 
-            $data->push([
-                $libelle,
-                number_format($stats['total_frais'], 0, ',', ' '),
-                number_format($stats['total_paye'], 0, ',', ' '),
-                number_format($stats['total_restant'], 0, ',', ' '),
-                $tauxPaiement . '%'
-            ]);
-        }
+        //     $data->push([
+        //         $libelle,
+        //         number_format($stats['total_frais'], 0, ',', ' '),
+        //         number_format($stats['total_paye'], 0, ',', ' '),
+        //         number_format($stats['total_restant'], 0, ',', ' '),
+        //         $tauxPaiement . '%'
+        //     ]);
+        // }
         
-        // Totaux pour les frais
-        $fraisTotals = $this->calculateFraisGrandTotals();
-        $tauxPaiementFrais = $fraisTotals['total_frais'] > 0 
-            ? round(($fraisTotals['total_paye'] / $fraisTotals['total_frais']) * 100, 1)
-            : 0;
+        // // Totaux pour les frais
+        // $fraisTotals = $this->calculateFraisGrandTotals();
+        // $tauxPaiementFrais = $fraisTotals['total_frais'] > 0 
+        //     ? round(($fraisTotals['total_paye'] / $fraisTotals['total_frais']) * 100, 1)
+        //     : 0;
         
-        $data->push(['']);
-         $data->push(['']);
-        $data->push([
-            'TOTAL FRAIS',
-            number_format($fraisTotals['total_frais'], 0, ',', ' '),
-            number_format($fraisTotals['total_paye'], 0, ',', ' '),
-            number_format($fraisTotals['total_restant'], 0, ',', ' '),
-            $tauxPaiementFrais . '%'
-        ]);
+        // $data->push(['']);
+        //  $data->push(['']);
+        // $data->push([
+        //     'TOTAL FRAIS',
+        //     number_format($fraisTotals['total_frais'], 0, ',', ' '),
+        //     number_format($fraisTotals['total_paye'], 0, ',', ' '),
+        //     number_format($fraisTotals['total_restant'], 0, ',', ' '),
+        //     $tauxPaiementFrais . '%'
+        // ]);
         
         return $data;
     }
