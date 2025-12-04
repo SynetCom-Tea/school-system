@@ -139,5 +139,7 @@ use Modules\Scolarite\Http\Controllers\InscriptionController;
 // Route::get('/api/eleves/classe/{classeId}', [InscriptionController::class, 'getElevesParClasse']);
     Route::get('/eleves/classe/{classeId}', [InscriptionController::class, 'getElevesParClasse']);
 
+    
+
     });
 

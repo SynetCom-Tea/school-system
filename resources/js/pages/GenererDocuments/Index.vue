@@ -411,6 +411,10 @@ import {
   mdiFile,
 } from "@mdi/js";
 export default {
+    components: {
+    AuthenticatedLayout,
+   
+  },
   name: 'GenerationDocumentsModern',
   props: {
     section: {
@@ -450,7 +454,7 @@ export default {
       return this.form.type_document && this.form.classe_id;
     },
     showEleveSelector() {
-      return ['certificat_scolarite', 'releve_notes'].includes(this.form.type_document);
+      return ['certificat_scolarite'].includes(this.form.type_document);
     },
     selectedDocumentLabel() {
       const doc = this.typesDocuments.find(d => d.value === this.form.type_document);

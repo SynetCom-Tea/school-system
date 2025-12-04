@@ -441,7 +441,7 @@
         </div>
 
          <!-- Registre Bibliothèque -->
-    <div class="generation-card">
+    <!-- <div class="generation-card">
         <div class="card-icon-wrapper library">
             <v-icon color="#FF9800" size="28">mdi-book-account</v-icon>
         </div>
@@ -466,10 +466,10 @@
         >
             Générer
         </v-btn>
-    </div>
+    </div> -->
 
     <!-- Fiche Dossier Candidat -->
-    <div class="generation-card">
+    <!-- <div class="generation-card">
         <div class="card-icon-wrapper candidate">
             <v-icon color="#9C27B0" size="28">mdi-folder-account</v-icon>
         </div>
@@ -494,7 +494,7 @@
         >
             Générer
         </v-btn>
-    </div>
+    </div> -->
 
     <!-- Certificat de Scolarité
     <div class="generation-card">

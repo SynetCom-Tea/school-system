@@ -38,7 +38,8 @@ use Modules\Scolarite\Entities\EtablissementTypeDocument;
 use Modules\Scolarite\Exports\FichePresenceAvanceeExport;
 use Modules\Scolarite\Exports\ListeClasseAffichageExport;
 use Modules\Scolarite\Exports\InscriptionsNonPayeesExport;
-
+// Add this import
+use Illuminate\Support\Str;
 
 
 class InscriptionController extends Controller
@@ -1727,6 +1728,9 @@ private function getLibellesJours($periode, $mois = null, $annee = null)
 public function genererFichePresenceAvancee(Request $request)
 {
     try {
+        ini_set('memory_limit', '256M');
+        ini_set('max_execution_time', 120);
+        
         $section = $request->section;
         $periode = $request->periode_type ?? 'mois';
         $periodeLabel = $request->periode_label ?? '';
@@ -1739,21 +1743,100 @@ public function genererFichePresenceAvancee(Request $request)
         $alternateRows = filter_var($request->input('alternate_rows', true), FILTER_VALIDATE_BOOLEAN);
         $outputFormat = $request->output_format ?? 'excel';
         
+        // NOUVEAU: Récupérer les classes sélectionnées
+        $selectedClasses = $request->selected_classes ? explode(',', $request->selected_classes) : [];
+        
+        \Log::info('Génération fiche présence avancée', [
+            'section' => $section,
+            'periode' => $periode,
+            'classes_selectionnees' => $selectedClasses,
+            'nombre_classes' => count($selectedClasses),
+            'format' => $outputFormat
+        ]);
+        
         // Déterminer le nombre de jours en fonction du mois/année
         $joursParPeriode = $this->getJoursParPeriode($periode, $mois, $annee);
         $libellesJours = $this->getLibellesJours($periode, $mois, $annee);
         
+        // Récupérer les inscriptions
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
         
-        if ($outputFormat === 'pdf') {
-            // Utiliser la même méthode avec tous les paramètres
-            return $this->genererFichePresencePdf($request);
+        // FILTRER par classes sélectionnées si spécifié
+        if (!empty($selectedClasses)) {
+            $inscriptions = array_filter($inscriptions, function($inscription) use ($selectedClasses) {
+                $classeAnneeId = $inscription['classe_annee_id'] ?? null;
+                return in_array($classeAnneeId, $selectedClasses);
+            });
+            
+            \Log::info('Inscriptions filtrées par classes', [
+                'total_avant_filtre' => count($this->ajaxInscriptionListe($request, null, $section)),
+                'total_apres_filtre' => count($inscriptions),
+                'classes_selectionnees' => $selectedClasses
+            ]);
         }
         
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        
+        // Récupérer les infos de l'établissement
+        $etablissement = Etablissement::find(Auth::user()->etablissement_id);
+        
+        // Grouper les inscriptions par classe
+        $classes = [];
+        foreach ($inscriptionsAvecClasses as $inscription) {
+            $classeName = $inscription['classe_annee']['classe']['libelle'] ?? 'Non classé';
+            if (!isset($classes[$classeName])) {
+                $classes[$classeName] = [];
+            }
+            $classes[$classeName][] = $inscription;
+        }
+        
+        \Log::info('Classes à générer', [
+            'noms_classes' => array_keys($classes),
+            'effectif_par_classe' => array_map('count', $classes)
+        ]);
+        
+        // Si format PDF, utiliser la vue PDF
+        if ($outputFormat === 'pdf') {
+            $data = [
+                'etablissement' => $etablissement,
+                'classes' => $classes,
+                'periode' => $periode,
+                'periodeLabel' => $periodeLabel,
+                'mois' => $mois,
+                'annee' => $annee,
+                'matieres' => $matieres,
+                'joursParPeriode' => $joursParPeriode,
+                'libellesJours' => $libellesJours,
+                'includeLogo' => $includeLogo,
+                'includeSignature' => $includeSignature,
+                'includeTotal' => $includeTotal,
+                'alternateRows' => $alternateRows,
+                'title' => 'Fiche de Présence - ' . ucfirst($periode),
+                'date' => date('d/m/Y à H:i'),
+            ];  
+            
+            // Configuration spécifique pour DomPDF
+            $pdf = PDF::loadView('exports.fiche_presence_pdf', $data);
+            $pdf->setPaper('A4', $joursParPeriode > 20 ? 'landscape' : 'portrait');
+            $pdf->setOption('enable_php', false);
+            $pdf->setOption('isRemoteEnabled', true);
+            $pdf->setOption('isHtml5ParserEnabled', true);
+            
+            $fileName = 'Fiche_presence_' . $periode . '_' . date('Ymd_His') . '.pdf';
+            $safeFileName = preg_replace('/[^a-zA-Z0-9._-]/', '_', $fileName);
+            
+            \Log::info('Génération PDF terminée', [
+                'fichier' => $safeFileName,
+                'nombre_pages' => count($classes)
+            ]);
+            
+            return $pdf->download($safeFileName);
+        }
+        
+        // Format Excel (existant)
         $fileName = 'Fiche_presence_avancee_' . $periode . '_' . date('Ymd_His') . '.xlsx';
         
-        // Passez les nouveaux paramètres à l'export
+        // Passer les paramètres à l'export
         $export = new FichePresenceAvanceeExport(
             $inscriptionsAvecClasses, 
             'Fiche de Présence Avancée',
@@ -1764,16 +1847,72 @@ public function genererFichePresenceAvancee(Request $request)
             $includeTotal,
             $includeLogo,
             $alternateRows,
-            $joursParPeriode, // NOUVEAU PARAMÈTRE
-            $libellesJours,   // NOUVEAU PARAMÈTRE
-            $mois,            // NOUVEAU PARAMÈTRE
-            $annee            // NOUVEAU PARAMÈTRE
+            $joursParPeriode,
+            $libellesJours,
+            $mois,
+            $annee
         );
+        
+        \Log::info('Génération Excel terminée', [
+            'fichier' => $fileName,
+            'nombre_inscriptions' => count($inscriptionsAvecClasses)
+        ]);
         
         return Excel::download($export, $fileName, \Maatwebsite\Excel\Excel::XLSX);
         
     } catch (\Exception $e) {
-        return response()->json(['error' => 'Erreur lors de l\'export: ' . $e->getMessage()], 500);
+        \Log::error('Erreur génération fiche présence avancée', [
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'request' => $request->all()
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la génération: ' . $e->getMessage(),
+            'trace' => config('app.debug') ? $e->getTraceAsString() : null
+        ], 500);
+    }
+}
+/**
+ * API pour récupérer les classes d'une section
+ */
+public function getClassesBySection($section)
+{
+    try {
+        $classes = ClasseAnnee::withCount(['inscriptions as effectif' => function($query) use ($section) {
+                $query->where('section_annee_id', $section);
+            }])
+            ->with('classe:niveau,libelle')
+            ->whereHas('inscriptions', function($query) use ($section) {
+                $query->where('section_annee_id', $section);
+            })
+            ->get()
+            ->map(function($classeAnnee) {
+                return [
+                    'id' => $classeAnnee->id,
+                    'libelle' => $classeAnnee->classe->libelle,
+                    'niveau' => $classeAnnee->classe->niveau,
+                    'effectif' => $classeAnnee->effectif
+                ];
+            });
+        
+        return response()->json([
+            'success' => true,
+            'classes' => $classes
+        ]);
+        
+    } catch (\Exception $e) {
+        \Log::error('Erreur récupération classes section', [
+            'section' => $section,
+            'error' => $e->getMessage()
+        ]);
+        
+        return response()->json([
+            'success' => false,
+            'message' => 'Erreur lors de la récupération des classes',
+            'error' => $e->getMessage()
+        ], 500);
     }
 }
 /**

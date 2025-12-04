@@ -283,7 +283,7 @@
                       style="cursor: pointer"
                       class="text-caption text-decoration-none text-error"
                     >
-                      Supprimer
+                      <!-- Supprimer -->
                     </a>
                   </v-col>
                 </v-row>
