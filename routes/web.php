@@ -90,7 +90,7 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::resource('etudiants', EtudiantsController::class);
-Route::resource('annees', AnneeController::class);
+// Route::resource('annees', AnneeController::class);
 Route::resource('classes', ClasseController::class)->only(['update', 'destroy']);
 Route::get('classes/{type}', [ClasseController::class, 'index'])->name('classes.index');
 Route::get('Classes/{type}', [ClasseController::class, 'create'])->name('classes.create');
@@ -151,5 +151,13 @@ Route::post('Unité d\'enseignement/{type}', [UEController::class, 'store'])->na
 Route::get('/systeme/lmd/{type}', [LmdController::class, 'index'])->name('lmd.index');
 Route::post('/systeme/lmd/store', [LmdController::class, 'store'])->name('systemelmd.store');
 
+// Annee Routes
+Route::get('/annees/academique', [AnneeController::class, 'index'])->name('annees.index');
+Route::post('/annees', [AnneeController::class, 'store'])->name('annees.store');
+Route::put('/annees/{id}', [AnneeController::class, 'update'])->name('annees.update');
+Route::delete('/annees/{id}', [AnneeController::class, 'destroy'])->name('annees.destroy');
+Route::put('/annees/{id}/activer', [AnneeController::class, 'activeYear'])->name('annees.activer');
+Route::put('/annees/{id}/cloturer', [AnneeController::class, 'closeYear'])->name('annees.cloturer');
+Route::put('/annees/{id}/archiver', [AnneeController::class, 'archiveYear'])->name('annees.archiver');
 
 require __DIR__ . '/auth.php';

@@ -77,7 +77,7 @@ export default {
       <v-form ref="form">
         <v-row style="margin-top: 5px">
           <v-col>
-            <v-alert type="info" text> Etablissement </v-alert>
+            <v-alert style="background-color: #004980; color: white;"   text> Etablissement </v-alert>
           </v-col>
         </v-row>
         <v-row style="margin-top: 5px; height: 90px">
@@ -200,7 +200,7 @@ export default {
         </v-row>
         <v-row>
           <v-col>
-            <v-alert color="info" :icon="icon.mdiAccountSchool" text>
+            <v-alert style="background-color: #004980; color: white;" :icon="icon.mdiAccountSchool" text>
               Administrateur de l'établissement
             </v-alert>
           </v-col>

@@ -21,4 +21,4 @@
     <?php if (!isset($__inertiaSsrDispatched)) { $__inertiaSsrDispatched = true; $__inertiaSsrResponse = app(\Inertia\Ssr\Gateway::class)->dispatch($page); }  if ($__inertiaSsrResponse) { echo $__inertiaSsrResponse->body; } else { ?><div id="app" data-page="<?php echo e(json_encode($page)); ?>"></div><?php } ?>
 </body>
 
-</html><?php /**PATH C:\Users\MAHAMADOU\OneDrive\Documents\projet_synetcom\system_1\school\school-system\resources\views/app.blade.php ENDPATH**/ ?>
+</html><?php /**PATH C:\Users\SYNETCOM\Desktop\projects\school-system\resources\views/app.blade.php ENDPATH**/ ?>

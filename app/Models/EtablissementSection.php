@@ -12,7 +12,8 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class EtablissementSection extends Model
 {
 
-    use HasFactory, SoftDeletes;
+    // use HasFactory, SoftDeletes;
+    protected $table = 'etablissement_section'; // 👈 IMPORTANT
     protected $fillable =  [
         'code',
         'regime_evaluation_id',

@@ -11,8 +11,7 @@
         <v-row>
 
 
-          <v-alert
-
+          <v-alert 
             border="start"
             variant="tonal"
             color="primary"
@@ -28,6 +27,15 @@
           </v-alert>
         </v-row>
         <v-row>
+          <v-col v-permission:any="'manage_school|manage_etablissement'" cols="auto" style="margin-left:18px;">
+                <v-card :disabled="paramCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('annees.index',type)">
+
+                    <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/inscription1.jpg'" class="text-white">
+
+                    </v-img>
+                    <p class="text-h6" style="text-align: center;">Année scolaire</p>
+                </v-card>
+            </v-col>
           <v-col v-permission:any="'manage_school|manage_etablissement'" cols="auto" style="margin-left:18px;">
                 <v-card :disabled="paramCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('param.index',type)">
 

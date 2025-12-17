@@ -286,8 +286,7 @@ export default {
                 width: auto;
                 word-wrap: break-word;
                 white-space: pre-wrap;
-                word-break: break-word;
-              ">
+                word-break: break-word;">
                         <p style="width: auto" class="text-wrap">
                             <v-icon left>{{ form.id ? icon.mdiPencil : icon.mdiPlusCircle }}</v-icon>
                             {{ dialog_title }}

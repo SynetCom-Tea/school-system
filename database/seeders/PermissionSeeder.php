@@ -53,6 +53,11 @@ class PermissionSeeder extends Seeder
         Permission::create(['name' => 'espace_comptable', 'description' => 'Espace comptable']);
         Permission::create(['name' => 'espace_etudiant', 'description' => 'Espace Étudiant']);
         Permission::create(['name' => 'responsable-enseignant', 'description' => 'Permission Responsable-Enseignant']);
+
+        Permission::create(['name' => 'create_annees', 'description' => "Créer des années scolaires"]);
+        Permission::create(['name' => 'edit_annee', 'description' => "Modifier une année scolaire"]);
+        Permission::create(['name' => 'delete_annee', 'description' => "Supprimer une année scolaire"]);
+        
         foreach ($this->models as $k => $v) {
             Permission::create(['name' => $k . '.create', 'description' => 'Peut ajouter ' . $v]);
             Permission::create(['name' => $k . '.read', 'description' => 'Peut voir ' . $v]);

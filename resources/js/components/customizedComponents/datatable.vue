@@ -308,9 +308,7 @@ export default {
         </v-dialog>
         <v-dialog v-model="dialogDelete" max-width="500px" persistent>
           <v-card>
-            <v-card-title style="background-color: #7d002c" class="text-h5 text-white"
-              >Confirmation de la suppression</v-card-title
-            >
+            <v-card-title style="background-color: #7d002c" class="text-h5 text-white" >Confirmation de la suppression</v-card-title>
             <v-card-text>Etes-vous de vouloir supprimer la ligne : </v-card-text>
             <v-card-actions class="card-actions-style">
               <Button
