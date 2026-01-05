@@ -13,11 +13,14 @@ return new class extends Migration
     {
         Schema::create('annees', function (Blueprint $table) {
             $table->id();
-            $table->string('libelle')->unique();
+            $table->string('libelle');
             $table->bigInteger('actif')->default(0);
             $table->foreignId('etablissement_section_id')->nullable()->constrained('etablissement_section')->cascadeOnDelete();
             $table->timestamps();
             $table->softDeletes();
+
+            // Unicité métier
+            $table->unique(['libelle', 'etablissement_section_id']);
         });
     }
 
@@ -27,13 +30,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('annees');
-        Schema::table('annees', function (Blueprint $table) {
-            $table->dropForeign(['etablissement_section_id']);
-            $table->dropColumn([
-                'etablissement_section_id',
-                'is_closed',
-                'is_archived',
-            ]);
-        });
+        // Schema::table('annees', function (Blueprint $table) {
+        //     $table->dropForeign(['etablissement_section_id']);
+        // });
     }
 };

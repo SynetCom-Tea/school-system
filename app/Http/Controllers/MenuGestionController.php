@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\MenuGestion;
 use App\Models\User;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
 use Inertia\Inertia;
+use App\Models\Annee;
+use App\Models\MenuGestion;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 
 class MenuGestionController extends Controller
 {
@@ -16,8 +17,9 @@ class MenuGestionController extends Controller
      *
      */
 
-    public function indexPrimaire(Request $request)
+    public function indexPrimaire(Request $request, $annee)
     {
+        // dd($annee);
         $authUser = Auth::user();
         $t = User::where('users.etablissement_id', $authUser->etablissement_id)
             ->join(
@@ -38,9 +40,9 @@ class MenuGestionController extends Controller
                 'text' => 'Session expiré!',
             ]);
         }
-        return Inertia::render('Gestion/IndexPrimaire', []);
+        return Inertia::render('Gestion/IndexPrimaire', ["anneeEncoursId" => $annee]);
     }
-    public function indexSecondaire(Request $request)
+    public function indexSecondaire(Request $request, $annee)
     {
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
@@ -48,9 +50,9 @@ class MenuGestionController extends Controller
                 'text' => 'Session expiré!',
             ]);
         }
-        return Inertia::render('Gestion/IndexSecondaire', []);
+        return Inertia::render('Gestion/IndexSecondaire', ["anneeEncoursId" => $annee]);
     }
-    public function indexSuperieure(Request $request)
+    public function indexSuperieure(Request $request, $annee)
     {
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
@@ -58,9 +60,9 @@ class MenuGestionController extends Controller
                 'text' => 'Session expiré!',
             ]);
         }
-        return Inertia::render('Gestion/IndexSuperieure', []);
+        return Inertia::render('Gestion/IndexSuperieure', ["anneeEncoursId" => $annee]);
     }
-    public function indexUniversitaire(Request $request)
+    public function indexUniversitaire(Request $request, $annee)
     {
         if (Auth::user() == null) {
             return redirect('/login')->with('message', [
@@ -68,7 +70,7 @@ class MenuGestionController extends Controller
                 'text' => 'Session expiré!',
             ]);
         }
-        return Inertia::render('Gestion/IndexUniversitaire', []);
+        return Inertia::render('Gestion/IndexUniversitaire', ["anneeEncoursId" => $annee]);
     }
     public function index()
     {

@@ -17,8 +17,13 @@ class Annee extends Model
 
     public static function getAnneeEnCours()
     {
-        return self::where('actif',1)->first();
+        return self::where('actif', 1)->first();
     }
+    public static function getToutesLesAnnees()
+    {
+        return self::orderBy('libelle', 'desc')->get();
+    }
+
     public function frais(): HasMany
     {
         return $this->hasMany(Frais::class);

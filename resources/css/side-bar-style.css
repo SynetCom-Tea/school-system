@@ -210,6 +210,62 @@
   animation: color-change 1s infinite;
 }
 
+
+/* Transition du drawer */
+.sidebar-transition {
+    transition: width 0.3s ease, transform 0.3s ease;
+}
+
+/* Icône */
+.toggle-icon {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+/* Rotation */
+.toggle-icon.rotated {
+    transform: rotateY(180deg);
+}
+
+/* Icône quand sidebar caché */
+.toggle-icon.hidden {
+    opacity: 0.6;
+    transform: rotate(90deg);
+}
+
+
+/* Bouton flottant */
+.floating-toggle {
+    position: fixed;
+    top: 55rem; /* sous l'app-bar */
+    left: 20px; /* largeur drawer ouvert */
+    z-index: 2000;
+    transition: left 0.3s ease;
+}
+
+/* Quand sidebar est compact */
+.floating-toggle.compact {
+    left: 80px;
+}
+
+/* Quand sidebar est caché */
+.floating-toggle.hidden {
+    left: 0px;
+}
+
+/* Icône animée */
+.toggle-icon {
+    transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.toggle-icon.rotated {
+    transform: rotateY(180deg);
+}
+
+.toggle-icon.hidden {
+    transform: rotate(180deg);
+    opacity: 0.7;
+}
+
 @keyframes color-change {
   0% {
     color: blue;

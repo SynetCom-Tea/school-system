@@ -120,7 +120,8 @@ class InscriptionController extends Controller
             'cycleFilieres' => $cf,
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
-            'annees' => Annee::all(),
+            // 'annees' => Annee::all(),
+            'annees' => Annee::where('etablissement_section_id',$etablissement_section[0])->where('actif', 1)->get(),
             // 'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id', $etablissement_section)->where('statut', '1')->with('type_document')->get(),
             // 'tuteurs' => ApprenantTuteur::whereHas('apprenant', function ($query) {
             //     $query->where('etablissement_id', Auth::user()->etablissement_id);
@@ -151,7 +152,9 @@ class InscriptionController extends Controller
     // Récupération de l'ID de la section d'établissement
     $et_sec_id = getSectionEtablissement($etablissement_id, $section)->first();
     
-    $year = getAnneeEncours()->id;
+    // $year = getAnneeEncours()->id;
+    $year = $request->anneeEncoursId;
+    // dd('year:', $year);
     
     // Construction de la requête pour les inscriptions
     $query = Inscription::with([
@@ -292,7 +295,7 @@ class InscriptionController extends Controller
         return $frais_scolarite;
     }
 
-  public function checkClasse($niveau, $etabSection)
+  public function checkClasse(Request $request, $niveau, $etabSection)
 {
     try {
         $etablissement_id = Auth::user()->etablissement_id;
@@ -325,7 +328,8 @@ class InscriptionController extends Controller
         }
         
         // Vérifiez les classes-années pour l'année en cours
-        $annee_encours = getAnneeEncours()->id;
+        // $annee_encours = getAnneeEncours()->id;
+        $annee_encours = $request->anneeEncoursId;
         $result = ClasseAnnee::whereIn('classe_id', $classes->pluck('id'))
             ->where('annee_id', $annee_encours)
             ->with('classe.niveau')
@@ -1136,7 +1140,8 @@ public function exportInscriptions(Request $request, $format)
     try {
         $section = $request->section;
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        // $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        $inscriptions = $this->calculerMontantsRestants($request, $inscriptions);
         
         // CHARGER LES RELATIONS NÉCESSAIRES POUR LES TYPES DE FRAIS
         $inscriptionsAvecRelations = [];
@@ -1233,7 +1238,7 @@ private function getClasseForInscription($inscriptionData)
 /**
  * Normaliser les données pour inclure les informations de classe
  */
-private function normaliserDonneesAvecClasses($inscriptions, $section)
+private function normaliserDonneesAvecClasses(Request $request, $inscriptions, $section)
 {
     $inscriptionsNormalisees = [];
 
@@ -1270,7 +1275,8 @@ private function normaliserDonneesAvecClasses($inscriptions, $section)
                 // Récupérer la classe depuis la relation
                 $classeAnnee = $this->getClasseAnneeForApprenant(
                     $inscriptionData['apprenant_id'] ?? null,
-                    getAnneeEncours()->id
+                    // getAnneeEncours()->id
+                    $request->anneeEncoursId
                 );
                 if ($classeAnnee) {
                     $inscriptionData['classe_annee'] = $classeAnnee->toArray();
@@ -1289,7 +1295,8 @@ private function normaliserDonneesAvecClasses($inscriptions, $section)
             // Récupérer la classe depuis ApprenantClasseAnnee
             $classeAnnee = $this->getClasseAnneeForApprenant(
                 $inscriptionData['apprenant_id'] ?? null,
-                $inscriptionData['annee_id'] ?? getAnneeEncours()->id
+                // $inscriptionData['annee_id'] ?? getAnneeEncours()->id
+                $inscriptionData['annee_id'] ?? $request->anneeEncoursId
             );
 
             if ($classeAnnee) {
@@ -1334,7 +1341,7 @@ private function getClasseAnneeForApprenant($apprenantId, $anneeId)
  * @param array $inscriptions
  * @return array
  */
-private function genererRecapitulatifParTypeFrais($inscriptions)
+private function genererRecapitulatifParTypeFrais(Request $request, $inscriptions)
 {
     $recapitulatif = [];
     $totalPaye = 0;
@@ -1358,7 +1365,8 @@ private function genererRecapitulatifParTypeFrais($inscriptions)
             // Calculer les frais totaux pour ce type
             $fraisType = DB::table('frais')
                 ->where('niveau_id', $inscription['niveau_id'] ?? null)
-                ->where('annee_id', getAnneeEncours()->id)
+                // ->where('annee_id', getAnneeEncours()->id)
+                ->where('annee_id', $request->anneeEncoursId)
                 ->where('type_frais_id', $typeFrais->id)
                 ->where('etablissement_id', Auth::user()->etablissement_id)
                 ->sum('montant');
@@ -1406,14 +1414,16 @@ public function exportInscriptionsPayees(Request $request, $format)
     try {
         $section = $request->section;
         $inscriptions = $this->getInscriptionsAvecPaiement($request, 'payees');
-        $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        // $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        $inscriptions = $this->calculerMontantsRestants($request, $inscriptions);
         
         if (count($inscriptions) === 0) {
             return response()->json(['error' => 'Aucune inscription avec paiement complet à exporter'], 404);
         }
         
         // UTILISER VOTRE METHODE EXISTANTE
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
         
         if ($format === 'pdf') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
@@ -1466,14 +1476,16 @@ public function exportInscriptionsNonPayees(Request $request, $format)
     try {
         $section = $request->section;
         $inscriptions = $this->getInscriptionsAvecPaiement($request, 'non_payees');
-        $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        // $inscriptions = $this->calculerMontantsRestants($inscriptions);
+        $inscriptions = $this->calculerMontantsRestants($request, $inscriptions);
 
         if (count($inscriptions) === 0) {
             return response()->json(['error' => 'Aucune inscription avec paiement incomplet à exporter'], 404);
         }
         
         // UTILISER VOTRE METHODE EXISTANTE
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
         
         if ($format === 'pdf') {
             $etb = Etablissement::find(Auth::user()->etablissement_id);
@@ -1531,8 +1543,10 @@ public function exportInscriptionsCombine(Request $request, $format)
         $inscriptionsNonPayees = $this->getInscriptionsAvecPaiement($request, 'non_payees');
         
         // Calculer les montants restants
-        $inscriptionsPayees = $this->calculerMontantsRestants($inscriptionsPayees);
-        $inscriptionsNonPayees = $this->calculerMontantsRestants($inscriptionsNonPayees);
+        // $inscriptionsPayees = $this->calculerMontantsRestants($inscriptionsPayees);
+        // $inscriptionsNonPayees = $this->calculerMontantsRestants($inscriptionsNonPayees);
+        $inscriptionsPayees = $this->calculerMontantsRestants($request, $inscriptionsPayees);
+        $inscriptionsNonPayees = $this->calculerMontantsRestants($request, $inscriptionsNonPayees);
         
         if (count($inscriptionsPayees) === 0 && count($inscriptionsNonPayees) === 0) {
             return response()->json(['error' => 'Aucune inscription à exporter'], 404);
@@ -1606,7 +1620,8 @@ public function genererFichePresencePdf(Request $request)
         
         
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
         
         // Récupérer les infos de l'établissement
         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
@@ -1775,7 +1790,8 @@ public function genererFichePresenceAvancee(Request $request)
             ]);
         }
         
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
         
         // Récupérer les infos de l'établissement
         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
@@ -1971,7 +1987,8 @@ public function genererListeAffichage(Request $request)
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
         
         // Normaliser les données avec les classes
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
         
         
             $fileName = 'liste_affichage_' . date('Ymd_His') . '.xlsx';
@@ -1997,7 +2014,8 @@ public function genererFichesPdfParClasse(Request $request)
         
         // Récupérer les inscriptions
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+        $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
         
         // Grouper par classe
         $classes = [];
@@ -2058,7 +2076,8 @@ public function genererRegistreBibliotheque(Request $request)
         
         // Limiter le nombre d'inscriptions pour éviter le timeout
         $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-        $inscriptionsAvecClasses = array_slice($this->normaliserDonneesAvecClasses($inscriptions, $section), 0, 10); // Limiter à 10
+        // $inscriptionsAvecClasses = array_slice($this->normaliserDonneesAvecClasses($inscriptions, $section), 0, 10); // Limiter à 10
+        $inscriptionsAvecClasses = array_slice($this->normaliserDonneesAvecClasses($request, $inscriptions, $section), 0, 10); // Limiter à 10
         
         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
         
@@ -2124,7 +2143,8 @@ public function genererFicheDossierCandidat(Request $request)
 private function getInscriptionsTerminaleEtTroisieme(Request $request, $section)
 {
     $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
     
     $terminales = [];
     $troisiemes = [];
@@ -2342,7 +2362,7 @@ public function showGenererDocuments(Request $request)
         $section = $request->section;
         
         // Récupérer toutes les classes disponibles
-        $classes = $this->getClassesDisponibles($section);
+        $classes = $this->getClassesDisponibles($request, $section);
         
         // Récupérer les matières par section
         $matieres = $this->getMatieresParSection($section);
@@ -2509,7 +2529,8 @@ public function genererDocumentParametrable(Request $request)
 private function getInscriptionsParClasseFiltree(Request $request, $section, $classeId = null, $niveauId = null, $eleveId = null)
 {
     $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
     
     // Grouper par classe
     $classes = [];
@@ -2688,7 +2709,7 @@ public function showParametresReleveNotes(Request $request)
         $section = $request->section;
         
         // Récupérer toutes les classes disponibles
-        $classes = $this->getClassesDisponibles($section);
+        $classes = $this->getClassesDisponibles($request, $section);
         
         // Récupérer les matières par section
         $matieres = $this->getMatieresParSection($section);
@@ -2830,10 +2851,11 @@ public function genererReleveNotesParMatiere($classeId, $matiere)
 /**
  * Récupérer les classes disponibles
  */
-private function getClassesDisponibles($section)
+private function getClassesDisponibles(Request $request, $section)
 {
     $inscriptions = $this->ajaxInscriptionListe(new Request(), null, $section);
-    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
     
     $classes = [];
     
@@ -2864,7 +2886,8 @@ private function getClassesDisponibles($section)
 private function getInscriptionsParClasse(Request $request, $section, $classeId = null)
 {
     $inscriptions = $this->ajaxInscriptionListe($request, null, $section);
-    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    // $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($inscriptions, $section);
+    $inscriptionsAvecClasses = $this->normaliserDonneesAvecClasses($request, $inscriptions, $section);
     
     // Grouper par classe
     $classes = [];
@@ -3110,9 +3133,10 @@ private function getMatieresParSection($section)
 /**
  * Calculer les montants restants en excluant les versements supprimés
  */
-private function calculerMontantsRestants($inscriptions)
+private function calculerMontantsRestants(Request $request, $inscriptions)
 {
-    $anneeId = getAnneeEncours()->id;
+    // $anneeId = getAnneeEncours()->id;
+    $anneeId = $request->anneeEncoursId;
     
     // Récupérer tous les IDs d'inscription et de niveau
     $inscriptionIds = [];

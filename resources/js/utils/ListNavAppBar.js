@@ -1,5 +1,6 @@
 import articlesIcon from "@iconify-icons/fluent-mdl2/articles";
 import formsAppsScriptOutlineRounded from "@iconify-icons/material-symbols/forms-apps-script-outline-rounded";
+import { disableCache } from "@iconify/vue";
 import {
   mdiTimetable,
   mdiBarn,
@@ -282,12 +283,17 @@ export function listMenus(page) {
     },
   ]
   if (pageSections) {
+    // console.log('annee encours ismo', page.anneeEncours);
+
     pageSections.forEach((element, index) => {
       if (element) {
-        iconSection = element.id == 1 ? mdiAccountSchoolOutline : element.id == 2 ? mdiTimerStarOutline :
-          element.id == 3 ? mdiTimerSyncOutline : mdiOfficeBuilding
-        linkSection = element.id == 1 ? 'gestion/primaire' : element.id == 2 ? 'gestion/secondaire' :
-          element.id == 3 ? 'gestion/superieure' : 'gestion/universitaire'
+        iconSection = element.id == 1 ? mdiAccountSchoolOutline :
+          element.id == 2 ? mdiTimerStarOutline :
+            element.id == 3 ? mdiTimerSyncOutline : mdiOfficeBuilding
+
+        linkSection = element.id == 1 ? 'gestion/primaire' :
+          element.id == 2 ? 'gestion/secondaire' :
+            element.id == 3 ? 'gestion/superieure' : 'gestion/universitaire'
         listMenusSections.push({
           icon: iconSection,
           title: element.libelle,
@@ -503,9 +509,13 @@ export function listMenus(page) {
 //Menu par section
 export function listMenusBySection(page, sectionID) {
   // let result
+  // On récupère l'année en cours à partir de l'ID fourni dans la page
+  let anneEnc = page.anneeEncours.find(a => a.id == page.anneeEncoursId);
+  // On définit si l'année est active (on s'assure que c'est un nombre pour la comparaison)
+  const isAnneeActive = anneEnc && Number(anneEnc.actif) === 1;
+  // console.log('anneEnc', anneEnc, 'isAnneeActive', isAnneeActive);
 
-
-
+  
   let childrenBySection = [
 
     {
@@ -516,7 +526,8 @@ export function listMenusBySection(page, sectionID) {
       note: "Ce menu permet d'accèder à la liste des années académiques",
       expand: false,
       image: "/assets/menusImage/inscription1.jpg",
-      permissions: ["manage_school", "liste_inscrit", "inscription"]
+      permissions: ["manage_school", "liste_inscrit", "inscription"],
+
     },
     {
       title: "Inscription",
@@ -617,6 +628,18 @@ export function listMenusBySection(page, sectionID) {
       })
     );
   })];
+
+  // console.log('result', result[0].filter(item => item.title == "Inscription"));
+  // if (!anneEnc || !isAnneeActive === false) {
+  //   return result = [result[0].filter(item => item.title == "Inscription" || item.title == "Notes" || item.title == "Bulletins")]
+  // }
+
+  // Utilisation dans votre code :
+  if (!anneEnc || !isAnneeActive) {
+    const allowedTitles = ["Inscription", "Notes", "Bulletins"];
+    return result = [getFilteredMenusForInactiveYear(result[0], allowedTitles)];
+  }
+
   return result ?? []
 
 }
@@ -709,3 +732,8 @@ export function menusTuteur(page, sectionID) {
   return result ?? {}
 
 }
+
+// À l'intérieur ou à l'extérieur de votre fonction principale
+export const getFilteredMenusForInactiveYear = (menus, arr) => {
+  return menus.filter(item => arr.includes(item.title));
+};

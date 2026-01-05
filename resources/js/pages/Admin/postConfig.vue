@@ -28,7 +28,7 @@
         </v-row>
         <v-row>
           <v-col v-permission:any="'manage_school|manage_etablissement'" cols="auto" style="margin-left:18px;">
-                <v-card :disabled="paramCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('annees.index',type)">
+                <v-card :disabled="paramCheck" elevation="6" width="210" style="border-color: blue;" variant="outlined" rounded="shaped" @click="goto('annees.index_config',type)">
 
                     <v-img style="object-fit: fill; width:210px; height:110px;" :src="'/assets/inscription1.jpg'" class="text-white">
 

@@ -32,7 +32,25 @@ export default {
 
   },
   layout: AuthenticatedLayout,
-  props: ["annees"],
+  // props: ["annees"],
+  props: {
+    annees: {
+      type: Array,
+      required: true
+    },
+    sections: {
+      type: Array,
+      required: true
+    },
+    currentSectionId: {
+      type: Number,
+      required: false,
+      default: null
+    },
+    workingYear: Object,
+    isReadonly: Boolean,
+  },
+
   data() {
     return {
       icon: {
@@ -67,6 +85,7 @@ export default {
 
       form: useForm({
         libelle: "",
+        section_id: null
       }),
       rules: [
         (value) => {
@@ -85,6 +104,8 @@ export default {
           text: "Une année est déjà en attente d'activation.",
         });
       }
+      // ✅ pré-remplissage ici
+      this.form.section_id = this.currentSectionId;
       this.dialog = true;
       this.dialog_title = "Nouvelle Année Scolaire";
     },
@@ -138,7 +159,9 @@ export default {
       });
     },
     async submit() {
+      console.log("data", this.form.data());
       const { valid } = await this.$refs.form.validate();
+
       if (!valid) return;
 
       // 🔴 Vérification doublon
@@ -216,7 +239,7 @@ export default {
         console.log(result);
         if (!result.isConfirmed) {
           // return router.get(route("annees.index"));
-          return this.$inertia.get(route("annees.index"));
+          return this.$inertia.get(route("annees.index_config", item.etablissement_section_id));
         }
 
         this.$inertia.put(route("annees.activer", item.id), {}, {
@@ -245,7 +268,7 @@ export default {
 
     closeYear(item) {
       const isActive = item.actif == 1;
-      const actionText = isActive ? "Désactiver" : "Activer";
+      const actionText = isActive ? "Clôturer" : "Activer";
       // const successText = isActive ? "Désactivé" : "Activé";
       // const errorText = isActive ? "Désactiver" : "Activer";
 
@@ -260,8 +283,9 @@ export default {
         console.log(result);
         if (!result.isConfirmed) {
           // return router.get(route("annees.index"));
-          return this.$inertia.get(route("annees.index"));
+          return this.$inertia.get(route("annees.index_config", item.etablissement_section_id));
         }
+
 
         // this.$inertia.post(route("annees.activer", item.id), {
         //   onSuccess: () =>
@@ -289,6 +313,7 @@ export default {
         //     }),
         // });
 
+
         this.$inertia.put(route("annees.cloturer", item.id), {}, {
           onSuccess: () => {
             this.$swal({
@@ -313,10 +338,20 @@ export default {
       });
     },
 
-    openItem(item) {
-      // Exemple : redirection vers le détail
-      this.$inertia.get(route('annees.show', item.id));
+
+    openYear(item) {
+      console.log('url', this.$page.url, 'item', item);
+      if(this.$page.url === "/annees/academique?section_id=1") {  
+        const url = route('indexPrimaire', {annee: item.id});
+        window.open(url, '_blank');
+      }
+
+      if(this.$page.url === "/annees/academique?section_id=2") {  
+        const url = route('indexSecondaire', {annee: item.id});
+        window.open(url, '_blank');
+      }
     },
+
 
     archiveYear(item) {
       this.$swal({
@@ -359,9 +394,15 @@ export default {
 
   },
 
-  // mounted() {
-  //   console.log('URL:', this.$page.url);
-  // }
+  mounted() {
+
+    // console.log('URL:', this.$page.url);
+    // console.log('id_section', this.currentSectionId);
+
+    if (this.currentSectionId) {
+      this.form.section_id = this.currentSectionId;
+    }
+  }
 
 
 };
@@ -387,6 +428,12 @@ export default {
                   <text-field label="Année acdemique" placeholder="Année: 2024-2025" v-model="form.libelle" isRequired
                     :rules="rules"></text-field>
                 </v-col>
+
+                <v-col cols="12" md="12">
+                  <v-select readonly label="Section" :items="sections" item-title="libelle" item-value="id"
+                    v-model="form.section_id" :rules="[v => !!v || 'Section obligatoire']" />
+                </v-col>
+
               </v-row>
             </v-form>
           </v-card-text>
@@ -403,33 +450,35 @@ export default {
       </template>
     </v-dialog>
     <v-card-text>
-      <Datatable :displayAddButton="this.$page.url == '/annees/academique?section_id=2' ? false : true" :items="annees" titleDatatable="Liste des années academiques"
-        :headers="headers" :permission="'manage_school'" :functionOnClickAddButton="create">
+      <Datatable :displayAddButton="this.$page.url.includes('section_id') ? false : true" :items="annees"
+        titleDatatable="Liste des années academiques" :headers="headers" :permission="'manage_school'"
+        :functionOnClickAddButton="create">
         <!-- <template v-slot:addBtn>
           <btn @click="create"><v-icon>{{ icon.mdiPlus }}</v-icon> Ajouter</btn>
         </template> -->
         <template v-slot:item.actions="{ item }">
-          <v-icon v-if="item.actif == 0 && this.$page.url !== '/annees/academique?section_id=2'" size="x-large" color="warning" title="Modifier" class="me-2"
-            @click="editItem(item)" :icon="icon.mdiPencil">
+          <v-icon v-if="item.actif == 0 && !this.$page.url.includes('section_id')" size="x-large" color="warning"
+            title="Modifier" class="me-2" @click="editItem(item)" :icon="icon.mdiPencil">
           </v-icon>
-          <v-icon v-if="item.actif == 0 && this.$page.url !== '/annees/academique?section_id=2'" size="x-large" color="error" title="Supprimer" @click="deleteItem(item)"
-            :icon="icon.mdiDelete">
+          <v-icon v-if="item.actif == 0 && !this.$page.url.includes('section_id')" size="x-large" color="error"
+            title="Supprimer" @click="deleteItem(item)" :icon="icon.mdiDelete">
           </v-icon>
 
-          <v-icon size="x-large" class="me-2" title="Activer" :icon="icon.mdiLockOpenVariant" v-if="item.actif == 0 && this.$page.url !== '/annees/academique?section_id=2'"
-            color="primary" :model-value="true" label="" @click="activeYear(item)"></v-icon>
+          <v-icon size="x-large" class="me-2" title="Activer" :icon="icon.mdiLockOpenVariant"
+            v-if="item.actif == 0 && !this.$page.url.includes('section_id')" color="primary" :model-value="true"
+            label="" @click="activeYear(item)"></v-icon>
           <!-- <v-switch v-else color="primary" :model-value="false" label="" @click="activeItem(item)"></v-switch> -->
 
           <!-- Ouvrir -->
-          <v-icon v-if="item.actif == 1 && this.$page.url !== '/annees/academique?section_id=2'" size="x-large" color="primary" title="Clôturer" class="me-2"
-            @click="closeYear(item)" :icon="icon.mdiLock" />
+          <v-icon v-if="item.actif == 1 && !this.$page.url.includes('section_id')" size="x-large" color="primary"
+            title="Clôturer" class="me-2" @click="closeYear(item)" :icon="icon.mdiLock" />
 
           <!-- Archiver -->
-          <v-icon v-if="item.actif == 2 && this.$page.url !== '/annees/academique?section_id=2'" size="x-large" color="orange" title="Archiver" @click="archiveYear(item)"
-            :icon="icon.mdiArchiveOutline" />
+          <v-icon v-if="item.actif == 2 && !this.$page.url.includes('section_id')" size="x-large" color="orange"
+            title="Archiver" @click="archiveYear(item)" :icon="icon.mdiArchiveOutline" />
 
-            <v-icon v-if="(item.actif == 2 || item.actif == 3) && this.$page.url == '/annees/academique?section_id=2'" size="x-large" color="#1976D2" title="Ouvrir" @click="openYear(item)"
-            :icon="icon.mdiBookOpenPageVariant" />
+          <v-icon v-if="(item.actif == 2 || item.actif == 3) && this.$page.url.includes('section_id')" size="x-large"
+            color="#1976D2" title="Ouvrir" @click="openYear(item)" :icon="icon.mdiBookOpenPageVariant" />
         </template>
         <template v-slot:item.Status="{ item }">
           <v-chip variant="flat" size="small" class="text-white" :style="{

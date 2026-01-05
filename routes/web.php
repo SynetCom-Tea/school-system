@@ -63,9 +63,7 @@ Route::get('/dashboard', function () {
     return Inertia::render('Dashboard');
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::middleware('auth')->group(function () {
-    Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {
-        
-    });
+    Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {});
     Route::resource('users', UserController::class);
     // Début routes tuteurs
     Route::get('tuteurs/list-warnings', [TuteurController::class, 'listWarnings'])->name('tuteurs.listWarnings');
@@ -73,12 +71,19 @@ Route::middleware('auth')->group(function () {
     Route::get('tuteurs/mail-box', [TuteurController::class, 'mailBox'])->name('tuteurs.mailBox');
     Route::get('tuteurs/dashboard', [TuteurController::class, 'dashboard'])->name('tuteurs.dashboard');
     Route::get('tuteurs/result', [TuteurController::class, 'result'])->name('tuteurs.result');
+    
     // Fin routes tuteurs
-    Route::get('menu-section-primaire', [MenuGestionController::class, 'indexPrimaire'])->name('indexPrimaire');
-    Route::get('menu-section-secondaire', [MenuGestionController::class, 'indexSecondaire'])->name('indexSecondaire');
-    Route::get('menu-section-superieure', [MenuGestionController::class, 'indexSuperieure'])->name('indexSuperieure');
-    Route::get('menu-section-universitaire', [MenuGestionController::class, 'indexUniversitaire'])->name('indexUniversitaire');
-    Route::get('get-versements-by-classeAnnee-and-student/{classeAnnee}/{apprenant}', [UserController::class, 'getVersementsByClasseAnneeAndStudent'])->name('getVersementsByClasseAnneeAndStudent');
+    // Route::get('menu-section-primaire', [MenuGestionController::class, 'indexPrimaire'])->name('indexPrimaire');
+    // Route::get('menu-section-secondaire', [MenuGestionController::class, 'indexSecondaire'])->name('indexSecondaire');
+    // Route::get('menu-section-superieure', [MenuGestionController::class, 'indexSuperieure'])->name('indexSuperieure');
+    // Route::get('menu-section-universitaire', [MenuGestionController::class, 'indexUniversitaire'])->name('indexUniversitaire');
+    // Route::get('get-versements-by-classeAnnee-and-student/{classeAnnee}/{apprenant}', [UserController::class, 'getVersementsByClasseAnneeAndStudent'])->name('getVersementsByClasseAnneeAndStudent');
+
+    Route::get('menu-section-primaire/{annee}', [MenuGestionController::class, 'indexPrimaire'])->name('indexPrimaire');
+    Route::get('menu-section-secondaire/{annee}', [MenuGestionController::class, 'indexSecondaire'])->name('indexSecondaire');
+    Route::get('menu-section-superieure/{annee}', [MenuGestionController::class, 'indexSuperieure'])->name('indexSuperieure');
+    Route::get('menu-section-universitaire/{annee}', [MenuGestionController::class, 'indexUniversitaire'])->name('indexUniversitaire');
+
     Route::get('get-inscriptions-by-year-and-section/{year}/{section}/{niveau}', [UserController::class, 'getInscriptionsByYearAndSection'])->name('getInscriptionsByYearAndSection');
     Route::get('get-users-by-category/{params}', [UserController::class, 'getUsersByCategory'])->name('getUsersByCategory');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -128,7 +133,7 @@ Route::prefix('calendrierscolaire')->group(function () {
 Route::resource('salles', SalleController::class);
 Route::resource('rapports', RapportController::class);
 Route::get('generate_bulletin_apprenant', [RapportController::class, 'bulletin'])->name('bulletin');
-Route::resource('enseignants', EnseignantController::class)->only([ 'update', 'destroy']);
+Route::resource('enseignants', EnseignantController::class)->only(['update', 'destroy']);
 Route::get('enseignantscreate/{type}', [EnseignantController::class, 'create'])->name('enseignants.create');
 Route::get('enseignants/{type}', [EnseignantController::class, 'index'])->name('enseignants.index');
 Route::post('enseignants/{type}', [EnseignantController::class, 'store'])->name('enseignants.store');
@@ -138,13 +143,13 @@ Route::get('AffectationEnseignants/{type}', [AffectationEnseignantController::cl
 Route::post('AffectationEnseignants/{type}', [AffectationEnseignantController::class, 'store'])->name('AffectationEnseignants.store');
 Route::get('AffectationEnseignants', [AffectationEnseignantController::class, 'edit'])->name('AffectationEnseignants.edit');
 Route::delete('AffectationEnseignantssup/{type}', [AffectationEnseignantController::class, 'supprimerE'])->name('AffectationEnseignants.supprimerE');
-Route::resource('filieres', FilliereController::class)->only([ 'update', 'destroy']);
+Route::resource('filieres', FilliereController::class)->only(['update', 'destroy']);
 Route::get('filierescreate/{type}', [FilliereController::class, 'create'])->name('filieres.create');
 Route::post('filieresstore/{type}', [FilliereController::class, 'store'])->name('filieres.store');
 Route::post('filierescycle/{type}', [FilliereController::class, 'ajout'])->name('filieres.ajout');
 Route::delete('filieressup/{type}', [FilliereController::class, 'supprimer'])->name('filieres.supprimer');
 Route::get('filieres/{type}', [FilliereController::class, 'index'])->name('filieres.index');
-Route::resource('UniteEnseignement', UEController::class)->only([ 'edit', 'update','destroy']);
+Route::resource('UniteEnseignement', UEController::class)->only(['edit', 'update', 'destroy']);
 Route::get('Unité d\'enseignement create/{type}', [UEController::class, 'create'])->name('ues.create');
 Route::get('Unité d\'enseignement/{type}', [UEController::class, 'index'])->name('ues.index');
 Route::post('Unité d\'enseignement/{type}', [UEController::class, 'store'])->name('ues.store');
@@ -153,11 +158,13 @@ Route::post('/systeme/lmd/store', [LmdController::class, 'store'])->name('system
 
 // Annee Routes
 Route::get('/annees/academique', [AnneeController::class, 'index'])->name('annees.index');
+Route::get('/annees/academique/{type}', [AnneeController::class, 'index_config'])->name('annees.index_config');
 Route::post('/annees', [AnneeController::class, 'store'])->name('annees.store');
 Route::put('/annees/{id}', [AnneeController::class, 'update'])->name('annees.update');
 Route::delete('/annees/{id}', [AnneeController::class, 'destroy'])->name('annees.destroy');
 Route::put('/annees/{id}/activer', [AnneeController::class, 'activeYear'])->name('annees.activer');
 Route::put('/annees/{id}/cloturer', [AnneeController::class, 'closeYear'])->name('annees.cloturer');
 Route::put('/annees/{id}/archiver', [AnneeController::class, 'archiveYear'])->name('annees.archiver');
+// Route::get('/annees/{annee}/work', [AnneeController::class, 'work'])->name('annees.work');
 
 require __DIR__ . '/auth.php';

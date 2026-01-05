@@ -45,6 +45,8 @@ export default {
     },
     mounted() {
         this.getMenus;
+        // console.log('secondaire', this.authPage.anneeEncoursId);
+        
     },
     computed: {
         getMenus() {
@@ -60,31 +62,31 @@ export default {
                 this.form.get(route("annees.index"));
             }
             if (item.link == "/subscribers") {
-                this.form.get(route("inscriptions.index"));
+                this.form.get(route("inscriptions.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "versements") {
-                this.form.get(route("versements.index"));
+                this.form.get(route("versements.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "emplois") {
-                this.form.get(route("emplois.index"));
+                this.form.get(route("emplois.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "emploisCreate") {
-                this.form.get(route("calendar.index"));
+                this.form.get(route("calendar.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "absences") {
-                this.form.get(route("absences.index"));
+                this.form.get(route("absences.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "evaluation") {
-                this.form.get(route("evaluation.index_admin"));
+                this.form.get(route("evaluation.index_admin", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "note") {
-                this.form.get(route("note.index_admin"));
+                this.form.get(route("note.index_admin", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "rapports") {
-                this.form.get(route("rapports.index"));
+                this.form.get(route("rapports.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "generations") {
-                this.form.get(route("rapports.create"));
+                this.form.get(route("rapports.create", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
         },
         onClickExpland(item) {

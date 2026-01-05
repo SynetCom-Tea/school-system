@@ -1,9 +1,6 @@
 <template>
   <v-row align="center" justify="center">
-    <v-col
-      cols="12"
-      sm="9"
-      style="
+    <v-col cols="12" sm="9" style="
         display: flex;
         justify-content: center;
         align-items: center;
@@ -12,32 +9,19 @@
         top: 0;
         margin: auto;
         height: 530px;
-      "
-    >
+      ">
       <v-card class="elevation-5 mt-4">
         <v-window v-model="step">
           <v-window-item :value="1">
             <div>
-              <v-btn
-                color="secondary"
-                title="Visiter le site web de l'application"
-                @click="goToWelcome()"
-                style="text-transform: none; font-size: 12px"
-                :prepend-icon="icons.mdiKeyboardBackspace"
-              >
-                Visiter le site web</v-btn
-              >
+              <v-btn color="secondary" title="Visiter le site web de l'application" @click="goToWelcome()"
+                style="text-transform: none; font-size: 12px" :prepend-icon="icons.mdiKeyboardBackspace">
+                Visiter le site web</v-btn>
             </div>
-            <SectionLogin
-              :goToNextWindow="goToNextWindow"
-              :listSocialNetworks="listSocialNetworks"
-            />
+            <SectionLogin :goToNextWindow="goToNextWindow" :listSocialNetworks="listSocialNetworks" />
           </v-window-item>
           <v-window-item :value="2">
-            <SectionRegister
-              :goToPreviousWindow="goToPreviousWindow"
-              :listSocialNetworks="listSocialNetworks"
-            />
+            <SectionRegister :goToPreviousWindow="goToPreviousWindow" :listSocialNetworks="listSocialNetworks" />
           </v-window-item>
         </v-window>
       </v-card>
@@ -143,14 +127,17 @@ export default {
   width: 50%;
   object-fit: cover;
 }
+
 .login {
   display: flex;
   justify-content: center;
   align-items: center;
 }
+
 .v-application .rounded-bl-xl {
   border-bottom-left-radius: 300px !important;
 }
+
 .v-application .rounded-br-xl {
   border-bottom-right-radius: 300px !important;
 }

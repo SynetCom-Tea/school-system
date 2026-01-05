@@ -14,8 +14,8 @@ class Annee extends Model
 {
     use HasFactory;
     use SoftDeletes;
-    protected $fillable = ['libelle', 'actif', "etablissement_section_id", ];
-    
+    protected $fillable = ['libelle', 'actif', "etablissement_section_id",];
+
 
     public static function getAnneeEnCours()
     {

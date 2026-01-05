@@ -43,45 +43,63 @@ export default {
     },
     mounted() {
         this.getMenus;
-        console.log('getMe',this.getMenus)
+        console.log('getMe', this.getMenus)
+        // console.log('auth page annee', this.authPage.anneeEncours.find(a => a.id == this.authPage.anneeEncoursId));
+        // console.log('auth page check', this.authPage.anneeEncours.find(a => a.id == this.authPage.anneeEncoursId).id =! this.authPage.anneeEncoursId ? true : false);
+        // console.log('check',checkIdAnneEncours(this.authPage, this.authPage.anneeEncoursId));
+        
+
     },
     computed: {
-        getMenus() {
+        getMenus() {       
+            
             let list = this.listMenusBySection(this.authPage, 1);
-            console.log('List',list)
-            return list[0] ??[];
+            console.log('List', list)
+            return list[0] ?? [];
         },
     },
     methods: {
         listMenusBySection,
         goToPage(item) {
+            if (item.link == "/academicYears") {
+                this.form.get(route("annees.index"));
+            }
             if (item.link == "/subscribers") {
-                this.form.get(route("inscriptions.index"));
+                this.form.get(route("inscriptions.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "versements") {
-                this.form.get(route("versements.index"));
+                this.form.get(route("versements.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "emplois") {
-                this.form.get(route("emplois.index"));
+                this.form.get(route("emplois.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "emploisCreate") {
-                this.form.get(route("calendar.index"));
+                this.form.get(route("calendar.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "evaluation") {
-                this.form.get(route("evaluation.index_admin"));
+                this.form.get(route("evaluation.index_admin", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "absences") {
-                this.form.get(route("absences.index"));
+                this.form.get(route("absences.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "note") {
-                this.form.get(route("note.index_admin"));
+                this.form.get(route("note.index_admin", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "rapports") {
-                this.form.get(route("rapports.index"));
+                this.form.get(route("rapports.index", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
             if (item.link == "generations") {
-                this.form.get(route("rapports.create"));
+                this.form.get(route("rapports.create", { anneeEncoursId: this.authPage.anneeEncoursId }));
             }
+        },
+        checkIdAnneEncours(page, anneeId) {
+            let result = false;
+            if (page?.anneeEncoursId) {
+                if (page.anneeEncoursId == anneeId) {
+                    result = true;
+                }
+            }
+            return result;
         },
         onClickExpland(item) {
             let vExpand = item.expand;
@@ -95,26 +113,28 @@ export default {
 </script>
 
 <template>
-<AuthenticatedLayout>
-    <div style="margin: 10px">
-        <Toolbar styleToolbar="background-color: white;" :icon="icons.mdiAccountSchoolOutline" toolbarTitle="Liste des menus Primaire"></Toolbar>
+    <AuthenticatedLayout>
         <div style="margin: 10px">
-            <h2 class="text-color-secondary">Gestion Primaire</h2>
-        </div>
+            <Toolbar styleToolbar="background-color: white;" :icon="icons.mdiAccountSchoolOutline"
+                toolbarTitle="Liste des menus Primaire"></Toolbar>
+            <div style="margin: 10px">
+                <h2 class="text-color-secondary">Gestion Primaire</h2>
+            </div>
 
-        <v-row>
-            <v-col v-for="(item, i) in getMenus" cols="2">
-                <v-card class="mx-auto" max-width="200" style="cursor: pointer" gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" @click="goToPage(item)">
-                    <v-img class="align-end text-white" height="150" :src="item.image" cover></v-img>
-                    <v-card-subtitle>
-                        <div class="d-flex py-2">
-                            <v-list-item :prepend-icon="item.icon">
-                                <v-list-item-subtitle dense>{{ item.title }}</v-list-item-subtitle>
-                            </v-list-item>
-                        </div>
-                    </v-card-subtitle>
-                </v-card>
-                <!-- <v-card :prepend-icon="item.icon" class="mx-auto" max-width="250" :image="item.image" :color="item.color" style="cursor: pointer" @click="goToPage(item)">
+            <v-row>
+                <v-col v-for="(item, i) in getMenus" cols="2">
+                    <v-card class="mx-auto" max-width="200" style="cursor: pointer"
+                        gradient="to bottom, rgba(0,0,0,.1), rgba(0,0,0,.5)" @click="goToPage(item)">
+                        <v-img class="align-end text-white" height="150" :src="item.image" cover></v-img>
+                        <v-card-subtitle>
+                            <div class="d-flex py-2">
+                                <v-list-item :prepend-icon="item.icon">
+                                    <v-list-item-subtitle dense>{{ item.title }}</v-list-item-subtitle>
+                                </v-list-item>
+                            </div>
+                        </v-card-subtitle>
+                    </v-card>
+                    <!-- <v-card :prepend-icon="item.icon" class="mx-auto" max-width="250" :image="item.image" :color="item.color" style="cursor: pointer" @click="goToPage(item)">
                     <v-card-text class="py-0" :key="i">
                         <v-card-title style="color: black">{{ item.title }}</v-card-title>
 
@@ -125,8 +145,8 @@ export default {
                         </div>
                     </v-card-text>
                 </v-card> -->
-            </v-col>
-        </v-row>
-    </div>
-</AuthenticatedLayout>
+                </v-col>
+            </v-row>
+        </div>
+    </AuthenticatedLayout>
 </template>
