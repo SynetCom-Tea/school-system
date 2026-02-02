@@ -23,7 +23,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        DB::statement("ALTER TABLE matieres ADD COLUMN code varchar(255);");
+        DB::statement("ALTER TABLE matieres ADD COLUMN code varchar(255)");
 
         DB::unprepared('
             CREATE TRIGGER matieres_before_insert BEFORE INSERT ON matieres

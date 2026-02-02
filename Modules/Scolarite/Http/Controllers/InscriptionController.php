@@ -1174,7 +1174,7 @@ public function exportInscriptions(Request $request, $format)
             ];
             
             $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
-            return $pdf->download('liste_inscrits_' . date('Ymd_His') . '.pdf');
+            return $pdf->stream('liste_inscrits_' . date('Ymd_His') . '.pdf');
         } 
         elseif ($format === 'excel') {
             $fileName = 'liste_inscrits_' . date('Ymd_His') . '.xlsx';
@@ -1426,7 +1426,7 @@ public function exportInscriptionsPayees(Request $request, $format)
             ];
             
             $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
-            return $pdf->download('liste_inscrits_payes_' . date('Ymd_His') . '.pdf');
+            return $pdf->stream('liste_inscrits_payes_' . date('Ymd_His') . '.pdf');
         } 
         elseif ($format === 'excel') {
             $fileName = 'liste_inscrits_payes_' . date('Ymd_His') . '.xlsx';
@@ -1486,7 +1486,7 @@ public function exportInscriptionsNonPayees(Request $request, $format)
             ];
             
             $pdf = PDF::loadView('exports.inscriptions_pdf', $data);
-            return $pdf->download('liste_inscrits_non_payes_' . date('Ymd_His') . '.pdf');
+            return $pdf->stream('liste_inscrits_non_payes_' . date('Ymd_His') . '.pdf');
         } 
         elseif ($format === 'excel') {
             $fileName = 'liste_inscrits_non_payes_' . date('Ymd_His') . '.xlsx';
@@ -1989,6 +1989,7 @@ public function genererListeAffichage(Request $request)
  */
 public function genererFichesPdfParClasse(Request $request)
 {
+   
     try {
         $section = $request->section;
         $typeFiche = $request->type_fiche ?? 'affichage';
@@ -2011,7 +2012,6 @@ public function genererFichesPdfParClasse(Request $request)
         
         // Récupérer les infos de l'établissement
         $etablissement = Etablissement::find(Auth::user()->etablissement_id);
-        
         $data = [
             'etablissement' => $etablissement,
             'classes' => $classes,
@@ -2034,7 +2034,7 @@ public function genererFichesPdfParClasse(Request $request)
         ]);
         
         $fileName = 'Listes_Affichage_Classes_' . date('Ymd_His') . '.pdf';
-        return $pdf->download($fileName);
+        return $pdf->stream($fileName);
         
     } catch (\Exception $e) {
         \Log::error('Erreur génération PDF: ' . $e->getMessage());

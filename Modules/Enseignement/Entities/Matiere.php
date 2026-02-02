@@ -13,7 +13,22 @@ class Matiere extends Model
 {
     use HasFactory,SoftDeletes;
 
-    protected $fillable = ['code', 'nom', 'etablissement_section_id'];
+    protected $fillable = ['code', 'nom', 'etablissement_section_id', 'type_matiere'];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saving(function ($matiere) {
+            // Update code if name or section changed, or if code is empty
+            if ($matiere->isDirty('nom') || $matiere->isDirty('etablissement_section_id') || empty($matiere->code)) {
+                $section = $matiere->etablissement_section ? $matiere->etablissement_section->section : null;
+                if ($section) {
+                    $matiere->code = $section->libelle . '/' . $matiere->nom;
+                }
+            }
+        });
+    }
 
     protected static function newFactory()
     {

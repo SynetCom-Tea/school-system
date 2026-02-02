@@ -1,373 +1,312 @@
 @foreach($donnees as $donnee)
 <!DOCTYPE html>
-<html lang="en">
+<html lang="fr">
+
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bulletin par classe</title>
-    <style type="text/css">
-        td,
-        th {
-            border: 0.5px solid black;
-    
+    <title>Bulletin CSP AVENIR 3</title>
+    <style>
+        @page {
+            margin: 15px;
+        }
+
+        body {
+            /* font-family: DejaVu Sans, sans-serif; */
+            font-family: "Times New Roman", Times, serif;
+            font-size: 13px;
+            margin: 0;
+            padding: 0;
+            position: relative;
+            min-height: 100vh;
         }
 
         table {
             width: 100%;
-            
-            font-family: helvetica;
-            line-height: 5mm;
             border-collapse: collapse;
+            margin-bottom: 2px;
         }
-        h2 {
+
+        th,
+        td {
+            border: 1px solid #000;
+            padding: 1px;
+            vertical-align: top;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .left {
+            text-align: left;
+        }
+
+        .right {
+            text-align: right;
+        }
+
+        .bold {
+            font-weight: bold;
+        }
+
+        .no-border td,
+        .no-border th {
+            border: none;
+        }
+
+        .titre {
+            background: #9bbb58;
+            text-align: center;
+            font-size: 14px;
+            font-weight: bold;
+            padding: 5px;
+            margin: 5px 0;
+            border-radius: 5px;
+        }
+
+        .section-title {
+            background: #eee;
+            font-weight: bold;
+            padding: 3px;
+        }
+
+        .signature-box {
+            height: 100px;
+            vertical-align: top;
+        }
+
+        /* MODIFICATION PRINCIPALE ICI */
+        .main-content {
+            padding-bottom: 40px;
+            /* Espace pour le footer */
+        }
+
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            text-align: center;
+            font-size: 9px;
+            padding: 2px 0;
+            border-top: 1px solid #ccc;
+            background: white;
+            width: 100%;
+        }
+
+        .footer-note {
             margin: 0;
             padding: 0;
+            line-height: 1.2;
         }
-        p {
-            margin: 5px;
+
+        .colomn_moyenne {
+            font-weight: bold;
         }
-       
-        body {
-            /* background-image: url(logos/armoirie.png); */
-            background-repeat: no-repeat;
-            background-position: center; 
-            
-            /* background-size: contain; */
-            opacity: 1;
+
+        .titre-th {
+
+            width: 60px;
         }
-    
-        .border th {
-            border: 1px solid #000;
-            color: white;
-            background: #717375;
-            padding: 5px;
-            font-weight: normal;
-            font-size: 14px;
-            text-align: center;
-        }
-        .border td {
-            border: 1px solid #CFD1D2;
-            padding: 5px 10px;
-            text-align: center;
-        }
-        
-        .no-border {
-            border-right: 1px solid #CFD1D2;
-            border-left: none;
-            border-top: none;
-            border-bottom: none;
-        }
-        .space {
-            padding-top: 250px;
-        }
-    
-        .p10 {
-            width: 10%;
-        }
-        .p15 {
-            width: 15%;
-        }
-        .p25 {
-            width: 25%;
-        }
-        .p50 {
-            width: 50%;
-        }
-        .p60 {
-            width: 60%;
-        }
-        .p75 {
-            width: 75%;
+
+        .checkbox {
+            font-family: DejaVu Sans, sans-serif;
+            font-size: 13px;
+            margin-left: 5px;
+            margin-right: 5px;
+            font-weight: bold;
         }
     </style>
 </head>
+
 <body>
-    <!-- Entete de page -->
-    <!-- <div style="background-image:url(test2.jpg)"> -->
-        
-    <div>
-        <div style="position:absolute; margin-top:10px;">
-        <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">MINISTERE DE L'EDUCATION NATIONALE</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">DREN NIAMEY</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">DDEN NIAMEY IV</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">IESG NY IV</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
-        </div>
-        <div style="position:absolute;margin-top:10px;margin-left:300px">
-       <!-- <img style="max-width:50%; height:auto" src="logos/iat-logo.png" alt="Logo de l'entreprise"> -->
-         @if($etablissement->logo === null)
-            <img style="max-width:30%; height: 11%;" src="logos/defaultLogo.png" alt="Logo de l'entreprise">
-            @else
-            <img style="max-width:30%; height:11%" src="logos/{{$etablissement->logo}}" alt="Logo de l'entreprise">
-            @endif
-        </div>
-        <div style="position:absolute;margin-top:10px;margin-left:500px">
-        <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : 2023-2024</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : I</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">SECTION : @if($section == '1') Primaire @elseif($section == '2' and $donnee['bulletin']->classe_annee->classe->niveau->id <= 10) Collège @else Lycée @endif</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$donnee['bulletin']->classe_annee->classe->niveau->libelle}}</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">Rédouble : <span style="color:green">Jamais Rédoublé</span></i>&nbsp;&nbsp;</b><br>
-        </div>
-    </div>
-                <!-- <div style="text-align: left; border-right: 0; border-bottom: 0; border-left: 0; border-top:0" class="50p">
-                    <b><i style="font-size: 13px; margin: 5px;">REPUBLIQUE DU NIGER</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">MINISTERE DE L'EDUCATION NATIONALE</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">DREN NIAMEY</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">DDEN NIAMEY IV</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">IESG NY IV</i></b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">{{ $etablissement->name}}</i></b><br>
-                </div>
-            
-                <div style="text-align: right; border-bottom:0; border-right: 0; border-top:0" class="50p">
-                    <b><i style="font-size: 13px; margin: 5px;">ANNEE SCOLAIRE : 2023-2024</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">SEMESTRE : I</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">SECTION : @if($section == '1') Primaire @elseif($section == '2' and $donnee['bulletin']->classe_annee->classe->niveau->id <= 10) Collège @else Lycée @endif</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">NIVEAU : {{$donnee['bulletin']->classe_annee->classe->niveau->code}}</i>&nbsp;&nbsp;</b><br>
-                    <b><i style="font-size: 13px; margin: 5px;">Rédouble : <span style="color:green">Jamais Rédoublé</span></i>&nbsp;&nbsp;</b><br>
-                </div>
-                <div style="margin-bottom: 20px; position:relative text-align:right; margin-top:10px;">
-                    <img style="max-width:30%; height:auto" src="team.png" alt="Logo de l'entreprise">
-                </div> -->
-           
-        <!-- fin entete de page  -->
 
-        <!-- titre du bulletin -->
-        <div style="background-color: grey;margin-left: 250px; width: 210px; height: 30px; margin-top: 150px;">
-            <b style="font-size: 20px;">BULLETIN DE NOTES</b> 
-        </div>
-        <div style="margin-left: 260px; width: 210px; height: 30px; margin-top: 10px;">
-            <b style="font-size: 20px;">Classe de : {{$donnee['bulletin']->nom_classe}}</b> 
-        </div>
-        <!-- fin titre du bulletin -->
+    <div class="main-content">
+        <!-- EN-TETE -->
+        <table class="no-border">
+            <tr>
+                <td width="20%" class="center">
+                    @if($etablissement->logo)
+                    <img style="border-radius: 100%;" src="{{ public_path('logos/'.$etablissement->logo) }}" width="140" height="140"><br>
+                    @endif
+                </td>
+                <td width="60%" class="center">
+                    <b>République du Niger</b><br>
+                    Ministère de l'Éducation Nationale de l'Alphabétisation et de la Promotion des Langues Nationales. Région de Niamey / IESG Niamey 4<br>
+                    <b style="font-size: 16px;">« {{ $etablissement->name}}/ AEROPORT »</b><br>
+                    <b style="font-size: 13px;">Complexe Scolaire Privé « {{ $etablissement->name}} »</b><br>
+                    BP/Tél: 96295361
+                </td>
+                <td width="20%"></td>
+            </tr>
+        </table>
 
-        <!-- Informations sur le professeur et rang -->
-        <div style="margin-top: 10px; position:absolute">
-            <b style="font-size: 13px;">Prof responsable de la classe : <span style="color:green">NON DEFINI</span></b> <br>
-            <b style="font-size: 13px;">Nom et Prénom de l'élève : {{$donnee['bulletin']->nom_prenom_apprenant}}</b> <br>
-            <b style="font-size: 13px;">Moyenne obtenue : {{$donnee['bulletin']->moyenne_details_notes}} / 20</b>
-        </div>
-       
-        <div style="margin-top: 10px; margin-left: 400px; position:absolute">
-            <b style="font-size: 13px;">Matricule : {{$donnee['bulletin']->matricule_apprenant}}</b> <br>
-            <b style="font-size: 13px;">Rang : {{$donnee['bulletin']->rang}}e</b>
-        </div>
-       
-        <!-- Fin informations sur le professeur et rang -->
+        <div class="titre">BULLETIN DE NOTES DU {{ strtoupper($donnee['bulletin']->periode) }}</div>
 
-        <!-- Debut du tableau -->
-        <table style="margin-top: 100px; font-size: 13px;">
+        <!-- INFOS ELEVE -->
+        <table>
+            <tr style="font-size: 14px;">
+                <td colspan="2"><b>Nom et Prénoms: {{$donnee['bulletin']->nom_prenom_apprenant}}</b> <br>
+                    <b>Matricule</b> : {{$donnee['bulletin']->matricule_apprenant}}
+                </td>
+                <td><b>Année</b> : {{$donnee['bulletin']->annee_scolaire}} <br>
+                    <b>Classe</b> : {{$donnee['bulletin']->nom_classe}} <br>
+                    <b>Effectif</b> : {{$donnee['bulletin']->classe_effectif}} <br>
+                    <b>Date</b> : {{$donnee['bulletin']->created_at->format('d-m-Y')}}
+                </td>
+            </tr>
+        </table>
+
+        <!-- TABLEAU NOTES -->
+        <table>
             <thead>
-            <tr style="text-align:center;" valign="center">
-                    <th style="text-align: left;"><b>Disciplines</b></th>
-                    <th width="30">MC<br>/20</th>
-                    <th width="30">NC<br>/20</th>
-                    <th width="30">MG<br>/20</th>
-                    <th width="35">Coef</th>
-                    <th width="40">Moy ceof</th>
-                    <th width="35">Rang</th>
-                    <th width="70">Appréciation</th>
-                    <th width="100">Signature</th>
+                <tr class="center bold">
+                    <th style="width: 145px;">Discipline</th>
+                    <th>Coef</th>
+                    <th class="titre-th">Moy. de Classe</th>
+                    <th class="titre-th">Compo</th>
+                    <th class="titre-th">Moy. /20</th>
+                    <th class="titre-th">Moy. Coef.</th>
+                    <th>Rang</th>
+                    <th>Appréciations et Visas des Professeurs</th>
                 </tr>
             </thead>
             <tbody>
                 @php
-                $total = 0;
+                $totalCoef = 0;
+                $totalMoyCoef = 0;
                 @endphp
                 @foreach($donnee['detail'] as $line)
-                    @php
-                        $total = $total + $line->moyenne_coefficiente;
-                    @endphp
-                    <tr>
-                    <td><b>{{$line->nom_matiere}}</b></td>
-                        <td style="text-align:center;" width="30">{{$line->note_de_classe}}</td>
-                        <td style="text-align:center;" width="30">{{$line->note_de_composition}}</td>
-                        <td style="text-align:center;" width="30">{{$line->moyenne}}</td>
-                        <td style="text-align:center;" width="35">{{$line->coefficient}}</td>
-                        <td style="text-align:center;" width="40">{{$line->moyenne_coefficiente}}</td>
-                        <td style="text-align:center;" width="35">{{$line->rang}}</td>
-                        
-                        <td style="text-align:center;" width="70">
-                            
-                            @if($line->moyenne <= 2)
+                @php
+                $totalCoef += $line->coefficient;
+                $totalMoyCoef += $line->moyenne_coefficiente;
+                @endphp
+                <tr>
+                    <td class="left">{{$line->nom_matiere}}</td>
+                    <td class="center">{{$line->coefficient}}</td>
+                    <td class="right">{{$line->note_de_classe}}</td>
+                    <td class="right">{{$line->note_de_composition}}</td>
+                    <td class="right">{{$line->moyenne}}</td>
+                    <td class="right colomn_moyenne">{{$line->moyenne_coefficiente}}</td>
+                    <td class="center">{{$line->rang_matiere}}</td>
+                    <td class="left">
+                        @if($line->moyenne <= 2)
                             NULL
-                            @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
+                        @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
                             MAL
-                            @elseif(($line->moyenne > 5 ) and ($line->moyenne <= 9))
-                            INSUFFISANT
-                            @elseif (($line->moyenne > 9 ) and ($line->moyenne <= 15))
+                        @elseif(($line->moyenne > 5 ) and ($line->moyenne < 10))
+                                INSUFFISANT
+                        @elseif (($line->moyenne >= 10 ) and ($line->moyenne < 12))
+                            PASSABLE
+                        @elseif (($line->moyenne >= 12 ) and ($line->moyenne < 14))
+                            ASSEZ BIEN
+                        @elseif (($line->moyenne >= 14 ) and ($line->moyenne < 16))
                             BIEN
-                            @elseif (($line->moyenne > 15 ) and ($line->moyenne <= 19 ))
+                        @elseif (($line->moyenne >= 16 ) and ($line->moyenne <= 19 ))
                             TRES BIEN
-                            @elseif (($line->moyenne > 19 ) and ($line->moyenne == 20))
-                            PARFAIT
-                            @else
+                        @elseif (($line->moyenne > 19 ) and ($line->moyenne == 20))
+                            EXCELLENT
+                        @else
                             Pas defini
-                            @endif
-                        </td>
-                        <td style="text-align:center;" width="100"></td>
-                    </tr>
+                        @endif
+                    </td>
+                </tr>
                 @endforeach
-                <tr>
-                    <td><b>Total</b></td>
-                    <td style="text-align:center" colspan="8">{{$total}}</td>
+                <tr class="bold">
+                    <td>TOTAL</td>
+                    <td class="center">{{$totalCoef}}</td>
+                    <td colspan="3"></td>
+                    <td class="right">{{$totalMoyCoef}}</td>
+                    <td colspan="2"></td>
                 </tr>
-                <tr>
-                    <td><b>Moyenne de classe</b></td>
-                    <td style="text-align:center" colspan="8">12</td>
-                </tr>
-                
-                <tr>
-                    <td><b>Moyenne 2e semestre</b></td>
-                    <td style="text-align:center" colspan="8"></td>
-                </tr>
-                
-                <tr>
-                    <td><b>Moyenne 1er semestre</b></td>
-                    <td style="text-align:center" colspan="8">{{$donnee['bulletin']->moyenne_details_notes}}</td>
-                </tr>
-               
-                <tr>
-                    <td><b>Moyenne annuelle</b></td>
-                    <td style="text-align:center" colspan="8"></td>
-                </tr>
-                
             </tbody>
         </table>
-        <!-- Fin du tableau -->
-        
-        <!-- <div  style="background-image:url(test.jpg);width: 200px; padding-top:-400px;background-repeat:no-repeat;background-position: center center;filter:alpha(opacity=50);opacity: 0.2;-moz-opacity:0.5">
-        </div> -->
-        
-        <table style="font-size: 13px; margin-top: 10px;">
-            <tr style="text-align:center;">
-                <th width="153" colspan=3>Conduite</th>
-                <th width="153" colspan=3>Travail</th>
-                <th width="153" colspan=3>Tableau d'honneur</th>
-                <th width="153" colspan=3>Assiduité / Retards</th>
-            </tr>
-           
-            <tr>    
-                <td width="153"  height="20" colspan=3>
-                    <input type="checkbox">&nbsp;&nbsp;&nbsp;<label>Bonne</label><br>
-                    <input type="checkbox"><label>Avertissement</label><br>
-                    <input type="checkbox"><label>Blâme</label><br>
-                    <label></label><br>
-                    <label></label><br>
-                </td>
-                <td width="153"  height="20" colspan=3>
 
-                    <input type="checkbox"><label>Honorable</label><br>
-                    <input type="checkbox"><label>Excellent</label><br>
-                    <input type="checkbox"><label>Très Bien</label><br>
-                    <input type="checkbox" ><label>Bien</label><br>
-                    <input type="checkbox"><label>Assez Bien</label><br>
-                    <input type="checkbox"><label>Passable</label><br>
-                    <input type="checkbox"><label>Peut mieux faire</label><br>
-                    <input type="checkbox"><label>Insuffisant</label><br>
-                    <!-- <input type="checkbox"><label>Faible</label><br>
-                    <input type="checkbox"><label>Médiocre</label><br>
-                    <input type="checkbox"><label>Très Faible</label><br>
-                    <input type="checkbox"><label>Échec</label><br>
-                    <input type="checkbox"><label>À revoir</label><br>
-                    <input type="checkbox"><label>À améliorer</label><br>
-                    <input type="checkbox"><label>Non fait</label><br>
-                    <input type="checkbox"><label>Insuffisant</label><br>
-                    <input type="checkbox"><label>À surveiller</label><br>
-                    <input type="checkbox"><label>À encourager</label><br>
-                    <input type="checkbox"><label>À féliciter</label><br>
-                    <input type="checkbox"><label>À récompenser</label><br>
-                    <input type="checkbox"><label>À motiver</label><br>
-                    <input type="checkbox"><label>À soutenir</label><br>
-                    <input type="checkbox"><label>À guider</label><br>
-                    <input type="checkbox"><label>À conseiller</label><br>
-                    <input type="checkbox"><label>À orienter</label><br>
-                    <input type="checkbox"><label>À former</label><br>
-                    <input type="checkbox"><label>À instruire</label><br>
-                    <input type="checkbox"><label>À éduquer</label><br>
-                    <input type="checkbox"><label>À cultiver</label><br>
-                    <input type="checkbox"><label>À développer</label><br>
-                    <input type="checkbox"><label>À perfectionner</label><br>
-                    <input type="checkbox"><label>À renforcer</label><br>
-                    <input type="checkbox"><label>À consolider</label><br>
-                    <input type="checkbox"><label>À améliorer</label><br>
-                    <input type="checkbox"><label>À progresser</label><br>
-                    <input type="checkbox"><label>À réussir</label><br>
-                    <input type="checkbox"><label>À exceller</label><br>
-                    <input type="checkbox"><label>À briller</label><br>
-                    <input type="checkbox"><label>À triompher</label><br>
-                    <input type="checkbox"><label>À conquérir</label><br>
-                    <input type="checkbox"><label>À dominer</label><br>
-                    <input type="checkbox"><label>À régner</label><br>
-                    <input type="checkbox"><label>À gouverner</label><br>
-                    <input type="checkbox"><label>À diriger</label><br> 
-                    <input type="checkbox"><label>À administrer</label><br>
-                    <input type="checkbox"><label>À gérer</label><br>
-                    <input type="checkbox"><label>À organiser</label><br>
-                    <input type="checkbox"><label>À planifier</label><br>
-                    <input type="checkbox"><label>À structurer</label><br>
-                    <input type="checkbox"><label>À coordonner</label><br>
-                    <input type="checkbox"><label>À superviser</label><br>
-                    <input type="checkbox"><label>À contrôler</label><br>
-                    <input type="checkbox"><label>À évaluer</label><br>
-                    <input type="checkbox"><label>À apprécier</label><br>
-                    <input type="checkbox"><label>À juger</label><br>
-                    <input type="checkbox"><label>À critiquer</label><br>
-                    <input type="checkbox"><label>À analyser</label><br>
-                    <input type="checkbox"><label>À synthétiser</label><br>
-                    <input type="checkbox"><label>À résumer</label><br>
-                    <input type="checkbox"><label>À reformuler</label><br>
-                    <input type="checkbox"><label>À expliquer</label><br>
-                    <input type="checkbox"><label>À illustrer</label><br>
-                    <input type="checkbox"><label>À démontrer</label><br>
-                    <input type="checkbox"><label>À prouver</label><br>
-                    <input type="checkbox"><label>À confirmer</label><br>
-                    <input type="checkbox"><label>À valider</label><br>
-                    <input type="checkbox"><label>À certifier</label><br>
-                    <input type="checkbox"><label>À homologuer</label><br>
-                    <input type="checkbox"><label>À accréditer</label><br>
-                    <input type="checkbox"><label>À reconnaître</label><br>
-                    <input type="checkbox"><label>À approuver</label><br> -->
-                    <!-- <input type="checkbox" checked="checked"><label>Insuffisant</label><br> -->
-                    <label></label><br>
+        <br>
+
+        <!-- MOYENNE & RANG DE L'ELEVE -->
+        <table>
+            <tr class="section-title">
+                <td style="width: 33%;" class="center">MOYENNE & RANG DE L'ELEVE</td>
+                <td style="width: 34%;" class="center">RESULTATS DE LA CLASSE</td>
+                <td style="width: 33%;" class="center">Mentions du Conseil des Prof.</td>
+            </tr>
+            <tr>
+                <td style="height: 60px; width: 33%;">
+                    <b>MOYENNE</b><br>
+                      <span style="margin-left: 10px;">En chiffre : <b>{{$donnee['bulletin']->moyenne_details_notes}}</b><br></span>
+                      <span style="margin-left: 10px;">En lettre: <b>{{ moyenneEnLettre($donnee['bulletin']->moyenne_details_notes) }}</b></span>
+                    <br><br>
+                    <b>RANG : {{$donnee['bulletin']->rang}}</b><br><br>
                 </td>
-                <td width="153"  height="20" colspan=3>
-                    <input type="checkbox"><label>Inscrit(e)</label><br>
-                    <input type="checkbox"><label>Félicitation</label><br>
-                    <input type="checkbox"><label>Encouragement</label><br>
-                    <input type="checkbox"><label>Non inscrit(e)</label><br>
-                    <label></label><br>
+                <td style="height: 60px; width: 34%;">
+                    Plus forte moyenne : <b>{{$donnee['bulletin']->classe_forte_moyenne}}<br></b>
+                    Plus faible moyenne : <b>{{$donnee['bulletin']->classe_faible_moyenne}}<br></b>
+                    Moyenne classe : <b>{{$donnee['bulletin']->classe_moyenne}}<br><br></b>
                 </td>
-                <td width="153"  height="20" colspan=3>
-                    <input type="checkbox"><label>Assidu</label><br>
-                    <input type="checkbox"><label>Retardataire</label><br>
-                    <input type="checkbox"><label>Absentéiste</label><br>
-                    <label></label><br>
-                    <label></label><br>
+                <td style="height: 60px; width: 33%; vertical-align: top;">
+                    <span class="checkbox">☐</span>Tableau d'honneur<br> <span class="checkbox">☐</span>Encouragement<br> <span class="checkbox">☐</span>Félicitation<br> <span class="checkbox">☐</span>Avertissement<br> <span class="checkbox">☐</span>Blâme<br><br>
                 </td>
-                
-                </tr>
-        </table>
-        <!-- <div style="margin-top: 5px;">
-            <b style="font-size: 13px;">Appréciation du proviseur&nbsp;</b> 
-        </div> -->
-        <table style="font-size: 13px;margin-left: 5px; border:0;">
-            <tr >
-                <td style="text-align: left; border-right: 0; border-bottom: 0; border-left: 0; border-top:0" class="50p">
-                    <b style="font-size: 13px; margin: 5px;">Appréciation du proviseur</b><br>
+            </tr>
+            <tr>
+                <td style="width: 33%;">
+                    Moyenne matières littéraires : <b>{{$donnee['bulletin']->moyenne_litteraire}}</b>
                 </td>
-                <td style="text-align: center; border-bottom:0; border-right: 0; border-top:0" class="50p">
-                    <b style="font-size: 13px; margin: 5px;">Visa des parents</b><br>
+                <td style="width: 34%;">
+
+                    Moyenne matières scientifiques : <b>{{$donnee['bulletin']->moyenne_scientifique}}</b>
+                </td>
+                <td style="width: 33%;  vertical-align: top;">
+                    Moyenne autres matières : <b>{{$donnee['bulletin']->moyenne_autres_matieres}}</b>
                 </td>
             </tr>
         </table>
-        
 
-    <div style="margin-top: 15px;">
+        <br>
 
+        <!-- ABSENCES ET RETARDS -->
+        <table>
+            <tr class="section-title">
+                <td colspan="1" class="center">ABSENCES</td>
+                <td colspan="1" class="center">RETARDS</td>
+                <td colspan="6" class="center">Appréciations du chef d'Établissement</td>
+            </tr>
+            <tr>
+                <td width="20%"><span class="checkbox">☐</span>Motivées: <br><br>
+                    <span class="checkbox">☐</span>Non Motivées
+                </td>
+                <td width="20%"><span class="checkbox">☐</span>Motivées <br><br>
+                    <span class="checkbox">☐</span>Non Motivées
+                </td>
+                <td colspan="6" class="center signature-box">
+                    @if(file_exists(public_path('images/cachet.png')))
+                    <img src="{{ public_path('images/cachet.png') }}" width="80"><br>
+                    @endif
+                </td>
+            </tr>
+        </table>
+
+        <br>
+
+        <!-- DERNIERE LIGNE AVEC PHRASE -->
+        <table class="no-border">
+            <tr>
+                <td class="center" colspan="3">
+                    <i>Votre Avenir, Notre souci</i>
+                </td>
+            </tr>
+        </table>
     </div>
-   
-    
+
+    <!-- FOOTER FIXE -->
+    <footer class="footer">
+        <p class="footer-note">
+            NB : Conserver précieusement ce bulletin. Aucun double ne sera établi.
+        </p>
+        <p class="footer-note">
+            Complexe Scolaire Privé « AVENIR 3 » - Aéroport-Niamey/Niger - Tél : 96 29 53 61</p>
+    </footer>
 </body>
 </html>
 @endforeach
+

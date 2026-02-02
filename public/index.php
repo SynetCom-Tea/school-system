@@ -1,5 +1,6 @@
 <?php
-
+ini_set('memory_limit', '512M');
+gc_collect_cycles();
 use Illuminate\Contracts\Http\Kernel;
 use Illuminate\Http\Request;
 

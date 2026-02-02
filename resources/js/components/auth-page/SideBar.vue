@@ -200,7 +200,7 @@
                                 <v-list-item-title class="text-wrap" v-text="item.title"></v-list-item-title>
                             </v-list-item>
                         </v-list-group>
-                        <v-list-group :value="MenuUser.title" v-permission:any="'user.read'" >
+                        <v-list-group :value="MenuUser.title" v-permission:any="'user.read|manage_school'" >
                             <template v-slot:activator="{ props }">
                                 <v-list-item class="group-title" v-bind="props">
                                     <template v-slot:prepend>

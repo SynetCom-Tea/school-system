@@ -27,6 +27,13 @@ class RapportController extends Controller
 
     public function bulletin(Request $request)
     {
+        $request->validate([
+            'type' => 'required',
+            'section' => 'required',
+            'id' => 'required_if:type,0',
+            'classe' => 'required_if:type,1',
+            'periode' => 'required_if:type,1',
+        ]);
         // dd('ismo');
         // $pdf = PDF::loadView('primaire/tester');
         // return $pdf->stream('itsolutionstuff.pdf');
@@ -39,7 +46,7 @@ class RapportController extends Controller
             if ($request->section == '1') {
                 // dd('fin');
                 $bulletin = $request->id ? HistoriqueBulletin::where('id', $request->id)->with('classe_annee.annee', 'classe_annee.classe.niveau')->first() : null;
-                
+
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id', $bulletin->id)->get() : [];
                 // dd($bulletin,$detail);
                 $data = [
@@ -119,6 +126,13 @@ class RapportController extends Controller
                     $query->where('classe_id', $request->classe)->where('annee_id', $annee_encours->id);
                 })->with('classe_annee.annee', 'classe_annee.classe.niveau')->get() : [];
 
+                if ($bulletins->isEmpty()) {
+                    return redirect()->back()->with('message', [
+                        'type' => 'error',
+                        'text' => "Aucun bulletin n'a été trouvé pour cette classe et cette période.",
+                    ]);
+                }
+
                 foreach ($bulletins as $key => $bulletin) {
                     $details = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id', $bulletin->id)->get() : [];
                     $tabs[$bulletin->apprenant_id] = [
@@ -139,22 +153,27 @@ class RapportController extends Controller
                 ];
 
                 $pdf = PDF::loadView('secondaire/bulletin_par_classe', $data);
-            }elseif($request->section == '3'){
+            } elseif ($request->section == '3') {
                 $tabs = [];
-                $bulletins = $request->classe && $periode ?  HistoriqueBulletin::where('statut',1)->where('periode',$periode->libelle)->whereHas('classe_annee',function($query) use ($request,$annee_encours){
-                    $query->where('classe_id',$request->classe)->where('annee_id',$annee_encours->id);
-                })->with('classe_annee.annee', 'apprenant','historique_notes','classe_annee.classe.niveau')->get() : [];
+                $bulletins = $request->classe && $periode ?  HistoriqueBulletin::where('statut', 1)->where('periode', $periode->libelle)->whereHas('classe_annee', function ($query) use ($request, $annee_encours) {
+                    $query->where('classe_id', $request->classe)->where('annee_id', $annee_encours->id);
+                })->with('classe_annee.annee', 'apprenant', 'historique_notes', 'classe_annee.classe.niveau')->get() : [];
 
-                
+                if ($bulletins->isEmpty()) {
+                    return redirect()->back()->with('message', [
+                        'type' => 'error',
+                        'text' => "Aucun bulletin n'a été trouvé pour cette classe et cette période.",
+                    ]);
+                }
 
                 foreach ($bulletins as $key => $bulletin) {
                     $bulletin->groupUe = $bulletin->historique_notes->groupBy('nom_eu');
-                    $tabs[$bulletin->apprenant_id]=[
+                    $tabs[$bulletin->apprenant_id] = [
                         'classe' => $bulletin->classe_annee->classe,
                         'bulletin' => $bulletin,
                     ];
                 }
-            
+
                 // dd($tabs);
                 $request->classe;
                 $data = [
@@ -164,7 +183,7 @@ class RapportController extends Controller
                     'title' => 'Bulletin Semestriel',
                     'date' => date('m/d/Y'),
                 ];
-            
+
                 $pdf = PDF::loadView('superieur/bulletin_par_classe', $data);
             }
         }
@@ -181,6 +200,7 @@ class RapportController extends Controller
      */
     public function index(Request $request)
     {
+        // dd($request->all());
         $check = false;
         $notes = [];
         $periode = [];
@@ -195,7 +215,7 @@ class RapportController extends Controller
         $note_interrogations = [];
         $note_devoir_surveilles = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $annee = Annee::where('actif',1)->first();
+        $annee = Annee::where('actif', 1)->first();
         $classes = getClasses($annee->id, $etablissement_section);
         if ($request->section_id == 3) {
             $filieres = Filiere::whereIn('etablissement_section_id', $etablissement_section)->get();
@@ -208,7 +228,7 @@ class RapportController extends Controller
         if ($request->classe != null || $request->classe2 != null) {
             $notes_reforme = getNoteByClasses($request->classe, $request->section_id, $request->periode);
             //dd($notes_reforme, $request->classe, $request->section_id, $request->periode);
-            if($request->section_id == 1){
+            if ($request->section_id == 1) {
                 $typesNotIn = ['TP', 'Examen', 'Devoir', 'Interrogation', 'Autre', 'Devoir / Devoir Surveillé'];
                 $periode = Periode::where('type', "Trimestre")->get();
             }
@@ -223,7 +243,7 @@ class RapportController extends Controller
                 $typesNotIn = ['Composition', 'Devoir', 'Interrogation', 'Contrôle'];
                 $note_devoirs = collect($notes_reforme)->where('type_evaluation', 'Examen')->values();
                 $note_examens = collect($notes_reforme)->where('type_evaluation', 'Devoir')->values();
-                $periode = Periode::where('type',"Semestre")->get();
+                $periode = Periode::where('type', "Semestre")->get();
                 // dd($note_examens, $note_devoirs, $notes_reforme);
             }
             $types = TypeEvaluation::whereNotIn('libelle', $typesNotIn)->get();
@@ -273,7 +293,11 @@ class RapportController extends Controller
      */
     public function create(Request $request)
     {
-        $premieregeneration = false;
+        $request->validate([
+            'section_id' => 'required',
+        ]);
+        // dd($request->all());
+        $premieregeneration = true;
         $apprenants = [];
         $apprenant = null;
         $section = null;
@@ -283,7 +307,7 @@ class RapportController extends Controller
         $filieres = [];
         $cycle_filieres = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
-        $annee = Annee::where('actif',1)->first();
+        $annee = Annee::where('actif', 1)->first();
         $classes = getClasses($annee->id, $etablissement_section);
         if ($request->section_id == 1) {
             $apprenant = 'Élève';
@@ -293,13 +317,32 @@ class RapportController extends Controller
                 if ($request->tab == 'option-1') {
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
-                        $premieregeneration = true;
-                        //dd('ds');
-                        $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
-                        //dd('F',$resultats);
-                        foreach ($resultats as &$resultat) {
-                            ajouterHistoriqueBulletin($resultat, $request->section_id);
+                        if ($request->action == 'view') {
+                            return redirect()->back()->with('message', [
+                                'type' => 'error',
+                                'text' => "Aucun bulletin n'a été généré pour cette sélection. Veuillez cliquer sur 'Générer'.",
+                            ]);
                         }
+                        try {
+                            $resultats = calculerResultatsClassePrimaire($request->classe, $request->section_id, $etablissement_section, $request->periode);
+
+                            if (empty($resultats)) {
+                                return redirect()->back()->with('message', [
+                                    'type' => 'error',
+                                    'text' => "Aucune note n'a été trouvée pour générer les bulletins de cette classe.",
+                                ]);
+                            }
+                            foreach ($resultats as &$resultat) {
+                                ajouterHistoriqueBulletin($resultat, $request->section_id);
+                            }
+                        } catch (\Exception $e) {
+                            return redirect()->back()->with('message', [
+                                'type' => 'error',
+                                'text' => "Erreur lors de la génération des bulletins : " . $e->getMessage(),
+                            ]);
+                        }
+                    } else {
+                        $premieregeneration = false;
                     }
                     $resultats = HistoriqueBulletin::with('historique_notes')
                         ->where('classe_annee_id', $request->classe)
@@ -331,22 +374,70 @@ class RapportController extends Controller
                 if ($request->tab == 'option-1') {
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
-                        //dd($request->classe, $request->section_id, $etablissement_section, $request->periode);
-                        $resultats = calculerResultatsClasse($request->classe, $request->section_id, $etablissement_section, $request->periode);
-                        //dd($resultats);
-                        if (empty($resultats)) {
-                            return; // Exit the function if $details_notes is empty
+                        if ($request->action == 'view') {
+                            return redirect()->back()->with('message', [
+                                'type' => 'error',
+                                'text' => "Aucun bulletin n'a été généré pour cette sélection. Veuillez cliquer sur 'Générer'.",
+                            ]);
                         }
-                        foreach ($resultats as &$resultat) {
-                            ajouterHistoriqueBulletin($resultat, $request->section_id);
+                        $premieregeneration = true;
+                        //dd($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                        try {
+                            $resultats = calculerResultatsClasse($request->classe, $request->section_id, $etablissement_section, $request->periode);
+                            if (empty($resultats)) {
+                                return redirect()->back()->with('message', [
+                                    'type' => 'error',
+                                    'text' => "Aucune note n'a été trouvée pour générer les bulletins de cette classe.",
+                                ]);
+                            }
+                            foreach ($resultats as &$resultat) {
+                                ajouterHistoriqueBulletin($resultat, $request->section_id);
+                            }
+                        } catch (\Exception $e) {
+                            return redirect()->back()->with('message', [
+                                'type' => 'error',
+                                'text' => "Erreur lors de la génération des bulletins : " . $e->getMessage(),
+                            ]);
                         }
                         // dd($historiqueBulletincheck, $resultats[0]['periode']);
+                    } else {
+                        $premieregeneration = false;
                     }
                     $resultats = HistoriqueBulletin::with('historique_notes')
                         ->where('classe_annee_id', $request->classe)
                         ->where('periode', Periode::find($request->periode)->libelle)
                         ->where('statut', true)
                         ->get();
+
+                    $notesParMatiere = $resultats->flatMap(fn($bulletin) => $bulletin->historique_notes)->groupBy(fn($note) => $note->nom_matiere);
+                    // dd($notesParMatiere);
+                    foreach ($notesParMatiere as $nomMatiere => $notes) {
+
+                        // Trier par moyenne décroissante
+                        $notesTriees = $notes->sortByDesc('moyenne')->values();
+
+                        $rang = 1;              // rang affiché
+                        $position = 1;          // position réelle (1,2,3,4…)
+                        $precedenteMoyenne = null;
+
+                        foreach ($notesTriees as $note) {
+                            $execo =  " e";
+                            // Si la moyenne est différente, on met à jour le rang
+                            if ($precedenteMoyenne !== null && $note->moyenne < $precedenteMoyenne) {
+                                $rang = $position;
+                            }elseif($precedenteMoyenne !== null && $note->moyenne == $precedenteMoyenne) {
+                                $execo = " e ex";
+                            }
+    
+                            // Mise à jour en base
+                            $note->update([
+                                'rang_matiere' => $rang . $execo
+                            ]);
+
+                            $precedenteMoyenne = $note->moyenne;
+                            $position++;
+                        }
+                    }
                 } elseif ($request->tab == 'option-2') {
                     $exception = true;
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
@@ -377,15 +468,34 @@ class RapportController extends Controller
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->where('statut', true)->get();
                     if ($request->session == 'Prémiere session') {
                         if ($historiqueBulletincheck->isEmpty()) {
+                            if ($request->action == 'view') {
+                                return redirect()->back()->with('message', [
+                                    'type' => 'error',
+                                    'text' => "Aucun bulletin n'a été généré pour cette sélection. Veuillez cliquer sur 'Générer'.",
+                                ]);
+                            }
+                            $premieregeneration = true;
                             $session = null;
-                            $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode, $session);
-                            if (empty($resultatsyy[0]['details_notes'])) {
-                            } else {
-                                foreach ($resultatsyy as $resultat) {
-                                    ajouterHistoriqueBulletin($resultat, $request->section_id);
+                            try {
+                                $resultatsyy = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode, $session);
+                                if (empty($resultatsyy[0]['details_notes'])) {
+                                    return redirect()->back()->with('message', [
+                                        'type' => 'error',
+                                        'text' => "Aucune note n'a été trouvée pour générer les bulletins de cette classe.",
+                                    ]);
+                                } else {
+                                    foreach ($resultatsyy as $resultat) {
+                                        ajouterHistoriqueBulletin($resultat, $request->section_id);
+                                    }
                                 }
+                            } catch (\Exception $e) {
+                                return redirect()->back()->with('message', [
+                                    'type' => 'error',
+                                    'text' => "Erreur lors de la génération des bulletins : " . $e->getMessage(),
+                                ]);
                             }
                         } else {
+                            $premieregeneration = false;
                             $resultats = HistoriqueBulletin::with('historique_notes')
                                 ->where('classe_annee_id', $request->classe)
                                 ->where('periode', Periode::where('id', $request->periode)->get()[0]->libelle)
@@ -452,7 +562,6 @@ class RapportController extends Controller
                 }
             }
         }
-        //dd($resultats);
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
             "resultats" => $resultats,

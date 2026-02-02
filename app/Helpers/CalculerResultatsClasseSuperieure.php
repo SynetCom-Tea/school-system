@@ -102,7 +102,13 @@ if (!function_exists('calculerMoyenneClasse')) {
 if (!function_exists('ajouterHistoriqueBulletin')) {
     function createHistoriqueBulletin($resultat, $section)
     {
-        // dd($resultat);
+        $groupedDetailsNotes = collect($resultat['details_notes'])->groupBy('type_matiere');
+        $moyenne_litteraire = $groupedDetailsNotes->has('Littéraire') ? round($groupedDetailsNotes->get('Littéraire')->avg('moyenne'), 2) : 0;
+        $moyenne_scientifique = $groupedDetailsNotes->has('Scientifique') ? round($groupedDetailsNotes->get('Scientifique')->avg('moyenne'), 2) : 0;
+        $moyenne_autre = $groupedDetailsNotes->has('Autre') ? round($groupedDetailsNotes->get('Autre')->avg('moyenne'), 2) : 0; 
+        // dd($moyenne_litteraire,$moyenne_scientifique,$moyenne_autre);
+        //
+        // dd('createHistoriqueBulletin', $groupedDetailsNotes);
         $commonFields = [
             'apprenant_id' => $resultat['apprenant_id'],
             'nom_classe' => $resultat['nom_classe'],
@@ -110,6 +116,15 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             'classe_annee_id' => $resultat['classe_annee_id'],
             'matricule_apprenant' => $resultat['matricule_apprenant'],
             'nom_prenom_apprenant' => $resultat['nom_prenom_apprenant'],
+            'rang' => $resultat['rang'],
+            'classe_effectif' => $resultat['classe_effectif'],
+            'annee_scolaire' => $resultat['annee_scolaire'],
+            'classe_forte_moyenne' => $resultat['classe_forte_moyenne'],
+            'classe_faible_moyenne' => $resultat['classe_faible_moyenne'],
+            'classe_moyenne' => $resultat['classe_moyenne'],
+            'moyenne_litteraire' => $moyenne_litteraire,
+            'moyenne_scientifique' => $moyenne_scientifique,
+            'moyenne_autres_matieres' => $moyenne_autre,
         ];
 
         switch ($section) {
@@ -143,10 +158,12 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
         $historiqueBulletin = HistoriqueBulletin::create($commonFields);
         foreach ($resultat['details_notes'] as $detailNote) {
             createHistoriqueNote($historiqueBulletin->id, $detailNote, $section);
+            
         }
         foreach ($resultat['details_notes'] as $detailNote) {
             ValidationDeSemestre($historiqueBulletin, $detailNote, $section,$resultat);
         }
+        
     }
     function ValidationDeSemestre($historiqueBulletin, $detailNote, $section,$resultat){
         // dd($resultat);
@@ -158,7 +175,7 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             ",[
                 "historique_bulletin_id"=>$historiqueBulletin->id
             ]);
-            dd($requetes);
+            // dd($requetes);
             $validation = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$section)->get();
             if ($validation[0]->regime_validation_id == 1){
                 // Validation par Capitalisation
@@ -200,7 +217,7 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             'nom_matiere' => $detailNote['nom_matiere'],
             // Add other common fields here
         ];
-
+        // dd('detailNote', $detailNote);
         switch ($section) {
             case 1:
                 $commonFields += [

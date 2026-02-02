@@ -189,6 +189,7 @@ return [
         // 'Example' => App\Facades\Example::class,
         'PDF' => Barryvdh\DomPDF\Facade::class,
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
+        'NumberToWords' => App\Helpers\NumberToWords::class,
     ])->toArray(),
 
 ];

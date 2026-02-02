@@ -49,6 +49,7 @@ class MatiereController extends Controller
             foreach($request->fichier as $matiere){
                 Matiere::updateOrInsert([
                     'nom' => $matiere[0],
+                    'type_matiere' => $matiere[1],
                     'etablissement_section_id' => $table->id,
                 ],
                 [
@@ -63,6 +64,7 @@ class MatiereController extends Controller
             foreach($request->donnees as $matiere){
             Matiere::updateOrInsert([
                 'nom' => $matiere['nom'],
+                'type_matiere' => $matiere['type_matiere'],
                 'etablissement_section_id' => $table->id,
             ],
             [
@@ -101,6 +103,7 @@ class MatiereController extends Controller
     {
         $matiere = Matiere::find($id);
         $matiere->update($request->all());
+        // dd($matiere);
         $table = DB::table('etablissement_section')->where('id',$matiere->etablissement_section_id)->first();
         return redirect()->route('matieres.index', $table->section_id);
     }

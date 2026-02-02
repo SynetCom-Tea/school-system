@@ -13,22 +13,23 @@
         $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
         $notestypeComposition = collect($notes_apprenant)->where('type_evaluation', 'Composition');
         $notesDeClasses = collect($notes_apprenant)->whereIn('type_evaluation', ['Interrogation', 'Devoir Surveillé', 'Devoir', 'Devoir / Devoir Surveillé', 'Examen']);
-        $groupedNotes = $notesDeClasses->groupBy('nom_matiere');
-        //dd('notes_apprenant', $notes_apprenant,'notestypeComposition', $notestypeComposition,'notesDeClasses', $notesDeClasses, 'groupedNotes', $groupedNotes);
+        $groupedNotes = $notesDeClasses->groupBy('nom_matiere'); 
+        // dd($notes_apprenant);
         $details_notes = [];
         foreach ($groupedNotes as $matiere => $notes) {
             // dd($notes);
             $compositionNotes = $notestypeComposition->where('nom_matiere', $matiere);
-
+            
             // Calculate total notes and average note
             $totalNotes = $notes->sum('note');
             $averageNote = $notes->avg('note');
-
+            
             // Calculate 'noteDeClasse' or set it to 0 if null
             $noteDeClasse = $averageNote !== null ? $averageNote : 0;
             $noteDeComposition = $compositionNotes->sum('note');
             $coefficient = $notes->first()->coefficient_matiere;
 
+          
             $noteDeClasseCoefficiente = $noteDeClasse * $coefficient;
             $noteDeCompositionCoefficiente = $noteDeComposition * $coefficient;
 
@@ -37,6 +38,7 @@
             
             $details_notes[] = [
                 'nom_matiere' => $matiere,
+                'type_matiere' => $compositionNotes->first() ? $compositionNotes->first()->type_matiere : $notes->first()->type_matiere,
                 'periodes' => $notes->first()->periode,
                 'coefficient' => $coefficient,
                 'note_de_classe' => $noteDeClasse,
@@ -50,6 +52,7 @@
         if(count($details_notes) != 0){
             $details_notes[] = [
                 'nom_matiere' => 'Conduite',
+                'type_matiere' => 'Autre',
                 'coefficient' => 1,
                 'note_de_classe' => 18,
                 'note_de_classe_coefficiente' => 18,
@@ -59,9 +62,12 @@
                 'moyenne_coefficiente' => 18
             ];
         }
+        // dd('details_notes', $details_notes);
         return $details_notes;
     }
 }
+
+
 
 if (!function_exists('calculateMoyenneGeneralSecondaire')) {
     function calculateMoyenneGeneralSecondaire($detailsNotes) {
@@ -84,5 +90,34 @@ if (!function_exists('ordinalSuffix')) {
             return $num . 'ème';
         }
         return $num . 'ème';
+    }
+}
+
+// ================ fonction de conversion de la moyenne en lettre ==================
+use NumberFormatter;
+
+if (!function_exists('moyenneEnLettre')) {
+    function moyenneEnLettre($moyenne)
+    {
+        if ($moyenne === null) {
+            return '';
+        }
+
+        $moyenne = round($moyenne, 2);
+
+        $formatter = new NumberFormatter('fr_FR', NumberFormatter::SPELLOUT);
+
+        $entier = floor($moyenne);
+        $decimal = round(($moyenne - $entier) * 100);
+
+        if ($decimal > 0) {
+            return ucfirst(
+                $formatter->format($entier)
+                . ' virgule '
+                . $formatter->format($decimal)
+            );
+        }
+
+        return ucfirst($formatter->format($entier));
     }
 }

@@ -115,7 +115,7 @@ export default {
             </v-toolbar-title>
         </v-toolbar>
         <v-card>
-            <Datatable titleDatatable="Liste des emplois" :headers="headers" :items="emplois" :functionOnClickAddButton="goTo" :permission="'emplois.create'">
+            <Datatable titleDatatable="Liste des emplois" :headers="headers" :items="emplois" :functionOnClickAddButton="goTo" :permission="'manage_school|emplois.create'">
                 <template v-slot:item.actions="{item}">
                     <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item.raw)" :icon="icons.mdiPencil" color="orange">
                     </v-icon>

@@ -1,3 +1,4 @@
+<?php $__currentLoopData = $donnees; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $donnee): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
 <!DOCTYPE html>
 <html lang="fr">
 
@@ -125,33 +126,35 @@
         <table class="no-border">
             <tr>
                 <td width="20%" class="center">
-                    @if($etablissement->logo)
-                    <img style="border-radius: 100%;" src="{{ public_path('logos/'.$etablissement->logo) }}" width="140" height="140"><br>
-                    @endif
+                    <?php if($etablissement->logo): ?>
+                    <img style="border-radius: 100%;" src="<?php echo e(public_path('logos/'.$etablissement->logo)); ?>" width="140" height="140"><br>
+                    <?php endif; ?>
                 </td>
                 <td width="60%" class="center">
                     <b>République du Niger</b><br>
                     Ministère de l'Éducation Nationale de l'Alphabétisation et de la Promotion des Langues Nationales. Région de Niamey / IESG Niamey 4<br>
-                    <b style="font-size: 16px;">« {{ $etablissement->name}}/ AEROPORT »</b><br>
-                    <b style="font-size: 13px;">Complexe Scolaire Privé « {{ $etablissement->name}} »</b><br>
+                    <b style="font-size: 16px;">« <?php echo e($etablissement->name); ?>/ AEROPORT »</b><br>
+                    <b style="font-size: 13px;">Complexe Scolaire Privé « <?php echo e($etablissement->name); ?> »</b><br>
                     BP/Tél: 96295361
                 </td>
                 <td width="20%"></td>
             </tr>
         </table>
 
-        <div class="titre">BULLETIN DE NOTES DU {{ strtoupper($bulletin->periode) }}</div>
+        <div class="titre">BULLETIN DE NOTES DU <?php echo e(strtoupper($donnee['bulletin']->periode)); ?></div>
 
         <!-- INFOS ELEVE -->
         <table>
             <tr style="font-size: 14px;">
-                <td colspan="2"><b>Nom et Prénoms: {{$bulletin->nom_prenom_apprenant}}</b> <br>
-                    <b>Matricule</b> : {{$bulletin->matricule_apprenant}}
+                <td colspan="2"><b>Nom et Prénoms: <?php echo e($donnee['bulletin']->nom_prenom_apprenant); ?></b> <br>
+                    <b>Matricule</b> : <?php echo e($donnee['bulletin']->matricule_apprenant); ?>
+
                 </td>
-                <td><b>Année</b> : {{$bulletin->annee_scolaire}} <br>
-                    <b>Classe</b> : {{$bulletin->nom_classe}} <br>
-                    <b>Effectif</b> : {{$bulletin->classe_effectif}} <br>
-                    <b>Date</b> : {{$bulletin->created_at->format('d-m-Y')}}
+                <td><b>Année</b> : <?php echo e($donnee['bulletin']->annee_scolaire); ?> <br>
+                    <b>Classe</b> : <?php echo e($donnee['bulletin']->nom_classe); ?> <br>
+                    <b>Effectif</b> : <?php echo e($donnee['bulletin']->classe_effectif); ?> <br>
+                    <b>Date</b> : <?php echo e($donnee['bulletin']->created_at->format('d-m-Y')); ?>
+
                 </td>
             </tr>
         </table>
@@ -171,51 +174,51 @@
                 </tr>
             </thead>
             <tbody>
-                @php
+                <?php
                 $totalCoef = 0;
                 $totalMoyCoef = 0;
-                @endphp
-                @foreach($detail as $line)
-                @php
+                ?>
+                <?php $__currentLoopData = $donnee['detail']; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $line): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); ?>
+                <?php
                 $totalCoef += $line->coefficient;
                 $totalMoyCoef += $line->moyenne_coefficiente;
-                @endphp
+                ?>
                 <tr>
-                    <td class="left">{{$line->nom_matiere}}</td>
-                    <td class="center">{{$line->coefficient}}</td>
-                    <td class="right">{{$line->note_de_classe}}</td>
-                    <td class="right">{{$line->note_de_composition}}</td>
-                    <td class="right">{{$line->moyenne}}</td>
-                    <td class="right colomn_moyenne">{{$line->moyenne_coefficiente}}</td>
-                    <td class="center">{{$line->rang_matiere}}</td>
+                    <td class="left"><?php echo e($line->nom_matiere); ?></td>
+                    <td class="center"><?php echo e($line->coefficient); ?></td>
+                    <td class="right"><?php echo e($line->note_de_classe); ?></td>
+                    <td class="right"><?php echo e($line->note_de_composition); ?></td>
+                    <td class="right"><?php echo e($line->moyenne); ?></td>
+                    <td class="right colomn_moyenne"><?php echo e($line->moyenne_coefficiente); ?></td>
+                    <td class="center"><?php echo e($line->rang_matiere); ?></td>
                     <td class="left">
-                        @if($line->moyenne <= 2)
+                        <?php if($line->moyenne <= 2): ?>
                             NULL
-                        @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
+                        <?php elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5)): ?>
                             MAL
-                        @elseif(($line->moyenne > 5 ) and ($line->moyenne < 10))
+                        <?php elseif(($line->moyenne > 5 ) and ($line->moyenne < 10)): ?>
                                 INSUFFISANT
-                        @elseif (($line->moyenne >= 10 ) and ($line->moyenne < 12))
+                        <?php elseif(($line->moyenne >= 10 ) and ($line->moyenne < 12)): ?>
                             PASSABLE
-                        @elseif (($line->moyenne >= 12 ) and ($line->moyenne < 14))
+                        <?php elseif(($line->moyenne >= 12 ) and ($line->moyenne < 14)): ?>
                             ASSEZ BIEN
-                        @elseif (($line->moyenne >= 14 ) and ($line->moyenne < 16))
+                        <?php elseif(($line->moyenne >= 14 ) and ($line->moyenne < 16)): ?>
                             BIEN
-                        @elseif (($line->moyenne >= 16 ) and ($line->moyenne <= 19 ))
+                        <?php elseif(($line->moyenne >= 16 ) and ($line->moyenne <= 19 )): ?>
                             TRES BIEN
-                        @elseif (($line->moyenne > 19 ) and ($line->moyenne == 20))
+                        <?php elseif(($line->moyenne > 19 ) and ($line->moyenne == 20)): ?>
                             EXCELLENT
-                        @else
+                        <?php else: ?>
                             Pas defini
-                        @endif
+                        <?php endif; ?>
                     </td>
                 </tr>
-                @endforeach
+                <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
                 <tr class="bold">
                     <td>TOTAL</td>
-                    <td class="center">{{$totalCoef}}</td>
+                    <td class="center"><?php echo e($totalCoef); ?></td>
                     <td colspan="3"></td>
-                    <td class="right">{{$totalMoyCoef}}</td>
+                    <td class="right"><?php echo e($totalMoyCoef); ?></td>
                     <td colspan="2"></td>
                 </tr>
             </tbody>
@@ -233,15 +236,15 @@
             <tr>
                 <td style="height: 60px; width: 33%;">
                     <b>MOYENNE</b><br>
-                       <span style="margin-left: 10px;">En chiffre : <b>{{$bulletin->moyenne_details_notes}}</b><br></span>
-                       <span style="margin-left: 10px;">En lettre: <b>{{ moyenneEnLettre($bulletin->moyenne_details_notes) }}</b></span>
+                      <span style="margin-left: 10px;">En chiffre : <b><?php echo e($donnee['bulletin']->moyenne_details_notes); ?></b><br></span>
+                      <span style="margin-left: 10px;">En lettre: <b><?php echo e(moyenneEnLettre($donnee['bulletin']->moyenne_details_notes)); ?></b></span>
                     <br><br>
-                    <b>RANG : {{$bulletin->rang}}</b><br><br>
+                    <b>RANG : <?php echo e($donnee['bulletin']->rang); ?></b><br><br>
                 </td>
                 <td style="height: 60px; width: 34%;">
-                    Plus forte moyenne : <b>{{$bulletin->classe_forte_moyenne}}<br></b>
-                    Plus faible moyenne : <b>{{$bulletin->classe_faible_moyenne}}<br></b>
-                    Moyenne classe : <b>{{$bulletin->classe_moyenne}}<br><br></b>
+                    Plus forte moyenne : <b><?php echo e($donnee['bulletin']->classe_forte_moyenne); ?><br></b>
+                    Plus faible moyenne : <b><?php echo e($donnee['bulletin']->classe_faible_moyenne); ?><br></b>
+                    Moyenne classe : <b><?php echo e($donnee['bulletin']->classe_moyenne); ?><br><br></b>
                 </td>
                 <td style="height: 60px; width: 33%; vertical-align: top;">
                     <span class="checkbox">☐</span>Tableau d'honneur<br> <span class="checkbox">☐</span>Encouragement<br> <span class="checkbox">☐</span>Félicitation<br> <span class="checkbox">☐</span>Avertissement<br> <span class="checkbox">☐</span>Blâme<br><br>
@@ -249,14 +252,14 @@
             </tr>
             <tr>
                 <td style="width: 33%;">
-                    Moyenne matières littéraires : <b>{{$bulletin->moyenne_litteraire}}</b>
+                    Moyenne matières littéraires : <b><?php echo e($donnee['bulletin']->moyenne_litteraire); ?></b>
                 </td>
                 <td style="width: 34%;">
 
-                    Moyenne matières scientifiques : <b>{{$bulletin->moyenne_scientifique}}</b>
+                    Moyenne matières scientifiques : <b><?php echo e($donnee['bulletin']->moyenne_scientifique); ?></b>
                 </td>
                 <td style="width: 33%;  vertical-align: top;">
-                    Moyenne autres matières : <b>{{$bulletin->moyenne_autres_matieres}}</b>
+                    Moyenne autres matières : <b><?php echo e($donnee['bulletin']->moyenne_autres_matieres); ?></b>
                 </td>
             </tr>
         </table>
@@ -278,9 +281,9 @@
                     <span class="checkbox">☐</span>Non Motivées
                 </td>
                 <td colspan="6" class="center signature-box">
-                    @if(file_exists(public_path('images/cachet.png')))
-                    <img src="{{ public_path('images/cachet.png') }}" width="80"><br>
-                    @endif
+                    <?php if(file_exists(public_path('images/cachet.png'))): ?>
+                    <img src="<?php echo e(public_path('images/cachet.png')); ?>" width="80"><br>
+                    <?php endif; ?>
                 </td>
             </tr>
         </table>
@@ -307,4 +310,6 @@
     </footer>
 </body>
 </html>
+<?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); ?>
 
+<?php /**PATH C:\Users\SYNETCOM\Desktop\projects\school-system\resources\views/secondaire/bulletin_par_classe.blade.php ENDPATH**/ ?>

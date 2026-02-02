@@ -62,38 +62,44 @@ export default {
                 mdiContentSave
             },
             headers: [{
-                    title: 'Code',
-                    align: 'start',
-                    sortable: false,
-                    key: 'code',
-                },
-                {
-                    title: 'Libellé',
-                    align: 'center',
-                    key: 'nom'
-                },
-                {
-                    title: 'Actions',
-                    align: 'center',
-                    key: 'actions'
-                },
+                title: 'Code',
+                align: 'start',
+                sortable: false,
+                key: 'code',
+            },
+            {
+                title: 'Libellé',
+                align: 'center',
+                key: 'nom'
+            },
+            {
+                title: 'Type de matière',
+                align: 'center',
+                key: 'type_matiere'
+            },
+            {
+                title: 'Actions',
+                align: 'center',
+                key: 'actions'
+            },
             ],
             dialog_title: 'Modifier la matière',
             dialog: false,
 
             form: useForm({
                 id: null,
-                fichier_matiere:null,
+                fichier_matiere: null,
                 importation: false,
-                fichier:[],
+                fichier: [],
                 code: '',
                 nom: '',
+                type_matiere: '',
                 donnees: [],
             }),
             file: null,
             headers1: [],
             data: [],
-            contentType: ["Nom"],
+            contentType: ["Nom", "Type de matière"],
 
             rules: [
                 value => {
@@ -114,6 +120,7 @@ export default {
         addRow() {
             this.form.donnees.push({
                 nom: null,
+                type_matiere: null,
                 before: null,
                 after: null
             });
@@ -128,7 +135,7 @@ export default {
             const array = this.form.donnees.filter(el => el.nom !== null && el.nom == p.nom)
             if (array.length > 1) {
                 this.removeRow(p)
-                this.dialog=false;
+                this.dialog = false;
                 this.$swal.fire({
                     icon: 'error',
                     title: 'Erreur',
@@ -162,7 +169,9 @@ export default {
             this.form.id = item.id
             this.form.code = item.code
             this.form.nom = item.nom
+            this.form.type_matiere = item.type_matiere
             this.dialog = true
+
         },
         deleteItem(item) {
             this.$swal({
@@ -179,24 +188,24 @@ export default {
 
                     this.form.delete(route('matieres.destroy', item.id), {
                         onFinish: () => {
-                            if (this.$page.props.flash ?.message ?.type == 'error') {
+                            if (this.$page.props.flash?.message?.type == 'error') {
                                 this.$swal({
                                     icon: 'error',
                                     title: 'Suppression',
-                                    text: this.$page.props.flash ?.message ?.text,
+                                    text: this.$page.props.flash?.message?.text,
                                     toast: true,
                                     position: 'top-end',
                                     showConfirmButton: false,
                                     timer: 5000,
                                     timerProgressBar: true,
                                 });
-                            } else if (this.$page.props.flash ?.message ?.type == 'success') {
+                            } else if (this.$page.props.flash?.message?.type == 'success') {
                                 this.$swal({
                                     icon: 'success',
                                     iconColor: '#004980',
                                     color: '#004980',
                                     title: 'Suppression',
-                                    text: this.$page.props.flash ?.message ?.text,
+                                    text: this.$page.props.flash?.message?.text,
                                     toast: true,
                                     position: 'top-end',
                                     showConfirmButton: false,
@@ -220,105 +229,107 @@ export default {
                 if (extensionsAutorisees.includes(extensionFichier)) {
 
 
-                const reader = new FileReader();
+                    const reader = new FileReader();
 
 
-                reader.onload = (e) => {
-                    const data = e.target.result;
+                    reader.onload = (e) => {
+                        const data = e.target.result;
 
-                    // Utilisation de JavaScript natif pour lire le fichier Excel
-                    const workbook = XLSX.read(data, {
-                        type: "binary"
-                    });
+                        // Utilisation de JavaScript natif pour lire le fichier Excel
+                        const workbook = XLSX.read(data, {
+                            type: "binary"
+                        });
 
-                    const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                        const sheet = workbook.Sheets[workbook.SheetNames[0]];
 
-                    // Convertir les données de la feuille en tableau
-                    const sheetData = XLSX.utils.sheet_to_json(sheet, {
-                        header: 1
-                    });
+                        // Convertir les données de la feuille en tableau
+                        const sheetData = XLSX.utils.sheet_to_json(sheet, {
+                            header: 1
+                        });
 
-                    // La première ligne est généralement utilisée comme en-têtes de colonne
-                    if (sheetData.length > 0) {
-                        this.headers1 = sheetData[0];
-                        this.data = sheetData.slice(1);
-                        console.log(this.data);
-                        if (this.checkEntete(this.headers1, this.contentType)) {
-                            const missingDataIndex = this.donneesManquantes(this.data);
+                        // La première ligne est généralement utilisée comme en-têtes de colonne
+                        if (sheetData.length > 0) {
+                            this.headers1 = sheetData[0];
+                            this.data = sheetData.slice(1);
+                            console.log(this.data);
+                            if (this.checkEntete(this.headers1, this.contentType)) {
+                                const missingDataIndex = this.donneesManquantes(this.data);
 
-                            if (typeof missingDataIndex === "number") {
-                                this.form.fichier=this.data;
-                                this.dialog=false;
+                                if (typeof missingDataIndex === "number") {
+                                    this.form.fichier = this.data;
+                                    this.dialog = false;
+                                    this.$swal.fire({
+                                        class: "alert",
+                                        title: "Validé",
+                                        text: "Votre fichier est valide!",
+                                        icon: "success",
+                                        confirmButtonText: "OK",
+                                    }).then(() => {
+                                        // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
+                                        this.dialog = true;
+                                    });
+                                } else {
+                                    this.form.fichier_matiere = null;
+                                    //this.submitForm(null);
+                                    const ligne = missingDataIndex.rowIndex + 2;
+                                    const colonne = missingDataIndex.columnIndex + 1;
+                                    this.close()
+                                    this.$swal.fire({
+                                        class: "alert",
+                                        title: "Erreur",
+                                        text: "Données manquantes à la ligne " +
+                                            ligne +
+                                            " et colonne " +
+                                            colonne +
+                                            " Veuillez corriger!",
+                                        icon: "warning",
+                                        confirmButtonText: "OK",
+                                    });
+                                }
+                            } else {
+                                this.form.fichier_matiere = null;
+                                this.dialog = false;
+                                //this.submitForm(null);
+
                                 this.$swal.fire({
-                                    class:"alert",
-                                    title: "Validé",
-                                    text: "Votre fichier est valide!",
-                                    icon: "success",
+                                    class: "alert",
+                                    title: "Erreur",
+                                    text: "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaité veuillez corriger !",
+                                    icon: "warning",
                                     confirmButtonText: "OK",
                                 }).then(() => {
                                     // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
                                     this.dialog = true;
                                 });
-                            } else {
-                                this.form.fichier_matiere = null;
-                                //this.submitForm(null);
-                                const ligne = missingDataIndex.rowIndex + 2;
-                                const colonne = missingDataIndex.columnIndex + 1;
-                                this.close()
-                                this.$swal.fire({
-                                    class:"alert",
-                                    title: "Erreur",
-                                    text: "Données manquantes à la ligne " +
-                                        ligne +
-                                        " et colonne " +
-                                        colonne +
-                                        " Veuillez corriger!",
-                                    icon: "warning",
-                                    confirmButtonText: "OK",
-                                });
                             }
-                        } else {
-                            this.form.fichier_matiere = null;
-                            this.dialog = false;
-                            //this.submitForm(null);
-
-                            this.$swal.fire({
-                                class:"alert",
-                                title: "Erreur",
-                                text: "L'en-tête de ce fichier ne correspond pas à celui du fichier souhaité veuillez corriger !",
-                                icon: "warning",
-                                confirmButtonText: "OK",
-                            }).then(() => {
-                                // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
-                                this.dialog = true;
-                            });
                         }
-                    }
-                };
-                reader.readAsBinaryString(file);
-            } else {
-                this.form.fichier_matiere = null;
-                            //this.submitForm(null);
-                 this.dialog = false;
-                this.$swal.fire({
-                        class:"alert",
+                    };
+                    reader.readAsBinaryString(file);
+                } else {
+                    this.form.fichier_matiere = null;
+                    //this.submitForm(null);
+                    this.dialog = false;
+                    this.$swal.fire({
+                        class: "alert",
                         title: "Erreur",
                         text: "Votre fichier n'est pas valide veuillez charger un fichier de type excel !",
                         icon: "warning",
                         confirmButtonText: "OK",
-                }).then(() => {
-                                // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
-                                this.dialog = true;
+                    }).then(() => {
+                        // Ouvrir le dialogue Vuetify après que l'alerte SweetAlert a été fermée
+                        this.dialog = true;
                     });
-            }
+                }
             }
         },
         checkEntete(arr1, arr2) {
-            if (arr1.length !== arr2.length) {
+            if (!arr1 || arr1.length < arr2.length) {
                 return false;
             }
-            for (let i = 0; i < arr1.length; i++) {
-                if (arr1[i] !== arr2[i]) {
+            for (let i = 0; i < arr2.length; i++) {
+                const h1 = arr1[i] ? arr1[i].toString().trim().toLowerCase() : "";
+                const h2 = arr2[i] ? arr2[i].toString().trim().toLowerCase() : "";
+                if (h1 !== h2) {
                     return false;
                 }
             }
@@ -347,7 +358,7 @@ export default {
                 valid
             } = await this.$refs.form.validate()
             if (!this.form.id && valid) {
-                this.dialog=false;
+                this.dialog = false;
                 this.$swal({
                     title: 'Etês-vous sûr de vouloir enregistrer?',
                     text: "Vous ne pourrez pas revenir en arrière !",
@@ -357,8 +368,8 @@ export default {
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Oui, Enregistrer !',
                     cancelButtonText: 'Non, annulez !',
-                    }).then((result) => {
-                    this.dialog=true;
+                }).then((result) => {
+                    this.dialog = true;
                     if (result.isConfirmed) {
                         this.form.post(route('matieres.store', this.section_id), {
                             onFinish: () => {
@@ -387,9 +398,11 @@ export default {
                 const {
                     id,
                     code,
-                    nom
+                    nom,
+                    type_matiere,
                 } = this.form
-                this.dialog=false;
+
+                this.dialog = false;
                 this.$swal({
                     title: 'Etês-vous sûr de vouloir enregistrer?',
                     text: "Vous ne pourrez pas revenir en arrière !",
@@ -399,9 +412,10 @@ export default {
                     cancelButtonColor: '#d33',
                     confirmButtonText: 'Oui, Enregistrer !',
                     cancelButtonText: 'Non, annulez !',
-                    }).then((result) => {
-                    this.dialog=true;
+                }).then((result) => {
+                    this.dialog = true;
                     if (result.isConfirmed) {
+
                         this.form.put(route('matieres.update', this.form.id), {
                             onFinish: () => {
                                 this.close()
@@ -428,11 +442,15 @@ export default {
             this.form.id = null
             this.form.code = ""
             this.form.nom = ""
+            this.form.type_matiere = ""
             this.form.donnees = []
-            this.form.fichier=[]
-            this.form.fichier_matiere=null,
-            this.form.importation= false,
+            this.form.fichier = []
+            this.form.fichier_matiere = null
+            this.form.importation = false
 
+            if (this.$refs.form) {
+                this.$refs.form.resetValidation()
+            }
             this.dialog = false
         }
     },
@@ -455,126 +473,160 @@ export default {
 }
 </script>
 <template>
-<Toolbar styleToolbar="background-color: white;" :icon="icons.mdiSchool" :toolbarTitle="Title"></Toolbar>
-<br>
-<v-card variant="outlined" style="border: 2px solid #7d002c">
-    <v-card-title style="color: white; background-color: #7d002c">GESTION DES MATIERES</v-card-title>
-    <v-divider></v-divider>
-    <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="700px" class="dialog">
-        <template v-slot:default="{ isActive }">
-            <v-card>
-                <v-toolbar dense style="background-color: #7d002c">
-                    <v-toolbar-title style="color:white">
-                        <v-icon left :icon="icons.mdiPencil"></v-icon> {{ dialog_title }}
-                    </v-toolbar-title>
-                    <v-spacer></v-spacer>
-                    <v-icon :icon="icons.mdiCloseCircle" title="Annuler" size="large" style="margin:10px" color="white" @click="close"></v-icon>
-                </v-toolbar>
-                <v-card-text>
-                    <div style="margin: 10px" v-if="form.id==null">
-                        <v-alert v-model="alertFirst" border="start" variant="tonal" closable close-label="Close Alert" color="primary" type="info" title="Information" size="small">
-                            <li>
-                                Cette section vous permet de renseigner les matières enseignées dans cet
-                                établissement
-                            </li>
-                            <li>
-                                Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
-                            </li>
-                        </v-alert>
-                        <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
-                            <Button style="height: 30px" title="Plier la note" @click="onclickAlertButton('first')" variant="outlined" color="primary" nameButton="Relire la note">
-                            </Button>
+    <Toolbar styleToolbar="background-color: white;" :icon="icons.mdiSchool" :toolbarTitle="Title"></Toolbar>
+    <br>
+    <v-card variant="outlined" style="border: 2px solid #7d002c">
+        <v-card-title style="color: white; background-color: #7d002c">GESTION DES MATIERES</v-card-title>
+        <v-divider></v-divider>
+        <v-dialog v-model="dialog" transition="dialog-top-transition" persistent width="800px" class="dialog">
+            <template v-slot:default="{ isActive }">
+                <v-card>
+                    <v-toolbar dense style="background-color: #7d002c">
+                        <v-toolbar-title style="color:white">
+                            <v-icon left :icon="icons.mdiPencil"></v-icon> {{ dialog_title }}
+                        </v-toolbar-title>
+                        <v-spacer></v-spacer>
+                        <v-icon :icon="icons.mdiCloseCircle" title="Annuler" size="large" style="margin:10px"
+                            color="white" @click="close"></v-icon>
+                    </v-toolbar>
+                    <v-card-text>
+                        <div style="margin: 10px" v-if="form.id == null">
+                            <v-alert v-model="alertFirst" border="start" variant="tonal" closable
+                                close-label="Close Alert" color="primary" type="info" title="Information" size="small">
+                                <li>
+                                    Cette section vous permet de renseigner les matières enseignées dans cet
+                                    établissement
+                                </li>
+                                <li>
+                                    Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
+                                </li>
+                            </v-alert>
+                            <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+                                <Button style="height: 30px" title="Plier la note" @click="onclickAlertButton('first')"
+                                    variant="outlined" color="primary" nameButton="Relire la note">
+                                </Button>
+                            </div>
                         </div>
-                    </div>
 
-                    <v-form ref="form">
-                        <v-row v-if="form.id==null">
-                            <v-col>
-                                <v-switch v-model="form.importation" color="#004980" inset :label="'Importation d\'un fichier pour alimenter les matières'"></v-switch>
-                            </v-col>
-                            <v-col v-if="form.importation">
-                                <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_matiere" label="Charger le fichier des Matières" variant="solo-inverted"></v-file-input>
-                            </v-col>
-                            <v-col v-if="form.importation">
-                                <v-btn class="ma-2" outlined type="button" color="primary" href="../models/Matieres.xlsx" download>
-                                    Télécharger le Modèle
-                                </v-btn>
-                            </v-col>
-                        </v-row>
-                        <v-row>
-                            <v-col cols="12" md="12" v-if="form.id!=null">
-                                <text-field disabled label="Code" placeholder="Code" v-model="form.code" isRequired :rules="rules"></text-field>
-                            </v-col>
-                        </v-row>
-                        <v-row v-if="!form.importation && form.id!=null">
-                            <v-col cols="12" md="12">
-                                <text-field label="Libellé" placeholder="Libellé" v-model="form.nom" isRequired :rules="rules"></text-field>
+                        <v-form ref="form">
+                            <v-row v-if="form.id == null">
+                                <v-col>
+                                    <v-switch v-model="form.importation" color="#004980" inset
+                                        :label="'Importation d\'un fichier pour alimenter les matières'"></v-switch>
+                                </v-col>
+                                <v-col v-if="form.importation">
+                                    <v-file-input clearable required @change="handleFileUpload"
+                                        v-model="form.fichier_matiere" label="Charger le fichier des Matières"
+                                        variant="solo-inverted"></v-file-input>
+                                </v-col>
+                                <v-col v-if="form.importation">
+                                    <v-btn class="ma-2" outlined type="button" color="primary"
+                                        href="../models/Matieres.xlsx" download>
+                                        Télécharger le Modèle
+                                    </v-btn>
+                                </v-col>
+                            </v-row>
+                            <v-row>
+                                <v-col cols="12" md="12" v-if="form.id != null">
+                                    <text-field disabled label="Code" placeholder="Code" v-model="form.code" isRequired
+                                        :rules="rules"></text-field>
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="!form.importation && form.id != null">
+                                <v-col cols="12" md="12">
+                                    <text-field label="Libellé" placeholder="Libellé" v-model="form.nom" isRequired
+                                        :rules="rules"></text-field>
 
-                            </v-col>
-                        </v-row>
-                        <v-card v-if="!form.importation && form.id==null">
-                            <br>
-                            <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
-
-                                <v-row>
-                                    <v-col md="2"></v-col>
-                                    <v-col md="6">
-                                        <TextField class="mt-2" label="Libellé" placeholder="Libellé" v-model="donnee.nom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!'] " @update:modelValue=" verify(donnee)"></TextField>
+                                </v-col>
+                            </v-row>
+                            <v-row v-if="!form.importation && form.id != null">
+                                <v-col>
+                                    <Autocomplete v-model="form.type_matiere" :isRequired="true"
+                                        itemTitle="type_matiere" class="mt-2" placeholder="Type de matière"
+                                        label="Type de matière" :items="['Scientifique', 'Littéraire', 'Autre']" chips
+                                        :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                    </Autocomplete>
+                                </v-col>
+                            </v-row>
+                            <v-card v-if="!form.importation && form.id == null">
+                                <br>
+                                <v-row v-for="(donnee, i) in form.donnees" :key="donnee.id">
+                                    <v-col class="ms-2">
+                                        <TextField class="mt-2" label="Libellé" placeholder="Libellé"
+                                            v-model="donnee.nom" isRequired
+                                            :rules="[(v) => !!v || 'Ce champ est requis!']"
+                                            @update:modelValue="verify(donnee)" />
                                     </v-col>
 
-                                    <v-col md="2">
-                                        <br>
-                                        <Button size="large" title="supprimer la matière" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
-                                            <v-icon :icon="icons.mdiCloseCircle"></v-icon>
+                                    <v-col cols="" md="4">
+                                        <Autocomplete v-model="donnee.type_matiere" :isRequired="true"
+                                            itemTitle="type_matiere" class="mt-2" placeholder="Type de matière"
+                                            label="Type de matière" :items="['Scientifique', 'Littéraire', 'Autre']"
+                                            chips :rules="[(v) => !!v || 'Ce champ est requis!']">
+                                        </Autocomplete>
+                                    </v-col>
+                                    <v-col class="mt-4" md="2">
+                                        <Button size="large" title="supprimer la matière" variant="outlined"
+                                            :disabled="form.donnees.length <= 1" icon @click="removeRow(donnee)"
+                                            color="error">
+                                            <v-icon :icon="icons.mdiCloseCircle" />
                                         </Button>
                                     </v-col>
                                 </v-row>
 
-                            </v-row>
-                            <v-row>
-                                <v-col md="8">
-                                </v-col>
-                                <v-col md="2">
-                                    <Button size="large" title="ajouter une matière" variant="outlined" icon @click="addRow()" fab small color="primary">
-                                        <v-icon :icon="icons.mdiPlusCircle"></v-icon>
-                                    </Button>
-                                </v-col>
-                            </v-row>
-                            <br>
-                        </v-card>
-                    </v-form>
-                </v-card-text>
-                <v-card-actions class="justify-end">
-                    <v-spacer></v-spacer>
-                    <Button color="red" variant="outlined" class="mb-2" nameButton="Annuler" title="Annuler" style="height: 30px" :prependIcon="icons.mdiCancel" @click="close"></Button>
-                    <Button variant="outlined" class="mb-2" nameButton="Enregistrer" title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icons.mdiContentSave" @click="submit"></Button>
-                </v-card-actions>
-            </v-card>
-        </template>
-
-    </v-dialog>
-    <v-card-text>
-        <Datatable titleDatatable="Liste des matières" :headers="headers" :items="matieres" :permission="'manage_school|matiere.create'" :functionOnClickAddButton="create">
-
-            <template v-slot:item.actions="{item}">
-                <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)" v-permission:any="'manage_school|matiere.update'" :icon="icons.mdiPencil" color="orange">
-                </v-icon>
-                <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)" v-permission:any="'manage_school|matiere.delete'" :icon="icons.mdiDelete" color="red">
-                </v-icon>
+                                <v-row>
+                                    <v-col md="10">
+                                    </v-col>
+                                    <v-col md="2">
+                                        <Button size="large" title="ajouter une matière" variant="outlined" icon
+                                            @click="addRow()" fab small color="primary">
+                                            <v-icon :icon="icons.mdiPlusCircle"></v-icon>
+                                        </Button>
+                                    </v-col>
+                                </v-row>
+                                <br>
+                            </v-card>
+                        </v-form>
+                    </v-card-text>
+                    <v-card-actions class="justify-end">
+                        <v-spacer></v-spacer>
+                        <Button color="red" variant="outlined" class="mb-2" nameButton="Annuler" title="Annuler"
+                            style="height: 30px" :prependIcon="icons.mdiCancel" @click="close"></Button>
+                        <Button variant="outlined" class="mb-2" nameButton="Enregistrer"
+                            title="Valider et Fermer la modale" style="height: 30px" :prependIcon="icons.mdiContentSave"
+                            @click="submit"></Button>
+                    </v-card-actions>
+                </v-card>
             </template>
-        </Datatable>
-    </v-card-text>
-</v-card>
+
+        </v-dialog>
+        <v-card-text>
+            <Datatable titleDatatable="Liste des matières" :headers="headers" :items="matieres"
+                :permission="'manage_school|matiere.create'" :functionOnClickAddButton="create">
+
+                <template v-slot:item.actions="{ item }">
+                    <v-icon size="small" class="me-2" title="Modifier" @click="editItem(item)"
+                        v-permission:any="'manage_school|matiere.update'" :icon="icons.mdiPencil" color="orange">
+                    </v-icon>
+                    <v-icon size="small" class="me-2" title="Supprimer" @click="deleteItem(item)"
+                        v-permission:any="'manage_school|matiere.delete'" :icon="icons.mdiDelete" color="red">
+                    </v-icon>
+                </template>
+            </Datatable>
+        </v-card-text>
+    </v-card>
 </template>
 
 <style>
-    .alert{
+.alert {
 
-        z-index: 1000; /* Lower z-index than the dialog */
-    }
+    z-index: 1000;
+    /* Lower z-index than the dialog */
+}
 
-    .dialog{
+.dialog {
 
-        z-index: 0; /* Lower z-index than the dialog */
-    }
+    z-index: 0;
+    /* Lower z-index than the dialog */
+}
 </style>

@@ -99,7 +99,7 @@ export default {
 
     return { parentSlots };
   },
-  updated() {},
+  updated() { },
   computed: {
     scopedSlots() {
       return this.$slots;
@@ -117,27 +117,11 @@ export default {
 };
 </script>
 <template>
-  <v-responsive
-    :class="classResponsive"
-    :height="heightResponsive"
-    :max-height="maxHeightResponsive"
-    :max-width="maxWidthResponsive"
-  >
-    <v-text-field
-      v-model="modelValue"
-      :variant="variant"
-      :hint="hint"
-      :type="type"
-      :density="density"
-      v-bind="$attrs"
-      :name="name"
-      :placeholder="placeholder"
-      :rules="rules"
-      :base-color="baseColorValue"
-      :color="colorValue"
-      :class="class"
-      :append-icon="appendIcon"
-    >
+  <v-responsive :class="classResponsive" :height="heightResponsive" :max-height="maxHeightResponsive"
+    :max-width="maxWidthResponsive">
+    <v-text-field v-model="modelValue" :variant="variant" :hint="hint" :type="type" :density="density" v-bind="$attrs"
+      :name="name" :placeholder="placeholder" :rules="rules" :base-color="baseColorValue" :color="colorValue"
+      :class="class" :append-icon="appendIcon">
       <template #label v-if="isRequired">
         <span id="required-field">{{ label }}</span>
       </template>
@@ -156,20 +140,11 @@ export default {
   color: red;
 }
 
-#app
-  > div
-  > main
-  > div.v-responsive.py-4
-  > div.v-responsive__content
-  > div
-  > div.v-input__control
-  > div.v-text-field
-  .v-field {
+#app>div>main>div.v-responsive.py-4>div.v-responsive__content>div>div.v-input__control>div.v-text-field .v-field {
   cursor: text;
-  height: 30px;
 }
+
 .v-text-field .v-input__control {
-  height: 30px;
   min-height: auto !important;
   display: flex !important;
   align-items: center !important;

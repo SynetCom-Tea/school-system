@@ -17,7 +17,7 @@ class AnneeScolaireSeeder extends Seeder
             'libelle' => '2022-2023',
         ]);
         Annee::create([
-            'libelle' => '2023-2024',
+            'libelle' => '2025-2026',
             'actif'=>1
         ]);
     }

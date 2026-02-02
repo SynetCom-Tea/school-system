@@ -1,73 +1,92 @@
 <template>
-<div>
-    <v-row>
-        <v-col cols="6" md="6">
-            <v-card-text class="mt-8">
-                <v-row align="center" justify="center">
-                    <v-col cols="12" sm="8" class="login">
-                        <h2 class="text-center">Page de connexion</h2>
-                        <v-form>
-                            <TextField label="Identifiant" outlined :isRequired="true" v-model="form.username" dense class="mt-5" hint="le nom d'utilisateur est obligatoire" :prepend-inner-icon="icons.mdiEmailOutline" />
-                            <div class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
-                                Mot de passe
+    <div>
+        <v-row>
+            <v-col cols="6" md="6">
+                <v-card-text class="mt-8">
+                    <v-row align="center" justify="center">
+                        <v-col cols="12" sm="8" class="login">
+                            <h2 class="text-center">Page de connexion</h2>
+                            <v-form>
+                                <TextField label="Identifiant" outlined :isRequired="true" v-model="form.username" dense
+                                    class="mt-5" hint="le nom d'utilisateur est obligatoire"
+                                    :prepend-inner-icon="icons.mdiEmailOutline" />
+                                <div
+                                    class="text-subtitle-1 text-medium-emphasis d-flex align-center justify-space-between">
+                                    Mot de passe
 
-                                <a style="cursor: pointer" class="text-caption text-decoration-none text-primary" target="_blank" @click="forgottenPassword">
-                                    Mot de passe oublié?</a>
+                                    <a style="cursor: pointer" class="text-caption text-decoration-none text-primary"
+                                        target="_blank" @click="forgottenPassword">
+                                        Mot de passe oublié?</a>
+                                </div>
+
+                                <TextField dense v-model="form.password"
+                                    :append-inner-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff"
+                                    :type="showPassword == true ? 'text' : 'password'"
+                                    :prepend-inner-icon="icons.mdiLockOutline"
+                                    :error-messages="form.errors.password && 'Mot de passe invalide!!'"
+                                    :isRequired="true" autocomplete="false"
+                                    hint="Un mot de passe composé de 8 caractères au min dont une lettre majuscule, caractères spéciaux,un chiffre et minuscules"
+                                    persistent-hint label="Mot de passe" @click:append-inner="togglePassword">
+                                </TextField>
+                            </v-form>
+                            <Button :loading="form.processing" title="Valider" variant="flat" nameButton="Connexion"
+                                @click="goToLogin" density="comfortable" class="text-center" block size="large"
+                                style="text-transform: none">
+                            </Button>
+                            <v-row>
+                                <v-col style="font-size: 2px">
+                                    <v-checkbox label="Se rappeler de moi" v-model="form.remember_me"
+                                        @change="onChangeRememberMe(form.remember_me)" color="primary">
+                                    </v-checkbox>
+                                </v-col>
+                            </v-row>
+
+                            <h6 class="text-center">
+                                <hr class="hr-text" data-content="Ou se connecter avec" />
+                            </h6>
+                            <div class="d-flex justify-space-between mx-1 mt-3">
+                                <div v-for="item in listSocialNetworks" class="d-flex justify-space-between mx-1 mt-3">
+                                    <Button :title="item.title" color="white" class="text-center"
+                                        @click="goToSocialNetworksUrl(item.link)">
+                                        <v-icon :color="item.color" :icon="item.icon"></v-icon>
+                                    </Button>
+                                </div>
                             </div>
-
-                            <TextField dense v-model="form.password" :append-inner-icon="showPassword ? icons.mdiEye : icons.mdiEyeOff" :type="showPassword == true ? 'text' : 'password'" :prepend-inner-icon="icons.mdiLockOutline" :error-messages="form.errors.password && 'Mot de passe invalide!!'" :isRequired="true" autocomplete="false" hint="Un mot de passe composé de 8 caractères au min dont une lettre majuscule, caractères spéciaux,un chiffre et minuscules" label="Mot de passe" @click:append-inner="togglePassword"></TextField>
-                        </v-form>
-                        <Button :loading="form.processing" title="Valider" variant="flat" nameButton="Connexion" @click="goToLogin" density="comfortable" class="text-center" block size="large" style="text-transform: none">
-                        </Button>
-                        <v-row>
-                            <v-col style="font-size: 2px">
-                                <v-checkbox label="Se rappeler de moi" v-model="form.remember_me" @change="onChangeRememberMe(form.remember_me)" color="primary">
-                                </v-checkbox>
-                            </v-col>
-                        </v-row>
-
-                        <h6 class="text-center">
-                            <hr class="hr-text" data-content="Ou se connecter avec" />
-                        </h6>
-                        <div class="d-flex justify-space-between mx-1 mt-3">
-                            <div v-for="item in listSocialNetworks" class="d-flex justify-space-between mx-1 mt-3">
-                                <Button :title="item.title" color="white" class="text-center" @click="goToSocialNetworksUrl(item.link)">
-                                    <v-icon :color="item.color" :icon="item.icon"></v-icon>
-                                </Button>
-                            </div>
-                        </div>
-                    </v-col>
-                </v-row>
-            </v-card-text>
-        </v-col>
-
-        <v-col cols="6" md="6" class="bg-primary rounded-xl rounded-be-0">
-            <v-card-text style="text-align: center">
-                <div><img src="team1.png" class="team-img pt-1" /></div>
-                <v-card-text class="white--text">
-                    <h3 class="text-center">Vous n'avez pas encore de compte?</h3>
-                    <h6 class="text-center">
-                        Tout y pour que vous puissiez commencer à créer votre <br />
-                        première expérience d'intégration
-                    </h6>
+                        </v-col>
+                    </v-row>
                 </v-card-text>
-                <div class="text-center">
-                    <Button title="Valider" style="text-transform: none" nameButton="S'enregistrer" density="comfortable" class="text-center" color="secondary" size="large" variant="flat" @click="goToNextWindow">
-                    </Button>
-                </div>
-            </v-card-text>
-        </v-col>
-    </v-row>
-    <div class="text-center ma-2">
-        <v-snackbar v-model="snackbar" location="top">
-            {{ getErrors }}
-            <template v-slot:actions>
-                <v-btn color="red" variant="text" @click="snackbar = false" title="Fermer la modale d'alerte" :append-icon="icons.mdiCloseCircle">
-                </v-btn>
-            </template>
-        </v-snackbar>
+            </v-col>
+
+            <v-col cols="6" md="6" class="bg-primary rounded-xl rounded-be-0">
+                <v-card-text style="text-align: center">
+                    <div><img src="team1.png" class="team-img pt-1" /></div>
+                    <v-card-text class="white--text">
+                        <h3 class="text-center">Vous n'avez pas encore de compte?</h3>
+                        <h6 class="text-center">
+                            Tout y pour que vous puissiez commencer à créer votre <br />
+                            première expérience d'intégration
+                        </h6>
+                    </v-card-text>
+                    <div class="text-center">
+                        <Button title="Valider" style="text-transform: none" nameButton="S'enregistrer"
+                            density="comfortable" class="text-center" color="secondary" size="large" variant="flat"
+                            @click="goToNextWindow">
+                        </Button>
+                    </div>
+                </v-card-text>
+            </v-col>
+        </v-row>
+        <div class="text-center ma-2">
+            <v-snackbar v-model="snackbar" location="top">
+                {{ getErrors }}
+                <template v-slot:actions>
+                    <v-btn color="red" variant="text" @click="snackbar = false" title="Fermer la modale d'alerte"
+                        :append-icon="icons.mdiCloseCircle">
+                    </v-btn>
+                </template>
+            </v-snackbar>
+        </div>
     </div>
-</div>
 </template>
 
 <script>
@@ -150,11 +169,11 @@ export default {
 
     computed: {},
     created() {
-        if (this.$page.props.flash ?.message ?.type == "error") {
+        if (this.$page.props.flash?.message?.type == "error") {
             this.$swal({
                 icon: "error",
                 title: "Authentification",
-                text: this.$page.props.flash ?.message ?.text,
+                text: this.$page.props.flash?.message?.text,
                 toast: true,
                 position: "top-end",
                 showConfirmButton: false,
@@ -164,7 +183,7 @@ export default {
         }
     },
     methods: {
-        onChangeRememberMe(remember) {},
+        onChangeRememberMe(remember) { },
         togglePassword() {
             this.showPassword = !this.showPassword;
         },
@@ -180,7 +199,7 @@ export default {
 
             this.form.post(route("login"), {
                 onSuccess: (e) => {
-                    if (e.props.flash ?.message ?.type == "error") {
+                    if (e.props.flash?.message?.type == "error") {
                         this.snackbar = true;
                         this.getErrors = e.props.flash.message.text;
                     }

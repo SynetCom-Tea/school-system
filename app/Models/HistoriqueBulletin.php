@@ -13,7 +13,9 @@ class HistoriqueBulletin extends Model
     protected $fillable = ['statut','apprenant_id', 'classe_annee_id', 
     'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe',
     'total_coefficient', 'somme_note_generale', 'somme_notation', 'somme_note_generale_coefficient',
-    'total_volume_horaire', 'moyenne_details_notes', 'rang','validation','total_credit'];
+    'total_volume_horaire', 'moyenne_details_notes', 'rang','validation','total_credit', 'annee_scolaire',
+    'classe_effectif', 'moyenne_litteraire', 'moyenne_scientifique', 'moyenne_autres_matieres',
+    'classe_forte_moyenne', 'classe_faible_moyenne', 'classe_moyenne'];
 
     public function apprenant()
     {

@@ -2,120 +2,120 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
 import * as XLSX from "xlsx/xlsx.mjs";
 import {
-    router,
-    useForm
+  router,
+  useForm
 } from "@inertiajs/vue3";
 import {
-    mdiPlus,
-    mdiSchool,
-    mdiAccountSchool,
-    mdiCheckCircle,
-    mdiCancel,
-    mdiBookOpenVariant,
-    mdiPlusCircle,
-    mdiCloseCircle
+  mdiPlus,
+  mdiSchool,
+  mdiAccountSchool,
+  mdiCheckCircle,
+  mdiCancel,
+  mdiBookOpenVariant,
+  mdiPlusCircle,
+  mdiCloseCircle
 } from '@mdi/js'
 export default {
-    layout: AuthenticatedLayout,
-    props: ["section_id"],
-    components: {
+  layout: AuthenticatedLayout,
+  props: ["section_id"],
+  components: {
     XLSX,
   },
-    data() {
-        return {
-            icon: {
-                mdiPlus,
-                mdiSchool,
-                mdiAccountSchool,
-                mdiCheckCircle,
-                mdiCancel,
-                mdiBookOpenVariant,
-                mdiPlusCircle,
-                mdiCloseCircle
-            },
+  data() {
+    return {
+      icon: {
+        mdiPlus,
+        mdiSchool,
+        mdiAccountSchool,
+        mdiCheckCircle,
+        mdiCancel,
+        mdiBookOpenVariant,
+        mdiPlusCircle,
+        mdiCloseCircle
+      },
 
-            file: null,
-            headers: [],
-            data: [],
-            contentType: ["nom"],
-            importation: false,
+      file: null,
+      headers: [],
+      data: [],
+      contentType: ["Nom", "Type de matière"],
+      importation: false,
 
-            form: useForm({
-                donnees: [],
-                fichier_matiere: null,
-            }),
-        }
+      form: useForm({
+        donnees: [],
+        fichier_matiere: null,
+      }),
+    }
+  },
+  mounted() {
+    this.addRow()
+  },
+  methods: {
+
+    goBack() {
+      router.get(route('matieres.index', this.section_id))
     },
-    mounted() {
-        this.addRow()
-    },
-    methods: {
+    addRow() {
+      this.form.donnees.push({
+        nom: null,
+        before: null,
+        after: null
+      });
 
-        goBack() {
-            router.get(route('matieres.index', this.section_id))
-        },
-        addRow() {
-            this.form.donnees.push({
-                nom: null,
-                before: null,
-                after: null
+    },
+
+    removeRow(p) {
+      this.form.donnees = this.form.donnees.filter((product) => product !== p)
+    },
+
+    async verify(p) {
+      const array = this.form.donnees.filter(el => el.nom !== null && el.nom == p.nom)
+      if (array.length > 1) {
+        this.removeRow(p)
+
+        this.$swal({
+          icon: 'error',
+          title: 'Erreur',
+          text: 'Cette matière existe déjà!',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 5000,
+          timerProgressBar: true,
+        });
+      } else {
+        return true
+      }
+    },
+    async submit() {
+      const {
+        valid
+      } = await this.$refs.form.validate()
+      if (valid) {
+
+        this.form.post(route('matieres.store', this.section_id), {
+          onFinish: () => {
+            this.close()
+            this.$swal({
+              icon: 'success',
+              iconColor: '#004980',
+              color: '#004980',
+              title: 'Enregistrement',
+              text: 'Matières créées avec succès!',
+              toast: true,
+              position: 'top-end',
+              showConfirmButton: false,
+              timer: 5000,
+              timerProgressBar: true,
             });
-
-        },
-
-        removeRow(p) {
-            this.form.donnees = this.form.donnees.filter((product) => product !== p)
-        },
-
-        async verify(p) {
-            const array = this.form.donnees.filter(el => el.nom !== null && el.nom == p.nom)
-            if (array.length > 1) {
-               this.removeRow(p)
-
-                this.$swal({
-                                icon: 'error',
-                                title: 'Erreur',
-                                text: 'Cette matière existe déjà!',
-                                toast: true,
-                                position: 'top-end',
-                                showConfirmButton: false,
-                                timer: 5000,
-                                timerProgressBar: true,
-                            });
-            } else {
-                return true
-            }
-        },
-        async submit() {
-            const {
-                valid
-            } = await this.$refs.form.validate()
-            if (valid) {
-
-                this.form.post(route('matieres.store', this.section_id), {
-                    onFinish: () => {
-                        this.close()
-                        this.$swal({
-                            icon: 'success',
-                            iconColor: '#004980',
-                            color: '#004980',
-                            title: 'Enregistrement',
-                            text: 'Matières créées avec succès!',
-                            toast: true,
-                            position: 'top-end',
-                            showConfirmButton: false,
-                            timer: 5000,
-                            timerProgressBar: true,
-                        });
-                    },
-                });
-            }
-        },
-        close() {
-            this.form.reset()
-        },
-        // Méthodes de l'importation du fichier
-        handleFileUpload(event) {
+          },
+        });
+      }
+    },
+    close() {
+      this.form.reset()
+    },
+    // Méthodes de l'importation du fichier
+    handleFileUpload(event) {
       const file = event.target.files[0];
       if (file) {
         const reader = new FileReader();
@@ -179,11 +179,13 @@ export default {
       }
     },
     checkEntete(arr1, arr2) {
-      if (arr1.length !== arr2.length) {
+      if (!arr1 || arr1.length < arr2.length) {
         return false;
       }
-      for (let i = 0; i < arr1.length; i++) {
-        if (arr1[i] !== arr2[i]) {
+      for (let i = 0; i < arr2.length; i++) {
+        const h1 = arr1[i] ? arr1[i].toString().trim().toLowerCase() : "";
+        const h2 = arr2[i] ? arr2[i].toString().trim().toLowerCase() : "";
+        if (h1 !== h2) {
           return false;
         }
       }
@@ -228,124 +230,96 @@ export default {
       }
       return valid;
     },
-    }
+  }
 }
 </script>
 <template>
-<v-card>
+  <v-card>
     <Toolbar :icon="icon.mdiBookOpenVariant" toolbarTitle="Création Matières"></Toolbar>
     <div style="margin: 10px">
-    <v-alert
-        v-model="alertFirst"
-        border="start"
-        variant="tonal"
-        closable
-        close-label="Close Alert"
-        color="primary"
-        type="info"
-        title="Information"
-        >
+      <v-alert v-model="alertFirst" border="start" variant="tonal" closable close-label="Close Alert" color="primary"
+        type="info" title="Information">
         <li>
-            Cette section vous permet de renseigner les matières enseignées dans cet
-            établissement
+          Cette section vous permet de renseigner les matières enseignées dans cet
+          établissement
         </li>
         <li>
-            Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
+          Vous pouvez utiliser le formulaire ou bien importer un fichier prérempli
         </li>
-    </v-alert>
-    <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
-        <Button
-        style="height: 30px"
-        title="Plier la note"
-        @click="onclickAlertButton('first')"
-        variant="outlined"
-        color="primary"
-        nameButton="Relire la note"
-        >
+      </v-alert>
+      <div v-if="!alertFirst" style="margin: auto; width: 50%; padding: 10px">
+        <Button style="height: 30px" title="Plier la note" @click="onclickAlertButton('first')" variant="outlined"
+          color="primary" nameButton="Relire la note">
         </Button>
+      </div>
     </div>
-</div>
     <v-card-text>
-        <v-form ref="form">
-            <!-- Chargement des données par importation de fichier -->
-            <v-card-text>
+      <v-form ref="form">
+        <!-- Chargement des données par importation de fichier -->
+        <v-card-text>
           <v-row>
             <v-col>
-              <v-switch
-                v-model="importation"
-                color="#004980"
-                inset
-                :label="'Importation d\'un fichier pour alimenter les matières'"
-              ></v-switch>
+              <v-switch v-model="importation" color="#004980" inset
+                :label="'Importation d\'un fichier pour alimenter les matières'"></v-switch>
             </v-col>
             <v-col v-if="importation">
-              <v-file-input
-                clearable
-                required
-                @change="handleFileUpload"
-                v-model="form.fichier_matiere"
-                label="Charger le fichier des Matières"
-                variant="solo-inverted"
-              ></v-file-input>
+              <v-file-input clearable required @change="handleFileUpload" v-model="form.fichier_matiere"
+                label="Charger le fichier des Matières" variant="solo-inverted"></v-file-input>
             </v-col>
-            <v-col v-if="importation"
-              ><v-btn
-                class="ma-2"
-                outlined
-                type="button"
-                color="primary"
-                href="../models/echantillons/fiche_echantillonage.ods"
-                download
-              >
+            <v-col v-if="importation"><v-btn class="ma-2" outlined type="button" color="primary"
+                href="../models/echantillons/fiche_echantillonage.ods" download>
                 Télécharger le Modèle
-              </v-btn></v-col
-            >
+              </v-btn></v-col>
           </v-row>
         </v-card-text>
-            <!-- Fin chargement -->
-            <v-card-text class="mx-auto" v-if="!importation">
-                <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des matières</v-chip>
-                <v-card outlined class="mb-md-2">
-                    <v-card-text>
-                        <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
+        <!-- Fin chargement -->
+        <v-card-text class="mx-auto" v-if="!importation">
+          <v-chip label variant="outlined" text-color="white" color="primary" class="text-md-h6 green--text">Ajout des
+            matières</v-chip>
+          <v-card outlined class="mb-md-2">
+            <v-card-text>
+              <v-row :key="donnee.id" v-for="(donnee, i) in form.donnees">
 
-                                    <v-row>
-                                        <v-col md="6">
-                                            <TextField label="Libellé" placeholder="Libellé" v-model="donnee.nom" isRequired :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
-                                        </v-col>
+                <v-row>
+                  <v-col md="6">
+                    <TextField label="Libellé" placeholder="Libellé" v-model="donnee.nom" isRequired
+                      :rules="[(v) => !!v || 'Ce champ est requis!', verify(donnee)]"></TextField>
+                  </v-col>
 
-                                        <v-col md="2">
-                                            <v-btn title="supprimer la matière" variant="outlined" :disabled="!(form.donnees.length > 1)" icon @click="removeRow(donnee)" fab small color="error">
-                                                <v-icon :icon="icon.mdiCloseCircle"></v-icon>
-                                            </v-btn>
-                                        </v-col>
-                                    </v-row>
+                  <v-col md="2">
+                    <v-btn title="supprimer la matière" variant="outlined" :disabled="!(form.donnees.length > 1)" icon
+                      @click="removeRow(donnee)" fab small color="error">
+                      <v-icon :icon="icon.mdiCloseCircle"></v-icon>
+                    </v-btn>
+                  </v-col>
+                </v-row>
 
 
-                        </v-row>
-                        <v-row>
-                                        <v-col md="6">
-                                        </v-col>
-                                        <v-col md="2">
-                                            <v-btn title="ajouter une matière" variant="outlined" icon @click="addRow()" fab small color="primary">
-                                                <v-icon :icon="icon.mdiPlusCircle"></v-icon>
-                                            </v-btn>
-                                        </v-col>
-                                    </v-row>
-                    </v-card-text>
-                </v-card>
-
+              </v-row>
+              <v-row>
+                <v-col md="6">
+                </v-col>
+                <v-col md="2">
+                  <v-btn title="ajouter une matière" variant="outlined" icon @click="addRow()" fab small
+                    color="primary">
+                    <v-icon :icon="icon.mdiPlusCircle"></v-icon>
+                  </v-btn>
+                </v-col>
+              </v-row>
             </v-card-text>
-        </v-form>
+          </v-card>
+
+        </v-card-text>
+      </v-form>
     </v-card-text>
     <v-card-actions class="justify-end">
-        <v-spacer></v-spacer>
-        <v-btn dark small type="button" color="red" @click="goBack">
-            <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
-        </v-btn>
-        <v-btn small color="primary" @click="submit">
-            <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
-        </v-btn>
+      <v-spacer></v-spacer>
+      <v-btn dark small type="button" color="red" @click="goBack">
+        <v-icon :icon="icon.mdiCancel" left></v-icon> Annuler
+      </v-btn>
+      <v-btn small color="primary" @click="submit">
+        <v-icon :icon="icon.mdiCheckCircle" left></v-icon> Enregistrer
+      </v-btn>
     </v-card-actions>
-</v-card>
+  </v-card>
 </template>
