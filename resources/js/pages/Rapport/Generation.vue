@@ -369,19 +369,17 @@ export default {
                                             :disabled="!periode" class="mt-4" isRequired item-title="libelle"
                                             item-value="id"></autocomplete>
                                     </v-col>
-                                    <v-col md="4" class="d-flex align-center">
-                                        <v-btn v-if="premieregeneration" class="mt-4" :append-icon="icons.mdiTimerSync"
+                                    <v-col md="2" class="d-flex align-center">
+                                        <v-btn  :append-icon="icons.mdiTimerSync"
                                             color="deep-purple-accent-4" @click="generate('generate')"
                                             :disabled="!periode">
                                             Générer
                                         </v-btn>
-                                        <template v-else>
-                                            <v-btn class="mt-4" :append-icon="icons.mdiEye" color="info"
-                                                @click="generate('view')" :disabled="!periode">
-                                                Voir
-                                            </v-btn>
-                                        </template>
-                                    </v-col>
+                                        <v-btn class="mx-4" :append-icon="icons.mdiEye" color="info"
+                                            @click="generate('view')" :disabled="!periode">
+                                            Voir
+                                        </v-btn>
+                                    </v-col> 
                                 </v-row>
                                 <Datatable v-if="classes.length !== 0 && (sectionID == 1)"
                                     titleDatatable="Liste des élèves" :headers="headers" :items="data"
