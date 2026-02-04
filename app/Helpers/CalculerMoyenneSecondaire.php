@@ -94,7 +94,6 @@ if (!function_exists('ordinalSuffix')) {
 }
 
 // ================ fonction de conversion de la moyenne en lettre ==================
-use NumberFormatter;
 
 if (!function_exists('moyenneEnLettre')) {
     function moyenneEnLettre($moyenne)
