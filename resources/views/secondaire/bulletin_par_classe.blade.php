@@ -131,11 +131,13 @@
                     @endif
                 </td>
                 <td width="60%" class="center">
-                    <b>République du Niger</b><br>
-                    Ministère de l'Éducation Nationale de l'Alphabétisation et de la Promotion des Langues Nationales. Région de Niamey / IESG Niamey 4<br>
-                    <b style="font-size: 16px;">« {{ $etablissement->name}}/ AEROPORT »</b><br>
-                    <b style="font-size: 13px;">Complexe Scolaire Privé « {{ $etablissement->name}} »</b><br>
-                    BP/Tél: 96295361
+                    <p style="font-size: 14px;">
+                        <b>République du Niger</b><br>
+                        Ministère de l'Éducation Nationale de l'Alphabétisation et de la Promotion des Langues. Région de Niamey / IESG Niamey 4<br>
+                        <b style="font-size: 16px;">« {{ $etablissement->name}}/ AEROPORT »</b><br>
+                    </p>
+                    <!-- <b style="font-size: 13px;">Complexe Scolaire Privé « {{ $etablissement->name}} »</b><br> -->
+                    <p style="margin-top: 15px">BP/Tél: 96295361</p>
                 </td>
                 <td width="20%"></td>
             </tr>
@@ -192,23 +194,23 @@
                     <td class="left">
                         @if($line->moyenne <= 2)
                             NULL
-                        @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
-                            MAL
-                        @elseif(($line->moyenne > 5 ) and ($line->moyenne < 10))
-                                INSUFFISANT
-                        @elseif (($line->moyenne >= 10 ) and ($line->moyenne < 12))
-                            PASSABLE
-                        @elseif (($line->moyenne >= 12 ) and ($line->moyenne < 14))
-                            ASSEZ BIEN
-                        @elseif (($line->moyenne >= 14 ) and ($line->moyenne < 16))
-                            BIEN
-                        @elseif (($line->moyenne >= 16 ) and ($line->moyenne <= 19 ))
-                            TRES BIEN
-                        @elseif (($line->moyenne > 19 ) and ($line->moyenne == 20))
-                            EXCELLENT
-                        @else
-                            Pas defini
-                        @endif
+                            @elseif(($line->moyenne > 2 ) and ($line->moyenne <= 5))
+                                MAL
+                                @elseif(($line->moyenne > 5 ) and ($line->moyenne < 10))
+                                    INSUFFISANT
+                                    @elseif (($line->moyenne >= 10 ) and ($line->moyenne < 12))
+                                        PASSABLE
+                                        @elseif (($line->moyenne >= 12 ) and ($line->moyenne < 14))
+                                            ASSEZ BIEN
+                                            @elseif (($line->moyenne >= 14 ) and ($line->moyenne < 16))
+                                                BIEN
+                                                @elseif (($line->moyenne >= 16 ) and ($line->moyenne <= 19 ))
+                                                    TRES BIEN
+                                                    @elseif (($line->moyenne > 19 ) and ($line->moyenne == 20))
+                                                    EXCELLENT
+                                                    @else
+                                                    Pas defini
+                                                    @endif
                     </td>
                 </tr>
                 @endforeach
@@ -234,8 +236,8 @@
             <tr>
                 <td style="height: 60px; width: 33%;">
                     <b>MOYENNE</b><br>
-                      <span style="margin-left: 10px;">En chiffre : <b>{{$donnee['bulletin']->moyenne_details_notes}}</b><br></span>
-                      <span style="margin-left: 10px;">En lettre: <b>{{ moyenneEnLettre($donnee['bulletin']->moyenne_details_notes) }}</b></span>
+                    <span style="margin-left: 10px;">En chiffre : <b>{{$donnee['bulletin']->moyenne_details_notes}}</b><br></span>
+                    <span style="margin-left: 10px;">En lettre: <b>{{ moyenneEnLettre($donnee['bulletin']->moyenne_details_notes) }}</b></span>
                     <br><br>
                     <b>RANG : {{$donnee['bulletin']->rang}}</b><br><br>
                 </td>
@@ -307,6 +309,6 @@
             Complexe Scolaire Privé « AVENIR 3 » - Aéroport-Niamey/Niger - Tél : 96 29 53 61</p>
     </footer>
 </body>
+
 </html>
 @endforeach
-

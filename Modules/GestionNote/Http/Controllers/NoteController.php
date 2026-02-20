@@ -154,7 +154,12 @@ class NoteController extends Controller
         // dd($apps);
         $eleves = $request->evaluation ? ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request, $annee) {
             $query->where('classe_id', $request->classe)->where('annee_id', $annee);
-        })->whereNotIn('apprenant_id', $apps)->with('apprenant')->get() : collect();
+        })->whereNotIn('apprenant_id', $apps)
+            ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+            ->orderBy('apprenants.nom', 'asc') // 🔤 tri alphabétique croissant
+            ->orderBy('apprenants.prenom', 'asc') // 🔤 tri alphabétique croissant
+            ->select('apprenant_classe_annees.*') // important pour éviter les conflits de colonnes
+            ->with('apprenant')->get() : collect();
         // dd($eleves);
         $customizingEleves = $eleves->map(
             function ($value) {
@@ -488,23 +493,48 @@ class NoteController extends Controller
                         $classeAnne->where('classe_id', $request->classe);
                     })->where('evaluation_id', $id_evaluation)->get()->pluck('apprenant_id');
                     $id_apps = HistoriqueBulletin::where('validation', true)->get()->pluck('apprenant_id');
+                    // $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
+                    //     $query->where('classe_id', $request->classe);
+                    // })->whereNotIn('apprenant_id', $id_apps)->with('apprenant')->get();
                     $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                         $query->where('classe_id', $request->classe);
-                    })->whereNotIn('apprenant_id', $id_apps)->with('apprenant')->get();
+                    })
+                        ->whereNotIn('apprenant_id', $id_apps)
+                        ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+                        ->orderBy('apprenants.nom', 'asc') // 🔤 tri alphabétique croissant
+                        ->orderBy('apprenants.prenom', 'asc') // 🔤 tri alphabétique croissant
+                        ->select('apprenant_classe_annees.*') // important pour éviter les conflits de colonnes
+                        ->with('apprenant')
+                        ->get();
                 } else {
                     $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                         $query->where('classe_id', $request->classe);
-                    })->whereNotIn('apprenant_id', $apps)->with('apprenant')->get();
+                    })->whereNotIn('apprenant_id', $apps)
+                        ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+                        ->orderBy('apprenants.nom', 'asc') // 🔤 tri alphabétique croissant
+                        ->orderBy('apprenants.prenom', 'asc') // 🔤 tri alphabétique croissant
+                        ->select('apprenant_classe_annees.*') // important pour éviter les conflits de colonnes
+                        ->with('apprenant')->get();
                 }
             } else {
                 $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                     $query->where('classe_id', $request->classe);
-                })->whereNotIn('apprenant_id', $apps)->with('apprenant')->get();
+                })->whereNotIn('apprenant_id', $apps)
+                    ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+                    ->orderBy('apprenants.nom', 'asc') // 🔤 tri alphabétique croissant
+                    ->orderBy('apprenants.prenom', 'asc') // 🔤 tri alphabétique croissant
+                    ->select('apprenant_classe_annees.*') // important pour éviter les conflits de colonnes
+                    ->with('apprenant')->get();
             }
         } elseif ($request->evaluation == null && $request->questionner == 1) {
             $eleves = ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request) {
                 $query->where('classe_id', $request->classe);
-            })->with('apprenant')->get();
+            })
+                ->join('apprenants', 'apprenant_classe_annees.apprenant_id', '=', 'apprenants.id')
+                ->orderBy('apprenants.nom', 'asc') // 🔤 tri alphabétique croissant
+                ->orderBy('apprenants.prenom', 'asc') // 🔤 tri alphabétique croissant
+                ->select('apprenant_classe_annees.*') // important pour éviter les conflits de colonnes
+                ->with('apprenant')->get();
         }
         $customizingEleves = $eleves->map(
             function ($value) {
@@ -535,7 +565,7 @@ class NoteController extends Controller
     {
         $user = Auth::user();
         $annee_id = getAnneeEncours()->id;
-        $matricule = Apprenant::where('id',$user->apprenant_id)->get()[0]->matricule;
+        $matricule = Apprenant::where('id', $user->apprenant_id)->get()[0]->matricule;
         $classe_anne_id = ApprenantClasseAnnee::where('apprenant_id', $user->apprenant_id)->whereHas('classe_annee', function ($value) use ($annee_id) {
             $value->where('annee_id', $annee_id);
         })->get()[0]->classe_annee_id;
@@ -559,13 +589,13 @@ class NoteController extends Controller
         ];
         // dd($notes_s1->count());
         for ($i = 0; $i < $notes_s1->count(); $i++) {
-            if ($notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode',$notes_s1[$i]->periode)->count()> 1 && $notes_s1[$i]->type_evaluation == "Devoir") {
-                for ($j = 0; $j < $notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode',$notes_s1[$i]->periode)->count(); $j++) {
-                    $notes_s1[$i]->type_evaluation = "Devoir" . " " . "N°"." ". $j + 2;
+            if ($notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode', $notes_s1[$i]->periode)->count() > 1 && $notes_s1[$i]->type_evaluation == "Devoir") {
+                for ($j = 0; $j < $notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode', $notes_s1[$i]->periode)->count(); $j++) {
+                    $notes_s1[$i]->type_evaluation = "Devoir" . " " . "N°" . " " . $j + 2;
                 }
-            }else if($notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode',$notes_s1[$i]->periode)->count()<= 1 && $notes_s1[$i]->type_evaluation == "Devoir"){
-                for ($j = 0; $j < $notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode',$notes_s1[$i]->periode)->count(); $j++) {
-                    $notes_s1[$i]->type_evaluation = "Devoir" . " ". "N°" . " " . $j + 1;
+            } else if ($notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode', $notes_s1[$i]->periode)->count() <= 1 && $notes_s1[$i]->type_evaluation == "Devoir") {
+                for ($j = 0; $j < $notes_s1->where('nom_matiere', $notes_s1[$i]->nom_matiere)->where('type_evaluation', $notes_s1[$i]->type_evaluation)->where('periode', $notes_s1[$i]->periode)->count(); $j++) {
+                    $notes_s1[$i]->type_evaluation = "Devoir" . " " . "N°" . " " . $j + 1;
                 }
             }
             // dump($notes_s1[$i]->type_evaluation. ' '.$notes_s1[$i]->nom_matiere . ' '. $notes_s1[$i]->periode);
@@ -595,7 +625,7 @@ class NoteController extends Controller
             'entetes_s2' => $entetes_s2,
             'notes_s1' => $notes_s1,
             'notes_s2' => $notes_s2,
-            'matricule'=> $matricule
+            'matricule' => $matricule
         ]);
     }
 }
