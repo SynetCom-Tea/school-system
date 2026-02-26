@@ -293,6 +293,7 @@ class RapportController extends Controller
      */
     public function create(Request $request)
     {
+        // dd($request->all());
         $request->validate([
             'section_id' => 'required',
         ]);
@@ -372,6 +373,9 @@ class RapportController extends Controller
             $periode = Periode::where('type', "Semestre")->get();
             if ($request->classe != null || $request->classe2 != null) {
                 if ($request->tab == 'option-1') {
+                    if ($request->action == 'generate') {
+                        HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->delete();
+                    }
                     $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('periode', Periode::find($request->periode)->libelle)->get();
                     if ($historiqueBulletincheck->isEmpty()) {
                         if ($request->action == 'view') {
@@ -421,18 +425,21 @@ class RapportController extends Controller
                         $precedenteMoyenne = null;
 
                         foreach ($notesTriees as $note) {
-                            $execo =  " e";
+                            $execo =  "e";
                             // Si la moyenne est différente, on met à jour le rang
                             if ($precedenteMoyenne !== null && $note->moyenne < $precedenteMoyenne) {
                                 $rang = $position;
-                            }elseif($precedenteMoyenne !== null && $note->moyenne == $precedenteMoyenne) {
-                                $execo = " e ex";
+                            } elseif ($precedenteMoyenne !== null && $note->moyenne == $precedenteMoyenne) {
+                                $execo = "e ex";
                             }
-    
+
                             // Mise à jour en base
-                            $note->update([
-                                'rang_matiere' => $rang . $execo
-                            ]);
+                            if ($request->tab == 'option-1' && $request->action == 'generate') {
+
+                                $note->update([
+                                    'rang_matiere' => $rang . $execo
+                                ]);
+                            }
 
                             $precedenteMoyenne = $note->moyenne;
                             $position++;

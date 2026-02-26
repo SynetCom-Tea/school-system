@@ -42,6 +42,6 @@ class ClasseAnnee extends Model
 
     public function apprenants(): BelongsToMany
     {
-        return $this->belongsToMany(Apprenant::class, 'apprenant_classe_annees');
+        return $this->belongsToMany(Apprenant::class, 'apprenant_classe_annees')->wherePivotNull('deleted_at');
     }
 }

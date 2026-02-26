@@ -18,7 +18,7 @@ return new class extends Migration
             $table->id();
             $table->foreignIdFor(HistoriqueBulletin::class)
                 ->index()
-                ->references('id')->on('historique_bulletins');
+                ->references('id')->on('historique_bulletins')->onDelete('cascade');
             $table->foreignIdFor(Matiere::class)->nullable()
                 ->index()
                 ->references('id')->on('matieres');

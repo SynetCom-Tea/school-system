@@ -209,6 +209,8 @@ export default {
                 }
 
             } else if (this.tab == 'option-2') {
+                console.log('section', this.sectionID, 'periode', this.periode2, 'classe ', this.classe2, 'tab', this.tab, 'apprenant', this.apprenant2);
+
                 if (!this.classe2 || !this.periode2 || (this.sectionID == 3 && !this.session2)) {
                     this.$swal({
                         icon: 'warning',
@@ -216,30 +218,47 @@ export default {
                         text: 'Veuillez remplir tous les champs obligatoires.',
                     });
                     return;
-                }
-                await axios
-                    .get(
-                        route('bulletinbyapprenant', {
-                            section_id: this.sectionID,
+                }this.$inertia.replace(this.$page.url, {
+                        data: {
+                             section_id: this.sectionID,
                             classe: this.classe2,
                             periode: this.periode2,
                             tab: this.tab,
                             apprenant: this.apprenant2,
                             session: this.session2
-                        })
-                    )
-                    .then(res => {
-                        console.log(res.data)
-                        this.donnees = res.data;
-                    })
-                    .catch(error => {
-                        console.error("Erreur lors de la récupération des bulletins:", error);
-                        this.$swal({
-                            icon: 'error',
-                            title: 'Erreur réseau',
-                            text: "Une erreur est survenue lors de la récupération des bulletins. Veuillez vérifier votre connexion ou réessayer plus tard.",
-                        });
+                        }
                     });
+                // await axios
+                //     .get(
+                //         route('bulletinbyapprenant', {
+                //             section_id: this.sectionID,
+                //             classe: this.classe2,
+                //             periode: this.periode2,
+                //             tab: this.tab,
+                //             apprenant: this.apprenant2,
+                //             session: this.session2
+                //         })
+                //     )
+                //     .then(res => {
+                //         console.log(res.data)
+                //         this.donnees = res.data;
+                //     })
+                    // .catch(error => {
+                    //     console.error("Erreur lors de la récupération des bulletins:", error);
+                    //     this.$swal({
+                    //         icon: 'error',
+                    //         title: 'Erreur réseau',
+                    //         text: "Une erreur est survenue lors de la récupération des bulletins. Veuillez vérifier votre connexion ou réessayer plus tard.",
+                    //     });
+                    // });
+                    // .catch(error => {
+                    //     console.error(error.response);
+                    //     this.$swal({
+                    //         icon: 'error',
+                    //         title: 'Erreur',
+                    //         text: error.response?.data?.message || 'Erreur serveur'
+                    //     });
+                    // });
             }
         },
         setData(classe) {
@@ -367,19 +386,19 @@ export default {
                                     <v-col md="3">
                                         <autocomplete label="Classe" v-model="classe" :items="classes"
                                             :disabled="!periode" class="mt-4" isRequired item-title="libelle"
-                                            item-value="id"></autocomplete>
+                                            item-value="id">
+                                        </autocomplete>
                                     </v-col>
                                     <v-col md="2" class="d-flex align-center">
-                                        <v-btn  :append-icon="icons.mdiTimerSync"
-                                            color="deep-purple-accent-4" @click="generate('generate')"
-                                            :disabled="!periode">
+                                        <v-btn :append-icon="icons.mdiTimerSync" color="deep-purple-accent-4"
+                                            @click="generate('generate')" :disabled="!periode">
                                             Générer
                                         </v-btn>
                                         <v-btn class="mx-4" :append-icon="icons.mdiEye" color="info"
                                             @click="generate('view')" :disabled="!periode">
                                             Voir
                                         </v-btn>
-                                    </v-col> 
+                                    </v-col>
                                 </v-row>
                                 <Datatable v-if="classes.length !== 0 && (sectionID == 1)"
                                     titleDatatable="Liste des élèves" :headers="headers" :items="data"
@@ -445,8 +464,8 @@ export default {
                                     </v-col>
                                     <v-col md="4">
                                         <autocomplete :label="apprenant" v-model="apprenant2" :items="apprenants"
-                                            :disabled="!classe2" multiple chips class="mt-4" isRequired
-                                            item-title="matricule" item-value="id">
+                                            :disabled="!classe2" chips class="mt-4" isRequired
+                                            :item-title="item => `${item.nom} ${item.prenom}`" item-value="id">
                                         </autocomplete>
                                     </v-col>
                                     <v-col md="4">

@@ -17,21 +17,22 @@ use Illuminate\Support\Facades\Auth;
 use Modules\GestionNote\Entities\Periode;
 
 if (!function_exists('calculerResultatsClasseSuperieure')) {
-    function calculerResultatsClasseSuperieure($classeId, $section, $etablissement_section, $periode, $apprenants = null,$session = null) {
+    function calculerResultatsClasseSuperieure($classeId, $section, $etablissement_section, $periode, $apprenants = null, $session = null)
+    {
         $resultatsClasse = [];
-        $annee = Annee::where('actif',1)->first();
+        $annee = Annee::where('actif', 1)->first();
         $classe = getClasses($annee->id, $etablissement_section, $classeId)->firstOrFail();
         // dd($classe);
-        if($apprenants != null){
+        if ($apprenants != null) {
             $apprenantsDeLaClasse = $apprenants;
             // dd($apprenants);
-        }else{
+        } else {
             $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
             // dd($apprenantsDeLaClasse);
         }
         // dd($apprenantsDeLaClasse);
-        foreach ($apprenantsDeLaClasse as $key=>$apprenant) {
-            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode,$session);
+        foreach ($apprenantsDeLaClasse as $key => $apprenant) {
+            $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode, $session);
             $resultatsClasse[$apprenant->id] = [
                 'classe_annee_id' => $classeId,
                 'periode' => $resultatMoyenne['periode'],
@@ -42,7 +43,7 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
                 'total_volume_horaire' => $resultatMoyenne['total_volume_horaire'],
                 'total_coefficient' => $resultatMoyenne['total_coefficient'],
                 'somme_note_generale' => $resultatMoyenne['somme_note_generale'],
-                'credit'=>$resultatMoyenne['credit'],
+                'credit' => $resultatMoyenne['credit'],
                 'somme_note_generale_coefficient' => $resultatMoyenne['somme_note_generale_coefficient'],
                 'moyenne_details_notes' => $resultatMoyenne['moyenne_generale'],
                 'details_notes' => $resultatMoyenne['details_notes'], // Tableau des détails des notes
@@ -50,7 +51,7 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
             // dump($resultatsClasse);
         }
         // die();
-       
+
         $resultatsClasseAvecRang = calculerRangApprenants($resultatsClasse);
         $moyenneClasse = calculerMoyenneClasse($resultatsClasse);
 
@@ -61,7 +62,8 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
 
 
 if (!function_exists('calculerRangApprenants')) {
-    function calculerRangApprenants($resultatsClasse) {
+    function calculerRangApprenants($resultatsClasse)
+    {
         // Trier le tableau des résultats par la moyenne générale de chaque apprenant de manière décroissante
         usort($resultatsClasse, function ($a, $b) {
             return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
@@ -83,7 +85,8 @@ if (!function_exists('calculerRangApprenants')) {
 }
 
 if (!function_exists('calculerMoyenneClasse')) {
-    function calculerMoyenneClasse($resultatsClasse) {
+    function calculerMoyenneClasse($resultatsClasse)
+    {
         $totalMoyenneGenerale = 0;
         $nombreApprenants = count($resultatsClasse);
 
@@ -100,12 +103,12 @@ if (!function_exists('calculerMoyenneClasse')) {
 
 
 if (!function_exists('ajouterHistoriqueBulletin')) {
-    function createHistoriqueBulletin($resultat, $section)
+    function createHistoriqueBulletin($resultat, $section, $exception = null)
     {
         $groupedDetailsNotes = collect($resultat['details_notes'])->groupBy('type_matiere');
         $moyenne_litteraire = $groupedDetailsNotes->has('Littéraire') ? round($groupedDetailsNotes->get('Littéraire')->avg('moyenne'), 2) : 0;
         $moyenne_scientifique = $groupedDetailsNotes->has('Scientifique') ? round($groupedDetailsNotes->get('Scientifique')->avg('moyenne'), 2) : 0;
-        $moyenne_autre = $groupedDetailsNotes->has('Autre') ? round($groupedDetailsNotes->get('Autre')->avg('moyenne'), 2) : 0; 
+        $moyenne_autre = $groupedDetailsNotes->has('Autre') ? round($groupedDetailsNotes->get('Autre')->avg('moyenne'), 2) : 0;
         // dd($moyenne_litteraire,$moyenne_scientifique,$moyenne_autre);
         //
         // dd('createHistoriqueBulletin', $groupedDetailsNotes);
@@ -116,7 +119,6 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             'classe_annee_id' => $resultat['classe_annee_id'],
             'matricule_apprenant' => $resultat['matricule_apprenant'],
             'nom_prenom_apprenant' => $resultat['nom_prenom_apprenant'],
-            'rang' => $resultat['rang'],
             'classe_effectif' => $resultat['classe_effectif'],
             'annee_scolaire' => $resultat['annee_scolaire'],
             'classe_forte_moyenne' => $resultat['classe_forte_moyenne'],
@@ -126,7 +128,11 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             'moyenne_scientifique' => $moyenne_scientifique,
             'moyenne_autres_matieres' => $moyenne_autre,
         ];
-
+        if ($exception == null) {
+            $commonFields += [
+                'rang' => $resultat['rang']
+            ];
+        }
         switch ($section) {
             case 1:
                 $commonFields += [
@@ -147,7 +153,7 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
                     'somme_note_generale' => $resultat['somme_note_generale'],
                     'somme_note_generale_coefficient' => $resultat['somme_note_generale_coefficient'],
                     'total_volume_horaire' => $resultat['total_volume_horaire'],
-                    'total_credit'=>$resultat['credit']
+                    'total_credit' => $resultat['credit']
                 ];
                 break;
             default:
@@ -158,53 +164,52 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
         $historiqueBulletin = HistoriqueBulletin::create($commonFields);
         foreach ($resultat['details_notes'] as $detailNote) {
             createHistoriqueNote($historiqueBulletin->id, $detailNote, $section);
-            
         }
         foreach ($resultat['details_notes'] as $detailNote) {
-            ValidationDeSemestre($historiqueBulletin, $detailNote, $section,$resultat);
+            ValidationDeSemestre($historiqueBulletin, $detailNote, $section, $resultat);
         }
-        
     }
-    function ValidationDeSemestre($historiqueBulletin, $detailNote, $section,$resultat){
+    function ValidationDeSemestre($historiqueBulletin, $detailNote, $section, $resultat)
+    {
         // dd($resultat);
-        if ($section == 3){
+        if ($section == 3) {
             $requetes = DB::select("
                 SELECT hn.id,hn.nom_eu ue,hn.historique_bulletin_id,hn.ue_id, (sum(hn.note_generale_coefficiente)/sum(hn.coefficient)) as note_ue FROM historique_notes hn 
                 JOIN historique_bulletins hb ON hb.id = hn.historique_bulletin_id
                 WHERE hb.id = :historique_bulletin_id group by hn.ue_id
-            ",[
-                "historique_bulletin_id"=>$historiqueBulletin->id
+            ", [
+                "historique_bulletin_id" => $historiqueBulletin->id
             ]);
             // dd($requetes);
-            $validation = DB::table('etablissement_section')->where('etablissement_id',Auth::user()->etablissement_id)->where('section_id',$section)->get();
-            if ($validation[0]->regime_validation_id == 1){
+            $validation = DB::table('etablissement_section')->where('etablissement_id', Auth::user()->etablissement_id)->where('section_id', $section)->get();
+            if ($validation[0]->regime_validation_id == 1) {
                 // Validation par Capitalisation
                 foreach ($requetes as $key => $requete) {
-                    if ($requete->note_ue<10){
-                        $historiqueBulletin->validation = 0 ;
+                    if ($requete->note_ue < 10) {
+                        $historiqueBulletin->validation = 0;
                         $historiqueBulletin->update();
-                        $ue_non_valides = HistoriqueNote::where('ue_id',$requete->ue_id)->where('historique_bulletin_id',$historiqueBulletin->id)->get();
+                        $ue_non_valides = HistoriqueNote::where('ue_id', $requete->ue_id)->where('historique_bulletin_id', $historiqueBulletin->id)->get();
                         foreach ($ue_non_valides as $key => $value) {
                             $value->session = 0;
                             $value->update();
                         }
                     }
                 }
-            }else if($validation[0]->regime_validation_id  == 2){
+            } else if ($validation[0]->regime_validation_id  == 2) {
                 // Validation par Compansation Orienté
-                if ($historiqueBulletin->moyenne_details_notes<10 && $historiqueBulletin->total_credit<$validation[0]->nbre_credit){
-                    $historiqueBulletin->validation = 0 ;
+                if ($historiqueBulletin->moyenne_details_notes < 10 && $historiqueBulletin->total_credit < $validation[0]->nbre_credit) {
+                    $historiqueBulletin->validation = 0;
                     $historiqueBulletin->update();
-                    $ue_non_valides = HistoriqueNote::where('historique_bulletin_id',$historiqueBulletin->id)->get();
+                    $ue_non_valides = HistoriqueNote::where('historique_bulletin_id', $historiqueBulletin->id)->get();
                     foreach ($ue_non_valides as $key => $value) {
                         $value->session = 0;
                         $value->update();
                     }
                 }
-            }else if ($validation[0]->regime_validation_id == 3){
+            } else if ($validation[0]->regime_validation_id == 3) {
                 // Validation par Compansation Ordinaire
-                if ($historiqueBulletin->moyenne_details_notes<10){
-                    $historiqueBulletin->validation = 0 ;
+                if ($historiqueBulletin->moyenne_details_notes < 10) {
+                    $historiqueBulletin->validation = 0;
                     $historiqueBulletin->update();
                 }
             }
@@ -226,16 +231,16 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
                 ];
                 break;
             case 2:
-                    $commonFields += [
-                        'coefficient' => $detailNote['coefficient'],
-                        'note_de_classe' => $detailNote['note_de_classe'],
-                        'note_de_classe_coefficiente' => $detailNote['note_de_classe_coefficiente'],
-                        'note_de_composition' => $detailNote['note_de_composition'],
-                        'note_de_composition_coefficiente' => $detailNote['note_de_composition_coefficiente'],
-                        'moyenne' => $detailNote['moyenne'],
-                        'moyenne_coefficiente' => $detailNote['moyenne_coefficiente'],
-                    ];
-                    break;
+                $commonFields += [
+                    'coefficient' => $detailNote['coefficient'],
+                    'note_de_classe' => $detailNote['note_de_classe'],
+                    'note_de_classe_coefficiente' => $detailNote['note_de_classe_coefficiente'],
+                    'note_de_composition' => $detailNote['note_de_composition'],
+                    'note_de_composition_coefficiente' => $detailNote['note_de_composition_coefficiente'],
+                    'moyenne' => $detailNote['moyenne'],
+                    'moyenne_coefficiente' => $detailNote['moyenne_coefficiente'],
+                ];
+                break;
             case 3:
                 $commonFields += [
                     'nom_eu' => $detailNote['nom_eu'],
@@ -265,21 +270,21 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
         if ($section == 1) {
             if ($exception != null) {
                 $checkhistorique = HistoriqueBulletin::where('classe_annee_id', $resultat['classe_annee_id'])
-                ->where('periode', $resultat['periode'])
-                ->where('apprenant_id', $resultat['apprenant_id'])
-                ->where('statut', true)
-                ->latest()
-                ->first();
+                    ->where('periode', $resultat['periode'])
+                    ->where('apprenant_id', $resultat['apprenant_id'])
+                    ->where('statut', true)
+                    ->latest()
+                    ->first();
                 if ($checkhistorique != null) {
                     $communs = array_intersect_assoc($checkhistorique->toArray(), $resultat);
                     if (empty(array_diff(['apprenant_id', 'classe_annee_id', 'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe', 'moyenne_details_notes', 'somme_notation', 'somme_note_generale'], array_keys($communs)))) {
                         return;
                     } else {
-                        createHistoriqueBulletin($resultat, $section);
+                        createHistoriqueBulletin($resultat, $section, $exception);
                         $checkhistorique->update(['statut' => false]);
                     }
                 } else {
-                    createHistoriqueBulletin($resultat, $section);
+                    createHistoriqueBulletin($resultat, $section, $exception);
                     return;
                 }
             } else {
@@ -287,22 +292,31 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             }
         } elseif ($section == 2) {
             if ($exception != null) {
+                // dd($resultat);
                 $checkhistorique = HistoriqueBulletin::where('classe_annee_id', $resultat['classe_annee_id'])
-                ->where('periode', $resultat['periode'])
-                ->where('apprenant_id', $resultat['apprenant_id'])
-                ->where('statut', true)
-                ->latest()
-                ->first();
+                    ->where('periode', $resultat['periode'])
+                    ->where('apprenant_id', $resultat['apprenant_id'])
+                    ->where('statut', true)
+                    ->latest()
+                    ->first();
                 if ($checkhistorique != null) {
                     $communs = array_intersect_assoc($checkhistorique->toArray(), $resultat);
                     if (empty(array_diff(['apprenant_id', 'classe_annee_id', 'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe', 'moyenne_details_notes'], array_keys($communs)))) {
                         return;
                     } else {
-                        createHistoriqueBulletin($resultat, $section);
-                        $checkhistorique->update(['statut' => false]);
+                        $detailsNotes = $resultat['details_notes'] ?? [];
+                        $resultat = collect($resultat)->except(['rang', 'details_notes', 'classe_effectif'])->toArray();
+                        // createHistoriqueBulletin($resultat, $section, $exception);
+                        $checkhistorique->update($resultat);
+                        foreach ($detailsNotes as $detailNote) {
+                            $historique_notes = HistoriqueNote::where('historique_bulletin_id', $checkhistorique->id)
+                                ->where('nom_matiere', $detailNote['nom_matiere'])
+                                ->first();
+                            $historique_notes->update($detailNote);
+                        }
                     }
                 } else {
-                    createHistoriqueBulletin($resultat, $section);
+                    createHistoriqueBulletin($resultat, $section, $exception);
                     return;
                 }
             } else {
@@ -315,6 +329,5 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
                 createHistoriqueBulletin($resultat, $section);
             }
         }
-        
     }
 }
