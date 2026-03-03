@@ -205,7 +205,7 @@
                                                 BIEN
                                                 @elseif (($line->moyenne >= 16 ) and ($line->moyenne <= 19 ))
                                                     TRES BIEN
-                                                    @elseif (($line->moyenne > 19 ) and ($line->moyenne == 20))
+                                                    @elseif (($line->moyenne > 19 ) and ($line->moyenne <= 20))
                                                     EXCELLENT
                                                     @else
                                                     Pas defini

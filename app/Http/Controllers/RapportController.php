@@ -355,7 +355,7 @@ class RapportController extends Controller
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
                     if ($request->apprenant != null) {
                         // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
-                        $apprenantIds = explode(',', $request->apprenant);
+                        $apprenantIds = is_array($request->apprenant) ? $request->apprenant : explode(',', $request->apprenant);
                         // Supprimer les espaces autour de chaque ID
                         $apprenantIds = array_map('trim', $apprenantIds);
                         $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
@@ -364,6 +364,13 @@ class RapportController extends Controller
                         foreach ($resultatstz as &$resultat) {
                             ajouterHistoriqueBulletin($resultat, $request->section_id, $exception);
                         }
+
+                        $resultats = HistoriqueBulletin::with('historique_notes')
+                            ->where('classe_annee_id', $request->classe)
+                            ->whereIn('apprenant_id', $apprenantIds)
+                            ->where('periode', Periode::find($request->periode)->libelle)
+                            ->where('statut', true)
+                            ->get();
                     }
                 }
             }
@@ -450,7 +457,7 @@ class RapportController extends Controller
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
                     if ($request->apprenant != null) {
                         // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
-                        $apprenantIds = explode(',', $request->apprenant);
+                        $apprenantIds = is_array($request->apprenant) ? $request->apprenant : explode(',', $request->apprenant);
                         // Supprimer les espaces autour de chaque ID
                         $apprenantIds = array_map('trim', $apprenantIds);
                         $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
@@ -459,6 +466,13 @@ class RapportController extends Controller
                         foreach ($resultatstz as &$resultat) {
                             ajouterHistoriqueBulletin($resultat, $request->section_id, $exception);
                         }
+
+                        $resultats = HistoriqueBulletin::with('historique_notes')
+                            ->where('classe_annee_id', $request->classe)
+                            ->whereIn('apprenant_id', $apprenantIds)
+                            ->where('periode', Periode::find($request->periode)->libelle)
+                            ->where('statut', true)
+                            ->get();
                     }
                 }
             }
@@ -535,36 +549,38 @@ class RapportController extends Controller
                     }
                 } elseif ($request->tab == 'option-2') {
                     $exception = true;
+                    $apprenantsSelect = [];
+                    $apprenantIds = [];
+                    if ($request->apprenant != null) {
+                        $apprenantIds = is_array($request->apprenant) ? $request->apprenant : explode(',', $request->apprenant);
+                        $apprenantIds = array_map('trim', $apprenantIds);
+                        $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
+                    }
                     $apprenants = ClasseAnnee::with('apprenants')->find($request->classe)->apprenants()->get();
                     if ($request->session == 'Prémiere session') {
                         $session = null;
                     } else {
                         $session = true;
                     }
-                    if ($request->apprenant != null) {
-                        // Convertir la chaîne en tableau en utilisant la virgule comme délimiteur
-                        $apprenantIds = explode(',', $request->apprenant);
-                        // Supprimer les espaces autour de chaque ID
-                        $apprenantIds = array_map('trim', $apprenantIds);
-                        $apprenantsSelect = Apprenant::whereIn('id', $apprenantIds)->get();
-                        foreach ($apprenantIds as $apprenantId) {
-                            $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)->where('apprenant_id', $apprenantId)->where('periode', Periode::find($request->periode)->libelle)->get();
-                            if ($historiqueBulletincheck->isEmpty()) {
-                                $resultatstz = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect, $session);
-                                foreach ($resultatstz as $resultat) {
-                                    ajouterHistoriqueBulletin($resultat, $request->section_id);
-                                }
-                                return $resultatstz;
-                            } else {
-                                $resultats = HistoriqueBulletin::with('historique_notes')
-                                    ->where('classe_annee_id', $request->classe)
-                                    ->where('periode', Periode::where('id', $request->periode)->get()[0]->libelle)
-                                    ->where('statut', true)
-                                    ->whereIn('apprenant_id', $apprenantIds)
-                                    ->get();
-                                return $resultats;
+                    if (!empty($apprenantIds)) {
+                        $historiqueBulletincheck = HistoriqueBulletin::where('classe_annee_id', $request->classe)
+                            ->whereIn('apprenant_id', $apprenantIds)
+                            ->where('periode', Periode::find($request->periode)->libelle)
+                            ->get();
+
+                        if ($historiqueBulletincheck->isEmpty()) {
+                            $resultatstz = calculerResultatsClasseSuperieure($request->classe, $request->section_id, $etablissement_section, $request->periode, $apprenantsSelect, $session);
+                            foreach ($resultatstz as $resultat) {
+                                ajouterHistoriqueBulletin($resultat, $request->section_id);
                             }
                         }
+
+                        $resultats = HistoriqueBulletin::with('historique_notes')
+                            ->where('classe_annee_id', $request->classe)
+                            ->where('periode', Periode::find($request->periode)->libelle)
+                            ->where('statut', true)
+                            ->whereIn('apprenant_id', $apprenantIds)
+                            ->get();
                     }
                 }
             }

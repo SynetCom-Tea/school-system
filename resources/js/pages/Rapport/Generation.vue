@@ -120,14 +120,31 @@ export default {
     }),
     watch: {
         overlay(val) {
-            if (val) {
-                // Si overlay est vrai, attendre pour le masquer
-                setTimeout(() => {
-                    if (this.overlay) {
-                        // Si l'overlay est toujours affiché après 3 secondes, le masquer
-                        this.overlay = false;
-                    }
-                }, 3000);
+            // Suppression de l'ancien watcher qui masquait l'overlay après 3 secondes
+        },
+        tab(val) {
+            // Réinitialisation des champs de l'option 1
+            this.filiere = null;
+            this.classe = null;
+            this.periode = null;
+            this.session1 = null;
+
+            // Réinitialisation des champs de l'option 2
+            this.filiere2 = null;
+            this.classe2 = null;
+            this.periode2 = null;
+            this.session2 = null;
+            this.apprenant2 = null;
+
+            // Réinitialisation des données
+            this.data = [];
+            this.donnees = [];
+
+            // Réinitialisation des classes pour les sections 1 et 2
+            if (this.sectionID == 1 || this.sectionID == 2) {
+                this.classes = this.$page.props.classes;
+            } else {
+                this.classes = [];
             }
         },
         '$page.props.flash.message': {
@@ -178,15 +195,42 @@ export default {
                             tab: this.tab,
                             session: this.session1,
                             action: action
+                        },
+                        onStart: () => {
+                            this.overlay = true;
+                            this.data = []; // Vider la table au clic
+                        },
+                        onSuccess: (page) => {
+                            if (this.sectionID == 3) {
+                                this.setData(this.classe);
+                            }
+                            if (this.sectionID == 1) {
+                                this.setData(this.classe);
+                            }
+                            // Mettre à jour avec les résultats fraîchement reçus
+                            this.data = page.props.resultats;
+                        },
+                        onFinish: () => {
+                            this.overlay = false;
+                            if (action === 'generate') {
+                                this.$swal({
+                                    icon: 'success',
+                                    title: 'Génération terminée',
+                                    text: 'Les bulletins ont été générés avec succès.',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                });
+                            } else if (action === 'view') {
+                                this.$swal({
+                                    icon: 'info',
+                                    title: 'Affichage des données',
+                                    text: 'Les données pour la période sélectionnée sont maintenant affichées.',
+                                    timer: 3000,
+                                    timerProgressBar: true,
+                                });
+                            }
                         }
                     });
-                    if (this.sectionID == 3) {
-                        this.setData(this.classe);
-                    }
-                    if (this.sectionID == 1) {
-                        this.setData(this.classe);
-                    }
-                    this.data = this.resultats;
                 };
 
                 if (action === 'generate') {
@@ -209,7 +253,7 @@ export default {
                 }
 
             } else if (this.tab == 'option-2') {
-                console.log('section', this.sectionID, 'periode', this.periode2, 'classe ', this.classe2, 'tab', this.tab, 'apprenant', this.apprenant2);
+                // console.log('section', this.sectionID, 'periode', this.periode2, 'classe ', this.classe2, 'tab', this.tab, 'apprenant', this.apprenant2);
 
                 if (!this.classe2 || !this.periode2 || (this.sectionID == 3 && !this.session2)) {
                     this.$swal({
@@ -218,47 +262,34 @@ export default {
                         text: 'Veuillez remplir tous les champs obligatoires.',
                     });
                     return;
-                }this.$inertia.replace(this.$page.url, {
-                        data: {
-                             section_id: this.sectionID,
-                            classe: this.classe2,
-                            periode: this.periode2,
-                            tab: this.tab,
-                            apprenant: this.apprenant2,
-                            session: this.session2
-                        }
-                    });
-                // await axios
-                //     .get(
-                //         route('bulletinbyapprenant', {
-                //             section_id: this.sectionID,
-                //             classe: this.classe2,
-                //             periode: this.periode2,
-                //             tab: this.tab,
-                //             apprenant: this.apprenant2,
-                //             session: this.session2
-                //         })
-                //     )
-                //     .then(res => {
-                //         console.log(res.data)
-                //         this.donnees = res.data;
-                //     })
-                    // .catch(error => {
-                    //     console.error("Erreur lors de la récupération des bulletins:", error);
-                    //     this.$swal({
-                    //         icon: 'error',
-                    //         title: 'Erreur réseau',
-                    //         text: "Une erreur est survenue lors de la récupération des bulletins. Veuillez vérifier votre connexion ou réessayer plus tard.",
-                    //     });
-                    // });
-                    // .catch(error => {
-                    //     console.error(error.response);
-                    //     this.$swal({
-                    //         icon: 'error',
-                    //         title: 'Erreur',
-                    //         text: error.response?.data?.message || 'Erreur serveur'
-                    //     });
-                    // });
+                } this.$inertia.replace(this.$page.url, {
+                    data: {
+                        section_id: this.sectionID,
+                        classe: this.classe2,
+                        periode: this.periode2,
+                        tab: this.tab,
+                        apprenant: this.apprenant2,
+                        session: this.session2
+                    },
+                    onStart: () => {
+                        this.overlay = true;
+                        this.donnees = []; // Vider la table
+                    },
+                    onSuccess: (page) => {
+                        this.donnees = page.props.resultats;
+                    },
+                    onFinish: () => {
+                        this.overlay = false;
+                        this.$swal({
+                            icon: 'success',
+                            title: 'Génération terminée',
+                            text: 'Le bulletin de l\'apprenant a été généré avec succès.',
+                            timer: 3000,
+                            timerProgressBar: true,
+                        });
+                    }
+                });
+
             }
         },
         setData(classe) {
@@ -314,6 +345,9 @@ export default {
 </script>
 
 <template>
+    <v-overlay :model-value="overlay" class="align-center justify-center" persistent>
+        <v-progress-circular color="primary" indeterminate size="64"></v-progress-circular>
+    </v-overlay>
     <v-card>
         <Toolbar :icon="icons.mdiDatabaseSync" :toolbarTitle="`Génération des bulletins - Section ${section}`">
         </Toolbar>
@@ -369,9 +403,9 @@ export default {
                                             Générer
                                         </v-btn>
                                         <template v-else>
-                                            <v-btn class="mt-4" :append-icon="icons.mdiEye" color="info"
+                                            <v-btn class="mt-4" :append-icon="icons.mdiEye" color="warning"
                                                 @click="generate('view')" :disabled="!session1">
-                                                Voir
+                                                Consulter
                                             </v-btn>
                                         </template>
                                     </v-col>
@@ -394,9 +428,9 @@ export default {
                                             @click="generate('generate')" :disabled="!periode">
                                             Générer
                                         </v-btn>
-                                        <v-btn class="mx-4" :append-icon="icons.mdiEye" color="info"
+                                        <v-btn class="mx-4" :append-icon="icons.mdiEye" color="warning"
                                             @click="generate('view')" :disabled="!periode">
-                                            Voir
+                                            Consulter
                                         </v-btn>
                                     </v-col>
                                 </v-row>
@@ -407,11 +441,11 @@ export default {
                                     <template v-slot:item.actions="{ item }">
                                         <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
                                             target="__blank">
-                                            <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter"
+                                            <v-icon size="large" class="mx-3" title="Imprimer" :icon="icons.mdiPrinter"
                                                 color="info"></v-icon>
                                         </a>
-                                        <v-icon size="small" class="me-2" title="Detail"
-                                            @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                                        <v-icon size="large" class="mx-3" title="Detail"
+                                            @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="warning">
                                         </v-icon>
                                     </template>
                                 </Datatable>
@@ -422,11 +456,11 @@ export default {
                                     <template v-slot:item.actions="{ item }">
                                         <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
                                             target="__blank">
-                                            <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter"
+                                            <v-icon size="large" class="mx-3" title="Imprimer" :icon="icons.mdiPrinter"
                                                 color="info"></v-icon>
                                         </a>
-                                        <v-icon size="small" class="me-2" title="Detail"
-                                            @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                                        <v-icon size="large" class="mx-3" title="Detail"
+                                            @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="warning">
                                         </v-icon>
                                     </template>
                                 </Datatable>
@@ -436,11 +470,11 @@ export default {
                                     <template v-slot:item.actions="{ item }">
                                         <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
                                             target="__blank">
-                                            <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter"
+                                            <v-icon size="large" class="mx-3" title="Imprimer" :icon="icons.mdiPrinter"
                                                 color="info"></v-icon>
                                         </a>
-                                        <v-icon size="small" class="me-2" title="Detail"
-                                            @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
+                                        <v-icon size="large" class="mx-3" title="Detail"
+                                            @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="warning">
                                         </v-icon>
                                     </template>
                                 </Datatable>
@@ -451,25 +485,25 @@ export default {
                         <v-card flat>
                             <v-card-text>
                                 <v-row v-if="sectionID == 1 || sectionID == 2">
-                                    <v-col cols="4">
+                                    <v-col md="3">
                                         <autocomplete class="mt-4" v-model="periode2" label="Periodes"
                                             itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined"
                                             :isRequired="true" chips clearable>
                                         </autocomplete>
                                     </v-col>
-                                    <v-col md="4">
+                                    <v-col md="3">
                                         <autocomplete label="Classe" v-model="classe2" :items="classes"
                                             @update:modelValue="setClasse(classe2)" :disabled="!periode2" class="mt-4"
                                             isRequired item-title="libelle" item-value="id"></autocomplete>
                                     </v-col>
-                                    <v-col md="4">
+                                    <v-col md="3">
                                         <autocomplete :label="apprenant" v-model="apprenant2" :items="apprenants"
                                             :disabled="!classe2" chips class="mt-4" isRequired
                                             :item-title="item => `${item.nom} ${item.prenom}`" item-value="id">
                                         </autocomplete>
                                     </v-col>
-                                    <v-col md="4">
-                                        <v-btn class="mt-4" :append-icon="icons.mdiTimerSync"
+                                    <v-col md="3" class="d-flex align-center">
+                                        <v-btn class="my-4" :append-icon="icons.mdiTimerSync"
                                             color="deep-purple-accent-4" @click="generate" :disabled="!apprenant2">
                                             Générer
                                         </v-btn>
@@ -485,13 +519,13 @@ export default {
                                         <autocomplete label="Classe" v-model="classe2" :items="classes" class="mt-4"
                                             isRequired item-title="libelle" item-value="id"></autocomplete>
                                     </v-col>
-                                    <v-col cols="2">
+                                    <v-col md="2">
                                         <autocomplete class="mt-4" v-model="periode2" label="Periodes"
                                             itemTitle="libelle" itemValue="id" :items="periodes" variant="outlined"
                                             :isRequired="true" :disabled="!classe2" chips clearable>
                                         </autocomplete>
                                     </v-col>
-                                    <v-col cols="2">
+                                    <v-col md="2">
                                         <autocomplete class="mt-4" v-model="session2" label="Sessions"
                                             :items="['Prémiere session', 'Deuxiéme session']"
                                             @update:modelValue="setApprenant()" variant="outlined" :isRequired="true"
@@ -504,7 +538,7 @@ export default {
                                             item-title="matricule" item-value="id">
                                         </autocomplete>
                                     </v-col>
-                                    <v-col md="2">
+                                    <v-col md="2" class="d-flex align-center">
                                         <v-btn class="mt-4" :append-icon="icons.mdiTimerSync"
                                             color="deep-purple-accent-4" @click="generate" :disabled="!apprenant2">
                                             Générer
@@ -517,10 +551,10 @@ export default {
                                     <template v-slot:item.actions="{ item }">
                                         <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
                                             target="__blank">
-                                            <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter"
+                                            <v-icon size="small" class="mx-3" title="Imprimer" :icon="icons.mdiPrinter"
                                                 color="info"></v-icon>
                                         </a>
-                                        <v-icon size="small" class="me-2" title="Detail"
+                                        <v-icon size="small" class="mx-3" title="Detail"
                                             @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
                                         </v-icon>
                                     </template>
@@ -532,10 +566,10 @@ export default {
                                     <template v-slot:item.actions="{ item }">
                                         <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
                                             target="__blank">
-                                            <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter"
+                                            <v-icon size="small" class="mx-3" title="Imprimer" :icon="icons.mdiPrinter"
                                                 color="info"></v-icon>
                                         </a>
-                                        <v-icon size="small" class="me-2" title="Detail"
+                                        <v-icon size="small" class="mx-3" title="Detail"
                                             @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
                                         </v-icon>
                                     </template>
@@ -545,10 +579,10 @@ export default {
                                     <template v-slot:item.actions="{ item }">
                                         <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
                                             target="__blank">
-                                            <v-icon size="small" class="me-2" title="Imprimer" :icon="icons.mdiPrinter"
+                                            <v-icon size="small" class="mx-3" title="Imprimer" :icon="icons.mdiPrinter"
                                                 color="info"></v-icon>
                                         </a>
-                                        <v-icon size="small" class="me-2" title="Detail"
+                                        <v-icon size="small" class="mx-3" title="Detail"
                                             @click="openBulletinDialog(item)" :icon="icons.mdiEye" color="info">
                                         </v-icon>
                                     </template>

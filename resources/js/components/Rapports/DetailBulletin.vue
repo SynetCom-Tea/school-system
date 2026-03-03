@@ -1,232 +1,206 @@
 <template>
-    <v-dialog v-model="dialog" max-width="1200">
-        <v-card v-if="data != null && typeSection == 1">
-            <v-card-subtitle
-                class="mx-auto"
-                max-width="425"
-            >
-                <v-list lines="two">
-                <v-list-subheader>{{ 'Classe: ' + data.nom_classe }}</v-list-subheader>
+    <v-dialog v-model="dialog" max-width="1200" persistent>
+        <v-card v-if="data != null" class="rounded-lg elevation-4">
+            <!-- Header Premium -->
+            <v-toolbar color="deep-purple-accent-4" dark>
+                <v-toolbar-title class="text-h6 font-weight-bold">
+                    <v-icon :icon="icons.mdiAccountFileTextOutline" start></v-icon>
+                    Détails du Bulletin - {{ data.periode }}
+                </v-toolbar-title>
+                <v-spacer></v-spacer>
+                <v-btn icon @click="closeDialog">
+                    <v-icon :icon="icons.mdiClose"></v-icon>
+                </v-btn>
+            </v-toolbar>
 
-                <v-list-item
-                    :title="'Matricule: '+data.matricule_apprenant"
-                >
-                    <template v-slot:subtitle>
-                    <span class="font-weight-bold">{{ 'Nom & Prénom: ' +  data.matricule_apprenant + ' ' + data.nom_prenom_apprenant }}</span> &mdash; Moyenne: {{ data.moyenne_details_notes }}
-                    </template>
-                </v-list-item>
+            <v-card-text class="pa-6">
+                <!-- Zone Info Étudiant (Header de contenu) -->
+                <v-sheet border rounded class="pa-4 mb-6 bg-grey-lighten-4">
+                    <v-row align="center">
+                        <v-col cols="12" md="6">
+                            <div class="d-flex align-center mb-2">
+                                <v-avatar color="deep-purple-lighten-4" size="48" class="mr-4">
+                                    <v-icon color="deep-purple-accent-4" :icon="icons.mdiAccount" size="32"></v-icon>
+                                </v-avatar>
+                                <div>
+                                    <div class="text-overline mb-0 pb-0 text-grey-darken-1">Nom & Prénom</div>
+                                    <div class="text-h6 font-weight-bold text-deep-purple-accent-4">{{
+                                        data.nom_prenom_apprenant }}</div>
+                                </div>
+                            </div>
+                            <div class="d-flex align-center">
+                                <v-icon :icon="icons.mdiCardAccountDetails" size="18" color="grey"
+                                    class="mr-2"></v-icon>
+                                <span class="text-body-2 text-grey-darken-2">Matricule: <strong>{{
+                                    data.matricule_apprenant }}</strong></span>
+                            </div>
+                        </v-col>
 
-                <v-divider inset></v-divider>
-                </v-list>
-            </v-card-subtitle>
-            <v-card-text>
-                <v-table density="compact">
-                    <thead>
-                    <tr>
-                        <th class="text-left">
-                        Matière
-                        </th>
-                        <th class="text-left">
-                        Notation
-                        </th>
-                        <th class="text-left">
-                        Note
-                        </th>
-                    </tr>
+                        <v-col cols="12" md="6">
+                            <v-row no-gutters>
+                                <v-col cols="6">
+                                    <div class="d-flex align-center mb-2">
+                                        <v-icon :icon="icons.mdiSchool" color="deep-purple-accent-4"
+                                            class="mr-2"></v-icon>
+                                        <div>
+                                            <div class="text-caption text-grey">Classe</div>
+                                            <div class="text-body-1 font-weight-medium">{{ data.nom_classe }}</div>
+                                        </div>
+                                    </div>
+                                </v-col>
+                                <v-col cols="6">
+                                    <div class="d-flex align-center mb-2">
+                                        <v-icon :icon="icons.mdiChartBar" color="deep-purple-accent-4"
+                                            class="mr-2"></v-icon>
+                                        <div>
+                                            <div class="text-caption text-grey">Moyenne</div>
+                                            <div class="text-body-1 font-weight-bold">{{ data.moyenne_details_notes }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </v-col>
+                                <v-col cols="12">
+                                    <div class="d-flex align-center">
+                                        <v-icon :icon="icons.mdiFormatListNumbered" color="deep-purple-accent-4"
+                                            class="mr-2"></v-icon>
+                                        <div>
+                                            <span class="text-caption text-grey">Rang: </span>
+                                            <span class="text-body-1 font-weight-medium">{{ data.rang || 'N/A' }}</span>
+                                        </div>
+                                    </div>
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                    </v-row>
+                </v-sheet>
+
+                <!-- Tables de notes -->
+                <!-- Primaire (1) -->
+                <v-table density="comfortable" v-if="typeSection == 1" class="border rounded">
+                    <thead class="bg-grey-lighten-3">
+                        <tr>
+                            <th class="text-left font-weight-bold">Matière</th>
+                            <th class="text-center font-weight-bold">Notation</th>
+                            <th class="text-center font-weight-bold">Note</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr
-                        v-for="item in data.historique_notes"
-                        :key="item.nom_matiere"
-                    >
-                        <td>{{ item.nom_matiere }}</td>
-                        <td>{{ item.notation_matiere }}</td>
-                        <td>{{ item.note }}</td>
-                    </tr>
+                        <tr v-for="item in data.historique_notes" :key="item.nom_matiere">
+                            <td>{{ item.nom_matiere }}</td>
+                            <td class="text-center">{{ item.notation_matiere }}</td>
+                            <td class="text-center font-weight-bold">{{ item.note }}</td>
+                        </tr>
                     </tbody>
                 </v-table>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="blue darken-1" text @click="closeDialog">Fermer</v-btn>
-            </v-card-actions>
-        </v-card>
-        <v-card v-if="data != null && (typeSection == 2 || typeSection == 3)">
-            <v-card-subtitle
-                v-if="typeSection == 2 || typeSection == 3"
-                class="mx-auto"
-                max-width="425"
-            >
-                <v-list lines="two">
-                <v-list-subheader>{{data.periode +' ' +  'Classe: ' + data.nom_classe }}</v-list-subheader>
 
-                <v-list-item
-                    :title="'Matricule: '+data.matricule_apprenant"
-                >
-                    <template v-slot:subtitle>
-                    <span class="font-weight-bold">{{ 'Nom & Prénom: ' +  data.nom_prenom_apprenant }}</span> &mdash; Moyenne: {{ data.moyenne_details_notes }} - Rang {{ data.rang }}
-                    </template>
-                </v-list-item>
-
-                <v-divider inset></v-divider>
-                </v-list>
-            </v-card-subtitle>
-            <v-card-text>
-                <v-table density="compact" v-if="typeSection == 2">
-                    <thead>
-                    <tr>
-                        <th class="text-left">
-                        Matière
-                        </th>
-                        <th class="text-left">
-                        Coefficient
-                        </th>
-                        <th class="text-left">
-                        Note de classe
-                        </th>
-                        <th class="text-left">
-                        Note de classe coefficienté
-                        </th>
-                        <th class="text-left">
-                        Note de composition
-                        </th>
-                        <th class="text-left">
-                        Note de composition coefficienté
-                        </th>
-                        <th class="text-left">
-                            Moyenne
-                        </th>
-                    </tr>
+                <!-- Secondaire (2) -->
+                <v-table density="comfortable" v-if="typeSection == 2" class="border rounded">
+                    <thead class="bg-grey-lighten-3">
+                        <tr>
+                            <th class="text-left font-weight-bold">Matière</th>
+                            <th class="text-center font-weight-bold">Coeff.</th>
+                            <th class="text-center font-weight-bold">Note Classe</th>
+                            <th class="text-center font-weight-bold">Note Classe Coeff.</th>
+                            <th class="text-center font-weight-bold">Note Comp.</th>
+                            <th class="text-center font-weight-bold">Note Comp. Coeff.</th>
+                            <th class="text-center font-weight-bold">Moyenne</th>
+                        </tr>
                     </thead>
                     <tbody>
-                    <tr
-                        v-for="item in data.details_notes"
-                        :key="item.nom_matiere"
-                    >
-                        <td>{{ item.nom_matiere }}</td>
-                        <td>{{ item.coefficient }}</td>
-                        <td>{{ item.note_de_classe }}</td>
-                        <td>{{ item.note_de_classe_coefficiente }}</td>
-                        <td>{{ item.note_de_composition }}</td>
-                        <td>{{ item.note_de_composition_coefficiente }}</td>
-                        <td>{{ item.moyenne }}</td>
-                    </tr>
+                        <tr v-for="item in data.historique_notes" :key="item.nom_matiere">
+                            <td>{{ item.nom_matiere }}</td>
+                            <td class="text-center">{{ item.coefficient }}</td>
+                            <td class="text-center">{{ item.note_de_classe }}</td>
+                            <td class="text-center">{{ item.note_de_classe_coefficiente }}</td>
+                            <td class="text-center">{{ item.note_de_composition }}</td>
+                            <td class="text-center">{{ item.note_de_composition_coefficiente }}</td>
+                            <td class="text-center font-weight-bold">{{ item.moyenne }}</td>
+                        </tr>
                     </tbody>
                 </v-table>
-                <v-table density="compact" v-if="typeSection == 4">
-                    <thead>
-                    <tr>
-                        <th class="text-left">
-                        Matière
-                        </th>
-                        <th class="text-left">
-                        UE
-                        </th>
-                        <th class="text-left">
-                        Coefficient
-                        </th>
-                        <th class="text-left">
-                        Volume Horaire
-                        </th>
-                        <th class="text-left">
-                            Note de devoir
-                        </th>
-                        <th class="text-left">
-                            Note d'examen
-                        </th>
-                        <th class="text-left">
-                        Note
-                        </th>
-                        <th class="text-left">
-                        Note coefficienté
-                        </th>
-                    </tr>
-                    </thead>
-                    <tbody>
-                    <tr
-                        v-for="item in data.historique_notes"
-                        :key="item.nom_matiere"
-                    >
-                        <td>{{ item.nom_matiere }}</td>
-                        <td>{{ item.nom_eu }}</td>
-                        <td>{{ item.coefficient }}</td>
-                        <td>{{ item.volume_horaire_matiere }}</td>
-                        <td>{{ item.note_origine_devoir }}</td>
-                        <td>{{ item.note_origine_examen }}</td>
-                        <td>{{ item.note_generale }}</td>
-                        <td>{{ item.note_generale_coefficiente }}</td>
-                    </tr>
-                    </tbody>
-                </v-table>
-                <v-data-table
-                    v-if="typeSection == 3"
-                    :headers="headers"
-                    :items="data.historique_notes"
-                    :group-by="groupBy"
-                    item-value="name"
-                >
+
+                <!-- Supérieur (3) -->
+                <v-data-table v-if="typeSection == 3" :headers="headers" :items="data.historique_notes"
+                    :group-by="groupBy" item-value="name" class="border rounded" density="comfortable">
                     <template v-slot:group-header="{ item, columns, toggleGroup, isGroupOpen }">
-                    <tr>
-                        <td :colspan="columns.length">
-                        <VBtn
-                            size="small"
-                            variant="text"
-                            :icon="isGroupOpen(item) ? '$expand' : '$next'"
-                            @click="toggleGroup(item)"
-                        ></VBtn>
-                        {{ item.value }}
-                        </td>
-                    </tr>
+                        <tr class="bg-deep-purple-lighten-5">
+                            <td :colspan="columns.length">
+                                <v-btn size="small" variant="text" :icon="isGroupOpen(item) ? '$expand' : '$next'"
+                                    @click="toggleGroup(item)"></v-btn>
+                                <span class="font-weight-bold text-deep-purple-darken-2">UE: {{ item.value }}</span>
+                            </td>
+                        </tr>
                     </template>
                 </v-data-table>
             </v-card-text>
-            <v-card-actions>
-                <v-btn color="blue darken-1" text @click="closeDialog">Fermer</v-btn>
+
+            <v-divider></v-divider>
+            <v-card-actions class="pa-4 bg-grey-lighten-4">
+                <v-spacer></v-spacer>
+                <v-btn color="deep-purple-accent-4" variant="elevated" @click="closeDialog"
+                    :prepend-icon="icons.mdiClose">
+                    Fermer
+                </v-btn>
             </v-card-actions>
         </v-card>
     </v-dialog>
 </template>
 
 <script>
-  export default {
+import {
+    mdiAccount,
+    mdiSchool,
+    mdiCardAccountDetails,
+    mdiChartBar,
+    mdiFormatListNumbered,
+    mdiAccountFileTextOutline,
+    mdiClose
+} from "@mdi/js";
+
+export default {
     props: {
-      data: {
-        type: Object,
-        required: true
-      },
-      typeSection: {
-        type: null,
-        required: true
-      }
+        data: {
+            type: Object,
+            required: true
+        },
+        typeSection: {
+            type: null,
+            required: true
+        }
     },
     data() {
-      return {
-        dialog: false,
-        groupBy: [
-          {
-            key: 'nom_eu',
-            order: 'asc',
-          },
-        ],
-        headers: [
-          {
-            title: 'Matière',
-            align: 'start',
-            sortable: false,
-            key: 'nom_matiere',
-          },
-          { title: 'Coefficient', key: 'coefficient' },
-          { title: 'Volume Horaire', key: 'volume_horaire_matiere' },
-          { title: 'Note de devoir', key: 'note_origine_devoir' },
-          { title: 'Note d\'examen', key: 'note_origine_examen' },
-          { title: 'Moyenne', key: 'note_generale' },
-          { title: 'Moyenne coefficienté', key: 'note_generale_coefficiente' },
-        ],
-      };
+        return {
+            dialog: false,
+            icons: {
+                mdiAccount,
+                mdiSchool,
+                mdiCardAccountDetails,
+                mdiChartBar,
+                mdiFormatListNumbered,
+                mdiAccountFileTextOutline,
+                mdiClose
+            },
+            groupBy: [
+                {
+                    key: 'nom_eu',
+                    order: 'asc',
+                },
+            ],
+            headers: [
+                { title: 'Matière', align: 'start', sortable: false, key: 'nom_matiere' },
+                { title: 'Coefficient', align: 'center', key: 'coefficient' },
+                { title: 'Vol. Hor.', align: 'center', key: 'volume_horaire_matiere' },
+                { title: 'Note Devoir', align: 'center', key: 'note_origine_devoir' },
+                { title: 'Note Examen', align: 'center', key: 'note_origine_examen' },
+                { title: 'Moyenne', align: 'center', key: 'note_generale' },
+                { title: 'Moyenne Coeff.', align: 'center', key: 'note_generale_coefficiente' },
+            ],
+        };
     },
     methods: {
         closeDialog() {
             this.$emit('close');
         }
     }
-  };
-  </script>
+};
+</script>

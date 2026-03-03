@@ -150,7 +150,7 @@ class NoteController extends Controller
         // dd($evaluations);
         $apps = $request->evaluation ? Note::whereHas('apprenant.apprenant_classe_annees.classe_annee', function ($classeAnne) use ($request) {
             $classeAnne->where('classe_id', $request->classe);
-        })->where('evaluation_id', $request->evaluation)->get()->pluck('apprenant_id') : collect();
+        })->where('evaluation_id', $request->evaluation)->where('statut', 1)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
         $eleves = $request->evaluation ? ApprenantClasseAnnee::whereHas('classe_annee', function ($query) use ($request, $annee) {
             $query->where('classe_id', $request->classe)->where('annee_id', $annee);
@@ -245,7 +245,7 @@ class NoteController extends Controller
             if ($value != null) {
                 $item = ApprenantClasseAnnee::where('id', $key)->with('apprenant')->get();
                 // dump($item[0]);
-                $verif = Note::where('evaluation_id', $request->evaluation ? $request->evaluation : $evaluation_id)->where('apprenant_id', $item[0]->apprenant->id)->get();
+                $verif = Note::where('evaluation_id', $request->evaluation ? $request->evaluation : $evaluation_id)->where('apprenant_id', $item[0]->apprenant->id)->where('statut', 1)->get();
                 // dump($verif);
                 if ($verif->count() == 0) {
                     $note = Note::create([
@@ -302,7 +302,11 @@ class NoteController extends Controller
     public function destroy($id)
     {
         $note = Note::find($id);
-        $note->delete();
+        $note->update([
+            'statut' => 0,
+            'user_id' => Auth::user()->id
+            ]);
+            $note->delete();
         return redirect()->back()->with('message', [
             'type' => 'success',
             'text' => 'Note supprimer avec success!',
@@ -478,7 +482,7 @@ class NoteController extends Controller
         $eleves = collect();
         $apps = $request->evaluation ? Note::whereHas('apprenant.apprenant_classe_annees.classe_annee', function ($classeAnne) use ($request) {
             $classeAnne->where('classe_id', $request->classe);
-        })->where('evaluation_id', $request->evaluation)->get()->pluck('apprenant_id') : collect();
+        })->where('evaluation_id', $request->evaluation)->where('statut', 1)->get()->pluck('apprenant_id') : collect();
         // dd($apps);
         if ($request->evaluation) {
             if ($request->section_id >= 3) {
