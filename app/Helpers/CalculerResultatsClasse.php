@@ -60,20 +60,15 @@ if (!function_exists('calculerResultatsClasse')) {
         $resultatsClasse = array_values($resultatsClasse);
 
         foreach ($resultatsClasse as &$resultat) {
-            $totalMoyenne = 0;
-
-            foreach ($resultat['details_notes'] as $details) {
-                $totalMoyenne += $details['moyenne'];
-            }
-
-            $resultat['moyenne_details_notes'] = count($resultat['details_notes']) > 0 ? number_format($totalMoyenne / count($resultat['details_notes']), 2) : 0;
+            
+            $resultat['moyenne_details_notes'] = calculateMoyenneGeneralSecondaire($resultat['details_notes']);
         }
-        
+        // dd('resultatsClasse avant tri', $resultatsClasse);
         // Trier par moyenne décroissante
         usort($resultatsClasse, function ($a, $b) {
             return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
         });
-
+        // dd($resultatsClasse);
         // Récupérer toutes les moyennes des élèves
         $moyennesClasse = array_column($resultatsClasse, 'moyenne_details_notes');
 

@@ -33,9 +33,9 @@
             $noteDeClasseCoefficiente = $noteDeClasse * $coefficient;
             $noteDeCompositionCoefficiente = $noteDeComposition * $coefficient;
 
-            $moyenne = ($noteDeClasse + $noteDeComposition) / 2;
-            $moyenneCoefficiente = ($noteDeClasseCoefficiente + $noteDeCompositionCoefficiente) / 2;
-            
+            $moyenne = round(($noteDeClasse + $noteDeComposition) / 2, 2);
+            // $moyenneCoefficiente = ($noteDeClasseCoefficiente + $noteDeCompositionCoefficiente) / 2;
+            $moyenneCoefficiente = $moyenne * $coefficient;
             $details_notes[] = [
                 'nom_matiere' => $matiere,
                 'type_matiere' => $compositionNotes->first() ? $compositionNotes->first()->type_matiere : $notes->first()->type_matiere,
@@ -72,13 +72,16 @@
 if (!function_exists('calculateMoyenneGeneralSecondaire')) {
     function calculateMoyenneGeneralSecondaire($detailsNotes) {
         $totalMoyenne = 0;
+        $totalCoefficient = 0;
         foreach ($detailsNotes as $details) {
-            $totalMoyenne += $details['moyenne'];
+            $totalMoyenne += $details['moyenne'] * $details['coefficient'];
+            $totalCoefficient += $details['coefficient'];
         }
-        $averageMoyenneDetailsNotes = count($detailsNotes) > 0 ? number_format($totalMoyenne / count($detailsNotes), 2) : 0;
+        $averageMoyenneDetailsNotes = $totalCoefficient > 0 ? number_format($totalMoyenne / $totalCoefficient, 2) : 0;
+        
         return $averageMoyenneDetailsNotes;
     }
-}
+}   
 
 if (!function_exists('ordinalSuffix')) {
     function ordinalSuffix($num) {

@@ -70,12 +70,12 @@ class NoteController extends Controller
         $evaluations = $request->classe ? $ev->map(
             function ($value) use ($section_id) {
                 if ($section_id <= 2) {
-                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom;
+                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom . ' - ' . $value->periode->libelle;
                 } else if ($section_id >= 3) {
                     if ($value->session != null) {
-                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->session;
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->periode->libelle . ' - ' . $value->session;
                     } else {
-                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom;
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->periode->libelle;
                     }
                 }
                 return [
@@ -133,12 +133,12 @@ class NoteController extends Controller
         $evaluations = $request->classe ? $ev->map(
             function ($value) use ($section_id) {
                 if ($section_id <= 2) {
-                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom;
+                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom . ' - ' . $value->periode->libelle;
                 } else if ($section_id >= 3) {
                     if ($value->session != null) {
-                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->session;
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->periode->libelle . ' - ' . $value->session;
                     } else {
-                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom;
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->periode->libelle;
                     }
                 }
                 return [
@@ -459,14 +459,14 @@ class NoteController extends Controller
         $evaluations = $request->classe ?  $ev->map(
             function ($value) use ($section_id) {
                 if ($section_id <= 2) {
-                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom;
+                    $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->niveau_matiere->matiere->nom . ' - ' . $value->periode->libelle;
                     $notation_niveau_matiere = $value->enseignement_annee->niveau_matiere->notation;
                 } else if ($section_id >= 3) {
                     $notation_niveau_matiere = null;
                     if ($value->session != null) {
-                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->session . ' du '  . $value->periode->libelle;
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->session . ' - '  . $value->periode->libelle;
                     } else {
-                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' du ' . $value->periode->libelle;
+                        $code = $value->type_evaluation->libelle . ' - ' . $value->enseignement_annee->filiere_niveau_matiere_ue->matiere->nom . ' - ' . $value->periode->libelle;
                     }
                 }
                 return [
