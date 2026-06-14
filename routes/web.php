@@ -7,6 +7,7 @@ use App\Http\Controllers\EtablissementController;
 use App\Http\Controllers\MatiereController;
 use App\Http\Controllers\AffectationController;
 use App\Http\Controllers\CalendrierscolaireController;
+use App\Http\Controllers\ConduiteController;
 use App\Http\Controllers\MenuGestionController;
 use App\Http\Controllers\RapportController;
 use Modules\GestionNote\Http\Controllers\NoteController;
@@ -87,6 +88,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('salles', SalleController::class);
     Route::get('getbulletinbyapprenant/{section_id}/{classe}/{periode}/{tab}/{apprenant}', [RapportController::class, 'create'])->name('bulletinbyapprenant');
     Route::get('getdata/{section_id}/{classe}/{periode}/{type_evaluation}', [RapportController::class, 'index'])->name('rapportdata');
+    Route::get('conduites', [ConduiteController::class, 'index'])->name('conduites.index');
+    Route::post('conduites', [ConduiteController::class, 'store'])->name('conduites.store');
 });
 
 Route::resource('etudiants', EtudiantsController::class);

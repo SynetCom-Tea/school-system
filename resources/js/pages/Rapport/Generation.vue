@@ -455,9 +455,6 @@ export default {
                                     :displayAddButton="classe ? true : false">
                                     <template v-slot:item.actions="{ item }">
                                         <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
-                                            target="__blank">Modifier la conduite
-                                        </a>
-                                        <a :href="route('bulletin', { type: 0, id: item.id, section: sectionID })"
                                             target="__blank">
                                             <v-icon size="large" class="mx-3" title="Imprimer" :icon="icons.mdiPrinter"
                                                 color="info"></v-icon>

@@ -8,6 +8,8 @@
  */
 
 
+use App\Models\Conduite;
+
  if (!function_exists('calculerMoyenneSecondaire')) {
     function calculerMoyenneSecondaire($classeID, $section, $periode, $apprenantID) {
         $notes_apprenant = getNoteByClasses($classeID, $section, $periode, $apprenantID);
@@ -50,16 +52,21 @@
             ];
         }
         if(count($details_notes) != 0){
+            $noteConduite = Conduite::where('classe_annee_id', $classeID)
+                ->where('periode_id', $periode)
+                ->where('apprenant_id', $apprenantID)
+                ->value('note');
+
             $details_notes[] = [
                 'nom_matiere' => 'Conduite',
                 'type_matiere' => 'Autre',
                 'coefficient' => 1,
-                'note_de_classe' => 18,
-                'note_de_classe_coefficiente' => 18,
-                'note_de_composition' => 18,
-                'note_de_composition_coefficiente' => 18,
-                'moyenne' => 18,
-                'moyenne_coefficiente' => 18
+                'note_de_classe' => $noteConduite,
+                'note_de_classe_coefficiente' => $noteConduite,
+                'note_de_composition' => $noteConduite,
+                'note_de_composition_coefficiente' => $noteConduite,
+                'moyenne' => $noteConduite,
+                'moyenne_coefficiente' => $noteConduite
             ];
         }
         // dd('details_notes', $details_notes);
