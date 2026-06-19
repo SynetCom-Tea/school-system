@@ -206,11 +206,11 @@
                                                 @elseif (($line->moyenne >= 16 ) and ($line->moyenne <= 19 ))
                                                     TRES BIEN
                                                     @elseif (($line->moyenne > 19 ) and ($line->moyenne <= 20))
-                                                    EXCELLENT
-                                                    @else
-                                                    Pas defini
-                                                    @endif
-                    </td>
+                                                        EXCELLENT
+                                                        @else
+                                                        Pas defini
+                                                        @endif
+                                                        </td>
                 </tr>
                 @endforeach
                 <tr class="bold">
@@ -264,6 +264,55 @@
         </table>
 
         <br>
+        <!-- RÉSULTATS ANNUELS -->
+        @php
+        $bulletinSemestre1 = $bulletin_semestre1 ?? null;
+        $moyenneSemestre1 = $bulletin->moyenne_semestre_1 ?? $bulletinSemestre1?->moyenne_details_notes ?? '';
+        $rangSemestre1 = $bulletin->rang_semestre_1 ?? $bulletinSemestre1?->rang ?? '';
+        $moyenneSemestre2 = $bulletin->moyenne_semestre_2 ?? $bulletin->moyenne_details_notes ?? '';
+        $rangSemestre2 = $bulletin->rang_semestre_2 ?? $bulletin->rang ?? '';
+        @endphp
+
+        @if($bulletin->moyenne_annuelle !== null)
+
+        <h1 class="titre">RÉSULTATS ANNUELS</h1>
+        <table>
+            <tr class="section-title">
+                <th style="padding: 5px;" class="center" colspan="2">Semestre I</th>
+                <th style="padding: 5px;" class="center" colspan="2">Semestre II</th>
+                <th style="padding: 5px;" class="center" colspan="2">Annuelle</th>
+                <th>Plus faible moyenne de la classe</th>
+                <th>Plus forte moyenne de la classe</th>
+            </tr>
+            <tr>
+                <th>Moy</th>
+                <th>Rang</th>
+                <th>Moy</th>
+                <th>Rang</th>
+                <th>Moy</th>
+                <th>Rang</th>
+                <th rowspan="2">{{ $bulletin->plus_faible_moyenne_annuelle }}</th>
+                <th rowspan="2">{{ $bulletin->plus_forte_moyenne_annuelle }}</th>
+                
+            </tr>
+            <tr class="center">
+                <td>{{ $moyenneSemestre1 }}</td>
+                <td>{{ $rangSemestre1 }}</td>
+                <td>{{ $moyenneSemestre2 }}</td>
+                <td>{{ $rangSemestre2 }}</td>
+                <td><b>{{ $bulletin->moyenne_annuelle }}</b></td>
+                <td><b>{{ $bulletin->rang_annuel }}</b></td>
+                
+            </tr>
+
+            <tr>
+                <td colspan="8" class="center">
+                    <b>{{ strtoupper(moyenneEnLettre($bulletin->moyenne_annuelle)) }}</b>
+                </td>
+            </tr>
+        </table>
+        <br>
+        @endif
 
         <!-- ABSENCES ET RETARDS -->
         <table>

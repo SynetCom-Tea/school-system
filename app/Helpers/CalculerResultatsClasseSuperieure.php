@@ -128,6 +128,22 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             'moyenne_scientifique' => $moyenne_scientifique,
             'moyenne_autres_matieres' => $moyenne_autre,
         ];
+
+        foreach ([
+            'moyenne_annuelle',
+            'rang_annuel',
+            'plus_forte_moyenne_annuelle',
+            'plus_faible_moyenne_annuelle',
+            'moyenne_semestre_1',
+            'moyenne_semestre_2',
+            'rang_semestre_1',
+            'rang_semestre_2',
+        ] as $champResultat) {
+            if (array_key_exists($champResultat, $resultat)) {
+                $commonFields[$champResultat] = $resultat[$champResultat];
+            }
+        }
+
         if ($exception == null) {
             $commonFields += [
                 'rang' => $resultat['rang']
@@ -301,7 +317,24 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
                     ->first();
                 if ($checkhistorique != null) {
                     $communs = array_intersect_assoc($checkhistorique->toArray(), $resultat);
-                    if (empty(array_diff(['apprenant_id', 'classe_annee_id', 'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe', 'moyenne_details_notes'], array_keys($communs)))) {
+                    $champsAComparer = ['apprenant_id', 'classe_annee_id', 'periode', 'matricule_apprenant', 'nom_prenom_apprenant', 'nom_classe', 'moyenne_details_notes'];
+
+                    foreach ([
+                        'moyenne_annuelle',
+                        'rang_annuel',
+                        'plus_forte_moyenne_annuelle',
+                        'plus_faible_moyenne_annuelle',
+                        'moyenne_semestre_1',
+                        'moyenne_semestre_2',
+                        'rang_semestre_1',
+                        'rang_semestre_2',
+                    ] as $champResultat) {
+                        if (array_key_exists($champResultat, $resultat)) {
+                            $champsAComparer[] = $champResultat;
+                        }
+                    }
+
+                    if (empty(array_diff($champsAComparer, array_keys($communs)))) {
                         return;
                     } else {
                         $detailsNotes = $resultat['details_notes'] ?? [];

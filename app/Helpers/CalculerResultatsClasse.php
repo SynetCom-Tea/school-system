@@ -18,16 +18,25 @@ if (!function_exists('calculerResultatsClasse')) {
     {
         $resultatsClasse = [];
         $annee = Annee::where('actif', 1)->first();
-        $classe = getClasses($annee->id, $etablissement_section, $classeId)->firstOrFail();
+        $classe = getClasses($annee->id, $etablissement_section, $classeId)->first();
+
+        if ($classe) {
+            $classeAnneeId = $classe->classe_annee_id;
+        } else {
+            $classeAnnee = ClasseAnnee::with('classe')->findOrFail($classeId);
+            $classeAnneeId = $classeAnnee->id;
+            $classe = getClasses($annee->id, $etablissement_section, $classeAnnee->classe_id)->firstOrFail();
+        }
+
         if ($apprenants != null) {
             $apprenantsDeLaClasse = $apprenants;
             // dd($apprenants);
         } else {
-            $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeId)->apprenants;
+            $apprenantsDeLaClasse = ClasseAnnee::with('apprenants')->find($classeAnneeId)->apprenants;
         }
         // dd($apprenantsDeLaClasse);
         foreach ($apprenantsDeLaClasse as $apprenant) {
-            $details_notes = calculerMoyenneSecondaire($classeId, $section, $periode, $apprenant->id);
+            $details_notes = calculerMoyenneSecondaire($classeAnneeId, $section, $periode, $apprenant->id);
             if (empty($details_notes)) {
                 break; // Exit the function if $details_notes is empty
             }
@@ -35,7 +44,7 @@ if (!function_exists('calculerResultatsClasse')) {
             
             
             $resultatsClasse[$apprenant->id] = [
-                'classe_annee_id' => $classeId,
+                'classe_annee_id' => $classeAnneeId,
                 'periode' => $details_notes[0]['periodes'],
                 'nom_classe' => $classe->code,
                 'apprenant_id' => $apprenant->id,
@@ -109,6 +118,9 @@ if (!function_exists('calculerResultatsClasse')) {
         }
 
         // dd('resultatsClasse final', $resultatsClasse);
+
+        // Calculate annual results if it's Semestre II
+        $resultatsClasse = calculerResultatsAnnuels($resultatsClasse, $classeAnneeId, $resultatsClasse[0]['periode'] ?? '');
 
         return $resultatsClasse;
     }

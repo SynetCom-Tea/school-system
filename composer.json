@@ -50,6 +50,7 @@
             "app/Helpers/CalculerResultatsClasse.php",
             "app/Helpers/CalculerResultatsClasseSuperieure.php",
             "app/Helpers/CalculerMoyenneSuperierure.php",
+            "app/Helpers/CalculerResultatsAnnuels.php",
             "app/Helpers/CreationCompte.php"
         ]
     },

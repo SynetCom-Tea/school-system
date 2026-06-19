@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignIdFor(Apprenant::class)->constrained()->cascadeOnDelete();
             $table->foreignIdFor(ClasseAnnee::class)->constrained('classe_annees')->cascadeOnDelete();
             $table->foreignIdFor(Periode::class)->constrained('periodes')->cascadeOnDelete();
-            $table->decimal('note', 5, 2)->default(18);
+            $table->decimal('note', 4, 2)->default(18.00);
             $table->foreignIdFor(User::class)->nullable()->constrained()->nullOnDelete();
             $table->timestamps();
             $table->unique(['apprenant_id', 'classe_annee_id', 'periode_id'], 'conduites_unique_apprenant_classe_periode');

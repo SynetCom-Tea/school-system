@@ -62,13 +62,21 @@ class RapportController extends Controller
 
                 $pdf = PDF::loadView('primaire/bulletin', $data)->setPaper('A4', 'landscape');
             } elseif ($request->section == '2') {
-
                 $bulletin = $request->id ? HistoriqueBulletin::where('id', $request->id)->with('classe_annee.annee', 'classe_annee.classe.niveau')->first() : null;
                 $detail = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id', $bulletin->id)->get() : [];
-                // dd($bulletin,$detail);
+                $bulletinSemestre1 = $bulletin ? HistoriqueBulletin::where('statut', 1)
+                    ->where('classe_annee_id', $bulletin->classe_annee_id)
+                    ->where('apprenant_id', $bulletin->apprenant_id)
+                    ->where(function ($query) {
+                        $query->where('periode', 'like', '%Semestre I%');
+                    })
+                    ->latest()
+                    ->first() : null;
+
                 $data = [
                     'etablissement' => $etab,
                     'bulletin' => $bulletin,
+                    'bulletin_semestre1' => $bulletinSemestre1,
                     'detail' => $detail,
                     'section' => $request->section,
                     'title' => 'Bulletin Semestriel',
@@ -135,9 +143,19 @@ class RapportController extends Controller
 
                 foreach ($bulletins as $key => $bulletin) {
                     $details = !is_null($bulletin) ? HistoriqueNote::where('historique_bulletin_id', $bulletin->id)->get() : [];
+                    $bulletinSemestre1 = HistoriqueBulletin::where('statut', 1)
+                        ->where('classe_annee_id', $bulletin->classe_annee_id)
+                        ->where('apprenant_id', $bulletin->apprenant_id)
+                        ->where(function ($query) {
+                            $query->where('periode', 'like', '%Semestre I%');
+                        })
+                        ->latest()
+                        ->first();
+
                     $tabs[$bulletin->apprenant_id] = [
                         'classe' => $bulletin->classe_annee->classe,
                         'bulletin' => $bulletin,
+                        'bulletin_semestre1' => $bulletinSemestre1,
                         'detail' => $details,
                     ];
                 }

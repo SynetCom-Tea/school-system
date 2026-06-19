@@ -12,10 +12,14 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('historique_bulletins', function (Blueprint $table) {
-            $table->decimal('moyenne_annuelle', 5, 2)->nullable();
-            $table->multiLineString('rang_annuel')->nullable();
-            $table->decimal('plus_forte_moyenne_annuelle', 5, 2)->nullable();
-            $table->decimal('plus_faible_moyenne_annuelle', 5, 2)->nullable();
+            $table->decimal('moyenne_annuelle', 4, 2)->nullable();
+            $table->decimal('plus_forte_moyenne_annuelle', 4, 2)->nullable();
+            $table->decimal('plus_faible_moyenne_annuelle', 4, 2)->nullable();
+            $table->decimal('moyenne_semestre_1', 4, 2)->nullable();
+            $table->decimal('moyenne_semestre_2', 4, 2)->nullable();
+            $table->string('rang_semestre_1')->nullable();
+            $table->string('rang_semestre_2')->nullable();
+            $table->string('rang_annuel')->nullable();
         });
     }
 
@@ -29,6 +33,10 @@ return new class extends Migration
             $table->dropColumn('rang_annuel');
             $table->dropColumn('plus_forte_moyenne_annuelle');
             $table->dropColumn('plus_faible_moyenne_annuelle');
+            $table->dropColumn('moyenne_semestre_1');
+            $table->dropColumn('moyenne_semestre_2');
+            $table->dropColumn('rang_semestre_1');
+            $table->dropColumn('rang_semestre_2');
         });
     }
 };

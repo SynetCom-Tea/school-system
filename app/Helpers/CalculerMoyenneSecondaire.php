@@ -9,6 +9,7 @@
 
 
 use App\Models\Conduite;
+use Illuminate\Support\Facades\Schema;
 
  if (!function_exists('calculerMoyenneSecondaire')) {
     function calculerMoyenneSecondaire($classeID, $section, $periode, $apprenantID) {
@@ -52,14 +53,21 @@ use App\Models\Conduite;
             ];
         }
         if(count($details_notes) != 0){
-            $noteConduite = Conduite::where('classe_annee_id', $classeID)
-                ->where('periode_id', $periode)
-                ->where('apprenant_id', $apprenantID)
-                ->value('note');
+            $noteConduite = 18;
 
+            if (Schema::hasTable('conduites')) {
+                $noteConduite = Conduite::where('classe_annee_id', $classeID)
+                    ->where('periode_id', $periode)
+                    ->where('apprenant_id', $apprenantID)
+                    ->value('note') ?? 18;
+            }
+
+            $noteConduite = round((float) $noteConduite, 2);
+            // dd('noteConduite', $noteConduite, 'details_notes', $details_notes);
             $details_notes[] = [
                 'nom_matiere' => 'Conduite',
                 'type_matiere' => 'Autre',
+                'periodes' => $details_notes[0]['periodes'] ?? null,
                 'coefficient' => 1,
                 'note_de_classe' => $noteConduite,
                 'note_de_classe_coefficiente' => $noteConduite,
@@ -81,8 +89,11 @@ if (!function_exists('calculateMoyenneGeneralSecondaire')) {
         $totalMoyenne = 0;
         $totalCoefficient = 0;
         foreach ($detailsNotes as $details) {
-            $totalMoyenne += $details['moyenne'] * $details['coefficient'];
-            $totalCoefficient += $details['coefficient'];
+            $moyenne = (float) ($details['moyenne'] ?? 0);
+            $coefficient = (float) ($details['coefficient'] ?? 0);
+
+            $totalMoyenne += $moyenne * $coefficient;
+            $totalCoefficient += $coefficient;
         }
         $averageMoyenneDetailsNotes = $totalCoefficient > 0 ? number_format($totalMoyenne / $totalCoefficient, 2) : 0;
         
@@ -113,6 +124,10 @@ if (!function_exists('moyenneEnLettre')) {
         }
 
         $moyenne = round($moyenne, 2);
+
+        if (!class_exists(NumberFormatter::class)) {
+            return str_replace('.', ',', number_format($moyenne, 2));
+        }
 
         $formatter = new NumberFormatter('fr_FR', NumberFormatter::SPELLOUT);
 

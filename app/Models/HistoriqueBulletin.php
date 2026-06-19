@@ -15,7 +15,8 @@ class HistoriqueBulletin extends Model
     'total_coefficient', 'somme_note_generale', 'somme_notation', 'somme_note_generale_coefficient',
     'total_volume_horaire', 'moyenne_details_notes', 'rang','validation','total_credit', 'annee_scolaire',
     'classe_effectif', 'moyenne_litteraire', 'moyenne_scientifique', 'moyenne_autres_matieres',
-    'classe_forte_moyenne', 'classe_faible_moyenne', 'classe_moyenne', 'moyenne_annuelle',  'rang_annuel', 'plus_forte_moyenne_annuelle', 'plus_faible_moyenne_annuelle',];
+    'classe_forte_moyenne', 'classe_faible_moyenne', 'classe_moyenne', 'moyenne_annuelle',  'rang_annuel',
+     'plus_forte_moyenne_annuelle', 'plus_faible_moyenne_annuelle', 'moyenne_semestre_1', 'moyenne_semestre_2', 'rang_semestre_1', 'rang_semestre_2'];
 
     public function apprenant()
     {
