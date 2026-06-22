@@ -158,13 +158,14 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
                 $details_notes[] = [
                     'nom_matiere' => $note->nom_matiere,
                     'notation_matiere' => $note->notation_matiere,
-                    'note' => $note->note
+                    'note' => $note->note,
+                    'type_matiere' => $note->type_matiere ?? null
                 ];
             }
             // dd('notes_apprenant', $notes_apprenant);
             $resultatsClasse[] = [
                 'classe_annee_id' => $classe_annee_id,
-                'periode' => $notes_apprenant[0]->periode,
+                'periode' => count($notes_apprenant) > 0 ? $notes_apprenant[0]->periode : \App\Models\Periode::find($periode)->libelle,
                 'nom_classe' => $classe->code,
                 'apprenant_id' => $apprenant->id,
                 'matricule_apprenant' => $apprenant->matricule,
@@ -182,16 +183,37 @@ if (!function_exists('calculerResultatsClassePrimaire')) {
             return $b['moyenne_details_notes'] <=> $a['moyenne_details_notes'];
         });
 
-        $rank = 1;
-        $prevRank = 1;
+        // Récupérer toutes les moyennes des élèves
+        $moyennesClasse = array_column($resultatsClasse, 'moyenne_details_notes');
+
+        // Moyenne générale de la classe
+        $moyenne_de_la_Classe = count($moyennesClasse) > 0 ? number_format(array_sum($moyennesClasse) / count($moyennesClasse), 2) : 0;
+        // Max et Min de la classe
+        $maxMoyenne = count($resultatsClasse) > 0 ? $resultatsClasse[0]['moyenne_details_notes'] : 0;
+        $minMoyenne = count($resultatsClasse) > 0 ? $resultatsClasse[count($resultatsClasse) - 1]['moyenne_details_notes'] : 0;
+
+        $rang = 1;
+        $positionsParMoyenne = [];
 
         foreach ($resultatsClasse as &$resultat) {
-            $resultat['rang'] = ($prevRank === $rank) ? '=' . $rank : $rank;
-            $prevRank = $rank;
-            $rank++;
-            // dump($resultat);
+            $moyenne = $resultat['moyenne_details_notes'];
+
+            if (!isset($positionsParMoyenne[$moyenne])) {
+                $positionsParMoyenne[$moyenne] = $rang;
+                $resultat['rang'] = $rang == 1 ? '1er' : $rang . 'e';
+            } else {
+                $resultat['rang'] = ($positionsParMoyenne[$moyenne] == 1 ? '1er' : $positionsParMoyenne[$moyenne] . 'e') . ' ex';
+            }
+
+            // Injecter max, min, moyenne classe, effectif, et année scolaire
+            $resultat['classe_forte_moyenne'] = $maxMoyenne;
+            $resultat['classe_faible_moyenne'] = $minMoyenne;
+            $resultat['classe_moyenne'] = $moyenne_de_la_Classe;
+            $resultat['classe_effectif'] = count($apprenantsDeLaClasse);
+            $resultat['annee_scolaire'] = $annee->libelle;
+
+            $rang++;
         }
-        // die();
 
         return $resultatsClasse;
     }

@@ -213,6 +213,10 @@ export default {
                         onFinish: () => {
                             this.overlay = false;
                             if (action === 'generate') {
+                                const flashMsg = this.$page.props.flash?.message;
+                                if (flashMsg && flashMsg.type === 'error') {
+                                    return;
+                                }
                                 this.$swal({
                                     icon: 'success',
                                     title: 'Génération terminée',
@@ -280,6 +284,10 @@ export default {
                     },
                     onFinish: () => {
                         this.overlay = false;
+                        const flashMsg = this.$page.props.flash?.message;
+                        if (flashMsg && flashMsg.type === 'error') {
+                            return;
+                        }
                         this.$swal({
                             icon: 'success',
                             title: 'Génération terminée',

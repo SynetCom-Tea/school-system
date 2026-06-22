@@ -85,6 +85,7 @@ use Illuminate\Support\Facades\Auth;
                 'volume_horaire_matiere' => $notes[0]->volume_horaire_matiere,
                 'note_generale' => $note_generale,
                 'note_generale_coefficiente' => $note_generale_coefficiente,
+                'type_matiere' => $notes[0]->type_matiere ?? null
             ];
             $periode = $notes[0]->periode;
             // dd($details_notes);

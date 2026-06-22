@@ -35,7 +35,7 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
             $resultatMoyenne = calculerMoyenneSuperierure($classeId, $apprenant->id, $section, $periode, $session);
             $resultatsClasse[$apprenant->id] = [
                 'classe_annee_id' => $classeId,
-                'periode' => $resultatMoyenne['periode'],
+                'periode' => $resultatMoyenne['periode'] ?? \App\Models\Periode::find($periode)->libelle,
                 'nom_classe' => $classe->libelle,
                 'apprenant_id' => $apprenant->id,
                 'matricule_apprenant' => $apprenant->matricule,
@@ -55,6 +55,17 @@ if (!function_exists('calculerResultatsClasseSuperieure')) {
         $resultatsClasseAvecRang = calculerRangApprenants($resultatsClasse);
         $moyenneClasse = calculerMoyenneClasse($resultatsClasse);
 
+        $maxMoyenne = count($resultatsClasseAvecRang) > 0 ? $resultatsClasseAvecRang[0]['moyenne_details_notes'] : 0;
+        $minMoyenne = count($resultatsClasseAvecRang) > 0 ? $resultatsClasseAvecRang[count($resultatsClasseAvecRang) - 1]['moyenne_details_notes'] : 0;
+
+        foreach ($resultatsClasseAvecRang as &$resultat) {
+            $resultat['classe_forte_moyenne'] = $maxMoyenne;
+            $resultat['classe_faible_moyenne'] = $minMoyenne;
+            $resultat['classe_moyenne'] = number_format($moyenneClasse, 2);
+            $resultat['classe_effectif'] = count($apprenantsDeLaClasse);
+            $resultat['annee_scolaire'] = $annee->libelle;
+        }
+
         // dd($resultatsClasseAvecRang);
         return $resultatsClasseAvecRang;
     }
@@ -70,14 +81,24 @@ if (!function_exists('calculerRangApprenants')) {
         });
 
         $rang = 1;
-        $classement_precedent = null;
+        $position = 1;
+        $precedenteMoyenne = null;
 
         foreach ($resultatsClasse as &$resultat) {
-            if ($classement_precedent !== null && $resultat['moyenne_details_notes'] < $classement_precedent) {
-                $rang++;
+            $moyenne = $resultat['moyenne_details_notes'];
+
+            if ($precedenteMoyenne !== null && $moyenne < $precedenteMoyenne) {
+                $rang = $position;
             }
-            $resultat['rang'] = $rang;
-            $classement_precedent = $resultat['moyenne_details_notes'];
+
+            if ($precedenteMoyenne !== null && $moyenne == $precedenteMoyenne) {
+                $resultat['rang'] = ($rang == 1 ? '1er' : $rang . 'e') . ' ex';
+            } else {
+                $resultat['rang'] = $rang == 1 ? '1er' : $rang . 'e';
+            }
+
+            $precedenteMoyenne = $moyenne;
+            $position++;
         }
 
         return $resultatsClasse;
@@ -106,9 +127,16 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
     function createHistoriqueBulletin($resultat, $section, $exception = null)
     {
         $groupedDetailsNotes = collect($resultat['details_notes'])->groupBy('type_matiere');
-        $moyenne_litteraire = $groupedDetailsNotes->has('Littéraire') ? round($groupedDetailsNotes->get('Littéraire')->avg('moyenne'), 2) : 0;
-        $moyenne_scientifique = $groupedDetailsNotes->has('Scientifique') ? round($groupedDetailsNotes->get('Scientifique')->avg('moyenne'), 2) : 0;
-        $moyenne_autre = $groupedDetailsNotes->has('Autre') ? round($groupedDetailsNotes->get('Autre')->avg('moyenne'), 2) : 0;
+        $noteField = 'moyenne';
+        if ($section == 1) {
+            $noteField = 'note';
+        } elseif ($section == 3) {
+            $noteField = 'note_generale';
+        }
+
+        $moyenne_litteraire = $groupedDetailsNotes->has('Littéraire') ? round($groupedDetailsNotes->get('Littéraire')->avg($noteField), 2) : 0;
+        $moyenne_scientifique = $groupedDetailsNotes->has('Scientifique') ? round($groupedDetailsNotes->get('Scientifique')->avg($noteField), 2) : 0;
+        $moyenne_autre = $groupedDetailsNotes->has('Autre') ? round($groupedDetailsNotes->get('Autre')->avg($noteField), 2) : 0;
         // dd($moyenne_litteraire,$moyenne_scientifique,$moyenne_autre);
         //
         // dd('createHistoriqueBulletin', $groupedDetailsNotes);
