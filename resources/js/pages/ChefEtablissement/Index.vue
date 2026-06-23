@@ -145,7 +145,7 @@ export default {
 
     <v-card variant="outlined" class="mt-4">
         <v-card-title class="d-flex align-center">
-            <span>Chefs d'etablissement</span>
+            <span>Chef d'etablissement</span>
             <v-spacer></v-spacer>
             <v-btn color="primary" :prepend-icon="icons.mdiPlus" @click="openForm()">
                 Ajouter
@@ -172,22 +172,10 @@ export default {
                         <td>{{ chef.telephone }}</td>
                         <td>{{ sectionLabel(chef) }}</td>
                         <td class="text-center">
-                            <v-btn
-                                size="small"
-                                variant="text"
-                                color="warning"
-                                :icon="icons.mdiPencil"
-                                title="Modifier"
-                                @click="openForm(chef)"
-                            ></v-btn>
-                            <v-btn
-                                size="small"
-                                variant="text"
-                                color="error"
-                                :icon="icons.mdiDelete"
-                                title="Supprimer"
-                                @click="destroyChef(chef)"
-                            ></v-btn>
+                            <v-btn size="small" variant="text" color="warning" :icon="icons.mdiPencil" title="Modifier"
+                                @click="openForm(chef)"></v-btn>
+                            <v-btn size="small" variant="text" color="error" :icon="icons.mdiDelete" title="Supprimer"
+                                @click="destroyChef(chef)"></v-btn>
                         </td>
                     </tr>
                     <tr v-if="!chefs.length">
@@ -213,68 +201,36 @@ export default {
                 <v-form @submit.prevent="submit">
                     <v-row>
                         <v-col cols="12" md="6">
-                            <v-text-field
-                                v-model="form.nom"
-                                label="Nom"
-                                variant="outlined"
-                                :error-messages="form.errors.nom"
-                            ></v-text-field>
+                            <v-text-field v-model="form.nom" label="Nom" variant="outlined"
+                                :error-messages="form.errors.nom"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field
-                                v-model="form.prenom"
-                                label="Prenom"
-                                variant="outlined"
-                                :error-messages="form.errors.prenom"
-                            ></v-text-field>
+                            <v-text-field v-model="form.prenom" label="Prenom" variant="outlined"
+                                :error-messages="form.errors.prenom"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field
-                                v-model="form.email"
-                                label="Email"
-                                type="email"
-                                variant="outlined"
-                                :error-messages="form.errors.email"
-                            ></v-text-field>
+                            <v-text-field v-model="form.email" label="Email" type="email" variant="outlined"
+                                :error-messages="form.errors.email"></v-text-field>
                         </v-col>
                         <v-col cols="12" md="6">
-                            <v-text-field
-                                v-model="form.telephone"
-                                label="Telephone"
-                                variant="outlined"
-                                :error-messages="form.errors.telephone"
-                            ></v-text-field>
+                            <v-text-field v-model="form.telephone" label="Telephone" variant="outlined"
+                                :error-messages="form.errors.telephone"></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                            <v-select
-                                v-model="form.etablissement_section_id"
-                                label="Section de l'etablissement"
-                                :items="etablissementSections"
-                                item-value="id"
+                            <v-select v-model="form.etablissement_section_id" label="Section de l'etablissement"
+                                :items="etablissementSections" item-value="id"
                                 :item-title="item => item.section?.libelle || item.section?.name || item.code || `Section ${item.id}`"
-                                variant="outlined"
-                                :error-messages="form.errors.etablissement_section_id"
-                            ></v-select>
+                                variant="outlined" :error-messages="form.errors.etablissement_section_id"></v-select>
                         </v-col>
                     </v-row>
 
                     <div class="d-flex justify-end">
-                        <v-btn
-                            class="mr-2"
-                            variant="outlined"
-                            color="error"
-                            :prepend-icon="icons.mdiCancel"
-                            :disabled="form.processing"
-                            @click="closeForm"
-                        >
+                        <v-btn class="mr-2" variant="outlined" color="error" :prepend-icon="icons.mdiCancel"
+                            :disabled="form.processing" @click="closeForm">
                             Annuler
                         </v-btn>
-                        <v-btn
-                            color="primary"
-                            type="submit"
-                            :prepend-icon="icons.mdiContentSave"
-                            :loading="form.processing"
-                        >
+                        <v-btn color="primary" type="submit" :prepend-icon="icons.mdiContentSave"
+                            :loading="form.processing">
                             Enregistrer
                         </v-btn>
                     </div>

@@ -721,7 +721,7 @@ export default {
                         <v-list-item :prepend-icon="icons.mdiPhoneOutline" title="Téléphone"
                             :subtitle="chefEtablissement.telephone || 'Non renseigné'"></v-list-item>
                         <v-list-item :prepend-icon="icons.mdiOfficeBuildingOutline" title="Établissement"
-                            :subtitle="chefEtablissement.etablissement ? chefEtablissement.etablissement.name : 'Non renseigné'"></v-list-item>
+                            :subtitle="chefEtablissement.etablissement_section ? chefEtablissement.etablissement_section?.code : 'Non renseigné'"></v-list-item>
                         <div class="d-flex justify-end mb-2">
                             <v-btn size="small" variant="outlined" color="primary" :prepend-icon="icons.mdiPencil"
                                 @click="openChefForm(chefEtablissement)">

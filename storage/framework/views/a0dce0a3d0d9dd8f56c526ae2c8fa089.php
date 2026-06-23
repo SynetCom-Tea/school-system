@@ -267,6 +267,7 @@
         </table>
 
         <br>
+
         <!-- RÉSULTATS ANNUELS -->
         <?php
         $bulletin = $donnee['bulletin'];
@@ -275,6 +276,8 @@
         $rangSemestre1 = $bulletin->rang_semestre_1 ?? $bulletinSemestre1?->rang ?? '';
         $moyenneSemestre2 = $bulletin->moyenne_semestre_2 ?? $bulletin->moyenne_details_notes ?? '';
         $rangSemestre2 = $bulletin->rang_semestre_2 ?? $bulletin->rang ?? '';
+
+        
         ?>
 
         <?php if($donnee['bulletin']->moyenne_annuelle !== null): ?>
@@ -333,9 +336,9 @@
                     <span class="checkbox">☐</span>Non Motivées
                 </td>
                 <td colspan="6" class="center signature-box">
-                    <?php if(file_exists(public_path('images/cachet.png'))): ?>
-                    <img src="<?php echo e(public_path('images/cachet.png')); ?>" width="80"><br>
-                    <?php endif; ?>
+                    <div style="margin-top: 50px; font-style: italic">
+                        <p><b><?php echo e($bulletin->chef_etablissement); ?></b></p>
+                    </div>
                 </td>
             </tr>
         </table>

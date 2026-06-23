@@ -330,7 +330,7 @@ class RapportController extends Controller
         $etablissementSectionId = count($etablissement_section) > 0 ? $etablissement_section[0] : null;
         $chefEtablissement = null;
         if ($etablissementSectionId) {
-            $chefEtablissement = \App\Models\ChefEtablissement::where('etablissement_section_id', $etablissementSectionId)->first();
+            $chefEtablissement = \App\Models\ChefEtablissement::with('etablissementSection.section')->where('etablissement_section_id', $etablissementSectionId)->first();
         }
         $annee = Annee::where('actif', 1)->first();
         $classes = getClasses($annee->id, $etablissement_section);

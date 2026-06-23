@@ -155,6 +155,7 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
             'moyenne_litteraire' => $moyenne_litteraire,
             'moyenne_scientifique' => $moyenne_scientifique,
             'moyenne_autres_matieres' => $moyenne_autre,
+            'chef_etablissement' => $resultat['chef_etablissement'],
         ];
 
         foreach ([
@@ -311,6 +312,23 @@ if (!function_exists('ajouterHistoriqueBulletin')) {
 
     function ajouterHistoriqueBulletin($resultat, $section, $exception = null)
     {
+        $chefEtablissementNomPrenom = null;
+        try {
+            $classeAnnee = \App\Models\ClasseAnnee::with('classe')->find($resultat['classe_annee_id']);
+            if ($classeAnnee && $classeAnnee->classe) {
+                $etablissementSectionId = $classeAnnee->classe->etablissement_section_id;
+                if ($etablissementSectionId) {
+                    $chef = \App\Models\ChefEtablissement::where('etablissement_section_id', $etablissementSectionId)->first();
+                    if ($chef) {
+                        $chefEtablissementNomPrenom = trim($chef->nom . ' ' . $chef->prenom);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Ignore
+        }
+        $resultat['chef_etablissement'] = $chefEtablissementNomPrenom;
+
         if ($section == 1) {
             if ($exception != null) {
                 $checkhistorique = HistoriqueBulletin::where('classe_annee_id', $resultat['classe_annee_id'])

@@ -265,6 +265,7 @@
         </table>
 
         <br>
+
         <!-- RÉSULTATS ANNUELS -->
         @php
         $bulletin = $donnee['bulletin'];
@@ -273,6 +274,8 @@
         $rangSemestre1 = $bulletin->rang_semestre_1 ?? $bulletinSemestre1?->rang ?? '';
         $moyenneSemestre2 = $bulletin->moyenne_semestre_2 ?? $bulletin->moyenne_details_notes ?? '';
         $rangSemestre2 = $bulletin->rang_semestre_2 ?? $bulletin->rang ?? '';
+
+        
         @endphp
 
         @if($donnee['bulletin']->moyenne_annuelle !== null)
@@ -331,9 +334,9 @@
                     <span class="checkbox">☐</span>Non Motivées
                 </td>
                 <td colspan="6" class="center signature-box">
-                    @if(file_exists(public_path('images/cachet.png')))
-                    <img src="{{ public_path('images/cachet.png') }}" width="80"><br>
-                    @endif
+                    <div style="margin-top: 50px; font-style: italic">
+                        <p><b>{{ $bulletin->chef_etablissement }}</b></p>
+                    </div>
                 </td>
             </tr>
         </table>

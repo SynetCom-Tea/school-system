@@ -39,8 +39,8 @@ class ChefEtablissementController extends Controller
         $validated = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
-            'email' => 'required',
-            'telephone' => 'required',
+            'email' => 'nullable',
+            'telephone' => 'nullable',
             'etablissement_section_id' => 'required',
         ]);
 
@@ -78,8 +78,8 @@ class ChefEtablissementController extends Controller
         $validated = $request->validate([
             'nom' => 'required',
             'prenom' => 'required',
-            'email' => 'required',
-            'telephone' => 'required',
+            'email' => 'nullable',
+            'telephone' => 'nullable',
             'etablissement_section_id' => 'required',
         ]);
 
