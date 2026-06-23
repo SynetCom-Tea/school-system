@@ -33,5 +33,10 @@ class EtablissementSection extends Model
     {
         return $this->hasMany(Classe::class);
     }
+
+    public function chefEtablissements()
+    {
+        return $this->hasMany(ChefEtablissement::class);
+    }
     
 }

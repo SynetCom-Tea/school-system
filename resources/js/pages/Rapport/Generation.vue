@@ -2,6 +2,8 @@
 const PdfPrinter = () => import("../../components/Rapports/PdfPrinter.vue");
 import DetailBulletin from '@/components/Rapports/DetailBulletin.vue';
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.vue";
+import { useForm } from '@inertiajs/vue3';
+
 import {
     mdiDatabaseSync,
     mdiTimerSync,
@@ -116,7 +118,19 @@ export default {
         classe: null,
         filiere: null,
         periode: null,
-        printPdf: false
+        printPdf: false,
+        dialogChef: false,
+        chefError: null,
+        chefEtablissement: null,
+        chefFormVisible: false,
+        chefForm: useForm({
+            id: null,
+            nom: '',
+            prenom: '',
+            email: '',
+            telephone: '',
+            etablissement_section_id: null,
+        }),
     }),
     watch: {
         overlay(val) {
@@ -342,7 +356,71 @@ export default {
         },
         printItem(item) {
             console.log('item print', item);
-        }
+        },
+
+        informationChef() {
+            this.dialogChef = true;
+            this.chefError = null;
+            this.chefEtablissement = this.$page.props.chefEtablissement || null;
+
+            if (!this.chefEtablissement) {
+                this.openChefForm();
+            }
+        },
+        openChefForm(chef = null) {
+            this.chefForm.clearErrors();
+            this.chefFormVisible = true;
+            this.chefForm.id = chef?.id || null;
+            this.chefForm.nom = chef?.nom || '';
+            this.chefForm.prenom = chef?.prenom || '';
+            this.chefForm.email = chef?.email || '';
+            this.chefForm.telephone = chef?.telephone || '';
+            this.chefForm.etablissement_section_id = chef?.etablissement_section_id || this.$page.props.etablissementSectionId;
+        },
+        resetChefForm() {
+            this.chefFormVisible = false;
+            this.chefForm.reset();
+            this.chefForm.clearErrors();
+        },
+        submitChef() {
+            this.chefError = null;
+
+            if (!this.chefForm.etablissement_section_id) {
+                this.chefError = "Aucune section d'établissement n'est liee a cette page.";
+                return;
+            }
+
+            const options = {
+                preserveScroll: true,
+                onSuccess: () => {
+                    this.chefEtablissement = this.$page.props.chefEtablissement || null;
+                    this.resetChefForm();
+                    this.$swal({
+                        icon: 'success',
+                        title: 'Enregistrement',
+                        text: "Les informations du chef d'établissement ont ete enregistrees.",
+                        toast: true,
+                        position: 'top-end',
+                        showConfirmButton: false,
+                        timer: 4000,
+                        timerProgressBar: true,
+                    });
+                },
+                onError: () => {
+                    this.chefError = "Veuillez corriger les informations du chef d'établissement.";
+                },
+            };
+
+            if (this.chefForm.id) {
+                this.chefForm.put(route('chef-etablissements.update', this.chefForm.id), options);
+            } else {
+                this.chefForm.post(route('chef-etablissements.store'), options);
+            }
+        },
+        closeChefDialog() {
+            this.dialogChef = false;
+            this.resetChefForm();
+        },
     },
     mounted() {
         if (this.sectionID == 1 || this.sectionID == 2) {
@@ -364,6 +442,9 @@ export default {
                 text="La génération par période s'effectue à la fin des évaluations de la période sélectionnée. En revanche, la génération par élève concerne ceux dont les notes ont été modifiées, ceux qui n'ont pas participé à une évaluation, ou encore ceux qui sont en session."
                 variant="tonal"></v-alert>
             <v-card>
+                <v-btn class="mt-4" :prepend-icon="icons.mdiAccountTie" color="warning" @click="informationChef">
+                    Chef d'établissement
+                </v-btn>
                 <v-tabs v-model="tab" color="deep-purple-accent-4" align-tabs="center">
                     <v-tab value="option-1">
                         <v-icon start>
@@ -612,6 +693,85 @@ export default {
                     <v-btn :icon="icons.mdiCloseCircle" title="Fermer" color="error" @click="close()"></v-btn>
                 </v-toolbar>
                 <PdfPrinter :content="apprenantData" />
+            </v-card>
+        </v-dialog>
+        <v-dialog overlay-opacity="0.7" v-model="dialogChef" max-width="750">
+            <v-card>
+                <v-toolbar dark color="orange">
+                    <v-toolbar-title>
+                        <v-icon left :icon="icons.mdiAccountTie"></v-icon> Chef d'établissement
+                    </v-toolbar-title>
+                    <v-spacer></v-spacer>
+                    <v-btn :icon="icons.mdiCloseCircle" title="Fermer" color="error" @click="closeChefDialog"></v-btn>
+                </v-toolbar>
+                <v-card-text>
+                    <v-alert v-if="chefError" type="error" variant="tonal">
+                        {{ chefError }}
+                    </v-alert>
+
+                    <v-alert v-else-if="!chefEtablissement" type="info" variant="tonal">
+                        Aucun chef trouvé
+                    </v-alert>
+
+                    <v-list v-else lines="two">
+                        <v-list-item :prepend-icon="icons.mdiAccountTie" title="Nom & prénom"
+                            :subtitle="`${chefEtablissement.nom || ''} ${chefEtablissement.prenom || ''}`.trim() || 'Non renseigné'"></v-list-item>
+                        <v-list-item :prepend-icon="icons.mdiEmailOutline" title="Email"
+                            :subtitle="chefEtablissement.email || 'Non renseigné'"></v-list-item>
+                        <v-list-item :prepend-icon="icons.mdiPhoneOutline" title="Téléphone"
+                            :subtitle="chefEtablissement.telephone || 'Non renseigné'"></v-list-item>
+                        <v-list-item :prepend-icon="icons.mdiOfficeBuildingOutline" title="Établissement"
+                            :subtitle="chefEtablissement.etablissement ? chefEtablissement.etablissement.name : 'Non renseigné'"></v-list-item>
+                        <div class="d-flex justify-end mb-2">
+                            <v-btn size="small" variant="outlined" color="primary" :prepend-icon="icons.mdiPencil"
+                                @click="openChefForm(chefEtablissement)">
+                                Modifier
+                            </v-btn>
+                        </div>
+                    </v-list>
+
+                    <div v-if="!chefFormVisible && !chefEtablissement" class="d-flex justify-end mt-4">
+                        <v-btn color="primary" :prepend-icon="icons.mdiPlus" @click="openChefForm()">
+                            Renseigner le chef
+                        </v-btn>
+                    </div>
+
+                    <v-divider v-if="chefFormVisible" class="my-4"></v-divider>
+
+                    <v-form v-if="chefFormVisible" @submit.prevent="submitChef">
+                        <v-row>
+                            <v-col cols="12" md="6">
+                                <v-text-field v-model="chefForm.nom" label="Nom" variant="outlined"
+                                    density="comfortable" :error-messages="chefForm.errors.nom" required></v-text-field>
+                            </v-col>
+                            <v-col cols="12" md="6">
+                                <v-text-field v-model="chefForm.prenom" label="Prénom" variant="outlined"
+                                    density="comfortable" :error-messages="chefForm.errors.prenom"
+                                    required></v-text-field>
+                            </v-col>
+                            <v-col cols="12" md="6">
+                                <v-text-field v-model="chefForm.email" label="Email" type="email" variant="outlined"
+                                    density="comfortable" :error-messages="chefForm.errors.email"
+                                    required></v-text-field>
+                            </v-col>
+                            <v-col cols="12" md="6">
+                                <v-text-field v-model="chefForm.telephone" label="Téléphone" variant="outlined"
+                                    density="comfortable" :error-messages="chefForm.errors.telephone"
+                                    required></v-text-field>
+                            </v-col>
+                        </v-row>
+                        <div class="d-flex justify-end">
+                            <v-btn class="mr-2" variant="outlined" color="error" :prepend-icon="icons.mdiCancel"
+                                :disabled="chefForm.processing" @click="resetChefForm">
+                                Annuler
+                            </v-btn>
+                            <v-btn color="primary" type="submit" :prepend-icon="icons.mdiContentSave"
+                                :loading="chefForm.processing">
+                                Enregistrer
+                            </v-btn>
+                        </div>
+                    </v-form>
+                </v-card-text>
             </v-card>
         </v-dialog>
         <DetailBulletin v-if="detailData !== null" v-model="dialog" :data="detailData" :typeSection="sectionID"

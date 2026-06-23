@@ -221,6 +221,12 @@ export function listMenus(page) {
       title: "Permissions",
       link: "/enseignement/permissions",
       permissions: "manage_system",
+    },
+    {
+      icon: mdiSquareMedium,
+      title: "Chefs d'établissement",
+      link: "/scolarite/chef-etablissements",
+      permissions: "manage_school",
     },]
   }
 
@@ -346,6 +352,12 @@ export function listMenus(page) {
         icon: mdiSquareMedium,
         title: "Permissions",
         link: "/enseignement/permissions",
+        permissions: "manage_system",
+      },
+      {
+        icon: mdiSquareMedium,
+        title: "Chefs d'établissement",
+        link: "/scolarite/chef-etablissements",
         permissions: "manage_system",
       },
     ],
@@ -591,7 +603,7 @@ export function listMenusBySection(page, sectionID) {
       image: "/assets/menusImage/rapport.png",
       permissions: ["manage_school", "bulletin"]
     },
-     {
+    {
       title: "Conduites",
       icon: mdiClipboardEditOutline,
       link: "gestionConduite",

@@ -119,4 +119,9 @@ Route::prefix('scolarite')->group(function () {
     //             // routes/api.php ou routes/web.php
     // Route::get('/api/eleves/classe/{classeId}', [InscriptionController::class, 'getElevesParClasse']);
     Route::get('/eleves/classe/{classeId}', [InscriptionController::class, 'getElevesParClasse']);
+    // chef etablissement routes
+    Route::get('/chef-etablissements', [\App\Http\Controllers\ChefEtablissementController::class, 'index'])->name('chef-etablissements.index');
+    Route::post('/chef-etablissements', [\App\Http\Controllers\ChefEtablissementController::class, 'store'])->name('chef-etablissements.store');
+    Route::put('/chef-etablissements/{id}', [\App\Http\Controllers\ChefEtablissementController::class, 'update'])->name('chef-etablissements.update');
+    Route::delete('/chef-etablissements/{id}', [\App\Http\Controllers\ChefEtablissementController::class, 'destroy'])->name('chef-etablissements.destroy');
 });

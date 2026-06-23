@@ -326,6 +326,12 @@ class RapportController extends Controller
         $filieres = [];
         $cycle_filieres = [];
         $etablissement_section = getSectionEtablissement(Auth::user()->etablissement_id, $request->section_id);
+
+        $etablissementSectionId = count($etablissement_section) > 0 ? $etablissement_section[0] : null;
+        $chefEtablissement = null;
+        if ($etablissementSectionId) {
+            $chefEtablissement = \App\Models\ChefEtablissement::where('etablissement_section_id', $etablissementSectionId)->first();
+        }
         $annee = Annee::where('actif', 1)->first();
         $classes = getClasses($annee->id, $etablissement_section);
         if ($request->section_id == 1) {
@@ -603,6 +609,7 @@ class RapportController extends Controller
                 }
             }
         }
+        // dd($resultats);
         return Inertia::render('Rapport/Generation', [
             "sectionID" => $request->section_id,
             "resultats" => $resultats,
@@ -613,7 +620,9 @@ class RapportController extends Controller
             "apprenants" => $apprenants,
             'apprenant' => $apprenant,
             'premieregeneration' => $premieregeneration,
-            'section' => $section
+            'section' => $section,
+            'chefEtablissement' => $chefEtablissement,
+            'etablissementSectionId' => $etablissementSectionId,
         ]);
     }
 
