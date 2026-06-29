@@ -86,11 +86,12 @@
             left: 0;
             right: 0;
             text-align: center;
-            font-size: 9px;
+            font-size: 12px;
             padding: 2px 0;
             border-top: 1px solid #ccc;
             background: white;
             width: 100%;
+            font-weight: bold;
         }
 
         .footer-note {
@@ -331,7 +332,7 @@
                     <span class="checkbox">☐</span>Non Motivées
                 </td>
                 <td colspan="6" class="center signature-box">
-                    <div style="margin-top: 50px; font-style: italic">
+                    <div style="margin-top: 90px; font-style: italic">
                         <p><b>{{ $bulletin->chef_etablissement }}</b></p>
                     </div>
                 </td>
