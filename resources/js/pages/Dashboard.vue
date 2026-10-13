@@ -1,46 +1,6 @@
 <script>
-// Données des notes des élèves par matière avec coefficients, note de classe et note de composition
-const students = [{
-        id: 1,
-        name: "Alice",
-        grades: [{
-                subject: "Mathématiques",
-                classGrade: 80,
-                compositionGrade: 90,
-                coefficient: 3
-            },
-            {
-                subject: "Français",
-                classGrade: 75,
-                compositionGrade: 85,
-                coefficient: 2
-            },
-            // Autres matières, notes de classe et de composition pour Alice
-        ],
-    },
-    {
-        id: 2,
-        name: "Bob",
-        grades: [{
-                subject: "Mathématiques",
-                classGrade: 70,
-                compositionGrade: 85,
-                coefficient: 3
-            },
-            {
-                subject: "Français",
-                classGrade: 80,
-                compositionGrade: 90,
-                coefficient: 2
-            },
-            // Autres matières, notes de classe et de composition pour Bob
-        ],
-    },
-    // Autres élèves avec leurs matières, notes de classe et de composition
-];
-
 import AuthenticatedLayout from "@/layouts/AuthenticatedLayout.vue";
-import { Head } from "@inertiajs/vue3";
+import { Head, router } from "@inertiajs/vue3";
 import ExampleApplicationDatatable from "../components/customizedComponents/ExampleApplicationDatatable.vue";
 import Dialog from "../components/customizedComponents/Dialog.vue";
 import Loader from "../components/customizedComponents/Loader.vue";
@@ -50,7 +10,9 @@ import {
     mdiPurse,
     mdiHomeOutline,
     mdiPresentation,
-    mdiGift
+    mdiGift,
+    mdiCalendarBlankOutline,
+    mdiCalendarCheckOutline,
 } from "@mdi/js";
 import {
     Vue3Marquee
@@ -62,6 +24,37 @@ import {
 import Datatable from "../components/customizedComponents/datatable.vue";
 import Toolbar from "../components/customizedComponents/Toolbar.vue";
 export default {
+    props: {
+        dashboardStats: {
+            type: Object,
+            default: () => ({
+                students: 0,
+                classes: 0,
+                teachers: 0,
+                payments: 0,
+                terminal_a: 0,
+                terminal_d: 0,
+                troisieme: 0,
+                unpaid_payments: 0,
+            }),
+        },
+        schoolYearLabel: {
+            type: String,
+            default: "Aucune année active",
+        },
+        isSelectedYearActive: {
+            type: Boolean,
+            default: false,
+        },
+        schoolYears: {
+            type: Array,
+            default: () => [],
+        },
+        selectedYearId: {
+            type: Number,
+            default: null,
+        },
+    },
     components: {
         ExampleApplicationDatatable,
         Loader,
@@ -80,141 +73,29 @@ export default {
         mdiPresentation,
         mdiGift,
     },
+    computed: {
+        selectedYearStatus() {
+            if (!this.selectedYearId) {
+                return "Aucune année sélectionnée";
+            }
+
+            return this.isSelectedYearActive ? "active" : "Année sélectionnée";
+        },
+        overviewCards() {
+            return [
+                { label: "Élèves inscrits", value: this.dashboardStats.students, icon: mdiAccount, detail: `Pour l'année ${this.schoolYearLabel}`, color: "#176b5b" },
+                { label: "Classes ouvertes", value: this.dashboardStats.classes, icon: mdiHomeOutline, detail: `Pour l'année ${this.schoolYearLabel}`, color: "#b45b35" },
+                { label: "Enseignants affectés", value: this.dashboardStats.teachers, icon: mdiPresentation, detail: `Pour l'année ${this.schoolYearLabel}`, color: "#3d638c" },
+                { label: "Versements encaissés", value: this.formatAmount(this.dashboardStats.payments), icon: mdiPurse, detail: "Montant cumulé · FCFA", color: "#8b6a20" },
+                { label: "Élèves en Terminale A", value: this.dashboardStats.terminal_a, icon: mdiAccount, detail: `Pour l'année ${this.schoolYearLabel}`, color: "#176b5b" },
+                { label: "Élèves en Terminale D", value: this.dashboardStats.terminal_d, icon: mdiAccount, detail: `Pour l'année ${this.schoolYearLabel}`, color: "#3d638c" },
+                { label: "Élèves en Troisième", value: this.dashboardStats.troisieme, icon: mdiAccount, detail: `Pour l'année ${this.schoolYearLabel}`, color: "#b45b35" },
+                { label: "Reste à encaisser", value: this.formatAmount(this.dashboardStats.unpaid_payments), icon: mdiPurse, detail: "Montant restant · FCFA", color: "#9b3e36" },
+            ];
+        },
+    },
     data() {
         return {
-            headersH: [{
-                    title: "Dessert (100g serving)",
-                    align: "start",
-                    sortable: false,
-                    key: "name",
-                },
-                {
-                    title: "Calories",
-                    key: "calories"
-                },
-                {
-                    title: "Fat (g)",
-                    key: "fat"
-                },
-                {
-                    title: "Carbs (g)",
-                    key: "carbs"
-                },
-                {
-                    title: "Protein (g)",
-                    key: "protein"
-                },
-                {
-                    title: "Actions",
-                    key: "actions",
-                    sortable: false
-                },
-            ],
-            headers: [{
-                    title: "N°",
-                    align: "start",
-                    key: "id",
-                    sortable: false,
-                },
-                {
-                    title: "Titre",
-                    align: "center",
-                    key: "title"
-                },
-
-                {
-                    title: "Actions",
-                    key: "actions",
-                    sortable: false,
-                },
-            ],
-            dataH: [{
-                    id: 1,
-                    title: "Ali",
-                },
-                {
-                    id: 2,
-                    title: "Sara",
-                },
-                {
-                    id: 3,
-                    title: "Sani",
-                },
-            ],
-            desserts: [{
-                    name: "Frozen Yogurt",
-                    calories: 159,
-                    fat: 6.0,
-                    carbs: 24,
-                    protein: 4.0,
-                },
-                {
-                    name: "Ice cream sandwich",
-                    calories: 237,
-                    fat: 9.0,
-                    carbs: 37,
-                    protein: 4.3,
-                },
-                {
-                    name: "Eclair",
-                    calories: 262,
-                    fat: 16.0,
-                    carbs: 23,
-                    protein: 6.0,
-                },
-                {
-                    name: "Cupcake",
-                    calories: 305,
-                    fat: 3.7,
-                    carbs: 67,
-                    protein: 4.3,
-                },
-                {
-                    name: "Gingerbread",
-                    calories: 356,
-                    fat: 16.0,
-                    carbs: 49,
-                    protein: 3.9,
-                },
-                {
-                    name: "Jelly bean",
-                    calories: 375,
-                    fat: 0.0,
-                    carbs: 94,
-                    protein: 0.0,
-                },
-                {
-                    name: "Lollipop",
-                    calories: 392,
-                    fat: 0.2,
-                    carbs: 98,
-                    protein: 0,
-                },
-                {
-                    name: "Honeycomb",
-                    calories: 408,
-                    fat: 3.2,
-                    carbs: 87,
-                    protein: 6.5,
-                },
-                {
-                    name: "Donut",
-                    calories: 452,
-                    fat: 25.0,
-                    carbs: 51,
-                    protein: 4.9,
-                },
-                {
-                    name: "KitKat",
-                    calories: 518,
-                    fat: 26.0,
-                    carbs: 65,
-                    protein: 7,
-                },
-            ],
-            students: [
-                // Inclure les données des élèves avec notes de classe, notes de composition, matières et coefficients
-            ],
             subjects: [], // Liste des matières uniques
             tableHeaders: [], // En-têtes du tableau
             test: "Abou",
@@ -227,40 +108,25 @@ export default {
                     return pattern.test(value) || "Invalid e-mail.";
                 },
             },
-            editedObject: {
-                name: "",
-                calories: 0,
-                fat: 0,
-                carbs: 0,
-                protein: 0,
-            },
+            
 
-      icons: { mdiGift, mdiAccount },
-      listGreetings: [
-        { id: 1, text: "Wa fonda kayan!", color: "red" },
-        { id: 2, text: "Barka da zouwa!", color: "blue" },
-        { id: 3, text: "Bienvenue!", color: "gray" },
-        { id: 1, text: "Welcome!", color: "green" },
-        { id: 1, text: "Marhaba!", color: "red" },
-      ],
-    };
-  },
-  mounted() {
-    this.extractSubjects();
-
-  },
-
+            icons: { mdiGift, mdiAccount, mdiCalendarBlankOutline, mdiCalendarCheckOutline },
+           
+        };
+    },
     methods: {
-        extractSubjects() {
-            // Extraction des matières uniques à partir des données
-            const allSubjects = students.flatMap(student => student.grades.map(grade => grade.subject));
-            this.subjects = [...new Set(allSubjects)];
-            this.tableHeaders = ['Élève', ...this.subjects, 'Moyenne'];
+        formatAmount(amount) {
+            return new Intl.NumberFormat("fr-FR", { maximumFractionDigits: 0 }).format(Number(amount) || 0);
+        },
+        selectSchoolYear(yearId) {
+            if (!yearId || Number(yearId) === Number(this.selectedYearId)) {
+                return;
+            }
 
-            console.log('Students', students)
-            console.log('allSubjects', allSubjects)
-            console.log('tableHeaders', this.tableHeaders)
-            console.log('this.subjects', this.subjects)
+            router.get("/dashboard", { annee_id: yearId }, {
+                preserveScroll: true,
+                replace: true,
+            });
         },
         getGrades(student, subject) {
             const foundGrade = student.grades.find(grade => grade.subject === subject);
@@ -287,77 +153,188 @@ export default {
         onCloseModale() {
             this.isDialog = false;
         },
-        onChangeTitle(e) {},
+        onChangeTitle(e) { },
 
-        editItem(item) {},
-        deleteItem(item) {},
+        editItem(item) { },
+        deleteItem(item) { },
     },
 };
 </script>
 
 <template>
-<Head title="Dashboard" />
 
-  <AuthenticatedLayout>
-    <Toolbar
-      styleToolbar="background-color: white;"
-      :icon="icons.mdiHome"
-      toolbarTitle="Acceuil"
-    ></Toolbar>
-    <!-- <div class="mt-10">
-      <Vue3Marquee :duration="25">
-        <v-row>
-          <v-col
-            :cols="12 / listGreetings.length"
-            v-for="item in listGreetings"
-            :key="item.id"
-            style="cursor:' pointer; background-color:#7d002c; color:white"
-          >
-            <v-hover v-slot="{ isHovering, props }" open-delay="200">
-              <v-card-text
-                :elevation="isHovering ? 4 : 2"
-                :color="isHovering ? 'primary' : 'undefined'"
-                :class="{ 'on-hover': isHovering }"
-                v-bind="props"
-                >{{ item.text }}
-              </v-card-text>
-            </v-hover>
-          </v-col>
-          &nbsp;&nbsp;
-        </v-row>
-      </Vue3Marquee>
-    </div>
-    <br /><br /><br /><br /><br /><br /> -->
+    <Head title="Dashboard" />
 
-    <!-- <div>
-      <h2>Tableau Récapitulatif des Notes par Matière avec Moyenne Ponderée</h2>
-      <v-card>
-        <v-card-title>Notes des Élèves</v-card-title>
-        <v-data-table :headers="tableHeaders" :items="students" item-key="id">
-          <template v-for="subject in subjects" v-slot:[`item.${subject}`]="{ item }">
-            <td>
-              {{ getGrades(item, subject) }}
-            </td>
-          </template>
-          <template v-slot:[`item.Moyenne`]="{ item }">
-            <td>
-              {{ calculateWeightedAverage(item) }}
-            </td>
-          </template>
-        </v-data-table>
-      </v-card>
-    </div>
+    <AuthenticatedLayout>
+        <Toolbar styleToolbar="background-color: white;" :icon="mdiHomeOutline" toolbarTitle="Accueil"></Toolbar>
+        <main class="dashboard-overview">
+            <header class="overview-heading">
+                <div>
+                    <p class="overview-eyebrow">VUE D'ENSEMBLE</p>
+                    <h1>Tableau de bord</h1>
+                    <p class="overview-caption">Les principaux indicateurs de votre établissement.</p>
+                </div>
+                <div class="year-controls">
+                    <v-select
+                        class="year-select"
+                        :model-value="selectedYearId"
+                        :items="schoolYears"
+                        item-title="libelle"
+                        item-value="id"
+                        label="Année scolaire"
+                        :prepend-inner-icon="icons.mdiCalendarBlankOutline"
+                        :menu-props="{ attach: 'body', maxHeight: 360 }"
+                        variant="outlined"
+                        density="comfortable"
+                        hide-details
+                        @update:model-value="selectSchoolYear"
+                    />
+                    <v-chip
+                        class="year-status"
+                        :color="isSelectedYearActive ? 'success' : 'default'"
+                        :prepend-icon="icons.mdiCalendarCheckOutline"
+                        variant="tonal"
+                    >
+                        {{ schoolYearLabel }} · {{ selectedYearStatus }}
+                    </v-chip>
+                </div>
+            </header>
 
-    <Button
-      variant="flat"
-      density="comfortable"
-      title="title"
-      class="m-4"
-      color="red"
-      nameButton="Test Loader"
-      :prependIcon="icons.mdiAccount"
-      :appendIcon="icons.mdiGift"
-      :onClickButton="onClickBt"
-    ></Button> -->
-  </AuthenticatedLayout>
+            <v-row class="overview-grid">
+                <v-col v-for="card in overviewCards" :key="card.label" cols="12" sm="3" xl="3">
+                    <v-card class="overview-card" variant="flat">
+                        <div class="overview-icon" :style="{ color: card.color, backgroundColor: `${card.color}16` }">
+                            <v-icon :icon="card.icon" size="22" />
+                        </div>
+                        <div class="overview-card-copy">
+                            <p>{{ card.label }}</p>
+                            <strong>{{ card.value }}</strong>
+                            <span>{{ card.detail }}</span>
+                        </div>
+                    </v-card>
+                </v-col>
+            </v-row>
+        </main>
+       
+    </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.dashboard-overview {
+    padding: 32px clamp(16px, 3vw, 40px) 8px;
+}
+
+.overview-heading {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 20px;
+    margin-bottom: 24px;
+}
+
+.overview-eyebrow {
+    margin: 0 0 8px;
+    color: #176b5b;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 1px;
+}
+
+.overview-heading h1 {
+    margin: 0;
+    color: #172b29;
+    font-size: 28px;
+    font-weight: 700;
+}
+
+.overview-caption {
+    margin: 6px 0 0;
+    color: #687774;
+    font-size: 14px;
+}
+
+.year-controls {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    flex-wrap: wrap;
+    gap: 12px;
+    min-width: 0;
+}
+
+.year-select {
+    flex: 0 1 280px;
+    min-width: 220px;
+}
+
+.year-status {
+    max-width: 100%;
+}
+
+.overview-grid {
+    row-gap: 4px;
+}
+
+.overview-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    min-height: 142px;
+    padding: 22px;
+    border: 1px solid #e4eae7;
+    border-radius: 6px;
+    background: #fff;
+}
+
+.overview-icon {
+    display: grid;
+    flex: 0 0 44px;
+    width: 44px;
+    height: 44px;
+    place-items: center;
+    border-radius: 6px;
+}
+
+.overview-card-copy {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+}
+
+.overview-card-copy p,
+.overview-card-copy span {
+    margin: 0;
+    color: #687774;
+    font-size: 13px;
+}
+
+.overview-card-copy strong {
+    overflow-wrap: anywhere;
+    margin: 9px 0 5px;
+    color: #172b29;
+    font-size: 26px;
+    line-height: 1.15;
+}
+
+@media (max-width: 600px) {
+    .overview-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .year-select {
+        width: 100%;
+        max-width: 360px;
+    }
+
+    .year-controls {
+        align-items: flex-start;
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .overview-heading h1 {
+        font-size: 24px;
+    }
+}
+</style>

@@ -18,5 +18,6 @@ export default {
         },
     },
 
-    plugins: [forms],
+    // Avoid applying Tailwind's global input styles to Vuetify controls.
+    plugins: [forms({ strategy: 'class' })],
 };

@@ -1,3 +1,4 @@
+
 import { defineConfig } from "vite";
 import laravel from "laravel-vite-plugin";
 import vue from "@vitejs/plugin-vue";
@@ -15,40 +16,60 @@ export default defineConfig({
                 },
             },
         }),
+
         vuetify({ autoImport: true }),
+
         laravel({
             input: "resources/js/app.ts",
             // ssr: "resources/js/ssr.ts",
-            refresh: true,
+
+            // Surveiller uniquement les fichiers utiles
+            refresh: [
+                "resources/views/**/*.blade.php",
+                "routes/**/*.php",
+            ],
         }),
+
         Components({
             resolvers: [
                 (componentName) => {
-                    // where `componentName` is always CapitalCase
-                    if (componentName === "Toast")
+                    if (componentName === "Toast") {
                         return {
                             name: componentName,
                             from: "vue-toastification",
                         };
-                    if (componentName === "VDataTable")
+                    }
+
+                    if (componentName === "VDataTable") {
                         return {
                             name: componentName,
                             from: "vuetify/labs/VDataTable",
                         };
-                     if (componentName === "VDataIterator")
-                         return {
+                    }
 
+                    if (componentName === "VDataIterator") {
+                        return {
                             name: componentName,
                             from: "vuetify/labs/VDataIterator",
-                         };
-
+                        };
+                    }
                 },
 
                 VuetifyResolver(),
             ],
         }),
     ],
+
+    // Empêcher Vite de surveiller les sessions Laravel
+    server: {
+        watch: {
+            ignored: [
+                "**/storage/framework/sessions/**",
+            ],
+        },
+    },
+
     optimizeDeps: {
-        exclude: ['echarts/charts'], // Exclure la résolution automatique de ce module par Vite
+        exclude: ["echarts/charts"],
     },
 });

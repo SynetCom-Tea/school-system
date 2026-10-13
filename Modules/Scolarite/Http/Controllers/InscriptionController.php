@@ -121,6 +121,7 @@ class InscriptionController extends Controller
             'typeFrais' => TypeFrais::all(),
             'apprenant' => $apprenant,
             'annees' => Annee::all(),
+            'anneeActiveId' => Annee::getAnneeEnCours()?->id,
             // 'typeDocuments' => EtablissementTypeDocument::where('etablissement_section_id', $etablissement_section)->where('statut', '1')->with('type_document')->get(),
             // 'tuteurs' => ApprenantTuteur::whereHas('apprenant', function ($query) {
             //     $query->where('etablissement_id', Auth::user()->etablissement_id);
@@ -294,6 +295,31 @@ class InscriptionController extends Controller
         return $frais_scolarite;
     }
 
+    public function getNiveauxParAnnee($section, $annee)
+    {
+        $etablissementSections = getSectionEtablissement(Auth::user()->etablissement_id, $section);
+        $etablissementSectionId = is_array($etablissementSections)
+            ? ($etablissementSections[0] ?? null)
+            : $etablissementSections;
+
+        if (!$etablissementSectionId || !Annee::whereKey($annee)->exists()) {
+            return response()->json([]);
+        }
+
+        $niveauIds = Classe::where('etablissement_section_id', $etablissementSectionId)
+            ->whereHas('classe_annees', function ($query) use ($annee) {
+                $query->where('annee_id', $annee);
+            })
+            ->distinct()
+            ->pluck('niveau_id');
+
+        $niveaux = Niveau::where('section_id', $section)
+            ->whereIn('id', $niveauIds)
+            ->get();
+
+        return response()->json($niveaux);
+    }
+
     public function checkClasse($niveau, $etabSection)
     {
         try {
@@ -326,8 +352,12 @@ class InscriptionController extends Controller
                 return ['code' => 0, 'message' => 'Aucune classe trouvée pour ce niveau et section'];
             }
 
-            // Vérifiez les classes-années pour l'année en cours
-            $annee_encours = getAnneeEncours()->id;
+            // Utilise l'année sélectionnée, avec l'année active en secours pour les anciens appels.
+            $annee_encours = request()->input('annee') ?: Annee::getAnneeEnCours()?->id;
+            if (!$annee_encours) {
+                return ['code' => 0, 'message' => 'Aucune année académique active ou sélectionnée'];
+            }
+
             $result = ClasseAnnee::whereIn('classe_id', $classes->pluck('id'))
                 ->where('annee_id', $annee_encours)
                 ->with('classe.niveau')

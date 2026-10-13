@@ -107,7 +107,7 @@
                     item-title="libelle"
                     item-value="id"
                     v-model="form.annee"
-                    @update:modelValue="submitForm()"
+                    @update:modelValue="onChangeAnnee"
                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
                 </v-col>
@@ -115,12 +115,13 @@
                   <Autocomplete
                     label="Niveaux"
                     :isRequired="true"
-                    :items="niveaux"
+                    :items="niveauxDisponibles"
                     item-title="libelle"
                     item-value="id"
                     class="mt-3"
                     v-model="form.niveau"
-                    @update:modelValue="type == '1' || type == '2' ? checkClasseExist(form.niveau) : '',submitForm()"
+                    :disabled="!form.annee"
+                    @update:modelValue="onChangeNiveau"
                     :rules="[(v) => !!v || 'Ce champ est requis!']"
                   ></Autocomplete>
                 </v-col>
@@ -137,6 +138,15 @@
                 </v-col>
                 <v-col cols="1"></v-col>
               </v-row>
+              <v-alert
+                v-if="anneeNonActive"
+                class="mx-4 mb-3"
+                type="warning"
+                variant="tonal"
+                title="Année académique différente"
+              >
+                L'année sélectionnée n'est pas l'année académique active.
+              </v-alert>
               <v-row>
                 <v-col cols="1"></v-col>
                 <v-col :cols="mdCycleFiliere" v-if="type == '3' || type == '4'">
@@ -204,7 +214,7 @@ import { mdiCloseCircle, mdiPlusCircle, mdiInformation } from "@mdi/js";
 import { useVuelidate } from '@vuelidate/core';
 import { required } from '@vuelidate/validators';
 export default {
-  props: ["type","niveaux","nextIndex","apprenant","annees","formapprenant","cycleFilieres","cycles","nbre_limite_eleve"],
+  props: ["type","niveaux","nextIndex","apprenant","annees","anneeActiveId","formapprenant","cycleFilieres","cycles","nbre_limite_eleve"],
   components: {
     mdiPlusCircle,
     mdiCloseCircle,
@@ -226,6 +236,7 @@ export default {
     section: null,
     vCycle: null,
     resultClasse: [],
+    niveauxDisponibles: [],
     hint:'',
     form: useForm({
       apprenant: null,
@@ -263,6 +274,9 @@ export default {
   },
 
   computed:{
+    anneeNonActive() {
+      return this.form.annee != null && Number(this.form.annee) !== Number(this.anneeActiveId);
+    },
     setCycleFilieres() {
       let list = [];
       if (this.cycleFilieres) {
@@ -286,6 +300,46 @@ export default {
   },
   
   methods: {
+
+    async onChangeAnnee() {
+      this.form.niveau = null;
+      this.form.classe = null;
+      this.resultClasse = [];
+      this.niveauxDisponibles = [];
+
+      if (!this.form.annee) {
+        await this.submitForm();
+        return;
+      }
+
+      if (this.type == '1' || this.type == '2') {
+        try {
+          const response = await axios.get(route('getNiveauxParAnnee', {
+            section: this.type,
+            annee: this.form.annee,
+          }));
+          this.niveauxDisponibles = response.data ?? [];
+        } catch (error) {
+          this.niveauxDisponibles = [];
+          console.error('Impossible de charger les niveaux de cette année académique.', error);
+        }
+      } else {
+        this.niveauxDisponibles = this.niveaux ?? [];
+      }
+
+      await this.submitForm();
+    },
+
+    async onChangeNiveau() {
+      this.form.classe = null;
+      this.resultClasse = [];
+
+      if ((this.type == '1' || this.type == '2') && this.form.niveau) {
+        await this.checkClasseExist(this.form.niveau);
+      }
+
+      await this.submitForm();
+    },
     
     requete(){
       this.$emit('input',this.vCycle)
@@ -297,7 +351,8 @@ export default {
           .get(
             route("getcheckClasse", {
               niveau: niveau,
-              etabSection: this.form.etablissement_section_id
+              etabSection: this.form.etablissement_section_id,
+              annee: this.form.annee,
             })
           )
           .then((res) => {

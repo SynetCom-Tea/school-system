@@ -57,6 +57,8 @@ class VersementController extends Controller
                         ->orWhere('nom', 'like', '%' . $recherche . '%')
                         ->orWhere('prenom', 'like', '%' . $recherche . '%');
                 });
+        })->whereHas('annee', function($query) {
+            $query->where('actif', 1);
         })->whereHas('niveau', function($query) use ($section) {
             $query->where('section_id', $section);
         })->with('apprenant', 'annee', 'niveau')->get();
@@ -72,7 +74,9 @@ class VersementController extends Controller
         $code = $request->code;
         $section = $request->section;
 
-        $item = $code ? Inscription::where('code',$code)->whereHas('niveau', function($query) use ($section){
+        $item = $code ? Inscription::where('code',$code)->whereHas('annee', function($query){
+            $query->where('actif', 1);
+        })->whereHas('niveau', function($query) use ($section){
             $query->where('section_id',(int)$section);
         })->with('apprenant','cycleFiliere','annee','niveau','versements.frais.etablissement_type_frais.type_frais')->get() : [];
         // dd($item);

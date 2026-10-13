@@ -38,7 +38,7 @@ class UserController extends Controller
     {
         $authUser =  Auth::user();
         $data = null;
-        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        $nameRole = $authUser?->roles?->first()?->name;
         $getModelClasseAnnee = ClasseAnnee::find((int) $classeAnnee);
         if ($nameRole == 'Administrateur') {
 
@@ -58,7 +58,7 @@ class UserController extends Controller
         $list = [];
         $authUser =  Auth::user();
         $collection = collect();
-        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        $nameRole = $authUser?->roles?->first()?->name;
         $findNiveau = Niveau::where('section_id', (int)$section)->where('id', (int)$niveau)->get();
        
         if ($nameRole == 'Administrateur') {
@@ -119,7 +119,7 @@ class UserController extends Controller
         $data = null;
         $list = [];
         $authUser =  Auth::user();
-        $nameRole = $authUser->roles[0] ? $authUser->roles[0]->name : null;
+        $nameRole = $authUser?->roles?->first()?->name;
 
         if ($nameRole == 'Administrateur') {
             if ($params == "allyears") {

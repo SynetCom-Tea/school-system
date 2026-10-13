@@ -172,7 +172,7 @@ export function listMenus(page) {
   const section = [
     { title: "Primaire", icon: mdiSchool, link: "/enseignement/gestion/1" },
     { title: "Secondaire", icon: mdiSchool, link: "/enseignement/gestion/2" },
-    { title: 'Supérieure', icon: mdiSchool, link: ' /systeme/lmd/3' },
+    { title: 'Supérieure', icon: mdiSchool, link: '/systeme/lmd/3' },
     { title: 'Universitaire', icon: mdiSchool, link: '/systeme/lmd/4' },
   ];
 
@@ -417,7 +417,7 @@ export function listMenus(page) {
     {
       icon: mdiCash,
       title: "Versements",
-      link: "versements",
+      link: "/scolarite/versements",
       color: "rgb(24,18,42)",
       note: "Ce menu permet d'effectuer des versements de la section",
       expand: false,

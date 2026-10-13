@@ -13,14 +13,14 @@
                     <apprenant-form @formSubmitted="getApprenantForm" :type="type" :apprenant="apprenant" @apprenantFormValid="apprenantFormValid" />
                 </v-card>
                 <v-card flat v-show="apprenant != null && !loadingWizard">
-                    <annee-form @formSubmitted="getAnneeForm" :type="type" :cycles="cycles" :cycleFilieres="cycleFilieres" :niveaux="niveaux" :nbre_limite_eleve="nbre_limite_eleve" :nextIndex="nextIndex" :apprenant="apprenant" :annees="annees" @anneeFormValid="anneeFormValid" />
+                    <annee-form @formSubmitted="getAnneeForm" :type="type" :cycles="cycles" :cycleFilieres="cycleFilieres" :niveaux="niveaux" :nbre_limite_eleve="nbre_limite_eleve" :nextIndex="nextIndex" :apprenant="apprenant" :annees="annees" :anneeActiveId="anneeActiveId" @anneeFormValid="anneeFormValid" />
                 </v-card>
             </tab-content>
 
             <!-- Tabs 2 -->
             <tab-content :title="tabTitle2" :before-change="beforeChange">
                 <v-card flat v-show="apprenant == null && !loadingWizard">
-                    <annee-form @formSubmitted="getAnneeForm" :type="type" :cycles="cycles" :cycleFilieres="cycleFilieres" :niveaux="niveaux" :nbre_limite_eleve="nbre_limite_eleve" :nextIndex="nextIndex" :formapprenant="formApprenant" :annees="annees" @anneeFormValid="anneeFormValid" />
+                    <annee-form @formSubmitted="getAnneeForm" :type="type" :cycles="cycles" :cycleFilieres="cycleFilieres" :niveaux="niveaux" :nbre_limite_eleve="nbre_limite_eleve" :nextIndex="nextIndex" :formapprenant="formApprenant" :annees="annees" :anneeActiveId="anneeActiveId" @anneeFormValid="anneeFormValid" />
                 </v-card>
                 <v-card flat v-show="apprenant != null && !loadingWizard">
                     <tuteur-form @formSubmitted="getTuteurForm" :type="type" :tuteurShow="0" :niveaux="niveaux" :nextIndex="nextIndex" :tuteurs="tuteurs" @tuteurFormValid="tuteurFormValid" />
@@ -131,7 +131,7 @@ import {
 } from "@mdi/js";
 export default {
     emits: ['formSubmitted'],
-    props: ["type", "niveaux", "typeFrais", "apprenant", "annees", "typeDocuments", "tuteurs", "cycleFilieres", "cycles", "nbre_limite_eleve"],
+    props: ["type", "niveaux", "typeFrais", "apprenant", "annees", "anneeActiveId", "typeDocuments", "tuteurs", "cycleFilieres", "cycles", "nbre_limite_eleve"],
     components: {
         FormWizard,
         TabContent,

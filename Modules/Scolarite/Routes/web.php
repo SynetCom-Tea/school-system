@@ -33,6 +33,7 @@ Route::prefix('scolarite')->group(function () {
     Route::resource('inscriptions', \Modules\Scolarite\Http\Controllers\InscriptionController::class);
     Route::get('/inscription/page/', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'addPage'])->name('inscriptionPage');
     Route::get('/inscription/checkClasse/{niveau}/{etabSection}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'checkClasse'])->name('getcheckClasse');
+    Route::get('/inscription/niveaux/{section}/{annee}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'getNiveauxParAnnee'])->name('getNiveauxParAnnee');
     Route::get('/inscription/getFrais/{niveau}/{annee}', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'getFrais'])->name('getfrais');
     Route::get('/liste_inscription_by_recherche', [\Modules\Scolarite\Http\Controllers\InscriptionController::class, 'ajaxInscriptionListe'])->name('getInscriptionsByRecherche');
     // Route::get('/liste_inscription_about_mle',[\Modules\Scolarite\Http\Controllers\InscriptionController::class,'ajaxGetInscriptionAboutMle'])->name('getInscriptionAboutMle'); 

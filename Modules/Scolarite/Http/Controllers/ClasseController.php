@@ -21,15 +21,25 @@ class ClasseController extends Controller
      * Display a listing of the resource.
      * @return Renderable
      */
-    public function index($type)
+    public function index(Request $request, $type)
     {
         $ets_id = Auth::user()->etablissement_id;
         $table = DB::table('etablissement_section')->where('etablissement_id',$ets_id)->where('section_id',$type)->first();
-        //dd($table, $ets_id);
+        $annees = Annee::orderByDesc('id')->get();
+        $anneeSelectionnee = $annees->firstWhere('id', (int) $request->query('annee_id'))
+            ?? $annees->firstWhere('actif', 1)
+            ?? $annees->first();
+
         return Inertia::render('Classe/Index', [
-            'classes' => Classe::where('etablissement_section_id',$table->id)->get(),
+            'classes' => Classe::where('etablissement_section_id', $table->id)
+                ->whereHas('classe_annees', function ($query) use ($anneeSelectionnee) {
+                    $query->where('annee_id', $anneeSelectionnee?->id);
+                })
+                ->get(),
             'section_id' => $type,
             'niveaux' => Niveau::where('section_id',$type)->get(),
+            'annees' => $annees,
+            'annee_id' => $anneeSelectionnee?->id,
             'filieres'=>CycleFiliere::with('filiere')->whereHas('filiere',function ($query) use ($table){
                 $query->where('etablissement_section_id',$table->id);})->get(),
         ]);

@@ -1,8 +1,7 @@
 <template>
   <footer
     style="
-      position: absolute;
-      bottom: 0;
+      position: relative;
       left: 0;
       background-color: #004980;
       width: 100%;

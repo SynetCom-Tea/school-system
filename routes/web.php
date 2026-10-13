@@ -10,6 +10,11 @@ use App\Http\Controllers\CalendrierscolaireController;
 use App\Http\Controllers\ConduiteController;
 use App\Http\Controllers\MenuGestionController;
 use App\Http\Controllers\RapportController;
+use App\Models\Annee;
+use App\Models\Apprenant;
+use App\Models\ClasseAnnee;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Modules\GestionNote\Http\Controllers\NoteController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -19,6 +24,9 @@ use Modules\Enseignement\Http\Controllers\EnseignantController;
 use Modules\Enseignement\Http\Controllers\FilliereController;
 use Modules\Enseignement\Http\Controllers\LmdController;
 use Modules\Enseignement\Http\Controllers\UEController;
+use Modules\Enseignement\Entities\Enseignant;
+use Modules\Scolarite\Entities\Versement;
+use Modules\Scolarite\Entities\Inscription;
 use Modules\Scolarite\Http\Controllers\EtudiantsController;
 use Modules\Scolarite\Http\Controllers\AnneeController;
 use Modules\Scolarite\Http\Controllers\ClasseController;
@@ -60,8 +68,75 @@ Route::get('/', function () {
     ]);
 });
 
-Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+Route::get('/dashboard', function (Request $request) {
+    $annee = Annee::find($request->query('annee_id')) ?? Annee::getAnneeEnCours();
+    $schoolYears = Annee::orderByDesc('id')->get(['id', 'libelle']);
+    $studentCountForLevel = static function (array $levelCodes, array $classLabels) use ($annee) {
+        if (!$annee) {
+            return 0;
+        }
+
+        return Apprenant::where(function ($query) use ($annee, $levelCodes, $classLabels) {
+            $query->whereHas('inscriptions', function ($inscription) use ($annee, $levelCodes) {
+                $inscription->where('annee_id', $annee->id)
+                    ->whereHas('niveau', fn ($niveau) => $niveau->whereIn('code', $levelCodes));
+            })->orWhereHas('apprenant_classe_annees.classe_annee', function ($classeAnnee) use ($annee, $classLabels) {
+                $classeAnnee->where('annee_id', $annee->id)
+                    ->whereHas('classe', function ($classe) use ($classLabels) {
+                        $classe->where(function ($labels) use ($classLabels) {
+                            foreach ($classLabels as $label) {
+                                $labels->orWhere('libelle', 'like', $label);
+                            }
+                        });
+                    });
+            });
+        })
+            ->distinct('apprenants.id')
+            ->count('apprenants.id');
+    };
+
+    $unpaidPayments = 0;
+    if ($annee) {
+        $inscriptions = Inscription::where('annee_id', $annee->id)->get(['id', 'niveau_id']);
+        $feesByLevel = DB::table('frais')
+            ->where('annee_id', $annee->id)
+            ->whereNull('deleted_at')
+            ->select('niveau_id', DB::raw('SUM(montant) as total_fees'))
+            ->groupBy('niveau_id')
+            ->pluck('total_fees', 'niveau_id');
+        $paymentsByInscription = DB::table('versements')
+            ->whereIn('inscription_id', $inscriptions->pluck('id'))
+            ->whereNull('deleted_at')
+            ->select('inscription_id', DB::raw('SUM(montant) as total_paid'))
+            ->groupBy('inscription_id')
+            ->pluck('total_paid', 'inscription_id');
+
+        $unpaidPayments = $inscriptions->sum(static function ($inscription) use ($feesByLevel, $paymentsByInscription) {
+            return max(
+                0,
+                ($feesByLevel[$inscription->niveau_id] ?? 0) - ($paymentsByInscription[$inscription->id] ?? 0)
+            );
+        });
+    }
+
+    $dashboardStats = [  
+        'students' => $annee ? Apprenant::whereHas('apprenant_classe_annees.classe_annee', fn ($query) => $query->where('annee_id', $annee->id))->count() : 0,
+        'classes' => $annee ? ClasseAnnee::where('annee_id', $annee->id)->count() : 0,
+        'teachers' => $annee ? Enseignant::whereHas('enseignement_annees.classe_annee', fn ($query) => $query->where('annee_id', $annee->id))->distinct()->count('id') : 0,
+        'payments' => $annee  ? Versement::whereHas('inscription', fn ($query) => $query->where('annee_id', $annee->id))->sum('montant') : 0,
+        'terminal_a' => $studentCountForLevel(['TA'], ['Terminale A%', 'Terminal A%']),
+        'terminal_d' => $studentCountForLevel(['TD'], ['Terminale D%', 'Terminal D%']),
+        'troisieme' => $studentCountForLevel(['3e'], ['Troisième%', 'Troisieme%', '3ème%', '3eme%']),
+        'unpaid_payments' => $unpaidPayments,
+    ];
+
+    return Inertia::render('Dashboard', [
+        'dashboardStats' => $dashboardStats,
+        'schoolYearLabel' => $annee?->libelle ?? 'Aucune année active',
+        'isSelectedYearActive' => (bool) ($annee?->actif ?? false),
+        'schoolYears' => $schoolYears,
+        'selectedYearId' => $annee?->id,
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 Route::middleware('auth')->group(function () {
     Route::group(['middleware' => ['checkRoles:Super-administrateur,Administrateur']], function () {

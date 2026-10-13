@@ -34,7 +34,7 @@
             mdiContentSave
         },
         layout: AuthenticatedLayout,
-        props: ["classes","section_id", "niveaux"],
+        props: ["classes", "section_id", "niveaux", "annees", "annee_id"],
         data() {
             return {
                 icons: {
@@ -79,6 +79,13 @@
             }
         },
         methods:{
+            filterByYear(anneeId) {
+                router.get(
+                    route('classes.index', { type: this.section_id }),
+                    { annee_id: anneeId },
+                    { preserveScroll: true, preserveState: true, replace: true }
+                )
+            },
             create() {
                 router.get(route('classes.create', this.section_id))
             },
@@ -227,8 +234,22 @@
                 </v-card>
             </template>
                                 
-                    </v-dialog>
+        </v-dialog>
         <v-card-text>
+            <div class="d-flex justify-end mb-4">
+                <v-select
+                    :model-value="annee_id"
+                    :items="annees"
+                    item-title="libelle"
+                    item-value="id"
+                    label="Année scolaire"
+                    density="compact"
+                    variant="outlined"
+                    hide-details
+                    style="max-width: 280px"
+                    @update:model-value="filterByYear"
+                />
+            </div>
             <Datatable titleDatatable="Liste des classes" :headers="headers" :items="classes" :permission="'manage_school|classe.create'" :functionOnClickAddButton="create" >
              
             <template v-slot:item.actions="{item}">
